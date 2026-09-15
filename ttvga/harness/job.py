@@ -7,12 +7,11 @@ Usage: job.py --targets targets.json --id <shuttle>/<macro> --root ~/ttvga [opti
 Layout under --root:
     tools/oss-cad-suite/bin/verilator, tools/ffmpeg/bin/ffmpeg
     harness/tb.cpp (this directory)
-    overrides/<shuttle>/<macro>.yaml (optional per-project tweaks)
+    overrides/<shuttle>/<macro>.json (+ .inputs/.gamepad/.diff), compiled by ttvga/overrides.py
     work/<shuttle>/<macro>/{repo/, build/, build.log, sim.log, timing.json, result.json}
     videos/<shuttle>/<macro>/{60s.avi, 30s.avi, 10s.avi, poster.png, contact.png}
 
-Standard library only: the host has no packages installed. The override file
-is a small YAML subset (see `read_override`) so PyYAML is not needed here.
+Standard library only: the host has no packages installed.
 """
 
 from __future__ import annotations
@@ -21,7 +20,6 @@ import argparse
 import hashlib
 import json
 import os
-import re
 import shutil
 import subprocess
 import sys
@@ -61,36 +59,19 @@ def run(cmd: list[str], log: Path, cwd: Path | None = None, timeout: float | Non
 
 
 def read_override(path: Path) -> dict:
-    """Read the per-project override file: flat `key: value` YAML plus simple lists.
+    """Read the compiled per-project override (`<macro>.json`, made by `ttvga/overrides.py`).
 
-    Supported keys: clock_hz, ui_in, uio_in, inputs (path to an input script,
-    relative to the override file), verilator_flags (list), sources (list,
-    replaces source_files), top_module, skip (reason), seconds, calib_seconds.
+    Keys: clock_hz, seconds, calib_seconds, ui_in, uio_in, verilator_flags,
+    sources, top_module, skip, and file names (next to the JSON) for inputs,
+    gamepad and patch.
     """
-    ov: dict = {}
     if not path.exists():
-        return ov
-    key = None
-    for raw in path.read_text().splitlines():
-        line = raw.split("#", 1)[0].rstrip()
-        if not line.strip():
-            continue
-        m = re.match(r"^(\w+):\s*(.*)$", line)
-        if m and not line.startswith(" "):
-            key, val = m.group(1), m.group(2).strip()
-            if val == "":
-                ov[key] = []
-            elif val.startswith("[") and val.endswith("]"):
-                ov[key] = [v.strip().strip("'\"") for v in val[1:-1].split(",") if v.strip()]
-            else:
-                ov[key] = val.strip("'\"")
-        elif line.strip().startswith("- ") and key is not None and isinstance(ov.get(key), list):
-            ov[key].append(line.strip()[2:].strip().strip("'\""))
-    return ov
+        return {}
+    return json.loads(path.read_text())
 
 
-def fetch(target: dict, repo_dir: Path, log: Path) -> str | None:
-    """Clone the project repo at its recorded commit. Returns an error string or None."""
+def fetch(target: dict, repo_dir: Path, log: Path, patch: Path | None = None) -> str | None:
+    """Clone the project repo at its recorded commit and apply an optional patch."""
     if repo_dir.exists():
         shutil.rmtree(repo_dir)
     repo_dir.mkdir(parents=True)
@@ -108,6 +89,9 @@ def fetch(target: dict, repo_dir: Path, log: Path) -> str | None:
     if (repo_dir / ".gitmodules").exists():
         run(["git", "submodule", "update", "-q", "--init", "--depth", "1", "--recursive"], log, cwd=repo_dir,
             timeout=600, env=env)
+    if patch is not None:
+        if run(["git", "apply", "--whitespace=nowarn", str(patch)], log, cwd=repo_dir, timeout=60, env=env) != 0:
+            return "patch did not apply"
     return None
 
 
@@ -163,8 +147,9 @@ def simulate(target: dict, ov: dict, repo_dir: Path, build_dir: Path, work: Path
         cmd += ["--ui-in", str(ov["ui_in"])]
     if ov.get("uio_in") is not None:
         cmd += ["--uio-in", str(ov["uio_in"])]
-    if ov.get("inputs"):
-        cmd += ["--inputs", str((args.overrides / target["shuttle"] / ov["inputs"]).resolve())]
+    for key in ("inputs", "gamepad"):
+        if ov.get(key):
+            cmd += [f"--{key}", str((args.overrides / target["shuttle"] / ov[key]).resolve())]
     # $readmem paths in Tiny Tapeout projects are usually relative to src/.
     rc = run(cmd, log, cwd=repo_dir / "src", timeout=args.timeout)
     if rc == 124:
@@ -240,7 +225,8 @@ def main() -> int:
         "verilator": str(args.root / "tools" / "oss-cad-suite" / "bin" / "verilator"),
         "ffmpeg": str(args.root / "tools" / "ffmpeg" / "bin" / "ffmpeg"),
     }
-    ov = read_override(args.overrides / shuttle / f"{macro}.yaml")
+    ov = read_override(args.overrides / shuttle / f"{macro}.json")
+    patch = (args.overrides / shuttle / ov["patch"]) if ov.get("patch") else None
 
     work.mkdir(parents=True, exist_ok=True)
     for old in ("build.log", "sim.log", "result.json"):
@@ -250,7 +236,7 @@ def main() -> int:
         "host": os.uname().nodename, "override": ov or None, "stage": None, "error": None,
         "timings": {}, "tools": tool_versions(tools),
     }
-    error = target.get("skip")
+    error = ov.get("skip") or target.get("skip")
     if error:
         result["stage"] = "skipped"
     repo_dir, build_dir = work / "repo", work / "build"
@@ -259,7 +245,7 @@ def main() -> int:
             t0 = time.monotonic()
             result["stage"] = stage
             if stage == "fetch":
-                error = fetch(target, repo_dir, work / "build.log")
+                error = fetch(target, repo_dir, work / "build.log", patch)
             elif stage == "build":
                 error = build(target, ov, repo_dir, build_dir, work / "build.log", tools)
             elif stage == "simulate":

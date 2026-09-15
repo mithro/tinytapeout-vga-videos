@@ -55,6 +55,7 @@ struct Options {
     std::string out_dir = ".";
     std::string ffmpeg = "ffmpeg";
     std::string inputs;           // optional input script
+    std::string gamepad;          // optional gamepad button script
     int ui_in = 0, uio_in = 0;    // constant inputs when no script
     bool quiet = false;
 };
@@ -63,6 +64,40 @@ struct InputEvent { uint64_t clock; int ui_in; int uio_in; };
 
 int parse_int(const std::string& s) {
     return static_cast<int>(std::strtol(s.c_str(), nullptr, 0));
+}
+
+// Gamepad Pmod emulation, as in the VGA Playground's InputController.ts:
+// once per scan line the controller state advances one step of a 400-step
+// cycle: 24 clock pulses shifting the 24-bit report (12 buttons of
+// controller 1 in the upper half, LSB first), then a latch pulse. Pins on
+// ui_in: bit 6 data, bit 5 clock, bit 4 latch.
+struct GamepadEvent { uint64_t clock; int buttons; };
+
+std::vector<GamepadEvent> load_gamepad(const std::string& path) {
+    std::vector<GamepadEvent> ev;
+    if (path.empty()) return ev;
+    FILE* f = std::fopen(path.c_str(), "r");
+    if (!f) { std::fprintf(stderr, "tb: cannot open gamepad script %s\n", path.c_str()); std::exit(2); }
+    char line[512];
+    while (std::fgets(line, sizeof line, f)) {
+        if (line[0] == '#' || line[0] == '\n') continue;
+        char a[64], b[64];
+        if (std::sscanf(line, "%63s %63s", a, b) == 2)
+            ev.push_back({std::strtoull(a, nullptr, 0), parse_int(b)});
+    }
+    std::fclose(f);
+    std::stable_sort(ev.begin(), ev.end(), [](const GamepadEvent& x, const GamepadEvent& y) { return x.clock < y.clock; });
+    return ev;
+}
+
+int gamepad_pins(int step, int buttons) {
+    const int pulses = 24;
+    const uint32_t data_reg = static_cast<uint32_t>(buttons & 0xfff) << 12;
+    const int clk = step < pulses * 2 ? step % 2 : 0;
+    const int idx = step < pulses * 2 + 1 ? step >> 1 : 0;
+    const int data = (data_reg >> idx) & 1;
+    const int latch = step == pulses * 2 + 1 ? 1 : 0;
+    return (data << 6) | (clk << 5) | (latch << 4);
 }
 
 // Input script: lines of "<clock> <ui_in> <uio_in>", numbers in C syntax.
@@ -146,6 +181,7 @@ int main(int argc, char** argv) {
         else if (a == "--out") opt.out_dir = next();
         else if (a == "--ffmpeg") opt.ffmpeg = next();
         else if (a == "--inputs") opt.inputs = next();
+        else if (a == "--gamepad") opt.gamepad = next();
         else if (a == "--ui-in") opt.ui_in = parse_int(next());
         else if (a == "--uio-in") opt.uio_in = parse_int(next());
         else if (a == "--quiet") opt.quiet = true;
@@ -161,14 +197,30 @@ int main(int argc, char** argv) {
     ctx.commandArgs(argc, argv);
     Vtop top{&ctx};
     std::vector<InputEvent> events = load_inputs(opt.inputs);
-    size_t next_event = 0;
+    std::vector<GamepadEvent> pad_events = load_gamepad(opt.gamepad);
+    const bool use_gamepad = !opt.gamepad.empty();
+    size_t next_event = 0, next_pad = 0;
+    int pad_buttons = 0, pad_step = 0;
+    uint64_t pad_line_clocks = 800;   // one scan line; refined once the line period is known
+    uint64_t pad_next_step_clock = 0;
+    int ui_in_base = opt.ui_in & 0xff;
 
     uint64_t clock = 0;
     auto tick = [&]() {
         while (next_event < events.size() && events[next_event].clock <= clock) {
-            top.ui_in = events[next_event].ui_in & 0xff;
+            ui_in_base = events[next_event].ui_in & 0xff;
+            top.ui_in = ui_in_base;
             top.uio_in = events[next_event].uio_in & 0xff;
             next_event++;
+        }
+        if (use_gamepad) {
+            while (next_pad < pad_events.size() && pad_events[next_pad].clock <= clock)
+                pad_buttons = pad_events[next_pad++].buttons;
+            if (clock >= pad_next_step_clock) {
+                top.ui_in = (ui_in_base & ~0x70) | gamepad_pins(pad_step, pad_buttons);
+                pad_step = (pad_step + 1) % 400;
+                pad_next_step_clock = clock + pad_line_clocks;
+            }
         }
         top.clk = 0; top.eval(); ctx.timeInc(1);
         top.clk = 1; top.eval(); ctx.timeInc(1);
@@ -222,6 +274,7 @@ int main(int argc, char** argv) {
 
     // ---- Work out the mode.
     const uint64_t line_clocks = hs.period;
+    pad_line_clocks = line_clocks;
     const int lines = static_cast<int>((vs.period + line_clocks / 2) / line_clocks);
     const Mode* mode = nullptr;
     int cpp = 1;  // clocks per pixel

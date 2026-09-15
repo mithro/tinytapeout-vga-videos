@@ -147,13 +147,15 @@ cd ~/{REMOTE_ROOT}/tools
 
 
 def sync(args: argparse.Namespace) -> int:
-    """Copy the harness, targets and overrides to the host."""
+    """Copy the harness, targets and compiled overrides to the host."""
+    from ttvga.overrides import COMPILED_DIR, compile_all
+
     host = resolve_host(args.host)
+    n = compile_all()
     rsync(host, [str(HARNESS_DIR) + "/", str(TARGETS_JSON)], f"{REMOTE_ROOT}/harness/", delete=True,
           extra=["--exclude", "__pycache__"])
-    OVERRIDES_DIR.mkdir(exist_ok=True)
-    rsync(host, [str(OVERRIDES_DIR) + "/"], f"{REMOTE_ROOT}/overrides/", delete=True)
-    print(f"synced harness, targets and overrides to {host.ssh}:{REMOTE_ROOT}/")
+    rsync(host, [str(COMPILED_DIR) + "/"], f"{REMOTE_ROOT}/overrides/", delete=True)
+    print(f"synced harness, targets and {n} overrides to {host.ssh}:{REMOTE_ROOT}/")
     return 0
 
 
