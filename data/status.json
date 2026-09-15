@@ -1,6 +1,6 @@
 {
   "attempted": 440,
-  "generated": "2026-09-15 10:34 UTC",
+  "generated": "2026-09-15 11:18 UTC",
   "projects": {
     "tt05/tt_um_algofoogle_vga_spi_rom": {
       "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
@@ -167,8 +167,8 @@
       ]
     },
     "tt06/tt_um_toivoh_retro_console": {
-      "reason": "2732 of 3596 frames in 1800 s wall (640x480@60, 1.28 Mclk/s)",
-      "verdict": "partial",
+      "reason": "3596/3596 frames are black (640x480@60)",
+      "verdict": "blank",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -189,8 +189,8 @@
       ]
     },
     "tt07/tt_um_MichaelBell_rle_vga": {
-      "reason": "line None clocks, ? lines, hsync transitions ?",
-      "verdict": "sim-timeout",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -200,8 +200,8 @@
       ]
     },
     "tt07/tt_um_algofoogle_raybox_zero": {
-      "reason": "line None clocks, ? lines, hsync transitions ?",
-      "verdict": "sim-timeout",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -211,8 +211,8 @@
       ]
     },
     "tt07/tt_um_emern_top": {
-      "reason": "line None clocks, ? lines, hsync transitions ?",
-      "verdict": "sim-timeout",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -288,8 +288,8 @@
       ]
     },
     "tt08/tt_um_MichaelBell_mandelbrot": {
-      "reason": "3027 of 3355 frames in 1802 s wall (640x480@75, 3.01 Mclk/s)",
-      "verdict": "partial",
+      "reason": "103 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -408,8 +408,8 @@
       ]
     },
     "tt08/tt_um_htfab_bouncy_capsule": {
-      "reason": "1943 of 3571 frames in 1800 s wall (640x480@60, 0.45 Mclk/s)",
-      "verdict": "partial",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -518,8 +518,8 @@
       ]
     },
     "tt08/tt_um_toivoh_demo": {
-      "reason": "2983 of 3600 frames in 1801 s wall (640x480@60, 1.39 Mclk/s)",
-      "verdict": "partial",
+      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -595,8 +595,8 @@
       ]
     },
     "tt09/tt_um_MichaelBell_rle_vga": {
-      "reason": "line None clocks, ? lines, hsync transitions ?",
-      "verdict": "sim-timeout",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -688,8 +688,8 @@
       ]
     },
     "tt09/tt_um_toivoh_demo": {
-      "reason": "2971 of 3600 frames in 1801 s wall (640x480@60, 1.39 Mclk/s)",
-      "verdict": "partial",
+      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -754,8 +754,8 @@
       ]
     },
     "ttcad25a/tt_um_MichaelBell_mandelbrot": {
-      "reason": "3024 of 3355 frames in 1802 s wall (640x480@75, 3.01 Mclk/s)",
-      "verdict": "partial",
+      "reason": "103 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -896,8 +896,8 @@
       ]
     },
     "ttcad25a/tt_um_gfg_development_tinymandelbrot": {
-      "reason": "2278/2278 frames are black (800x600@60)",
-      "verdict": "blank",
+      "reason": "line 1056 clocks, 628 lines, hsync transitions ?",
+      "verdict": "unstable-sync",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -907,8 +907,8 @@
       ]
     },
     "ttcad25a/tt_um_htfab_bouncy_capsule": {
-      "reason": "1982 of 3571 frames in 1801 s wall (640x480@60, 0.46 Mclk/s)",
-      "verdict": "partial",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1028,8 +1028,8 @@
       ]
     },
     "ttcad25a/tt_um_spacewar": {
-      "reason": "1 distinct frame(s) in 7143 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "347 distinct frames of 7143 (640x480@60, 640x480, 119.0 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1072,8 +1072,8 @@
       ]
     },
     "ttcad25a/tt_um_toivoh_demo": {
-      "reason": "2652 of 3600 frames in 1800 s wall (640x480@60, 1.24 Mclk/s)",
-      "verdict": "partial",
+      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1160,8 +1160,8 @@
       ]
     },
     "ttgf0p1/tt_um_dinogame": {
-      "reason": "1 distinct frame(s) in 3585 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "175 distinct frames of 3585 (640x480@60, 640x480, 59.8 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1226,8 +1226,8 @@
       ]
     },
     "ttgf0p2/tt_um_algofoogle_raybox_zero": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "7 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1242,8 +1242,8 @@
       "videos": []
     },
     "ttgf0p2/tt_um_htfab_asicle2": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "2 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1313,8 +1313,8 @@
       ]
     },
     "ttgf0p3/tt_um_AbAdA_2048": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "15 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1498,13 +1498,19 @@
       ]
     },
     "ttihp0p1/tt_um_algofoogle_raybox_zero": {
-      "reason": "missing sources: raybox-zero/src/rtl/fixed_point_params.v, raybox-zero/src/rtl/helpers.v, raybox-zero/src/rtl/rbzero.v, raybox-zero/src/rtl/spi_registers.v, raybox-zero/src/rtl/debug_overlay.v, raybox-zero/src/rtl/map_overlay.v, raybox-zero/src/rtl/map_rom.v, raybox-zero/src/rtl/pov.v, raybox-zero/src/rtl/lzc.v, raybox-zero/src/rtl/reciprocal.v, raybox-zero/src/rtl/wall_tracer.v, raybox-zero/src/rtl/row_render.v, raybox-zero/src/rtl/vga_mux.v, raybox-zero/src/rtl/vga_sync.v, raybox-zero/src/rtl/top_raybox_zero_fsm.v",
-      "verdict": "build-failed",
-      "videos": []
+      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480)",
+      "verdict": "static",
+      "videos": [
+        "10s.avi",
+        "30s.avi",
+        "60s.avi",
+        "contact.png",
+        "poster.png"
+      ]
     },
     "ttihp0p1/tt_um_dinogame": {
-      "reason": "1 distinct frame(s) in 3585 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "175 distinct frames of 3585 (640x480@60, 640x480, 59.8 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1580,8 +1586,8 @@
       ]
     },
     "ttihp0p2/tt_um_MichaelBell_rle_vga": {
-      "reason": "3596/3596 frames are black (640x480@60)",
-      "verdict": "blank",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1624,8 +1630,8 @@
       ]
     },
     "ttihp0p2/tt_um_algofoogle_raybox_zero": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1684,8 +1690,8 @@
       ]
     },
     "ttihp0p2/tt_um_htfab_bouncy_capsule": {
-      "reason": "1982 of 3571 frames in 1801 s wall (640x480@60, 0.46 Mclk/s)",
-      "verdict": "partial",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1717,8 +1723,8 @@
       ]
     },
     "ttihp0p2/tt_um_rebeccargb_vga_pride": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1772,8 +1778,8 @@
       ]
     },
     "ttihp0p2/tt_um_toivoh_retro_console": {
-      "reason": "2778 of 3596 frames in 1800 s wall (640x480@60, 1.30 Mclk/s)",
-      "verdict": "partial",
+      "reason": "3596/3596 frames are black (640x480@60)",
+      "verdict": "blank",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1919,8 +1925,8 @@
       ]
     },
     "ttihp0p4/tt_um_htfab_asicle2": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "2 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1930,8 +1936,8 @@
       ]
     },
     "ttihp0p4/tt_um_silicon_strummer": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "24 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1941,8 +1947,8 @@
       ]
     },
     "ttihp0p4/tt_um_snake_game": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "10 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1963,8 +1969,8 @@
       ]
     },
     "ttihp0p4/tt_um_toivoh_demo": {
-      "reason": "2615 of 3600 frames in 1800 s wall (640x480@60, 1.22 Mclk/s)",
-      "verdict": "partial",
+      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2018,8 +2024,8 @@
       ]
     },
     "ttihp25a/tt_um_MichaelBell_mandelbrot": {
-      "reason": "3048 of 3355 frames in 1802 s wall (640x480@75, 3.03 Mclk/s)",
-      "verdict": "partial",
+      "reason": "103 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2029,8 +2035,8 @@
       ]
     },
     "ttihp25a/tt_um_MichaelBell_rle_vga": {
-      "reason": "3600/3600 frames are black (640x480@75)",
-      "verdict": "blank",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2144,8 +2150,8 @@
       ]
     },
     "ttihp25a/tt_um_gamepad_pmod_demo": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "10 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2155,8 +2161,8 @@
       ]
     },
     "ttihp25a/tt_um_gfg_development_tinymandelbrot": {
-      "reason": "2278/2278 frames are black (800x600@60)",
-      "verdict": "blank",
+      "reason": "line 1056 clocks, 628 lines, hsync transitions ?",
+      "verdict": "unstable-sync",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2287,8 +2293,8 @@
       ]
     },
     "ttihp25a/tt_um_rebeccargb_vga_pride": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2309,7 +2315,7 @@
       ]
     },
     "ttihp25a/tt_um_rejunity_atari2600": {
-      "reason": "337 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1609 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2342,8 +2348,8 @@
       ]
     },
     "ttihp25a/tt_um_spacewar": {
-      "reason": "1 distinct frame(s) in 7143 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "347 distinct frames of 7143 (640x480@60, 640x480, 119.0 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2402,8 +2408,8 @@
       "videos": []
     },
     "ttihp25a/tt_um_toivoh_demo_tt10": {
-      "reason": "2645 of 3600 frames in 1800 s wall (640x480@60, 1.24 Mclk/s)",
-      "verdict": "partial",
+      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2501,8 +2507,8 @@
       ]
     },
     "ttihp25b/tt_um_gamepad_pmod_demo": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "11 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2523,7 +2529,7 @@
       ]
     },
     "ttihp25b/tt_um_rejunity_atari2600": {
-      "reason": "337 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1609 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2638,8 +2644,8 @@
       ]
     },
     "ttihp26a/tt_um_faaaa": {
-      "reason": "3505 of 3596 frames in 1800 s wall (640x480@60, 0.82 Mclk/s)",
-      "verdict": "partial",
+      "reason": "3533 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2687,7 +2693,7 @@
       ]
     },
     "ttihp26a/tt_um_michaelstambach_vogal": {
-      "reason": "3596/3596 frames are one colour (640x480@60)",
+      "reason": "3562/3596 frames are one colour (640x480@60)",
       "verdict": "blank",
       "videos": [
         "10s.avi",
@@ -2764,8 +2770,8 @@
       ]
     },
     "ttihp26a/tt_um_rebeccargb_vga_pride": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2786,8 +2792,8 @@
       ]
     },
     "ttihp26a/tt_um_snake_game": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "10 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2808,8 +2814,8 @@
       ]
     },
     "ttihp26a/tt_um_tobiasgreiser_move_vga_square": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "96 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2918,8 +2924,8 @@
       ]
     },
     "ttsky25a/tt_um_MichaelBell_mandelbrot": {
-      "reason": "3084 of 3355 frames in 1802 s wall (640x480@75, 3.07 Mclk/s)",
-      "verdict": "partial",
+      "reason": "103 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2929,8 +2935,8 @@
       ]
     },
     "ttsky25a/tt_um_MichaelBell_rle_vga": {
-      "reason": "3600/3600 frames are black (640x480@75)",
-      "verdict": "blank",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2978,8 +2984,8 @@
       ]
     },
     "ttsky25a/tt_um_gamepad_pmod_demo": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "11 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3049,8 +3055,8 @@
       ]
     },
     "ttsky25a/tt_um_rebeccargb_vga_pride": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3207,8 +3213,8 @@
       ]
     },
     "ttsky25b/tt_um_htfab_asicle2": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3218,8 +3224,8 @@
       ]
     },
     "ttsky25b/tt_um_lukasdragoste_vga_patterns": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "10 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3229,8 +3235,8 @@
       ]
     },
     "ttsky25b/tt_um_pongsagon_tinygpu_v2": {
-      "reason": "3596/3596 frames are black (640x480@60)",
-      "verdict": "blank",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3240,8 +3246,8 @@
       ]
     },
     "ttsky25b/tt_um_rebeccargb_vga_pride": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3350,8 +3356,8 @@
       ]
     },
     "ttsky26a/tt_um_AmitChen1415": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "7 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3405,8 +3411,8 @@
       ]
     },
     "ttsky26a/tt_um_TinyGPU_v3": {
-      "reason": "3596/3596 frames are black (640x480@60)",
-      "verdict": "blank",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3630,8 +3636,8 @@
       ]
     },
     "ttsky26a/tt_um_madech_8bit_processor_vga": {
-      "reason": "3596/3596 frames are black (640x480@60)",
-      "verdict": "blank",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3652,8 +3658,8 @@
       ]
     },
     "ttsky26a/tt_um_maze": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "3 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3734,8 +3740,8 @@
       "videos": []
     },
     "ttsky26a/tt_um_rebeccargb_vga_pride": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3827,8 +3833,8 @@
       ]
     },
     "ttsky26a/tt_um_toivoh_demo": {
-      "reason": "1935 of 3600 frames in 1800 s wall (640x480@60, 0.91 Mclk/s)",
-      "verdict": "partial",
+      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3849,8 +3855,8 @@
       ]
     },
     "ttsky26a/tt_um_toivoh_demo_4tile": {
-      "reason": "2451 of 3600 frames in 1800 s wall (640x480@60, 1.15 Mclk/s)",
-      "verdict": "partial",
+      "reason": "3598 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3860,8 +3866,8 @@
       ]
     },
     "ttsky26a/tt_um_tomvdsch_cyclonerunner": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "72 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3926,8 +3932,8 @@
       ]
     },
     "ttsky26b/tt_um_27jorge05_crc_fifo": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "2 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4047,8 +4053,8 @@
       ]
     },
     "ttsky26b/tt_um_abhinavputhran_raycast": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "55 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4140,8 +4146,8 @@
       ]
     },
     "ttsky26b/tt_um_flappy_vga_Akul18": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "60 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4250,8 +4256,8 @@
       ]
     },
     "ttsky26b/tt_um_peterhan_ReactionGame": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "7 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4261,8 +4267,8 @@
       ]
     },
     "ttsky26b/tt_um_rebeccargb_vga_pride": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4294,8 +4300,8 @@
       ]
     },
     "ttsky26b/tt_um_rv32_vga": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "7 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4316,8 +4322,8 @@
       ]
     },
     "ttsky26b/tt_um_sandsim_Alden_G878": {
-      "reason": "3587/3587 frames are one colour (640x480@60)",
-      "verdict": "blank",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4349,8 +4355,8 @@
       ]
     },
     "ttsky26b/tt_um_tiny3d_kevinqian11": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "16 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4486,8 +4492,8 @@
       "videos": []
     },
     "ttsky26c/tt_um_ja_achtung_1x1": {
-      "reason": "56 distinct frames of 476 (640x480@60, 640x480, 59.5 fps)",
-      "verdict": "ok",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4497,8 +4503,8 @@
       ]
     },
     "ttsky26c/tt_um_ja_achtung_1x2": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4530,8 +4536,8 @@
       ]
     },
     "ttsky26c/tt_um_moein_maleki_arm16": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "model exited 0 without timing.json",
+      "verdict": "sim-crashed",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4574,8 +4580,8 @@
       ]
     },
     "ttsky26c/tt_um_rebeccargb_vga_pride": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)",
-      "verdict": "static",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4645,19 +4651,19 @@
       "videos": []
     }
   },
-  "succeeded": 386,
+  "succeeded": 380,
   "targets": 440,
   "verdicts": {
     "bad-timing": 1,
-    "blank": 15,
-    "build-failed": 10,
+    "blank": 8,
+    "build-failed": 9,
     "fetch-failed": 1,
     "no-sync": 12,
-    "ok": 294,
-    "partial": 24,
-    "sim-timeout": 4,
+    "ok": 341,
+    "partial": 7,
+    "sim-crashed": 16,
     "skipped": 9,
-    "static": 68,
-    "unstable-sync": 2
+    "static": 32,
+    "unstable-sync": 4
   }
 }
