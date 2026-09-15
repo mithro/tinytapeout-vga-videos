@@ -298,17 +298,35 @@ int main(int argc, char** argv) {
         double e = ev + ep;
         if (e < best) { best = e; mode = &m; cpp = k; }
     }
+    // A design may use a standard line but a non-standard number of lines per
+    // frame (the tennis game has 506). Take the horizontal crop from the mode
+    // and keep every line, so the picture is the right shape with black bars.
+    const int vpulse_lines = static_cast<int>((vs.pulse + line_clocks / 2) / line_clocks);
+    bool vertical_matched = false;
+    if (mode == nullptr) {
+        for (const Mode& m : MODES) {
+            double k = static_cast<double>(line_clocks) / m.line_px;
+            if (k < 0.9 || k > 4.5) continue;
+            double eh = std::fabs(k - std::round(k * m.line_px) / m.line_px);
+            double ep = std::fabs(static_cast<double>(hs.pulse) / line_clocks - static_cast<double>(m.hpulse) / m.line_px);
+            if (ep < 0.01 && eh < 0.02 && lines > m.height) { mode = &m; cpp = k; break; }
+        }
+    } else {
+        vertical_matched = true;
+    }
     int width, height, hback, vback;
     if (mode) {
-        width = mode->width; height = mode->height; hback = mode->hback; vback = mode->vback;
+        width = mode->width; hback = mode->hback;
+        height = vertical_matched ? mode->height : lines - vpulse_lines;
+        vback = vertical_matched ? mode->vback : 0;
         if (std::fabs(cpp - std::round(cpp)) < 0.01) cpp = std::round(cpp);
     } else {
         // Unknown mode: keep everything after the sync pulses at one clock per pixel.
         width = static_cast<int>(line_clocks - hs.pulse);
-        height = lines - static_cast<int>((vs.pulse + line_clocks / 2) / line_clocks);
+        height = lines - vpulse_lines;
         hback = 0; vback = 0;
-        if (width > 4096 || height > 4096 || width < 16 || height < 16) return fail("bad-timing");
     }
+    if (width > 4096 || height > 4096 || width < 16 || height < 16) return fail("bad-timing");
     const double fps = opt.clock_hz / static_cast<double>(vs.period);
     const uint64_t target_frames = static_cast<uint64_t>(opt.seconds * fps + 0.5);
     const uint64_t clock_limit = clock + static_cast<uint64_t>((opt.seconds + 2.5 / fps) * opt.clock_hz);

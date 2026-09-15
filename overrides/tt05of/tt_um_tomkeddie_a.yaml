@@ -1,0 +1,4 @@
+# ui_in[7] selects the Pmod pin mapping: high = Tiny VGA (mole99),
+# low = Digilent, which puts hsync/vsync on uio_out instead of uo_out.
+# Found by the input probe; recorded here so the run is deterministic.
+ui_in: 0x80

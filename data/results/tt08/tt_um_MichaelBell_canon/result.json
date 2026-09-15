@@ -2,21 +2,84 @@
   "id": "tt08/tt_um_MichaelBell_canon",
   "shuttle": "tt08",
   "macro": "tt_um_MichaelBell_canon",
-  "started": "2026-09-15T04:18:34+00:00",
+  "started": "2026-09-15T05:57:01+00:00",
   "host": "big-storage",
   "override": null,
-  "stage": "build",
-  "error": "verilator failed",
+  "stage": "encode",
+  "error": null,
   "timings": {
-    "fetch": 4.2,
-    "build": 0.2
+    "fetch": 2.8,
+    "build": 11.5,
+    "simulate": 1093.9,
+    "encode": 12.3
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
     "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
   },
-  "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/MichaelBell/tt08-canon\n[exit 0]\n\n$ git fetch -q --depth 1 origin 76d44c18c1139fab761e65768c159eb3e7a102c3\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/oss-cad-suite/bin/verilator --cc --exe --build -j 1 --prefix Vtop --top-module tt_um_MichaelBell_canon -Mdir /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src -y /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src --relative-includes /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/project.v /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/pwm.v /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/music.v /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/sample.v /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/display.sv /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/timing.sv /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/vga.sv /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/latch_reg.v\n%Error-MODMISSING: /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/latch_reg.v:39:5: Cannot find file containing module: 'sky130_fd_sc_hd___05Finv_1'\n   39 |     sky130_fd_sc_hd__inv_1 CLKINV(.Y(clk_b), .A(clk));\n      |     ^~~~~~~~~~~~~~~~~~~~~~\n                   ... For error description see https://verilator.org/warn/MODMISSING?v=5.053\n                   ... Looked in:\n                        /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/sky130_fd_sc_hd___05Finv_1\n                        /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/sky130_fd_sc_hd___05Finv_1.v\n                        /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/sky130_fd_sc_hd___05Finv_1.sv\n                        sky130_fd_sc_hd___05Finv_1\n                        sky130_fd_sc_hd___05Finv_1.v\n                        sky130_fd_sc_hd___05Finv_1.sv\n                        /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/build/sky130_fd_sc_hd___05Finv_1\n                        /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/build/sky130_fd_sc_hd___05Finv_1.v\n                        /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/build/sky130_fd_sc_hd___05Finv_1.sv\n                   ... With current working directory '/home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src'\n%Error-MODMISSING: /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/latch_reg.v:40:5: Cannot find file containing module: 'sky130_fd_sc_hd___05Fdlclkp_4'\n   40 |     sky130_fd_sc_hd__dlclkp_4 CG( .CLK(clk_b), .GCLK(gated_clk), .GATE(wen) );\n      |     ^~~~~~~~~~~~~~~~~~~~~~~~~\n%Error-MODMISSING: /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/latch_reg.v:45:13: Cannot find file containing module: 'sky130_fd_sc_hd___05Fdlxtp_1'\n   45 |             sky130_fd_sc_hd__dlxtp_1 state (.Q(data_out[i]), .D(data_in[i]), .GATE(gated_clk) );\n      |             ^~~~~~~~~~~~~~~~~~~~~~~~\n%Error: Exiting due to 3 error(s)\n[exit 1]\n",
-  "finished": "2026-09-15T04:18:39+00:00",
-  "verdict": "build-failed",
-  "reason": "verilator failed"
+  "timing": {
+    "status": "ok",
+    "clock_hz": 36000000,
+    "first_sync_clock": 810,
+    "hsync_active_low": false,
+    "vsync_active_low": false,
+    "line_clocks": 1024,
+    "lines": 625,
+    "hsync_pulse_clocks": 72,
+    "vsync_pulse_clocks": 2048,
+    "line_clocks_range": [
+      1024,
+      1024
+    ],
+    "frame_clocks_range": [
+      640000,
+      640000
+    ],
+    "mode": "800x600@56",
+    "clocks_per_pixel": 1.0,
+    "width": 800,
+    "height": 600,
+    "fps": 56.25,
+    "frames": 3375,
+    "target_frames": 3375,
+    "distinct_frames": 1986,
+    "uniform_frames": 1,
+    "black_frames": 1,
+    "lines_seen": 2109956,
+    "short_lines": 0,
+    "long_lines": 0,
+    "clocks_simulated": 2162562858,
+    "sim_seconds": 60.071,
+    "wall_seconds": 1093.8,
+    "clocks_per_wall_second": 1977114,
+    "ffmpeg_status": 0,
+    "frame_hashes_count": 3375
+  },
+  "videos": {
+    "10s.avi": {
+      "bytes": 6669640,
+      "sha256": "a9f9ef9d737658bc44bd25c7435d287f761a05c2b91cc83180d6858e01cc78c4"
+    },
+    "30s.avi": {
+      "bytes": 138636232,
+      "sha256": "4b10dc0f696077d9e709e35d38afe56244efa93019f2b3ae8cfefd4c44394c7d"
+    },
+    "60s.avi": {
+      "bytes": 616028254,
+      "sha256": "87772a853b1dc2821d235633751cb348be4e48ebe7efb23baf1a078ad9a3c12c"
+    },
+    "contact.png": {
+      "bytes": 101864,
+      "sha256": "cbbe64f76d1656aa5ed4a47014f46b793310e3a1e9d627636a08a364d8380a3c"
+    },
+    "poster.png": {
+      "bytes": 4537,
+      "sha256": "6637beff98effad92ffaf2bb69afd212648b68ecf17ebb7916acf7080d7da417"
+    }
+  },
+  "build_log_tail": "elBell_canon/repo/src/project.v /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/pwm.v /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/music.v /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/sample.v /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/display.sv /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/timing.sv /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/vga.sv /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/repo/src/latch_reg.v\nmake: Entering directory '/home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.593 MB sources in 576 modules, into 0.650 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.388 s (elab=0.039, cvt=0.116, bld=11.182); cpu 0.206 s on 1 threads; allocated 30.578 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/build/Vtop --clock-hz 36000000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/tt08/tt_um_MichaelBell_canon/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1966080: line 1024 clocks, 625 lines, hsync active-high, vsync active-high, mode 800x600@56, 1.000 clk/px, 800x600 @ 56.250 fps\ntb: ok: 3375 frames (1986 distinct, 1 uniform), 2162562858 clocks in 1093.8s wall (1.98 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt08/tt_um_MichaelBell_canon/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/tt08/tt_um_MichaelBell_canon/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt08/tt_um_MichaelBell_canon/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/tt08/tt_um_MichaelBell_canon/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/tt08/tt_um_MichaelBell_canon/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/tt08/tt_um_MichaelBell_canon/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt08/tt_um_MichaelBell_canon/60s.avi -vf select='not(mod(n\\,210))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/tt08/tt_um_MichaelBell_canon/contact.png\n[exit 0]\n",
+  "finished": "2026-09-15T06:15:44+00:00",
+  "verdict": "ok",
+  "reason": "1986 distinct frames of 3375 (800x600@56, 800x600, 56.2 fps)"
 }
