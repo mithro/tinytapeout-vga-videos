@@ -1,0 +1,22 @@
+{
+  "id": "tt08/tt_um_toivoh_demo",
+  "shuttle": "tt08",
+  "macro": "tt_um_toivoh_demo",
+  "started": "2026-09-15T04:18:39+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "build",
+  "error": "verilator failed",
+  "timings": {
+    "fetch": 1.6,
+    "build": 0.2
+  },
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/toivoh/tt08-demo\n[exit 0]\n\n$ git fetch -q --depth 1 origin bb6f67edee4f88f8e32c353aa6c68f921b2e7f77\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/oss-cad-suite/bin/verilator --cc --exe --build -j 1 --prefix Vtop --top-module tt_um_toivoh_demo -Mdir /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src -y /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src --relative-includes /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/project.v /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/demo.sv /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/sine_table_generated3.v /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/logo_table_generated.v /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/graphics.sv /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/raster_scan2.sv /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/tinysynth.sv /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/alu_code_generated.v /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/memories.sv\n%Error-MODMISSING: /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/memories.sv:155:4: Cannot find file containing module: 'sky130_fd_sc_hd___05Fdlclkp_1'\n  155 |    sky130_fd_sc_hd__dlclkp_1 clock_gate( .CLK(clk), .GATE(data_we[j]), .GCLK(_gclk) );\n      |    ^~~~~~~~~~~~~~~~~~~~~~~~~\n                   ... For error description see https://verilator.org/warn/MODMISSING?v=5.053\n                   ... Looked in:\n                        /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/sky130_fd_sc_hd___05Fdlclkp_1\n                        /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/sky130_fd_sc_hd___05Fdlclkp_1.v\n                        /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/sky130_fd_sc_hd___05Fdlclkp_1.sv\n                        sky130_fd_sc_hd___05Fdlclkp_1\n                        sky130_fd_sc_hd___05Fdlclkp_1.v\n                        sky130_fd_sc_hd___05Fdlclkp_1.sv\n                        /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/build/sky130_fd_sc_hd___05Fdlclkp_1\n                        /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/build/sky130_fd_sc_hd___05Fdlclkp_1.v\n                        /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/build/sky130_fd_sc_hd___05Fdlclkp_1.sv\n                   ... With current working directory '/home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src'\n%Error-MODMISSING: /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/memories.sv:156:4: Cannot find file containing module: 'sky130_fd_sc_hd___05Fclkbuf_8'\n  156 |    sky130_fd_sc_hd__clkbuf_8 clock_buffer( .A(_gclk), .X(gclk[j]) );\n      |    ^~~~~~~~~~~~~~~~~~~~~~~~~\n%Error-MODMISSING: /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/memories.sv:168:4: Cannot find file containing module: 'sky130_fd_sc_hd___05Fdlxtn_1'\n  168 |    sky130_fd_sc_hd__dlxtn_1 n_latch( .GATE_N(clk), .D(wdata[i]), .Q(wdata2[i]));\n      |    ^~~~~~~~~~~~~~~~~~~~~~~~\n%Error-MODMISSING: /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/memories.sv:174:5: Cannot find file containing module: 'sky130_fd_sc_hd___05Fdlxtp_1'\n  174 |     sky130_fd_sc_hd__dlxtp_1 p_latch(.GATE(gclk[j]), .D(wdata2[i]), .Q(data[j][i]));\n      |     ^~~~~~~~~~~~~~~~~~~~~~~~\n%Error: Exiting due to 4 error(s)\n[exit 1]\n",
+  "finished": "2026-09-15T04:18:41+00:00",
+  "verdict": "build-failed",
+  "reason": "verilator failed"
+}

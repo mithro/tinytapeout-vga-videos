@@ -1,0 +1,22 @@
+{
+  "id": "ttcad25a/tt_um_MichaelBell_mandelbrot",
+  "shuttle": "ttcad25a",
+  "macro": "tt_um_MichaelBell_mandelbrot",
+  "started": "2026-09-15T04:38:39+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "build",
+  "error": "verilator failed",
+  "timings": {
+    "fetch": 2.4,
+    "build": 0.1
+  },
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/MichaelBell/tt08-mandelbrot\n[exit 0]\n\n$ git fetch -q --depth 1 origin c1644c8feae6fdf4f0d76114e2a361654e785504\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/oss-cad-suite/bin/verilator --cc --exe --build -j 1 --prefix Vtop --top-module tt_um_MichaelBell_mandelbrot -Mdir /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src -y /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src --relative-includes /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/project.v /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/mandel.v /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/square.v /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/multiply.v /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/latch_reg.v /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/vga.sv /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/timing.sv /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/coord.v\n%Error-MODMISSING: /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/latch_reg.v:39:5: Cannot find file containing module: 'sky130_fd_sc_hd___05Finv_1'\n   39 |     sky130_fd_sc_hd__inv_1 CLKINV(.Y(clk_b), .A(clk));\n      |     ^~~~~~~~~~~~~~~~~~~~~~\n                   ... For error description see https://verilator.org/warn/MODMISSING?v=5.053\n                   ... Looked in:\n                        /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/sky130_fd_sc_hd___05Finv_1\n                        /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/sky130_fd_sc_hd___05Finv_1.v\n                        /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/sky130_fd_sc_hd___05Finv_1.sv\n                        sky130_fd_sc_hd___05Finv_1\n                        sky130_fd_sc_hd___05Finv_1.v\n                        sky130_fd_sc_hd___05Finv_1.sv\n                        /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/build/sky130_fd_sc_hd___05Finv_1\n                        /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/build/sky130_fd_sc_hd___05Finv_1.v\n                        /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/build/sky130_fd_sc_hd___05Finv_1.sv\n                   ... With current working directory '/home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src'\n%Error-MODMISSING: /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/latch_reg.v:45:13: Cannot find file containing module: 'sky130_fd_sc_hd___05Fdlclkp_2'\n   45 |             sky130_fd_sc_hd__dlclkp_2 CG( .CLK(clk_b), .GCLK(gated_clk), .GATE(wen) );\n      |             ^~~~~~~~~~~~~~~~~~~~~~~~~\n%Error-MODMISSING: /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/latch_reg.v:53:13: Cannot find file containing module: 'sky130_fd_sc_hd___05Fdlxtp_1'\n   53 |             sky130_fd_sc_hd__dlxtp_1 state (.Q(data_out[i]), .D(data_in[i]), .GATE(gated_clk) );\n      |             ^~~~~~~~~~~~~~~~~~~~~~~~\n%Error-MODMISSING: /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_mandelbrot/repo/src/latch_reg.v:47:13: Cannot find file containing module: 'sky130_fd_sc_hd___05Fdlclkp_4'\n   47 |             sky130_fd_sc_hd__dlclkp_4 CG( .CLK(clk_b), .GCLK(gated_clk), .GATE(wen) );\n      |             ^~~~~~~~~~~~~~~~~~~~~~~~~\n%Error: Exiting due to 4 error(s)\n[exit 1]\n",
+  "finished": "2026-09-15T04:38:41+00:00",
+  "verdict": "build-failed",
+  "reason": "verilator failed"
+}

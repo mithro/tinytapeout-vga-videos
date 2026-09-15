@@ -1,0 +1,22 @@
+{
+  "id": "ttihp25a/tt_um_MichaelBell_canon",
+  "shuttle": "ttihp25a",
+  "macro": "tt_um_MichaelBell_canon",
+  "started": "2026-09-15T04:27:18+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "build",
+  "error": "missing sources: sky130_polyfill.v",
+  "timings": {
+    "fetch": 2.9,
+    "build": 0.0
+  },
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/MichaelBell/tt08-canon\n[exit 0]\n\n$ git fetch -q --depth 1 origin 76d44c18c1139fab761e65768c159eb3e7a102c3\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n",
+  "finished": "2026-09-15T04:27:21+00:00",
+  "verdict": "build-failed",
+  "reason": "missing sources: sky130_polyfill.v"
+}

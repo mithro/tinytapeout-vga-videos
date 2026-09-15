@@ -1,0 +1,22 @@
+{
+  "id": "ttihp26a/tt_um_lkhanh_vga_trng",
+  "shuttle": "ttihp26a",
+  "macro": "tt_um_lkhanh_vga_trng",
+  "started": "2026-09-15T05:00:36+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "build",
+  "error": "verilator failed",
+  "timings": {
+    "fetch": 1.2,
+    "build": 0.2
+  },
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/DivineMK/ttihp26a-tapeout\n[exit 0]\n\n$ git fetch -q --depth 1 origin 02218a155272cc73a2ca275f534b96a10d0492f8\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/oss-cad-suite/bin/verilator --cc --exe --build -j 1 --prefix Vtop --top-module tt_um_lkhanh_vga_trng -Mdir /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src -y /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src --relative-includes /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src/project.v /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src/hvsync_generator.v /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src/ring_oscillator.v /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src/vga_checker.v /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src/vga_gamepad.v /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src/vga_ring.v /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src/vga_stripe.v\n%Error-MODMISSING: /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src/ring_oscillator.v:54:29: Cannot find file containing module: 'sg13g2_inv_1'\n   54 |         (* keep = \"true\" *) sg13g2_inv_1 inv (\n      |                             ^~~~~~~~~~~~\n                   ... For error description see https://verilator.org/warn/MODMISSING?v=5.053\n                   ... Looked in:\n                        /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src/sg13g2_inv_1\n                        /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src/sg13g2_inv_1.v\n                        /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src/sg13g2_inv_1.sv\n                        sg13g2_inv_1\n                        sg13g2_inv_1.v\n                        sg13g2_inv_1.sv\n                        /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/build/sg13g2_inv_1\n                        /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/build/sg13g2_inv_1.v\n                        /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/build/sg13g2_inv_1.sv\n                   ... With current working directory '/home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src'\n%Error-MODMISSING: /home/ttvga/ttvga/work/ttihp26a/tt_um_lkhanh_vga_trng/repo/src/ring_oscillator.v:59:29: Cannot find file containing module: 'sg13g2_inv_1'\n   59 |         (* keep = \"true\" *) sg13g2_inv_1 inv (\n      |                             ^~~~~~~~~~~~\n%Error: Exiting due to 2 error(s)\n[exit 1]\n",
+  "finished": "2026-09-15T05:00:38+00:00",
+  "verdict": "build-failed",
+  "reason": "verilator failed"
+}

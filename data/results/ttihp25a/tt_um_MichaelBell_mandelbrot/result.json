@@ -1,0 +1,22 @@
+{
+  "id": "ttihp25a/tt_um_MichaelBell_mandelbrot",
+  "shuttle": "ttihp25a",
+  "macro": "tt_um_MichaelBell_mandelbrot",
+  "started": "2026-09-15T04:35:22+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "build",
+  "error": "missing sources: sky130_polyfill.v",
+  "timings": {
+    "fetch": 2.5,
+    "build": 0.0
+  },
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/MichaelBell/tt08-mandelbrot\n[exit 0]\n\n$ git fetch -q --depth 1 origin c1644c8feae6fdf4f0d76114e2a361654e785504\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n",
+  "finished": "2026-09-15T04:35:25+00:00",
+  "verdict": "build-failed",
+  "reason": "missing sources: sky130_polyfill.v"
+}

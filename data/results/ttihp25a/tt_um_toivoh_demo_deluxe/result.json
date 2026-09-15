@@ -1,0 +1,22 @@
+{
+  "id": "ttihp25a/tt_um_toivoh_demo_deluxe",
+  "shuttle": "ttihp25a",
+  "macro": "tt_um_toivoh_demo_deluxe",
+  "started": "2026-09-15T04:27:25+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "build",
+  "error": "missing sources: sky130_polyfill.v",
+  "timings": {
+    "fetch": 2.1,
+    "build": 0.0
+  },
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/toivoh/tt08-demo-deluxe\n[exit 0]\n\n$ git fetch -q --depth 1 origin 256dd86d49e56902b1c672e7f793a2a739e69ff5\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n",
+  "finished": "2026-09-15T04:27:28+00:00",
+  "verdict": "build-failed",
+  "reason": "missing sources: sky130_polyfill.v"
+}

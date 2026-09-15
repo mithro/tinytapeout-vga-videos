@@ -156,6 +156,8 @@ def simulate(target: dict, ov: dict, repo_dir: Path, build_dir: Path, work: Path
         return "wall-clock limit"
     if not (out / "timing.json").exists():
         return f"model exited {rc} without timing.json"
+    if (out / "timing.json").stat().st_size == 0:
+        return f"model exited {rc} with an empty timing.json"
     return None
 
 
@@ -258,13 +260,20 @@ def main() -> int:
             if stage == "simulate":
                 # No raster found: there is nothing to encode. Partial or unstable
                 # rasters are still encoded because the clip helps diagnosis.
-                status = json.loads((work / "out" / "timing.json").read_text()).get("status")
+                try:
+                    status = json.loads((work / "out" / "timing.json").read_text()).get("status")
+                except (OSError, json.JSONDecodeError):
+                    status = None
                 if status in ("no-sync", "bad-timing"):
                     break
     timing_path = work / "out" / "timing.json"
     if timing_path.exists():
         shutil.copy(timing_path, work / "timing.json")
-        result["timing"] = json.loads(timing_path.read_text())
+        try:
+            result["timing"] = json.loads(timing_path.read_text())
+        except json.JSONDecodeError:
+            # The model was killed while writing (wall-clock limit): keep what we know.
+            result["timing"] = {"status": "sim-timeout", "partial": True}
     if videos.exists():
         result["videos"] = {p.name: {"bytes": p.stat().st_size, "sha256": sha256(p)}
                             for p in sorted(videos.iterdir())}

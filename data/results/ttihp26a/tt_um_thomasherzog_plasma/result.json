@@ -1,0 +1,85 @@
+{
+  "id": "ttihp26a/tt_um_thomasherzog_plasma",
+  "shuttle": "ttihp26a",
+  "macro": "tt_um_thomasherzog_plasma",
+  "started": "2026-09-15T05:02:42+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "encode",
+  "error": null,
+  "timings": {
+    "fetch": 1.2,
+    "build": 23.0,
+    "simulate": 622.9,
+    "encode": 7.3
+  },
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "timing": {
+    "status": "ok",
+    "clock_hz": 25175000,
+    "first_sync_clock": 11,
+    "hsync_active_low": true,
+    "vsync_active_low": true,
+    "line_clocks": 800,
+    "lines": 525,
+    "hsync_pulse_clocks": 96,
+    "vsync_pulse_clocks": 1600,
+    "line_clocks_range": [
+      800,
+      800
+    ],
+    "frame_clocks_range": [
+      420000,
+      420000
+    ],
+    "mode": "640x480@60",
+    "clocks_per_pixel": 1.0,
+    "width": 640,
+    "height": 480,
+    "fps": 59.9405,
+    "frames": 3596,
+    "target_frames": 3596,
+    "distinct_frames": 256,
+    "uniform_frames": 0,
+    "black_frames": 0,
+    "lines_seen": 1888362,
+    "short_lines": 0,
+    "long_lines": 0,
+    "clocks_simulated": 1512393611,
+    "sim_seconds": 60.075,
+    "wall_seconds": 622.9,
+    "clocks_per_wall_second": 2427994,
+    "ffmpeg_status": 0,
+    "frame_hashes_count": 3596
+  },
+  "videos": {
+    "10s.avi": {
+      "bytes": 48982514,
+      "sha256": "afebc06d92d15847cef5e07bdeba1a1c5865bc06c7b906d6f29742203d6fa0d5"
+    },
+    "30s.avi": {
+      "bytes": 145421046,
+      "sha256": "f9a09435ba59d0d01b7d7a6632f452435540cc880864830575a0b7e7abcd7b33"
+    },
+    "60s.avi": {
+      "bytes": 292630092,
+      "sha256": "df2fadd97d327e9eebabda6d005571d558e0489e0f904a901e5c1670d32a4b07"
+    },
+    "contact.png": {
+      "bytes": 474551,
+      "sha256": "9d7446c9be6d84c4096f085d9adacd60ddd8833964ceb24033c429958a8f13d6"
+    },
+    "poster.png": {
+      "bytes": 75050,
+      "sha256": "ccdddf79a2c34894f6becb5109d88790716d1bf759452e81a2aeb6d93d113bee"
+    }
+  },
+  "build_log_tail": "peration -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -x c++-header Vtop__pch.h -o Vtop__pch.h.slow.gch\ng++   -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -include Vtop__pch.h.slow -c Vtop__ConstPool__0__Slow.cpp\ng++   -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -include Vtop__pch.h.slow -c Vtop___024root__Slow.cpp\ng++   -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -include Vtop__pch.h.slow -c Vtop___024root__0__Slow.cpp\ng++   -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -include Vtop__pch.h.slow -c Vtop___024root__1__Slow.cpp\ng++   -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -include Vtop__pch.h.slow -c Vtop__Syms__Slow.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp26a/tt_um_thomasherzog_plasma/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.114 MB sources in 6 modules, into 2.680 MB in 8 C++ files needing 0.000 MB\n- Verilator: Walltime 22.825 s (elab=0.004, cvt=0.409, bld=22.362); cpu 0.464 s on 1 threads; allocated 62.641 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttihp26a/tt_um_thomasherzog_plasma/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttihp26a/tt_um_thomasherzog_plasma/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (256 distinct, 0 uniform), 1512393611 clocks in 622.9s wall (2.43 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp26a/tt_um_thomasherzog_plasma/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttihp26a/tt_um_thomasherzog_plasma/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp26a/tt_um_thomasherzog_plasma/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttihp26a/tt_um_thomasherzog_plasma/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttihp26a/tt_um_thomasherzog_plasma/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttihp26a/tt_um_thomasherzog_plasma/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp26a/tt_um_thomasherzog_plasma/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttihp26a/tt_um_thomasherzog_plasma/contact.png\n[exit 0]\n",
+  "finished": "2026-09-15T05:13:38+00:00",
+  "verdict": "ok",
+  "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)"
+}

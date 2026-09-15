@@ -1,0 +1,22 @@
+{
+  "id": "ttsky26a/tt_um_toivoh_demo_4tile",
+  "shuttle": "ttsky26a",
+  "macro": "tt_um_toivoh_demo_4tile",
+  "started": "2026-09-15T05:05:17+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "build",
+  "error": "verilator failed",
+  "timings": {
+    "fetch": 1.3,
+    "build": 0.3
+  },
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/toivoh/tt26-demo-4tile\n[exit 0]\n\n$ git fetch -q --depth 1 origin 084c79466d2355d7099bccff036a4c6f2fdb9f02\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/oss-cad-suite/bin/verilator --cc --exe --build -j 1 --prefix Vtop --top-module tt_um_toivoh_demo_4tile -Mdir /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src -y /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src --relative-includes /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/jumper.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/scene1.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/trace_state_rs.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/subdivider_pl.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/memories.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/subdiv_pl_tracer.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/raster_scan.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/view_calc_pl.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/music_player_wrapper.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/interval_buffer2.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/trace_state.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/subdet.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/synth_test.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/matrix_calc_pl.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/vga_pl_tracer.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/project_pl.v /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/music_player.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/buffered_pl_tracer.sv /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/room_navigator.sv\n%Error-MODMISSING: /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/trace_state_rs.sv:19:4: Cannot find file containing module: 'sky130_fd_sc_hd___05Ffa_1'\n   19 |    sky130_fd_sc_hd__fa_1 full_adder(\n      |    ^~~~~~~~~~~~~~~~~~~~~\n                   ... For error description see https://verilator.org/warn/MODMISSING?v=5.053\n                   ... Looked in:\n                        /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/sky130_fd_sc_hd___05Ffa_1\n                        /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/sky130_fd_sc_hd___05Ffa_1.v\n                        /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src/sky130_fd_sc_hd___05Ffa_1.sv\n                        sky130_fd_sc_hd___05Ffa_1\n                        sky130_fd_sc_hd___05Ffa_1.v\n                        sky130_fd_sc_hd___05Ffa_1.sv\n                        /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/build/sky130_fd_sc_hd___05Ffa_1\n                        /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/build/sky130_fd_sc_hd___05Ffa_1.v\n                        /home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/build/sky130_fd_sc_hd___05Ffa_1.sv\n                   ... With current working directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_toivoh_demo_4tile/repo/src'\n%Error: Exiting due to 1 error(s)\n[exit 1]\n",
+  "finished": "2026-09-15T05:05:19+00:00",
+  "verdict": "build-failed",
+  "reason": "verilator failed"
+}

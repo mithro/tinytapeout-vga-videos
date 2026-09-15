@@ -1,0 +1,22 @@
+{
+  "id": "ttihp0p1/tt_um_algofoogle_raybox_zero",
+  "shuttle": "ttihp0p1",
+  "macro": "tt_um_algofoogle_raybox_zero",
+  "started": "2026-09-15T04:13:26+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "build",
+  "error": "missing sources: raybox-zero/src/rtl/fixed_point_params.v, raybox-zero/src/rtl/helpers.v, raybox-zero/src/rtl/rbzero.v, raybox-zero/src/rtl/spi_registers.v, raybox-zero/src/rtl/debug_overlay.v, raybox-zero/src/rtl/map_overlay.v, raybox-zero/src/rtl/map_rom.v, raybox-zero/src/rtl/pov.v, raybox-zero/src/rtl/lzc.v, raybox-zero/src/rtl/reciprocal.v, raybox-zero/src/rtl/wall_tracer.v, raybox-zero/src/rtl/row_render.v, raybox-zero/src/rtl/vga_mux.v, raybox-zero/src/rtl/vga_sync.v, raybox-zero/src/rtl/top_raybox_zero_fsm.v",
+  "timings": {
+    "fetch": 601.6,
+    "build": 0.0
+  },
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/algofoogle/tt07-raybox-zero\n[exit 0]\n\n$ git fetch -q --depth 1 origin 52f0c950ce848645954d855fd43489ddb16e0dc4\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n\n$ git submodule update -q --init --depth 1 --recursive\n\n[timeout after 600s]\n",
+  "finished": "2026-09-15T04:23:28+00:00",
+  "verdict": "build-failed",
+  "reason": "missing sources: raybox-zero/src/rtl/fixed_point_params.v, raybox-zero/src/rtl/helpers.v, raybox-zero/src/rtl/rbzero.v, raybox-zero/src/rtl/spi_registers.v, raybox-zero/src/rtl/debug_overlay.v, raybox-zero/src/rtl/map_overlay.v, raybox-zero/src/rtl/map_rom.v, raybox-zero/src/rtl/pov.v, raybox-zero/src/rtl/lzc.v, raybox-zero/src/rtl/reciprocal.v, raybox-zero/src/rtl/wall_tracer.v, raybox-zero/src/rtl/row_render.v, raybox-zero/src/rtl/vga_mux.v, raybox-zero/src/rtl/vga_sync.v, raybox-zero/src/rtl/top_raybox_zero_fsm.v"
+}

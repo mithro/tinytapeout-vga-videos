@@ -1,0 +1,22 @@
+{
+  "id": "ttcad25a/tt_um_MichaelBell_canon",
+  "shuttle": "ttcad25a",
+  "macro": "tt_um_MichaelBell_canon",
+  "started": "2026-09-15T04:41:13+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "build",
+  "error": "verilator failed",
+  "timings": {
+    "fetch": 2.5,
+    "build": 0.2
+  },
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/MichaelBell/tt08-canon\n[exit 0]\n\n$ git fetch -q --depth 1 origin 76d44c18c1139fab761e65768c159eb3e7a102c3\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/oss-cad-suite/bin/verilator --cc --exe --build -j 1 --prefix Vtop --top-module tt_um_MichaelBell_canon -Mdir /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src -y /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src --relative-includes /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/project.v /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/pwm.v /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/music.v /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/sample.v /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/display.sv /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/timing.sv /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/vga.sv /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/latch_reg.v\n%Error-MODMISSING: /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/latch_reg.v:39:5: Cannot find file containing module: 'sky130_fd_sc_hd___05Finv_1'\n   39 |     sky130_fd_sc_hd__inv_1 CLKINV(.Y(clk_b), .A(clk));\n      |     ^~~~~~~~~~~~~~~~~~~~~~\n                   ... For error description see https://verilator.org/warn/MODMISSING?v=5.053\n                   ... Looked in:\n                        /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/sky130_fd_sc_hd___05Finv_1\n                        /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/sky130_fd_sc_hd___05Finv_1.v\n                        /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/sky130_fd_sc_hd___05Finv_1.sv\n                        sky130_fd_sc_hd___05Finv_1\n                        sky130_fd_sc_hd___05Finv_1.v\n                        sky130_fd_sc_hd___05Finv_1.sv\n                        /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/build/sky130_fd_sc_hd___05Finv_1\n                        /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/build/sky130_fd_sc_hd___05Finv_1.v\n                        /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/build/sky130_fd_sc_hd___05Finv_1.sv\n                   ... With current working directory '/home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src'\n%Error-MODMISSING: /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/latch_reg.v:40:5: Cannot find file containing module: 'sky130_fd_sc_hd___05Fdlclkp_4'\n   40 |     sky130_fd_sc_hd__dlclkp_4 CG( .CLK(clk_b), .GCLK(gated_clk), .GATE(wen) );\n      |     ^~~~~~~~~~~~~~~~~~~~~~~~~\n%Error-MODMISSING: /home/ttvga/ttvga/work/ttcad25a/tt_um_MichaelBell_canon/repo/src/latch_reg.v:45:13: Cannot find file containing module: 'sky130_fd_sc_hd___05Fdlxtp_1'\n   45 |             sky130_fd_sc_hd__dlxtp_1 state (.Q(data_out[i]), .D(data_in[i]), .GATE(gated_clk) );\n      |             ^~~~~~~~~~~~~~~~~~~~~~~~\n%Error: Exiting due to 3 error(s)\n[exit 1]\n",
+  "finished": "2026-09-15T04:41:15+00:00",
+  "verdict": "build-failed",
+  "reason": "verilator failed"
+}

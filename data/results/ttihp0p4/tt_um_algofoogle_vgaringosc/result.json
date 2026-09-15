@@ -1,0 +1,22 @@
+{
+  "id": "ttihp0p4/tt_um_algofoogle_vgaringosc",
+  "shuttle": "ttihp0p4",
+  "macro": "tt_um_algofoogle_vgaringosc",
+  "started": "2026-09-15T05:04:15+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "build",
+  "error": "verilator failed",
+  "timings": {
+    "fetch": 1.2,
+    "build": 0.1
+  },
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/algofoogle/ttihp0p4-vga-ring-osc\n[exit 0]\n\n$ git fetch -q --depth 1 origin 624d589122ff12a959be09500e2efbe418b6cc22\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/oss-cad-suite/bin/verilator --cc --exe --build -j 1 --prefix Vtop --top-module tt_um_algofoogle_vgaringosc -Mdir /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src -y /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src --relative-includes /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src/sync.v /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src/ring_osc.v /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src/worker.v /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src/vga_sync.v /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src/vgaringosc.v /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src/project.v\n%Error-MODMISSING: /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src/ring_osc.v:25:26: Cannot find file containing module: 'sg13cmos5l_inv_1'\n   25 |     (* keep_hierarchy *) sg13cmos5l_inv_1 pdkinv_notouch_ (\n      |                          ^~~~~~~~~~~~~~~~\n                   ... For error description see https://verilator.org/warn/MODMISSING?v=5.053\n                   ... Looked in:\n                        /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src/sg13cmos5l_inv_1\n                        /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src/sg13cmos5l_inv_1.v\n                        /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src/sg13cmos5l_inv_1.sv\n                        sg13cmos5l_inv_1\n                        sg13cmos5l_inv_1.v\n                        sg13cmos5l_inv_1.sv\n                        /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/build/sg13cmos5l_inv_1\n                        /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/build/sg13cmos5l_inv_1.v\n                        /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/build/sg13cmos5l_inv_1.sv\n                   ... With current working directory '/home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src'\n%Error-MODMISSING: /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src/ring_osc.v:133:26: Cannot find file containing module: 'sg13cmos5l_inv_4'\n  133 |     (* keep_hierarchy *) sg13cmos5l_inv_4 inv_array_notouch_ [N-1:0] (.A(ins), .Y(outs));\n      |                          ^~~~~~~~~~~~~~~~\n%Error: Internal Error: /home/ttvga/ttvga/work/ttihp0p4/tt_um_algofoogle_vgaringosc/repo/src/ring_osc.v:133:63: ../V3Width.cpp:7951: Visit function missing? Widthed function missing for math node: PARSEREF 0x555572388040 {f133cl} @dt=0@  N\n                                                                                                              : ... note: In instance 'tt_um_algofoogle_vgaringosc.vgaringosc.ro_inv4'\n  133 |     (* keep_hierarchy *) sg13cmos5l_inv_4 inv_array_notouch_ [N-1:0] (.A(ins), .Y(outs));\n      |                                                               ^\n                        ... This fatal error may be caused by the earlier error(s); resolve those first.\n[exit 1]\n",
+  "finished": "2026-09-15T05:04:17+00:00",
+  "verdict": "build-failed",
+  "reason": "verilator failed"
+}

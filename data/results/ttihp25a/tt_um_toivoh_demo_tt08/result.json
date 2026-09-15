@@ -1,0 +1,22 @@
+{
+  "id": "ttihp25a/tt_um_toivoh_demo_tt08",
+  "shuttle": "ttihp25a",
+  "macro": "tt_um_toivoh_demo_tt08",
+  "started": "2026-09-15T04:27:22+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "build",
+  "error": "verilator failed",
+  "timings": {
+    "fetch": 1.6,
+    "build": 0.2
+  },
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/toivoh/tt08-demo\n[exit 0]\n\n$ git fetch -q --depth 1 origin bb6f67edee4f88f8e32c353aa6c68f921b2e7f77\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/oss-cad-suite/bin/verilator --cc --exe --build -j 1 --prefix Vtop --top-module tt_um_toivoh_demo_tt08 -Mdir /home/ttvga/ttvga/work/ttihp25a/tt_um_toivoh_demo_tt08/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttihp25a/tt_um_toivoh_demo_tt08/repo/src -y /home/ttvga/ttvga/work/ttihp25a/tt_um_toivoh_demo_tt08/repo/src --relative-includes /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttihp25a/tt_um_toivoh_demo_tt08/repo/src/project.v /home/ttvga/ttvga/work/ttihp25a/tt_um_toivoh_demo_tt08/repo/src/demo.sv /home/ttvga/ttvga/work/ttihp25a/tt_um_toivoh_demo_tt08/repo/src/sine_table_generated3.v /home/ttvga/ttvga/work/ttihp25a/tt_um_toivoh_demo_tt08/repo/src/logo_table_generated.v /home/ttvga/ttvga/work/ttihp25a/tt_um_toivoh_demo_tt08/repo/src/graphics.sv /home/ttvga/ttvga/work/ttihp25a/tt_um_toivoh_demo_tt08/repo/src/raster_scan2.sv /home/ttvga/ttvga/work/ttihp25a/tt_um_toivoh_demo_tt08/repo/src/tinysynth.sv /home/ttvga/ttvga/work/ttihp25a/tt_um_toivoh_demo_tt08/repo/src/alu_code_generated.v\n%Error: Specified --top-module 'tt_um_toivoh_demo_tt08' was not found in design.\n        ... Suggested alternative: 'tt_um_toivoh_demo'\n        ... See the manual at https://verilator.org/verilator_doc.html?v=5.053 for more assistance.\n%Error: Exiting due to 1 error(s)\n[exit 1]\n",
+  "finished": "2026-09-15T04:27:24+00:00",
+  "verdict": "build-failed",
+  "reason": "verilator failed"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "tt09/tt_um_znah_vga_ca",
+  "shuttle": "tt09",
+  "macro": "tt_um_znah_vga_ca",
+  "started": "2026-09-15T04:24:51+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "build",
+  "error": "verilator failed",
+  "timings": {
+    "fetch": 1.4,
+    "build": 0.1
+  },
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/znah/tt09-vga-ca\n[exit 0]\n\n$ git fetch -q --depth 1 origin a77f183a849135d80e1e54ad2f83142638f39eb6\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/oss-cad-suite/bin/verilator --cc --exe --build -j 1 --prefix Vtop --top-module tt_um_znah_vga_ca -Mdir /home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/repo/src -y /home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/repo/src --relative-includes /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/repo/src/project.v /home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/repo/src/hvsync_generator.v\n%Error-MODMISSING: /home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/repo/src/project.v:82:55: Cannot find file containing module: 'sky130_fd_sc_hd___05Fdlygate4sd3_1'\n   82 |   (* mem2reg *) reg[L:0] cells; wire[L:0] cells_buf ; sky130_fd_sc_hd__dlygate4sd3_1 cellsbuf_[L:0] ( .X(cells_buf), .A(cells) );\n      |                                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n                   ... For error description see https://verilator.org/warn/MODMISSING?v=5.053\n                   ... Looked in:\n                        /home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/repo/src/sky130_fd_sc_hd___05Fdlygate4sd3_1\n                        /home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/repo/src/sky130_fd_sc_hd___05Fdlygate4sd3_1.v\n                        /home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/repo/src/sky130_fd_sc_hd___05Fdlygate4sd3_1.sv\n                        sky130_fd_sc_hd___05Fdlygate4sd3_1\n                        sky130_fd_sc_hd___05Fdlygate4sd3_1.v\n                        sky130_fd_sc_hd___05Fdlygate4sd3_1.sv\n                        /home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/build/sky130_fd_sc_hd___05Fdlygate4sd3_1\n                        /home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/build/sky130_fd_sc_hd___05Fdlygate4sd3_1.v\n                        /home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/build/sky130_fd_sc_hd___05Fdlygate4sd3_1.sv\n                   ... With current working directory '/home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/repo/src'\n%Error: Internal Error: /home/ttvga/ttvga/work/tt09/tt_um_znah_vga_ca/repo/src/project.v:82:96: ../V3Width.cpp:7951: Visit function missing? Widthed function missing for math node: PARSEREF 0x55555acf8b10 {e82ds} @dt=0@  L\n                                                                                              : ... note: In instance 'tt_um_znah_vga_ca'\n   82 |   (* mem2reg *) reg[L:0] cells; wire[L:0] cells_buf ; sky130_fd_sc_hd__dlygate4sd3_1 cellsbuf_[L:0] ( .X(cells_buf), .A(cells) );\n      |                                                                                                ^\n                        ... This fatal error may be caused by the earlier error(s); resolve those first.\n[exit 1]\n",
+  "finished": "2026-09-15T04:24:53+00:00",
+  "verdict": "build-failed",
+  "reason": "verilator failed"
+}
