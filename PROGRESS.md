@@ -5,6 +5,50 @@ whenever something non-obvious is learned. This file is the resume point
 if work stops for lack of credits or tokens: read it, then `docs/status.md`,
 then the newest `data/results/` entries.
 
+## 2026-09-15 (later): first pipeline, first video
+
+Done:
+- Dedicated `ttvga` user created on the big host (no sudo, no docker), key
+  pair `~/.ssh/ttvga_ed25519` on the laptop, local host config in
+  `~/.config/tinytapeout-vga-videos/config.toml` (short name `big`).
+  Toolchain installed under `/home/ttvga/ttvga/tools/`: oss-cad-suite
+  2026-09-14 (Verilator 5.053), ffmpeg n8.1.2 static, uv. Pinned in
+  `ttvga/tools.toml`; `tt-vga bootstrap` re-installs on a fresh host.
+- The request for the same user on the other three hosts could not be
+  delivered: the ansible-owning Claude session is not reachable from this
+  machine (the desktop session I could reach said it does not own the
+  repo and pointed at a session named "ansible-main"). Needs the owner.
+- `tt-vga targets`: 440 targets, 9 skipped (8 analog, 1 Wokwi).
+- `ttvga/harness/tb.cpp` + `job.py` + `runqueue.py`: fetch at commit,
+  Verilator build (auto-retry with --timing), simulate with sync
+  calibration, decode, MJPEG via ffmpeg pipe, cuts, poster, contact sheet,
+  atomic result.json. `tt-vga host-check|bootstrap|sync|queue|collect|
+  analyze|report` on the laptop.
+- First end-to-end run: tt08 Metaballs (50 MHz, 800x600@72), 3 s clip in
+  22 s wall, 7.1 M clocks/s with the -Os default build. Now built with
+  OPT_FAST=-O2; measure again.
+- Five-project 60 s pilot started on the big host (5 parallel jobs):
+  Metaballs, VGA donut (48 MHz, 2x2), Rebecca's VGA timing experiments,
+  sushi demo, not-a-dinosaur. First result: timing experiments = no-sync
+  after 1 s of calibration (probably needs ui_in to select a mode; a good
+  first diagnosis case).
+
+Learned:
+- A harness file must not be called `queue.py`: it shadows the stdlib
+  module and breaks `concurrent.futures`. Renamed to `runqueue.py`.
+- The `tb` exit status is 3 for any non-ok timing status; job.py stops
+  before encode when there is no raster at all.
+- Hooks in this environment block inline python, stderr-to-null redirects
+  and some compound commands; write scripts to files instead.
+
+Next:
+- Read the pilot results (`tt-vga collect`, `analyze`, `report`), commit
+  `docs/status.md`, copy one poster and contact sheet into `docs/examples/`.
+- Fix whatever the pilot shows, then run all 440 with 40 jobs.
+- Add the Gamepad Pmod emulator and the input-script expansion in job.py.
+- Write `tt-vga diagnose` (ad hoc use only until the owner agrees to a
+  full automated pass).
+
 ## 2026-09-15: research and design
 
 Done:
