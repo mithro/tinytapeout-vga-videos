@@ -70,7 +70,9 @@ def verdict(result: dict) -> tuple[str, str]:
     if uniform >= frames * 0.95:
         colour = "black" if timing.get("black_frames", 0) >= uniform else "one colour"
         return "blank", f"{uniform}/{frames} frames are {colour} ({mode})"
-    if distinct <= 2:
+    # Two distinct frames can already be an animation (Nyan cat alternates two
+    # frames), so only a single unchanging frame counts as static.
+    if distinct <= 1:
         return "static", f"{distinct} distinct frame(s) in {frames} ({mode}, {timing.get('width')}x{timing.get('height')})"
     return "ok", (f"{distinct} distinct frames of {frames} ({mode}, {timing.get('width')}x{timing.get('height')}, "
                   f"{timing.get('fps', 0):.1f} fps)")
