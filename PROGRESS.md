@@ -63,6 +63,11 @@ Pilot outcome (5 projects, 60 s each, 5 parallel jobs, 10 minutes wall):
   and Gamepad Pmod emulation added to tb.cpp; not yet exercised.
 - Example images committed under `docs/examples/`.
 
+Full run started 2026-09-15 04:13 UTC on the big host: all 440 targets,
+40 parallel jobs, 60 s each, `--redo`. Expected to take about 1.5 hours.
+If this log has no later entry, the run may have finished unattended:
+`tt-vga queue status --host big`, then `collect`, `analyze`, `report`.
+
 Next:
 - Full run of all 440 targets with 40 jobs; collect, analyze, report.
 - Then review verdict groups: no-sync and blank first (most likely

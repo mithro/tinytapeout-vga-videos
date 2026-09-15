@@ -1,0 +1,18 @@
+{
+  "id": "tt06/tt_um_algofoogle_tt06_grab_bag",
+  "shuttle": "tt06",
+  "macro": "tt_um_algofoogle_tt06_grab_bag",
+  "started": "2026-09-15T04:13:26+00:00",
+  "host": "big-storage",
+  "override": null,
+  "stage": "skipped",
+  "error": "analog project",
+  "timings": {},
+  "tools": {
+    "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+    "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "finished": "2026-09-15T04:13:26+00:00",
+  "verdict": "skipped",
+  "reason": "analog project"
+}
