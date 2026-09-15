@@ -133,8 +133,18 @@ After the polyfill re-run and the input probe (all 440 attempted):
   Adelaide). Two empty answers were removed from the results. Diagnosis
   so far: 3 real answers, $0.76 total, both causes correct.
 
+QSPI Pmod model written (`ttvga/harness/qspi.h`): one flash and two PSRAMs
+answering reads and remembering writes on the bidirectional pins, with the
+pin map read from each project's own pin names (35 projects). First test:
+Achtung on ttsky26c went from 3571 black frames to a picture of two
+growing curves, exactly what the game should draw, because it keeps its
+framebuffer in PSRAM. Flash holds an RGB332 test pattern unless an
+override supplies a file, so flash-backed projects (photo frame, RLE
+video player) will show that pattern rather than their intended artwork.
+Re-running all 35.
+
 Next:
-- Collect the three batches (slow, submodule, stimulus), report, commit.
+- Collect the four batches (slow, submodule, stimulus, QSPI), report, commit.
 - Judge the stimulus results: did pressing buttons produce motion?
 - Remaining build failures need per-project work: generated ROM macros
   (atari2600), GDS-only macros (cartrip), VHDL (pixel_processor), a
