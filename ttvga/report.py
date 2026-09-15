@@ -34,13 +34,15 @@ def run(args: argparse.Namespace) -> int:
     succeeded = sum(n for v, n in total.items() if v in SUCCESS)
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
+    video_bytes = sum(v.get("bytes", 0) for r in results.values() for v in (r.get("videos") or {}).values())
     lines = [
         "# Status", "",
         f"Generated {generated} by `tt-vga report`. Do not edit by hand.", "",
         f"- Targets: {len(targets)}",
         f"- Attempted: {done}",
-        f"- Videos produced (ok + static + partial): {succeeded}",
-        f"- Pending: {total['pending']}", "",
+        f"- Videos produced: {succeeded}",
+        f"- Pending: {total['pending']}",
+        f"- Video, poster and contact sheet size on the simulation host: {video_bytes / 1e9:.0f} GB", "",
         "## Verdicts", "",
         "| Verdict | Count |", "| --- | ---: |",
     ]
