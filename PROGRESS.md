@@ -63,13 +63,40 @@ Pilot outcome (5 projects, 60 s each, 5 parallel jobs, 10 minutes wall):
   and Gamepad Pmod emulation added to tb.cpp; not yet exercised.
 - Example images committed under `docs/examples/`.
 
-Full run started 2026-09-15 04:13 UTC on the big host: all 440 targets,
-40 parallel jobs, 60 s each, `--redo`. Expected to take about 1.5 hours.
-If this log has no later entry, the run may have finished unattended:
-`tt-vga queue status --host big`, then `collect`, `analyze`, `report`.
+Full run 2026-09-15 04:13 to 05:51 UTC (440 targets, 40 jobs, 60 s):
+270 ok, 75 static, 30 build-failed, 20 blank, 13 no-sync, 7 bad-timing,
+1 unstable-sync, 1 fetch-failed, 9 skipped, 14 crashed (job.py fell over
+on an empty timing.json after the 30-minute kill). 345 videos.
+Causes found and fixed in the harness:
+- Submodule with an SSH URL hung `git submodule update` for 10 minutes
+  (raybox-zero on four shuttles). Now rewritten to HTTPS.
+- 15 projects instantiate sky130 cells in RTL (latches, clock gates,
+  buffers: toivoh, MichaelBell, mole99, rebelmike, znah). The IHP
+  re-hardens list a `sky130_polyfill.v` the project repo never had.
+  Both are covered by Tiny Tapeout's polyfill (410 cells), now in
+  `ttvga/harness/cells/` and passed to Verilator as a `-v` library file.
+- The wall-clock limit used SIGKILL, losing the clip. tb.cpp now stops
+  on SIGTERM, closes ffmpeg and writes timing.json with status
+  sim-timeout; job.py gives it two minutes. Slow designs (toivoh demos,
+  bouncy capsule, faaaa, galton, array_mult) get partial clips.
+Still open after the fixes (for the diagnosis phase):
+- Ring oscillators instantiate IHP/GF cells (3 projects): no models, and
+  a ring oscillator is not meaningfully simulatable anyway.
+- rejunity atari2600 uses generated ROM macros (`rom_2600_*`), cartrip a
+  GDS-only nameplate macro, pixel_processor is VHDL (GHDL/yosys could
+  convert), prime_quine trips a Verilator parse bug on `~&`.
+- 20 blank: rle_vga (needs QSPI flash contents), pio_ram_emu (needs the
+  RP2040 RAM emulator), tinygpu, mandelbrot, snake, vga_ca ... mostly
+  external memory or input. 13 no-sync: crispy_vga, htfab vga_tester,
+  photo_frame, spacewar, spi_mem: likely inputs or external hardware.
+- 7 bad-timing: tomkeddie_a on six shuttles (vsync period looked shorter
+  than two lines: check what the design puts on the vsync pin) and
+  nitelich_conway.
+- One repo is gone (alex-segura/tt06-pong).
+Re-run of the 46 affected projects started 05:57 UTC.
 
 Next:
-- Full run of all 440 targets with 40 jobs; collect, analyze, report.
+- Collect the re-run, report, commit.
 - Then review verdict groups: no-sync and blank first (most likely
   wrong-inputs / wrong-clock), static (stimulus), build-failed (source
   layout, SystemVerilog, includes).
