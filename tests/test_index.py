@@ -64,3 +64,28 @@ def test_markdown_table_has_one_row_per_project():
 
 def test_json_is_serialisable():
     json.dumps(record(TARGET, RESULT))
+
+
+def test_count_reads_as_words():
+    from ttvga.index import count
+
+    assert count(660_000_000_000) == "660 billion"
+    assert count(1_230_000_000_000) == "1.2 trillion"
+    assert count(0) == "0"
+
+
+def test_stats_summarise_the_whole_set():
+    from ttvga.index import stats
+
+    entries = [record(TARGET, RESULT),
+               record({**TARGET, "id": "tt09/tt_um_y", "macro": "tt_um_y", "shuttle": "tt09"}, None)]
+    s = stats(entries)
+    assert s["projects"] == 2 and s["with_video"] == 1
+    assert s["verdicts"] == {"ok": 1, "pending": 1}
+    assert s["modes"] == {"640x480@60": 1} and s["resolutions"] == {"640x480": 1}
+    assert s["frame_rates"] == {"60": 1}
+    assert s["video_bytes"] == 154798650 + 25820716 + 25620
+    assert s["simulation"]["clocks_total"] == 1510000000
+    assert s["helped_by"]["probed_input"] == 1 and s["helped_by"]["qspi_memory"] == 0
+    assert s["liveliest"][0]["id"] == "tt08/tt_um_x"
+    assert s["motion"]["median"] == 0.0123

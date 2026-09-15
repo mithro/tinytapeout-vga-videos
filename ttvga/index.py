@@ -94,10 +94,103 @@ def record(target: dict, result: dict | None) -> dict:
     return entry
 
 
+def count(n: float | None) -> str:
+    """A big number in words a reader can hold: 660 billion, 1.2 trillion."""
+    n = n or 0
+    if n >= 1e12:
+        return f"{n / 1e12:.2g} trillion"
+    if n >= 1e9:
+        return f"{n / 1e9:.0f} billion"
+    if n >= 1e6:
+        return f"{n / 1e6:.0f} million"
+    return f"{n:.0f}"
+
+
 def size(n: int | None) -> str:
     if not n:
         return ""
+    if n >= 1e9:
+        return f"{n / 1e9:.1f} GB"
     return f"{n / 1e6:.0f} MB" if n >= 1e6 else f"{n / 1e3:.0f} kB"
+
+
+def tally(values) -> list[tuple[str, int]]:
+    """Count values, most common first, skipping the ones nothing has."""
+    counts: dict[str, int] = {}
+    for v in values:
+        if v in (None, "", 0):
+            continue
+        counts[str(v)] = counts.get(str(v), 0) + 1
+    return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+
+
+def stats(entries: list[dict]) -> dict:
+    """Figures worth knowing about the whole set: what was made, and what it cost."""
+    videos = [e for e in entries if e["has_video"]]
+    byte_total = sum(f.get("bytes") or 0 for e in entries for f in e["video"].get("files", {}).values())
+    seconds = [e["video"]["seconds"] for e in videos if e["video"].get("seconds")]
+    deltas = sorted(e["video"]["mean_frame_delta"] for e in videos
+                    if e["video"].get("mean_frame_delta") is not None)
+    wall = [e["simulation"]["wall_seconds"] for e in entries if (e["simulation"] or {}).get("wall_seconds")]
+    clocks = [e["simulation"]["clocks"] for e in entries if (e["simulation"] or {}).get("clocks")]
+    rates = sorted(e["simulation"]["clocks_per_wall_second"] for e in entries
+                   if (e["simulation"] or {}).get("clocks_per_wall_second"))
+
+    def median(xs):
+        return xs[len(xs) // 2] if xs else None
+
+    def liveliest(n=10):
+        ranked = sorted(videos, key=lambda e: -(e["video"].get("mean_frame_delta") or 0))
+        return [{"id": e["id"], "title": e["title"], "motion": e["video"]["mean_frame_delta"],
+                 "ever": e["video"].get("pixels_ever_changed"), "colours": e["video"].get("colours")}
+                for e in ranked[:n]]
+
+    def slowest(n=10):
+        ranked = sorted((e for e in entries if (e["simulation"] or {}).get("wall_seconds")),
+                        key=lambda e: -e["simulation"]["wall_seconds"])
+        return [{"id": e["id"], "title": e["title"], "wall_seconds": e["simulation"]["wall_seconds"],
+                 "clocks_per_wall_second": e["simulation"].get("clocks_per_wall_second")}
+                for e in ranked[:n]]
+
+    return {
+        "projects": len(entries),
+        "with_video": len(videos),
+        "verdicts": dict(tally(e["verdict"] for e in entries)),
+        "shuttles": dict(tally(e["shuttle"] for e in entries)),
+        "video_bytes": byte_total,
+        "video_seconds": round(sum(seconds), 1),
+        "modes": dict(tally(e["video"].get("mode") for e in videos)),
+        "resolutions": dict(tally(f'{e["video"].get("width")}x{e["video"].get("height")}' for e in videos)),
+        "frame_rates": dict(tally(round(e["video"]["fps"]) for e in videos if e["video"].get("fps"))),
+        "clocks_per_pixel": dict(tally(e["video"].get("clocks_per_pixel") for e in videos)),
+        "colours": dict(tally(e["video"].get("colours") for e in videos)),
+        "sync_polarity": dict(tally(
+            ("hsync low" if e["video"].get("hsync_active_low") else "hsync high") +
+            (", vsync low" if e["video"].get("vsync_active_low") else ", vsync high") for e in videos)),
+        "design_clock_hz": dict(tally(e["clock_hz"] for e in entries)),
+        "tiles": dict(tally(e["tiles"] for e in entries)),
+        "languages": dict(tally(e["language"] for e in entries)),
+        "motion": {
+            "median": median(deltas),
+            "still": sum(1 for d in deltas if d == 0),
+            "under_0.1_percent": sum(1 for d in deltas if 0 < d < 0.001),
+            "over_1_percent": sum(1 for d in deltas if d > 0.01),
+        },
+        "helped_by": {
+            "probed_input": sum(1 for e in entries if (e["simulation"] or {}).get("auto_ui_in") is not None),
+            "qspi_memory": sum(1 for e in entries if (e["simulation"] or {}).get("qspi")),
+            "input_script": sum(1 for e in entries if ((e["simulation"] or {}).get("override") or {}).get("inputs")),
+            "gamepad_script": sum(1 for e in entries if ((e["simulation"] or {}).get("override") or {}).get("gamepad")),
+        },
+        "simulation": {
+            "wall_seconds_total": round(sum(wall)),
+            "wall_seconds_median": median(sorted(wall)),
+            "clocks_total": sum(clocks),
+            "clocks_per_wall_second_median": median(rates),
+        },
+        "liveliest": liveliest(),
+        "slowest": slowest(),
+    }
 
 
 def motion(v: dict) -> str:
@@ -114,6 +207,57 @@ def ever(v: dict) -> str:
     """Share of pixels that change at any point in the clip."""
     e = v.get("pixels_ever_changed")
     return f"{100 * e:.3g}%" if e is not None else ""
+
+
+def bars(title: str, counts: dict, limit: int = 8, unit: str = "") -> str:
+    """A small labelled bar chart, widest value first."""
+    items = list(counts.items())[:limit]
+    if not items:
+        return ""
+    top = max(n for _, n in items)
+    rows = "".join(
+        f'<tr><th>{html.escape(str(k))}{unit}</th><td class="num">{n}</td>'
+        f'<td class="bar"><span style="width:{100 * n / top:.1f}%"></span></td></tr>'
+        for k, n in items)
+    return f'<section class="stat"><h3>{html.escape(title)}</h3><table class="chart">{rows}</table></section>'
+
+
+def write_stats_html(s: dict) -> str:
+    sim = s["simulation"]
+    m = s["motion"]
+    helped = s["helped_by"]
+    hours = sim["wall_seconds_total"] / 3600
+    facts = [
+        ("Projects", f'{s["projects"]}'),
+        ("With video", f'{s["with_video"]}'),
+        ("Video", f'{size(s["video_bytes"])} in {s["video_seconds"] / 60:.0f} minutes of footage'),
+        ("Simulated", f'{count(sim["clocks_total"])} clock cycles'),
+        ("Machine time", f"{hours:.0f} hours, median {sim['wall_seconds_median'] / 60:.0f} minutes per project"),
+        ("Speed", f'{(sim["clocks_per_wall_second_median"] or 0) / 1e6:.1f} million cycles per second, median'),
+        ("Motion", f'median {100 * (m["median"] or 0):.3g}% of pixels change per frame; '
+                   f'{m["over_1_percent"]} clips change more than 1%, {m["still"]} not at all'),
+        ("Needed help", f'{helped["probed_input"]} a probed input, {helped["input_script"]} an input script, '
+                        f'{helped["gamepad_script"]} a gamepad, {helped["qspi_memory"]} a modelled memory'),
+    ]
+    out = ['<section id="stats"><h2>Statistics</h2><table class="facts">']
+    out += [f"<tr><th>{html.escape(k)}</th><td>{v}</td></tr>" for k, v in facts]
+    out.append("</table><div class=\"charts\">")
+    out.append(bars("Video mode", s["modes"]))
+    out.append(bars("Frame rate", s["frame_rates"], unit=" fps"))
+    out.append(bars("Colours used", s["colours"]))
+    out.append(bars("Design clock", {f"{int(k) / 1e6:g} MHz": v for k, v in s["design_clock_hz"].items()}))
+    out.append(bars("Sync polarity", s["sync_polarity"], limit=4))
+    out.append(bars("Tiles", s["tiles"], limit=6))
+    out.append("</div>")
+    out.append('<div class="charts">')
+    out.append("<section class=\"stat\"><h3>Liveliest clips</h3><table class=\"chart\">" + "".join(
+        f'<tr><th><a href="#{html.escape(e["id"].replace("/", "-"))}">{html.escape(e["title"] or e["id"])}</a></th>'
+        f'<td class="num">{100 * (e["motion"] or 0):.2g}%</td></tr>' for e in s["liveliest"]) + "</table></section>")
+    out.append("<section class=\"stat\"><h3>Slowest to simulate</h3><table class=\"chart\">" + "".join(
+        f'<tr><th><a href="#{html.escape(e["id"].replace("/", "-"))}">{html.escape(e["title"] or e["id"])}</a></th>'
+        f'<td class="num">{(e["wall_seconds"] or 0) / 60:.0f} min</td></tr>' for e in s["slowest"]) + "</table></section>")
+    out.append("</div></section>")
+    return "\n".join(out)
 
 
 def write_html(entries: list[dict], generated: str) -> str:
@@ -144,12 +288,22 @@ def write_html(entries: list[dict], generated: str) -> str:
         ".barely-moving{background:#fdf3d7;color:#6b4e00}.partial{background:#fdf3d7;color:#6b4e00}",
         ".bad{background:#fbe3e3;color:#7f1d1d}.skipped{background:#eee;color:#555}",
         "a{color:#544ead}", "code{font-family:ui-monospace,monospace;font-size:.9em}",
+        "#stats{margin:1rem 0 2rem}",
+        ".facts{max-width:60rem}.facts th{width:11rem;position:static}",
+        ".charts{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem}",
+        ".stat{flex:1 1 20rem;background:#fff;border:1px solid #e7e5ee;padding:.5rem .75rem}",
+        ".stat h3{font-size:.95rem;font-weight:500;margin:.25rem 0 .5rem}",
+        ".chart th{background:none;font-weight:400;position:static;white-space:nowrap}",
+        ".chart td,.chart th{border:0;padding:.15rem .4rem}",
+        ".chart td.bar{width:60%}",
+        ".chart td.bar span{display:block;height:.7rem;background:#8afbfd;border:1px solid #544ead}",
         "</style></head><body>",
         "<h1>Tiny Tapeout VGA videos</h1>",
         f'<p class="lede">Simulated output of every Tiny Tapeout project whose pinout matches the Tiny VGA Pmod. '
         f"{ok} of {len(entries)} projects have a watchable clip. Each has a 60, 30 and 10 second MJPEG at the "
         f"design's own resolution and frame rate, a poster frame and a contact sheet. Generated {generated}.</p>",
         "<p>" + " ".join(f'<span class="v {cls(v)}">{html.escape(v)} {counts[v]}</span>' for v in order) + "</p>",
+        write_stats_html(stats(entries)),
     ]
     for shuttle, rows in by_shuttle.items():
         out.append(f"<h2>{html.escape(shuttle)} <small>({len(rows)} projects)</small></h2>")
@@ -165,7 +319,7 @@ def write_html(entries: list[dict], generated: str) -> str:
                      f'{v.get("colours") or 0} colours'
                      if e["has_video"] else "")
             out.append(
-                "<tr>"
+                f'<tr id="{html.escape(e["id"].replace("/", "-"))}">'
                 f"<td>{preview}</td>"
                 f'<td><strong>{html.escape(e["title"] or e["macro"])}</strong><br>{html.escape(e["author"] or "")}<br>'
                 f'<code>{html.escape(e["macro"])}</code><br>'
@@ -189,8 +343,28 @@ def cls(verdict: str) -> str:
 
 
 def write_markdown(entries: list[dict], generated: str) -> str:
+    s = stats(entries)
+    sim = s["simulation"]
+    top = lambda d, n=4: ", ".join(f"{k} ({v})" for k, v in list(d.items())[:n])  # noqa: E731
     lines = ["# Videos", "",
              f"Generated {generated} by `tt-vga index`. Do not edit by hand.", "",
+             "## Statistics", "",
+             f'- Projects: {s["projects"]}, with video: {s["with_video"]}',
+             f'- Footage: {size(s["video_bytes"])} holding {s["video_seconds"] / 60:.0f} minutes',
+             f'- Simulated: {count(sim["clocks_total"])} clock cycles in '
+             f'{sim["wall_seconds_total"] / 3600:.0f} hours of machine time',
+             f'- Speed: {(sim["clocks_per_wall_second_median"] or 0) / 1e6:.1f} million cycles per second (median), '
+             f'{sim["wall_seconds_median"] / 60:.0f} minutes per project (median)',
+             f'- Motion: median {100 * (s["motion"]["median"] or 0):.3g}% of pixels change per frame; '
+             f'{s["motion"]["over_1_percent"]} clips change more than 1%, {s["motion"]["still"]} not at all',
+             f'- Modes: {top(s["modes"])}',
+             f'- Frame rates: {top({k + " fps": v for k, v in s["frame_rates"].items()})}',
+             f'- Design clocks: {top({f"{int(k) / 1e6:g} MHz": v for k, v in s["design_clock_hz"].items()})}',
+             f'- Helped by: {s["helped_by"]["probed_input"]} a probed input, '
+             f'{s["helped_by"]["input_script"]} an input script, {s["helped_by"]["gamepad_script"]} a gamepad, '
+             f'{s["helped_by"]["qspi_memory"]} a modelled memory',
+             "",
+             "## Projects", "",
              "One row per project. The clips themselves are on the simulation host under",
              "`videos/<shuttle>/<macro>/`; this table says what each one contains.", "",
              "Motion is the share of pixels that change from one frame to the next;",
@@ -216,19 +390,19 @@ def build() -> list[dict]:
 def run(args: argparse.Namespace) -> int:
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     entries = build()
-    INDEX_JSON.write_text(json.dumps({"generated": generated, "count": len(entries), "projects": entries},
-                                     indent=2) + "\n")
+    INDEX_JSON.write_text(json.dumps({"generated": generated, "count": len(entries),
+                                      "stats": stats(entries), "projects": entries}, indent=2) + "\n")
     INDEX_HTML.write_text(write_html(entries, generated))
     VIDEOS_MD.write_text(write_markdown(entries, generated))
     with_video = sum(1 for e in entries if e["has_video"])
     print(f"{len(entries)} projects, {with_video} with video -> "
           f"{INDEX_JSON.relative_to(ROOT)}, {INDEX_HTML.relative_to(ROOT)}, {VIDEOS_MD.relative_to(ROOT)}")
     if args.upload:
-        from ttvga.remote import REMOTE_ROOT, resolve_host, rsync
+        from ttvga.remote import REMOTE_VIDEOS, resolve_host, rsync
 
         host = resolve_host(args.host)
-        rsync(host, [str(INDEX_HTML), str(INDEX_JSON)], f"{REMOTE_ROOT}/videos/")
-        print(f"uploaded to {host.ssh}:{REMOTE_ROOT}/videos/")
+        rsync(host, [str(INDEX_HTML), str(INDEX_JSON)], f"{REMOTE_VIDEOS}/")
+        print(f"uploaded to {host.ssh}:{REMOTE_VIDEOS}/")
     return 0
 
 

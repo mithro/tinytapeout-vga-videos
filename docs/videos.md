@@ -1,6 +1,20 @@
 # Videos
 
-Generated 2026-09-15 15:06 UTC by `tt-vga index`. Do not edit by hand.
+Generated 2026-09-15 15:11 UTC by `tt-vga index`. Do not edit by hand.
+
+## Statistics
+
+- Projects: 440, with video: 408
+- Footage: 217.8 GB holding 408 minutes
+- Simulated: 708 billion clock cycles in 69 hours of machine time
+- Speed: 4.0 million cycles per second (median), 6 minutes per project (median)
+- Motion: median 0.78% of pixels change per frame; 191 clips change more than 1%, 55 not at all
+- Modes: 640x480@60 (380), 640x480@75 (13), 800x600@60 (5), 800x600@56 (4)
+- Frame rates: 60 fps (373), 56 fps (9), 75 fps (5), 62 fps (4)
+- Design clocks: 25.175 MHz (230), 25 MHz (69), 50.4 MHz (15), 25.2 MHz (13)
+- Helped by: 0 a probed input, 49 an input script, 16 a gamepad, 35 a modelled memory
+
+## Projects
 
 One row per project. The clips themselves are on the simulation host under
 `videos/<shuttle>/<macro>/`; this table says what each one contains.
@@ -30,7 +44,7 @@ ever is the share that change at any point in the clip.
 | `tt06/tt_um_alexsegura_pong` | Pong | fetch-failed |  |  |  |  |  |  |
 | `tt07/tt_um_vga_snake` | VGA Snake Game | blank | 640x480 | 72.8 | 0.0235% | 100% | 5 | 17 MB |
 | `tt07/tt_um_tinytapeout_dvd_screensaver` | DVD Screensaver with Tiny Tapeout Logo (Tiny VGA) | ok | 640x480 | 59.9 | 0.323% | 87.7% | 2 | 33 MB |
-| `tt07/tt_um_vga_perlin` | VGA Perlin Noise | ok | 640x480 | 72.8 | 6.25% | 100% | 64 | 1773 MB |
+| `tt07/tt_um_vga_perlin` | VGA Perlin Noise | ok | 640x480 | 72.8 | 6.25% | 100% | 64 | 1.8 GB |
 | `tt07/tt_um_rejunity_vga` | VGA Checkers | ok | 640x480 | 60.0 | 11.2% | 99.6% | 5 | 748 MB |
 | `tt07/tt_um_emern_top` | badGPU | blank | 640x480 | 59.5 | 0% | 0% | 1 | 14 MB |
 | `tt07/tt_um_algofoogle_raybox_zero` | raybox-zero TT07 edition | static | 640x480 | 59.5 | 0% | 0% | 3 | 34 MB |
@@ -56,7 +70,7 @@ ever is the share that change at any point in the clip.
 | `tt08/tt_um_htfab_bouncy_capsule` | Bouncy Capsule | ok | 640x480 | 59.5 | 3.25% | 97.2% | 44 | 396 MB |
 | `tt08/tt_um_dendraws_donut` | donut | static | 640x480 | 59.9 | 0% | 0% | 4 | 226 MB |
 | `tt08/tt_um_tinytapeout_logo_screensaver` | VGA Screensaver with Tiny Tapeout Logo | ok | 640x480 | 59.9 | 1.47% | 87.7% | 33 | 74 MB |
-| `tt08/tt_um_patater_demokit` | Patater Demo Kit Waggling Rainbow on a Chip | ok | 640x480 | 59.9 | 37.4% | 99.6% | 19 | 1250 MB |
+| `tt08/tt_um_patater_demokit` | Patater Demo Kit Waggling Rainbow on a Chip | ok | 640x480 | 59.9 | 37.4% | 99.6% | 19 | 1.3 GB |
 | `tt08/tt_um_MichaelBell_canon` | TT08 Pachelbel's Canon demo | ok | 800x600 | 56.2 | 6.68% | 99.9% | 64 | 616 MB |
 | `tt08/tt_um_toivoh_demo` | Sequential Shadows [TT08 demo competition] | ok | 640x480 | 60.0 | 10.2% | 99.8% | 21 | 848 MB |
 | `tt08/tt_um_gfg_development_tinymandelbrot` | TinyMandelbrot | unstable-sync | 800x600 | 38.0 | 0% | 0.0269% | 2 | 14 MB |
@@ -65,7 +79,7 @@ ever is the share that change at any point in the clip.
 | `tt08/tt_um_toivoh_demo_deluxe` | Sequential Shadows Deluxe [TT08 demo competition] | ok | 640x480 | 60.0 | 9.2% | 99.8% | 21 | 828 MB |
 | `tt08/tt_um_MichaelBell_mandelbrot` | VGA Mandelbrot | ok | 640x480 | 55.9 | 10.2% | 97.6% | 15 | 287 MB |
 | `tt08/tt_um_edwintorok` | Rounding error | ok | 640x480 | 60.1 | 1.01% | 72.6% | 7 | 380 MB |
-| `tt08/tt_um_rejunity_vga_logo` | VGA Tiny Logo (1 tile) | ok | 640x480 | 59.9 | 38% | 99.6% | 11 | 1273 MB |
+| `tt08/tt_um_rejunity_vga_logo` | VGA Tiny Logo (1 tile) | ok | 640x480 | 59.9 | 38% | 99.6% | 11 | 1.3 GB |
 | `tt08/tt_um_quarren42_demoscene_top` | asic design is my passion | ok | 640x480 | 59.9 | 1.09% | 83.1% | 7 | 53 MB |
 | `tt08/tt_um_crispy_vga` | Crispy VGA | no-sync |  |  |  |  |  |  |
 | `tt08/tt_um_favoritohjs_scroller` | VGA Scroller | ok | 640x480 | 59.5 | 95.9% | 99.5% | 8 | 982 MB |
@@ -75,7 +89,7 @@ ever is the share that change at any point in the clip.
 | `ttihp0p2/tt_um_edwintorok` | Rounding error | ok | 640x480 | 60.1 | 1.01% | 72.6% | 7 | 380 MB |
 | `ttihp0p2/tt_um_rebeccargb_vga_pride` | VGA Pride | ok | 640x480 | 59.9 | 0.0554% | 99.6% | 14 | 83 MB |
 | `ttihp0p2/tt_um_a1k0n_nyancat` | VGA Nyan Cat | ok | 640x480 | 59.9 | 47.6% | 96.1% | 26 | 857 MB |
-| `ttihp0p2/tt_um_rejunity_vga_logo` | VGA Tiny Logo (1 tile) | ok | 640x480 | 59.9 | 37.9% | 99.3% | 12 | 1279 MB |
+| `ttihp0p2/tt_um_rejunity_vga_logo` | VGA Tiny Logo (1 tile) | ok | 640x480 | 59.9 | 37.9% | 99.3% | 12 | 1.3 GB |
 | `ttihp0p2/tt_um_MichaelBell_canon` | TT08 Pachelbel's Canon demo | ok | 800x600 | 56.2 | 6.68% | 99.9% | 64 | 616 MB |
 | `ttihp0p2/tt_um_a1k0n_demo` | Demo by a1k0n | ok | 640x480 | 60.0 | 39.5% | 99.6% | 58 | 744 MB |
 | `ttihp0p2/tt_um_rejunity_vga_test01` | VGA Drop (audio/visual demo) | ok | 640x480 | 60.0 | 14.7% | 99.6% | 28 | 892 MB |
@@ -83,7 +97,7 @@ ever is the share that change at any point in the clip.
 | `ttihp0p2/tt_um_vga_glyph_mode` | Glyph Mode | ok | 640x480 | 59.9 | 0.92% | 33.9% | 9 | 661 MB |
 | `ttihp0p2/tt_um_cfib_demo` | cfib Demoscene Entry | ok | 640x480 | 59.5 | 1.41% | 17.2% | 19 | 442 MB |
 | `ttihp0p2/tt_um_favoritohjs_scroller` | VGA Scroller | ok | 640x480 | 59.5 | 95.9% | 99.5% | 8 | 982 MB |
-| `ttihp0p2/tt_um_algofoogle_tinyvga_fun_wrapper` | TTIHP TinyVGA FUN! | ok | 640x480 | 59.9 | 2.06% | 97.5% | 64 | 1068 MB |
+| `ttihp0p2/tt_um_algofoogle_tinyvga_fun_wrapper` | TTIHP TinyVGA FUN! | ok | 640x480 | 59.9 | 2.06% | 97.5% | 64 | 1.1 GB |
 | `ttihp0p2/tt_um_toivoh_retro_console` | Retro Console | blank | 640x480 | 59.9 | 0% | 0% | 1 | 14 MB |
 | `ttihp0p2/tt_um_2048_vga_game` | 2048 sliding tile puzzle game (VGA) | ok | 640x480 | 59.9 | 0.0094% | 2.28% | 3 | 47 MB |
 | `ttihp0p2/tt_um_MichaelBell_mandelbrot` | VGA Mandelbrot | ok | 640x480 | 55.9 | 28.1% | 97.6% | 17 | 290 MB |
@@ -94,7 +108,7 @@ ever is the share that change at any point in the clip.
 | `ttihp0p2/tt_um_rebeccargb_colorbars` | Color Bars | static | 640x480 | 59.9 | 0% | 0% | 11 | 67 MB |
 | `ttihp0p2/tt_um_toivoh_demo_deluxe` | Sequential Shadows Deluxe [TT08 demo competition] | ok | 640x480 | 60.0 | 9.2% | 99.8% | 21 | 828 MB |
 | `ttihp0p2/tt_um_crispy_vga` | Crispy VGA | no-sync |  |  |  |  |  |  |
-| `tt09/tt_um_znah_vga_ca` | znah_vga_ca | ok | 640x480 | 59.9 | 47.7% | 99.6% | 9 | 1141 MB |
+| `tt09/tt_um_znah_vga_ca` | znah_vga_ca | ok | 640x480 | 59.9 | 47.7% | 99.6% | 9 | 1.1 GB |
 | `tt09/tt_um_rebeccargb_vga_pride` | VGA Pride | ok | 640x480 | 59.9 | 0.0554% | 99.6% | 14 | 83 MB |
 | `tt09/tt_um_MichaelBell_rle_vga` | RLE Video Player | blank | 640x480 | 60.0 | 0% | 0% | 1 | 14 MB |
 | `tt09/tt_um_2048_vga_game` | 2048 sliding tile puzzle game (VGA) | ok | 640x480 | 59.9 | 0.0094% | 2.28% | 3 | 47 MB |
@@ -102,18 +116,18 @@ ever is the share that change at any point in the clip.
 | `tt09/tt_um_a1k0n_nyancat` | VGA Nyan Cat | ok | 640x480 | 59.9 | 47.6% | 96.1% | 26 | 857 MB |
 | `tt09/tt_um_rejunity_vga_test01` | VGA Drop (audio/visual demo) | ok | 640x480 | 60.0 | 14.7% | 99.6% | 28 | 892 MB |
 | `tt09/tt_um_toivoh_demo` | Sequential Shadows [TT08 demo competition] | ok | 640x480 | 60.0 | 10.2% | 99.8% | 21 | 848 MB |
-| `tt09/tt_um_rejunity_vga_logo` | VGA Tiny Logo (1 tile) | ok | 640x480 | 59.9 | 37.9% | 99.3% | 12 | 1279 MB |
+| `tt09/tt_um_rejunity_vga_logo` | VGA Tiny Logo (1 tile) | ok | 640x480 | 59.9 | 37.9% | 99.3% | 12 | 1.3 GB |
 | `tt09/tt_um_rebeccargb_colorbars` | Color Bars | static | 640x480 | 59.9 | 0% | 0% | 11 | 67 MB |
 | `tt09/tt_um_rebeccargb_tt09ball_screensaver` | TT09Ball VGA Screensaver | ok | 640x480 | 59.9 | 1.55% | 91.4% | 9 | 96 MB |
 | `tt09/tt_um_rebeccargb_vga_timing_experiments` | VGA Timing Experiments | ok | 640x480 | 59.9 | 0.0388% | 94.6% | 8 | 142 MB |
 | `tt09/tt_um_rejunity_atari2600` | Atari 2600 | build-failed |  |  |  |  |  |  |
 | `ttihp25a/tt_um_tiny_shader_mole99` | Tiny Shader | ok | 640x480 | 59.9 | 12.5% | 100% | 64 | 536 MB |
-| `ttihp25a/tt_um_rejunity_vga_logo` | VGA Tiny Logo (1 tile) | ok | 640x480 | 59.9 | 37.9% | 99.3% | 12 | 1279 MB |
+| `ttihp25a/tt_um_rejunity_vga_logo` | VGA Tiny Logo (1 tile) | ok | 640x480 | 59.9 | 37.9% | 99.3% | 12 | 1.3 GB |
 | `ttihp25a/tt_um_htfab_checkers` | Overengineered Checkers | ok | 640x480 | 59.9 | 11.2% | 99.6% | 5 | 750 MB |
 | `ttihp25a/tt_um_nyan` | nyan | ok | 640x480 | 57.2 | 0.756% | 12.1% | 14 | 112 MB |
 | `ttihp25a/tt_um_MichaelBell_canon` | TT08 Pachelbel's Canon demo | ok | 800x600 | 56.2 | 6.68% | 99.9% | 64 | 616 MB |
 | `ttihp25a/tt_um_toivoh_demo_tt08` | Sequential Shadows [TT08 demo competition] | build-failed |  |  |  |  |  |  |
-| `ttihp25a/tt_um_rejunity_atari2600` | Atari 2600 | ok | 640x480 | 59.9 | 60.6% | 92.2% | 13 | 1133 MB |
+| `ttihp25a/tt_um_rejunity_atari2600` | Atari 2600 | ok | 640x480 | 59.9 | 60.6% | 92.2% | 13 | 1.1 GB |
 | `ttihp25a/tt_um_edwintorok` | Rounding error | ok | 640x480 | 60.1 | 1.01% | 72.6% | 7 | 380 MB |
 | `ttihp25a/tt_um_yuri_panchul_sea_battle_vga_game` | Sea Battle | ok | 640x480 | 54.8 | 3.16% | 99.6% | 6 | 105 MB |
 | `ttihp25a/tt_um_toivoh_demo_deluxe` | Sequential Shadows Deluxe [TT08 demo competition] | ok | 640x480 | 60.0 | 9.2% | 99.8% | 21 | 828 MB |
@@ -139,13 +153,13 @@ ever is the share that change at any point in the clip.
 | `ttihp25a/tt_um_htfab_bouncy_capsule` | Bouncy Capsule | ok | 640x480 | 59.5 | 3.25% | 97.2% | 44 | 396 MB |
 | `ttihp25a/tt_um_toivoh_demo_tt10` | Orion Iron Ion [TT10 demo competition] | ok | 640x480 | 60.0 | 1.33% | 99.1% | 10 | 209 MB |
 | `ttihp25a/tt_um_algofoogle_vga` | IHP VGA demo | ok | 640x480 | 59.5 | 0.256% | 53.7% | 11 | 290 MB |
-| `ttihp25a/tt_um_znah_vga_ca` | znah_vga_ca | ok | 640x480 | 59.9 | 47.7% | 99.6% | 9 | 1141 MB |
+| `ttihp25a/tt_um_znah_vga_ca` | znah_vga_ca | ok | 640x480 | 59.9 | 47.7% | 99.6% | 9 | 1.1 GB |
 | `ttihp25a/tt_um_jmack2201` | Sprite Bouncer with Looping Background Options | ok | 640x480 | 59.5 | 0.245% | 80.1% | 15 | 24 MB |
 | `ttihp25a/tt_um_vga_glyph_mode` | Glyph Mode | ok | 640x480 | 59.9 | 0.92% | 33.9% | 9 | 661 MB |
 | `ttihp25a/tt_um_favoritohjs_scroller` | VGA Scroller | ok | 640x480 | 59.5 | 95.9% | 99.5% | 8 | 982 MB |
 | `ttihp25a/tt_um_crispy_vga` | Crispy VGA | no-sync |  |  |  |  |  |  |
 | `ttihp25a/tt_um_quarren42_demoscene_top` | asic design is my passion | ok | 640x480 | 59.9 | 1.09% | 83.1% | 7 | 53 MB |
-| `ttihp25a/tt_um_patater_demokit` | Patater Demo Kit Waggling Rainbow on a Chip | ok | 640x480 | 59.9 | 37.4% | 99.6% | 19 | 1250 MB |
+| `ttihp25a/tt_um_patater_demokit` | Patater Demo Kit Waggling Rainbow on a Chip | ok | 640x480 | 59.9 | 37.4% | 99.6% | 19 | 1.3 GB |
 | `ttihp25a/tt_um_zec_square1` | "SQUARE-1": VGA/audio demo | ok | 640x480 | 60.0 | 0.78% | 79.8% | 5 | 104 MB |
 | `ttihp25a/tt_um_bytex64_munch` | Munch | ok | 640x480 | 59.9 | 5.05% | 99.6% | 22 | 182 MB |
 | `ttihp25a/tt_um_cfib_demo` | cfib Demoscene Entry | ok | 640x480 | 59.5 | 1.41% | 17.2% | 19 | 442 MB |
@@ -163,7 +177,7 @@ ever is the share that change at any point in the clip.
 | `ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game` | Sea Battle | ok | 640x480 | 54.8 | 3.16% | 99.6% | 6 | 105 MB |
 | `ttcad25a/tt_um_edwintorok` | Rounding error | ok | 640x480 | 60.1 | 1.01% | 72.6% | 7 | 380 MB |
 | `ttcad25a/tt_um_MichaelBell_mandelbrot` | VGA Mandelbrot | ok | 640x480 | 55.9 | 10.2% | 97.6% | 15 | 287 MB |
-| `ttcad25a/tt_um_patater_demokit` | Patater Demo Kit Waggling Rainbow on a Chip | ok | 640x480 | 59.9 | 37.4% | 99.6% | 19 | 1250 MB |
+| `ttcad25a/tt_um_patater_demokit` | Patater Demo Kit Waggling Rainbow on a Chip | ok | 640x480 | 59.9 | 37.4% | 99.6% | 19 | 1.3 GB |
 | `ttcad25a/tt_um_toivoh_demo` | Orion Iron Ion [TT08 demo competition] | ok | 640x480 | 60.0 | 1.33% | 99.1% | 10 | 209 MB |
 | `ttcad25a/tt_um_dendraws_donut` | donut | static | 640x480 | 59.9 | 0% | 0% | 4 | 226 MB |
 | `ttcad25a/tt_um_rejunity_vga_test01` | VGA Drop (audio/visual demo) | ok | 640x480 | 60.0 | 14.7% | 99.6% | 28 | 892 MB |
@@ -195,14 +209,14 @@ ever is the share that change at any point in the clip.
 | `ttcad25a/tt_um_tiny_shader_mole99` | Tiny Shader | ok | 640x480 | 59.9 | 12.5% | 100% | 64 | 536 MB |
 | `ttcad25a/tt_um_spacewar` | XY Spacewar | ok | 640x480 | 119.0 | 0.0034% | 7.3% | 3 | 52 MB |
 | `ttcad25a/tt_um_htfab_checkers` | Overengineered Checkers | ok | 640x480 | 59.9 | 11.2% | 99.6% | 5 | 750 MB |
-| `ttcad25a/tt_um_rejunity_vga_logo` | VGA Tiny Logo (1 tile) | ok | 640x480 | 59.9 | 38% | 99.6% | 11 | 1273 MB |
+| `ttcad25a/tt_um_rejunity_vga_logo` | VGA Tiny Logo (1 tile) | ok | 640x480 | 59.9 | 38% | 99.6% | 11 | 1.3 GB |
 | `ttcad25a/tt_um_quarren42_demoscene_top` | asic design is my passion | ok | 640x480 | 59.9 | 1.09% | 83.1% | 7 | 53 MB |
 | `ttcad25a/tt_um_crispy_vga` | Crispy VGA | no-sync |  |  |  |  |  |  |
 | `ttcad25a/tt_um_favoritohjs_scroller` | VGA Scroller | ok | 640x480 | 59.5 | 95.9% | 99.5% | 8 | 982 MB |
 | `ttcad25a/tt_um_vga_glyph_mode` | Glyph Mode | ok | 640x480 | 59.9 | 0.92% | 33.9% | 9 | 661 MB |
 | `ttihp25b/tt_um_tinytapeout_logo_screensaver` | VGA Screensaver with Tiny Tapeout Logo | ok | 640x480 | 59.9 | 1.47% | 87.7% | 33 | 74 MB |
 | `ttihp25b/tt_um_ihp_logo_screensaver` | VGA Screensaver with the IHP Logo | ok | 640x480 | 59.9 | 2.09% | 91.4% | 33 | 86 MB |
-| `ttihp25b/tt_um_rejunity_atari2600` | Atari 2600 | ok | 640x480 | 59.9 | 60.6% | 92.2% | 13 | 1133 MB |
+| `ttihp25b/tt_um_rejunity_atari2600` | Atari 2600 | ok | 640x480 | 59.9 | 60.6% | 92.2% | 13 | 1.1 GB |
 | `ttihp25b/tt_um_gamepad_pmod_demo` | Gamepad Pmod Demo | barely-moving | 640x480 | 59.9 | 0.0008% | 0.953% | 3 | 32 MB |
 | `ttihp25b/tt_um_zerotoasic_logo_screensaver` | VGA Screensaver with Zero to ASIC Logo | ok | 640x480 | 59.9 | 1.65% | 88.1% | 33 | 82 MB |
 | `ttihp25b/tt_um_2048_vga_game` | 2048 sliding tile puzzle game (VGA) | ok | 640x480 | 59.9 | 0.0094% | 2.28% | 3 | 47 MB |
@@ -224,7 +238,7 @@ ever is the share that change at any point in the clip.
 | `ttsky25a/tt_um_2048_vga_game` | 2048 sliding tile puzzle game (VGA) | ok | 640x480 | 59.9 | 0.0094% | 2.28% | 3 | 47 MB |
 | `ttsky25a/tt_um_algofoogle_vga_matrix_dac` | Analog VGA CSDAC experiments | skipped |  |  |  |  |  |  |
 | `ttsky25a/tt_um_vga_glyph_mode` | VGA Glyph Mode | ok | 640x480 | 59.9 | 1.12% | 36.3% | 9 | 634 MB |
-| `ttsky25a/tt_um_vga_example` | Jabulani Ball VGA Demo  | ok | 640x480 | 59.9 | 1.37% | 93.6% | 7 | 1355 MB |
+| `ttsky25a/tt_um_vga_example` | Jabulani Ball VGA Demo  | ok | 640x480 | 59.9 | 1.37% | 93.6% | 7 | 1.4 GB |
 | `ttsky25a/tt_um_7FM_ShadyPong` | ShadyPong | static | 640x480 | 59.9 | 0% | 0% | 5 | 19 MB |
 | `ttsky25a/tt_um_nvious_graphics` | nVious Graphics | ok | 640x480 | 59.9 | 0.779% | 49.5% | 9 | 543 MB |
 | `ttsky25a/tt_um_10_vga_crossyroad` | Crossyroad | ok | 640x480 | 59.5 | 1.13% | 43.3% | 5 | 54 MB |
@@ -244,7 +258,7 @@ ever is the share that change at any point in the clip.
 | `ttsky25b/tt_um_htfab_asicle2` | Asicle v2 | barely-moving | 640x480 | 59.9 | 0.0006% | 0.523% | 3 | 64 MB |
 | `ttsky25b/tt_um_algofoogle_vga_matrix_dac` | Analog VGA CSDAC experiments (TTSKY25b) | skipped |  |  |  |  |  |  |
 | `ttsky25b/tt_um_rom_vga_screensaver` | VGA Screensaver with embedded bitmap ROM | ok | 640x480 | 59.9 | 0.9% | 84.8% | 59 | 50 MB |
-| `ttsky25b/tt_um_rejunity_vga_playground` | My (S)VGA Playground | ok | 640x480 | 59.9 | 85.2% | 99.6% | 33 | 1702 MB |
+| `ttsky25b/tt_um_rejunity_vga_playground` | My (S)VGA Playground | ok | 640x480 | 59.9 | 85.2% | 99.6% | 33 | 1.7 GB |
 | `ttsky25b/tt_um_tinytapeout_logo_screensaver` | VGA Screensaver with Tiny Tapeout Logo | ok | 640x480 | 59.9 | 1.47% | 87.7% | 33 | 74 MB |
 | `ttsky25b/tt_um_tiny_shader_v2_mole99` | Tiny Shader v2 | ok | 640x480 | 59.9 | 25% | 99.8% | 64 | 356 MB |
 | `ttsky25b/tt_um_zerotoasic_logo_screensaver` | VGA Screensaver with Zero to ASIC Logo | ok | 640x480 | 59.9 | 1.65% | 88.1% | 33 | 82 MB |
@@ -260,11 +274,11 @@ ever is the share that change at any point in the clip.
 | `ttgf0p2/tt_um_2048_vga_game` | 2048 sliding tile puzzle game (VGA) | ok | 640x480 | 59.9 | 0.0094% | 2.28% | 3 | 47 MB |
 | `ttgf0p2/tt_um_a1k0n_nyancat` | VGA Nyan Cat | ok | 640x480 | 59.9 | 47.6% | 96.1% | 26 | 857 MB |
 | `ttgf0p2/tt_um_htfab_asicle2` | Asicle v2 | barely-moving | 640x480 | 59.9 | 0.0006% | 0.523% | 3 | 64 MB |
-| `ttgf0p2/tt_um_rejunity_vga_logo` | VGA Tiny Logo | ok | 640x480 | 59.9 | 68.2% | 83% | 64 | 1546 MB |
-| `ttgf0p2/tt_um_kbeckmann_flame` | Flame demo | ok | 640x480 | 59.5 | 2.74% | 40.2% | 43 | 1233 MB |
+| `ttgf0p2/tt_um_rejunity_vga_logo` | VGA Tiny Logo | ok | 640x480 | 59.9 | 68.2% | 83% | 64 | 1.5 GB |
+| `ttgf0p2/tt_um_kbeckmann_flame` | Flame demo | ok | 640x480 | 59.5 | 2.74% | 40.2% | 43 | 1.2 GB |
 | `ttgf0p2/tt_um_htfab_vga_tester` | Video mode tester | no-sync |  |  |  |  |  |  |
 | `ttgf0p2/tt_um_algofoogle_vgaringosc` | Ring osc on VGA | build-failed |  |  |  |  |  |  |
-| `ttihp26a/tt_um_rejunity_vga_logo` | VGA Tiny Logo Roto Zoomer | ok | 640x480 | 59.9 | 68.2% | 99.6% | 64 | 1320 MB |
+| `ttihp26a/tt_um_rejunity_vga_logo` | VGA Tiny Logo Roto Zoomer | ok | 640x480 | 59.9 | 68.2% | 99.6% | 64 | 1.3 GB |
 | `ttihp26a/tt_um_mattvenn_vgatest` | VGA demo | ok | 640x480 | 59.9 | 9.16% | 99.6% | 64 | 425 MB |
 | `ttihp26a/tt_um_matth_fischer_vgaTT` | VGA Squares | ok | 640x480 | 59.9 | 12.5% | 99.6% | 16 | 208 MB |
 | `ttihp26a/tt_um_phsauter_vga_maze` | VGA Maze Runner | ok | 640x480 | 59.9 | 0.0352% | 66.6% | 7 | 315 MB |
@@ -287,7 +301,7 @@ ever is the share that change at any point in the clip.
 | `ttihp26a/tt_um_faaaa` | Demoscreen full of RICH | ok | 640x480 | 59.9 | 3.83% | 87.9% | 5 | 154 MB |
 | `ttihp26a/tt_um_snake_game` | SnakeGame | ok | 640x480 | 59.9 | 0.0072% | 24.1% | 4 | 57 MB |
 | `ttihp26a/tt_um_tomolt_rasterizer` | Tiny Triangle Rasterizer | static | 640x480 | 59.9 | 0% | 0% | 3 | 83 MB |
-| `ttihp26a/tt_um_pong` | TinyPong | ok | 640x480 | 59.9 | 0.0829% | 6.46% | 11 | 1310 MB |
+| `ttihp26a/tt_um_pong` | TinyPong | ok | 640x480 | 59.9 | 0.0829% | 6.46% | 11 | 1.3 GB |
 | `ttihp26a/tt_um_vga_leonllrmc` | LLR simple VGA GPU | static | 640x480 | 59.9 | 0% | 0% | 4 | 641 MB |
 | `ttihp26a/tt_um_thomasherzog_plasma` | Plasma | ok | 640x480 | 59.9 | 6.27% | 99.6% | 64 | 293 MB |
 | `ttihp26a/tt_um_moss_display` | moss_display | ok | 640x480 | 59.9 | 0.899% | 17.2% | 6 | 481 MB |
@@ -307,14 +321,14 @@ ever is the share that change at any point in the clip.
 | `ttihp0p4/tt_um_glyph_mode_hd` | Glyph Mode HD | ok | 640x480 | 59.9 | 1.12% | 36.3% | 9 | 634 MB |
 | `ttihp0p4/tt_um_urish_rings` | VGA Rings | ok | 640x480 | 59.9 | 12.5% | 99.6% | 16 | 644 MB |
 | `ttsky26a/tt_um_rom_vga_screensaver` | VGA Screensaver with embedded bitmap ROM | ok | 640x480 | 59.9 | 0.9% | 84.8% | 59 | 50 MB |
-| `ttsky26a/tt_um_algofoogle_dottee` | DOTTEE VGA demo | ok | 640x480 | 59.9 | 63.9% | 99.8% | 64 | 1422 MB |
+| `ttsky26a/tt_um_algofoogle_dottee` | DOTTEE VGA demo | ok | 640x480 | 59.9 | 63.9% | 99.8% | 64 | 1.4 GB |
 | `ttsky26a/tt_um_immrudul_w7khan` | Mrudul and Wahhaj Demoscene F2025 | ok | 640x480 | 59.5 | 1.2% | 31.2% | 3 | 68 MB |
 | `ttsky26a/tt_um_pettit_galton` | Tiny Galton | ok | 640x480 | 59.9 | 0.025% | 13.8% | 8 | 145 MB |
 | `ttsky26a/tt_um_toivoh_demo_4tile` | Underflow Cubed [TTSKY26a demo competition] | ok | 640x480 | 60.0 | 2.47% | 99.8% | 11 | 263 MB |
 | `ttsky26a/tt_um_bad_ode_plotter_vga` | Bad VGA ODE Plotter | barely-moving | 640x480 | 59.9 | 0.0003% | 0.573% | 3 | 21 MB |
-| `ttsky26a/tt_um_kolontsov_journey` | Journey | ok | 640x480 | 59.5 | 38.7% | 99.8% | 31 | 1221 MB |
+| `ttsky26a/tt_um_kolontsov_journey` | Journey | ok | 640x480 | 59.5 | 38.7% | 99.8% | 31 | 1.2 GB |
 | `ttsky26a/tt_um_scottshuynh_ad_astra` | ASIC Ad Astra | ok | 640x480 | 59.9 | 0.219% | 96.1% | 22 | 141 MB |
-| `ttsky26a/tt_um_demoscenettsky` | Algorithmic Pattern Generator | ok | 640x480 | 59.5 | 16.9% | 99.8% | 64 | 1506 MB |
+| `ttsky26a/tt_um_demoscenettsky` | Algorithmic Pattern Generator | ok | 640x480 | 59.5 | 16.9% | 99.8% | 64 | 1.5 GB |
 | `ttsky26a/tt_um_maze` | Maze | barely-moving | 640x480 | 59.9 | 0.0006% | 0.861% | 5 | 155 MB |
 | `ttsky26a/tt_um_ds_missile_command` | Missile Command | static | 640x480 | 59.5 | 0% | 0% | 2 | 30 MB |
 | `ttsky26a/tt_um_AlephNaNsea_space_time_waves_and_filaments` | Space-Time Waves and Filaments | ok | 640x480 | 59.9 | 12.5% | 99.8% | 4 | 820 MB |
@@ -338,12 +352,12 @@ ever is the share that change at any point in the clip.
 | `ttsky26a/tt_um_prime_quine` | Prime Quine | build-failed |  |  |  |  |  |  |
 | `ttsky26a/tt_um_gerardvt_clash_poc` | Interactive Triangle-Wave Plasma (Clash HDL) | ok | 640x480 | 59.5 | 6.98% | 99.8% | 15 | 250 MB |
 | `ttsky26a/tt_um_AmitChen1415` | Tiny Blackjack | ok | 640x480 | 59.5 | 0.0058% | 13.7% | 4 | 67 MB |
-| `ttsky26a/tt_um_gerardvt_spade_poc` | Interactive XOR Plasma (Spade HDL) | ok | 640x480 | 59.5 | 24.9% | 99.8% | 64 | 1081 MB |
+| `ttsky26a/tt_um_gerardvt_spade_poc` | Interactive XOR Plasma (Spade HDL) | ok | 640x480 | 59.5 | 24.9% | 99.8% | 64 | 1.1 GB |
 | `ttsky26a/tt_um_spacewar_top` | Spacewar | barely-moving | 640x480 | 59.9 | 0.039% | 0.292% | 3 | 22 MB |
 | `ttsky26a/tt_um_toivoh_demo` | Orion Iron Ion [TTSKY26a demo competition] | ok | 640x480 | 60.0 | 4.04% | 99.8% | 10 | 213 MB |
 | `ttsky26a/tt_um_ChristmasTree_MaligayangPasko` | ChristmasTree_MaligayangPasko | ok | 640x480 | 59.9 | 0.118% | 0.118% | 9 | 279 MB |
 | `ttsky26a/tt_um_topadi` | time | barely-moving | 640x480 | 60.0 | 0.0002% | 0.354% | 6 | 22 MB |
-| `ttsky26a/tt_um_siliconimist` | Siliconimist Demoscene | ok | 640x480 | 59.9 | 12.5% | 97.7% | 4 | 1180 MB |
+| `ttsky26a/tt_um_siliconimist` | Siliconimist Demoscene | ok | 640x480 | 59.9 | 12.5% | 97.7% | 4 | 1.2 GB |
 | `ttsky26a/tt_um_madech_8bit_processor_vga` | 8-Bit Processor with VGA | blank | 640x480 | 59.9 | 0% | 0% | 1 | 14 MB |
 | `ttsky26a/tt_um_pong` | Pong | barely-moving | 640x480 | 59.9 | 0.0463% | 1.39% | 5 | 34 MB |
 | `ttsky26a/tt_um_glyph_mode_hd` | Glyph Mode HD | ok | 640x480 | 59.9 | 1.11% | 36.2% | 9 | 842 MB |
@@ -356,7 +370,7 @@ ever is the share that change at any point in the clip.
 | `ttsky26a/tt_um_goose_game` | Goose Game | ok | 640x480 | 59.5 | 0.0223% | 9.74% | 8 | 53 MB |
 | `ttsky26a/tt_um_cmos_inverter` | Reactive Plasma: CMOS Inverter | ok | 640x480 | 59.9 | 0.496% | 5.03% | 12 | 248 MB |
 | `ttsky26a/tt_um_BellaB05_Hearts` | Pink Hearts | ok | 640x480 | 59.9 | 6.21% | 87.2% | 2 | 685 MB |
-| `ttsky26a/tt_um_liamolucko_vga` | VGA demo | ok | 640x480 | 59.9 | 12.5% | 99.6% | 64 | 1051 MB |
+| `ttsky26a/tt_um_liamolucko_vga` | VGA demo | ok | 640x480 | 59.9 | 12.5% | 99.6% | 64 | 1.1 GB |
 | `ttsky26a/tt_um_5482582_cat_vga` | Cat VGA | ok | 640x480 | 59.9 | 0.48% | 90% | 2 | 37 MB |
 | `ttsky26a/tt_um_vga_example_directional_toggle` | Directional toggle of VGA playground example | ok | 640x480 | 59.9 | 3.11% | 99.6% | 32 | 438 MB |
 | `ttsky26a/tt_um_shalindra_vga_rings` | Variable Speed and Colour Select VGA Rings | ok | 640x480 | 59.9 | 12.5% | 99.6% | 16 | 644 MB |
@@ -403,17 +417,17 @@ ever is the share that change at any point in the clip.
 | `ttsky26b/tt_um_Halcy0nnnn` | IEEE_MMU_Cybertron_Logo | static | 640x480 | 59.9 | 0% | 0% | 2 | 36 MB |
 | `ttsky26b/tt_um_Halcy0nnnn_1` | IEEE_MMU_Logo | static | 640x480 | 59.9 | 0% | 0% | 2 | 36 MB |
 | `ttsky26b/tt_um_llhtimlam_movingscreen` | movingscreen | ok | 640x480 | 59.9 | 3.11% | 99.6% | 32 | 440 MB |
-| `ttsky26b/tt_um_harveywong85_harveywilly` | harveywilly | ok | 640x480 | 59.9 | 73.3% | 99.6% | 5 | 1552 MB |
+| `ttsky26b/tt_um_harveywong85_harveywilly` | harveywilly | ok | 640x480 | 59.9 | 73.3% | 99.6% | 5 | 1.6 GB |
 | `ttsky26b/tt_um_theandelope_checkers` | Checkers | ok | 640x480 | 59.9 | 12.5% | 99.6% | 16 | 644 MB |
 | `ttsky26b/tt_um_bytex64_wave_hi` | wave_hi | ok | 640x480 | 59.9 | 3.58% | 36.8% | 13 | 222 MB |
 | `ttsky26b/tt_um_calebulboaca_calebcheckers` | Caleb's Checkers | ok | 640x480 | 59.9 | 11.1% | 99.6% | 5 | 883 MB |
 | `ttsky26b/tt_um_vga_yusefkarim` | ttsky-verilog-yk | ok | 640x480 | 59.9 | 0.327% | 44.8% | 11 | 42 MB |
-| `ttsky26b/tt_um_lfearn_latchup` | Latch Up Tiny Tapeout | ok | 640x480 | 59.9 | 31.4% | 99.6% | 5 | 1015 MB |
+| `ttsky26b/tt_um_lfearn_latchup` | Latch Up Tiny Tapeout | ok | 640x480 | 59.9 | 31.4% | 99.6% | 5 | 1.0 GB |
 | `ttgf26a/tt_um_waferspace_vga_screensaver` | Wafer.space Logo VGA Screensaver | ok | 640x480 | 59.9 | 1.05% | 82.3% | 33 | 72 MB |
 | `ttgf26a/tt_um_happyhop_deadcast2` | happyhop | ok | 640x480 | 59.9 | 0.0815% | 68.9% | 3 | 25 MB |
 | `ttgf26a/tt_um_uacj` | Custom DVD Screensaver for VGA | ok | 640x480 | 59.9 | 0.39% | 86.2% | 2 | 24 MB |
 | `ttgf26a/tt_um_pixel_processor` | Tiny Pixel Processor | build-failed |  |  |  |  |  |  |
-| `ttgf26a/tt_um_algofoogle_dottee` | DOTTEE VGA demo (TTGF26a) | ok | 640x480 | 59.9 | 63.9% | 99.8% | 64 | 1423 MB |
+| `ttgf26a/tt_um_algofoogle_dottee` | DOTTEE VGA demo (TTGF26a) | ok | 640x480 | 59.9 | 63.9% | 99.8% | 64 | 1.4 GB |
 | `ttgf26a/tt_um_danielpenas42` | Ball Display | static | 640x480 | 59.5 | 0% | 0% | 2 | 14 MB |
 | `ttgf26a/tt_um_uacj_bouncing_DVD_screensaver` | Custom DVD Screensaver for VGA | ok | 640x480 | 59.9 | 0.157% | 76.9% | 3 | 37 MB |
 | `ttgf26a/tt_um_logoUACJ_MOGA` | VGA_screensaver_UACJ | ok | 640x480 | 59.9 | 0.667% | 84.4% | 33 | 47 MB |

@@ -1,6 +1,320 @@
 {
-  "generated": "2026-09-15 15:06 UTC",
+  "generated": "2026-09-15 15:11 UTC",
   "count": 440,
+  "stats": {
+    "projects": 440,
+    "with_video": 408,
+    "verdicts": {
+      "ok": 326,
+      "static": 34,
+      "barely-moving": 26,
+      "blank": 18,
+      "no-sync": 12,
+      "build-failed": 9,
+      "skipped": 9,
+      "unstable-sync": 4,
+      "bad-timing": 1,
+      "fetch-failed": 1
+    },
+    "shuttles": {
+      "ttsky26a": 57,
+      "ttihp25a": 46,
+      "ttsky26b": 46,
+      "ttcad25a": 40,
+      "ttihp26a": 31,
+      "tt08": 30,
+      "ttsky25a": 27,
+      "ttihp0p2": 24,
+      "ttsky26c": 21,
+      "ttsky25b": 15,
+      "tt09": 13,
+      "ttihp0p4": 11,
+      "ttgf0p2": 10,
+      "ttgf26a": 10,
+      "tt07": 7,
+      "ttihp0p3": 7,
+      "ttihp25b": 7,
+      "tt05": 6,
+      "tt05of": 6,
+      "tt06": 6,
+      "ttgf0p3": 6,
+      "ttgf0p1": 5,
+      "ttihp0p1": 5,
+      "ttgf26b": 4
+    },
+    "video_bytes": 217816658410,
+    "video_seconds": 24476.9,
+    "modes": {
+      "640x480@60": 380,
+      "640x480@75": 13,
+      "800x600@60": 5,
+      "800x600@56": 4,
+      "800x600@72": 4,
+      "640x480@72": 2
+    },
+    "resolutions": {
+      "640x480": 391,
+      "800x600": 13,
+      "640x504": 4
+    },
+    "frame_rates": {
+      "60": 373,
+      "56": 9,
+      "75": 5,
+      "62": 4,
+      "72": 4,
+      "38": 3,
+      "55": 3,
+      "57": 3,
+      "119": 2,
+      "73": 2
+    },
+    "clocks_per_pixel": {
+      "1.0": 361,
+      "2.0": 27,
+      "1.9062": 9,
+      "4.2667": 5,
+      "0.9524": 3,
+      "1.04": 3
+    },
+    "colours": {
+      "3": 62,
+      "5": 36,
+      "2": 34,
+      "4": 30,
+      "33": 23,
+      "9": 23,
+      "64": 22,
+      "11": 19,
+      "7": 17,
+      "1": 15,
+      "8": 15,
+      "14": 10,
+      "15": 9,
+      "10": 8,
+      "16": 8,
+      "6": 8,
+      "19": 7,
+      "26": 7,
+      "13": 6,
+      "21": 6,
+      "28": 6,
+      "12": 5,
+      "22": 5,
+      "32": 5,
+      "58": 5,
+      "59": 5,
+      "44": 4,
+      "52": 2,
+      "17": 1,
+      "20": 1,
+      "24": 1,
+      "31": 1,
+      "43": 1,
+      "50": 1
+    },
+    "sync_polarity": {
+      "hsync low, vsync low": 236,
+      "hsync high, vsync high": 162,
+      "hsync low, vsync high": 8,
+      "hsync high, vsync low": 2
+    },
+    "design_clock_hz": {
+      "25175000": 230,
+      "25000000": 69,
+      "50400000": 15,
+      "25200000": 13,
+      "50000000": 12,
+      "48000000": 9,
+      "50350000": 8,
+      "31500000": 7,
+      "100000000": 5,
+      "25250000": 5,
+      "36000000": 5,
+      "23000000": 3,
+      "24000000": 3,
+      "64000000": 3,
+      "40000000": 2,
+      "25179000": 1,
+      "4": 1
+    },
+    "tiles": {
+      "1x1": 239,
+      "1x2": 125,
+      "2x2": 45,
+      "3x2": 15,
+      "6x2": 7,
+      "4x2": 4,
+      "8x2": 2,
+      "3x4": 1,
+      "4x4": 1,
+      "6x4": 1
+    },
+    "languages": {
+      "Verilog": 393,
+      "SystemVerilog": 27,
+      "Analog": 8,
+      "HardCaml": 5,
+      "Chisel": 2,
+      "Clash": 1,
+      "Spade": 1,
+      "VHDL": 1,
+      "Verilog, SystemVerilog": 1,
+      "Wokwi": 1
+    },
+    "motion": {
+      "median": 0.007796,
+      "still": 55,
+      "under_0.1_percent": 102,
+      "over_1_percent": 191
+    },
+    "helped_by": {
+      "probed_input": 0,
+      "qspi_memory": 35,
+      "input_script": 49,
+      "gamepad_script": 16
+    },
+    "simulation": {
+      "wall_seconds_total": 249056,
+      "wall_seconds_median": 384.4,
+      "clocks_total": 707837436974,
+      "clocks_per_wall_second_median": 3968207
+    },
+    "liveliest": [
+      {
+        "id": "tt08/tt_um_favoritohjs_scroller",
+        "title": "VGA Scroller",
+        "motion": 0.959322,
+        "ever": 0.995313,
+        "colours": 8
+      },
+      {
+        "id": "ttihp0p2/tt_um_favoritohjs_scroller",
+        "title": "VGA Scroller",
+        "motion": 0.959322,
+        "ever": 0.995313,
+        "colours": 8
+      },
+      {
+        "id": "ttihp25a/tt_um_favoritohjs_scroller",
+        "title": "VGA Scroller",
+        "motion": 0.959322,
+        "ever": 0.995313,
+        "colours": 8
+      },
+      {
+        "id": "ttcad25a/tt_um_favoritohjs_scroller",
+        "title": "VGA Scroller",
+        "motion": 0.959322,
+        "ever": 0.995313,
+        "colours": 8
+      },
+      {
+        "id": "ttsky25b/tt_um_rejunity_vga_playground",
+        "title": "My (S)VGA Playground",
+        "motion": 0.852089,
+        "ever": 0.996357,
+        "colours": 33
+      },
+      {
+        "id": "ttsky26b/tt_um_harveywong85_harveywilly",
+        "title": "harveywilly",
+        "motion": 0.73345,
+        "ever": 0.996357,
+        "colours": 5
+      },
+      {
+        "id": "ttgf0p2/tt_um_rejunity_vga_logo",
+        "title": "VGA Tiny Logo",
+        "motion": 0.682248,
+        "ever": 0.829785,
+        "colours": 64
+      },
+      {
+        "id": "ttihp26a/tt_um_rejunity_vga_logo",
+        "title": "VGA Tiny Logo Roto Zoomer",
+        "motion": 0.681973,
+        "ever": 0.996344,
+        "colours": 64
+      },
+      {
+        "id": "ttgf26a/tt_um_algofoogle_dottee",
+        "title": "DOTTEE VGA demo (TTGF26a)",
+        "motion": 0.639449,
+        "ever": 0.997917,
+        "colours": 64
+      },
+      {
+        "id": "ttsky26a/tt_um_algofoogle_dottee",
+        "title": "DOTTEE VGA demo",
+        "motion": 0.638822,
+        "ever": 0.997917,
+        "colours": 64
+      }
+    ],
+    "slowest": [
+      {
+        "id": "ttsky26b/tt_um_array_mult_vga",
+        "title": "4x4 Array Multiplier with VGA Visualization",
+        "wall_seconds": 5247.4,
+        "clocks_per_wall_second": 286215
+      },
+      {
+        "id": "tt08/tt_um_toivoh_demo_deluxe",
+        "title": "Sequential Shadows Deluxe [TT08 demo competition]",
+        "wall_seconds": 4379.6,
+        "clocks_per_wall_second": 691427
+      },
+      {
+        "id": "ttihp0p2/tt_um_toivoh_demo_deluxe",
+        "title": "Sequential Shadows Deluxe [TT08 demo competition]",
+        "wall_seconds": 4331.7,
+        "clocks_per_wall_second": 699069
+      },
+      {
+        "id": "ttihp25a/tt_um_toivoh_demo_deluxe",
+        "title": "Sequential Shadows Deluxe [TT08 demo competition]",
+        "wall_seconds": 4329.9,
+        "clocks_per_wall_second": 699360
+      },
+      {
+        "id": "ttcad25a/tt_um_toivoh_demo_deluxe",
+        "title": "Sequential Shadows Deluxe [TT08 demo competition]",
+        "wall_seconds": 4312.4,
+        "clocks_per_wall_second": 702203
+      },
+      {
+        "id": "ttihp0p2/tt_um_htfab_bouncy_capsule",
+        "title": "Bouncy Capsule",
+        "wall_seconds": 3645.6,
+        "clocks_per_wall_second": 411970
+      },
+      {
+        "id": "ttcad25a/tt_um_htfab_bouncy_capsule",
+        "title": "Bouncy Capsule",
+        "wall_seconds": 3641.9,
+        "clocks_per_wall_second": 412393
+      },
+      {
+        "id": "tt08/tt_um_htfab_bouncy_capsule",
+        "title": "Bouncy Capsule",
+        "wall_seconds": 3625.0,
+        "clocks_per_wall_second": 414319
+      },
+      {
+        "id": "ttihp25a/tt_um_htfab_bouncy_capsule",
+        "title": "Bouncy Capsule",
+        "wall_seconds": 3607.0,
+        "clocks_per_wall_second": 416386
+      },
+      {
+        "id": "ttsky26a/tt_um_pettit_galton",
+        "title": "Tiny Galton",
+        "wall_seconds": 3436.8,
+        "clocks_per_wall_second": 440062
+      }
+    ]
+  },
   "projects": [
     {
       "id": "tt05/tt_um_wokwi_380409393770716161",

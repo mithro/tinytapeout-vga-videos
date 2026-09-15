@@ -29,7 +29,8 @@ from ttvga import HARNESS_DIR, OVERRIDES_DIR, RESULTS_DIR, TARGETS_JSON
 
 CONFIG_PATH = Path.home() / ".config" / "tinytapeout-vga-videos" / "config.toml"
 FORBIDDEN_USERS = {"root", "tim", "ansible"}
-REMOTE_ROOT = "ttvga"          # relative to the remote user's home
+REMOTE_ROOT = "ttvga"          # working files, relative to the remote user's home
+REMOTE_VIDEOS = "public_html"  # published clips, served at https://<host>/~<user>/
 TOOLS_TOML = Path(__file__).resolve().parent / "tools.toml"
 
 
@@ -115,7 +116,8 @@ R=~/{REMOTE_ROOT}
 [ -f $R/queue-state.json ] && python3 -c "import json;s=json.load(open('$R/queue-state.json'));print('queue:', 'running' if not s['finished'] else 'finished', s['done'], 'done', s['failed'], 'failed', len(s['running']), 'active')" || echo "queue: never run"
 ls $R/work 2>/dev/null | wc -l | sed 's/^/shuttles with work: /'
 find $R/work -name result.json 2>/dev/null | wc -l | sed 's/^/results: /'
-du -sh $R/videos 2>/dev/null || echo "videos: none"
+du -sh ~/{REMOTE_VIDEOS} 2>/dev/null || echo "published videos: none"
+curl -s -o /dev/null -w "published index: HTTP %{{http_code}}\\n" "https://$(hostname -f)/~$(whoami)/index.html" || true
 """
     return ssh(host, script, check=False).returncode
 
@@ -221,7 +223,7 @@ def collect(args: argparse.Namespace) -> int:
             path.write_text(json.dumps(result, indent=2) + "\n")
     if args.images:
         dest = Path(args.images)
-        rsync_from(host, f"{REMOTE_ROOT}/videos/", dest,
+        rsync_from(host, f"{REMOTE_VIDEOS}/", dest,
                    extra=["--include", "*/", "--include", "poster.png", "--include", "contact.png",
                           "--exclude", "*", "--prune-empty-dirs"])
     n = sum(1 for _ in RESULTS_DIR.glob("*/*/result.json"))

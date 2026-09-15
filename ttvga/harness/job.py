@@ -9,7 +9,8 @@ Layout under --root:
     harness/tb.cpp (this directory)
     overrides/<shuttle>/<macro>.json (+ .inputs/.gamepad/.diff), compiled by ttvga/overrides.py
     work/<shuttle>/<macro>/{repo/, build/, build.log, sim.log, timing.json, result.json}
-    videos/<shuttle>/<macro>/{60s.avi, 30s.avi, 10s.avi, poster.png, contact.png}
+    ~/public_html/<shuttle>/<macro>/{60s.avi, 30s.avi, 10s.avi, poster.png, contact.png}
+      (published at https://<host>/~<user>/, see docs/publishing.md)
 
 Standard library only: the host has no packages installed.
 """
@@ -342,6 +343,8 @@ def main() -> int:
     ap.add_argument("--targets", type=Path, required=True)
     ap.add_argument("--id", required=True, help="<shuttle>/<macro>")
     ap.add_argument("--root", type=Path, default=Path.home() / "ttvga")
+    ap.add_argument("--videos", type=Path, default=Path.home() / "public_html",
+                    help="where the clips are published (default ~/public_html)")
     ap.add_argument("--overrides", type=Path, default=None, help="default <root>/overrides")
     ap.add_argument("--seconds", type=float, default=60.0)
     ap.add_argument("--calib-seconds", type=float, default=1.0)
@@ -359,7 +362,7 @@ def main() -> int:
         return 2
     shuttle, macro = target["shuttle"], target["macro"]
     work = args.root / "work" / shuttle / macro
-    videos = args.root / "videos" / shuttle / macro
+    videos = args.videos / shuttle / macro
     tools = {
         "verilator": str(args.root / "tools" / "oss-cad-suite" / "bin" / "verilator"),
         "ffmpeg": str(args.root / "tools" / "ffmpeg" / "bin" / "ffmpeg"),
