@@ -2,21 +2,23 @@
   "id": "ttgf26b/tt_um_LukeSilva_cartrip",
   "shuttle": "ttgf26b",
   "macro": "tt_um_LukeSilva_cartrip",
-  "started": "2026-09-15T05:57:06+00:00",
+  "started": "2026-09-15T13:40:19+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "build",
   "error": "verilator failed",
   "timings": {
-    "fetch": 1.5,
+    "fetch": 1.4,
     "build": 0.2
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
     "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
   },
+  "auto_ui_in": null,
+  "qspi": null,
   "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/LukeSilva/tt-gf-car-trip\n[exit 0]\n\n$ git fetch -q --depth 1 origin 1cf32fa7a117574b4b50956676d9060b185de341\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/oss-cad-suite/bin/verilator --cc --exe --build -j 1 --prefix Vtop --top-module tt_um_LukeSilva_cartrip -Mdir /home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/repo/src -y /home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/repo/src/tt_um_LukeSilva_cartrip.v /home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/repo/src/hvsync_generator.v /home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/repo/src/rom.v\n%Error-MODMISSING: /home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/repo/src/tt_um_LukeSilva_cartrip.v:21:3: Cannot find file containing module: 'tt_gf_cartrip_lg_nameplate'\n   21 |   tt_gf_cartrip_lg_nameplate nameplate();\n      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~\n                   ... For error description see https://verilator.org/warn/MODMISSING?v=5.053\n                   ... Looked in:\n                        /home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/repo/src/tt_gf_cartrip_lg_nameplate\n                        /home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/repo/src/tt_gf_cartrip_lg_nameplate.v\n                        /home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/repo/src/tt_gf_cartrip_lg_nameplate.sv\n                        tt_gf_cartrip_lg_nameplate\n                        tt_gf_cartrip_lg_nameplate.v\n                        tt_gf_cartrip_lg_nameplate.sv\n                        /home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/build/tt_gf_cartrip_lg_nameplate\n                        /home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/build/tt_gf_cartrip_lg_nameplate.v\n                        /home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/build/tt_gf_cartrip_lg_nameplate.sv\n                   ... With current working directory '/home/ttvga/ttvga/work/ttgf26b/tt_um_LukeSilva_cartrip/repo/src'\n%Error: Exiting due to 1 error(s)\n[exit 1]\n",
-  "finished": "2026-09-15T05:57:08+00:00",
+  "finished": "2026-09-15T13:40:21+00:00",
   "verdict": "build-failed",
   "reason": "verilator failed"
 }

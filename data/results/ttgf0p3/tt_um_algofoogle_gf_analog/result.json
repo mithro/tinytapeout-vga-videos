@@ -2,7 +2,7 @@
   "id": "ttgf0p3/tt_um_algofoogle_gf_analog",
   "shuttle": "ttgf0p3",
   "macro": "tt_um_algofoogle_gf_analog",
-  "started": "2026-09-15T05:26:55+00:00",
+  "started": "2026-09-15T13:40:40+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "skipped",
@@ -12,7 +12,9 @@
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
     "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
   },
-  "finished": "2026-09-15T05:26:55+00:00",
+  "auto_ui_in": null,
+  "qspi": null,
+  "finished": "2026-09-15T13:40:40+00:00",
   "verdict": "skipped",
   "reason": "analog project"
 }

@@ -2,7 +2,7 @@
   "id": "ttsky26a/tt_um_algofoogle_vga_matrix_dac",
   "shuttle": "ttsky26a",
   "macro": "tt_um_algofoogle_vga_matrix_dac",
-  "started": "2026-09-15T05:07:34+00:00",
+  "started": "2026-09-15T13:17:27+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "skipped",
@@ -12,7 +12,9 @@
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
     "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
   },
-  "finished": "2026-09-15T05:07:35+00:00",
+  "auto_ui_in": null,
+  "qspi": null,
+  "finished": "2026-09-15T13:17:27+00:00",
   "verdict": "skipped",
   "reason": "analog project"
 }
