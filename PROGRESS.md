@@ -18,6 +18,8 @@ Done:
 - Probed hosts. Only one host gives the orchestrator passwordless sudo, so
   only there can the dedicated user be created without help. One host has a
   changed SSH host key. Details deliberately not recorded here.
+- Created github.com/mithro/tinytapeout-vga-videos with the standard settings
+  (v0.0 tag, merge commits only, protected main, tag ruleset vXX.ZZZ).
 - Wrote the design spec (`docs/superpowers/specs/2026-09-15-vga-videos-design.md`)
   and host setup notes (`docs/host-setup.md`).
 
