@@ -44,8 +44,29 @@ uv run tt-vga report                    # docs/status.md and data/status.json
 
 The queue runs in a `tmux` session on the host and can be stopped and
 restarted at any time; finished projects are skipped unless `--redo` is
-given. Per-project tweaks (clock, inputs, extra Verilator flags, source
-patches, skip) go in `overrides/<shuttle>/<macro>.yaml`.
+given. Per-project tweaks (clock, inputs, gamepad buttons, extra Verilator
+flags, source patches, skip) go in `overrides/<shuttle>/<macro>.yaml`; the
+format is documented at the top of `ttvga/overrides.py`.
+
+When the default all-low inputs give no raster, the job runner probes each
+single `ui_in` bit with a short calibration run and uses the first one that
+syncs (recorded as `auto_ui_in` in the result).
+
+### Asking an agent why a video is wrong
+
+```
+uv run tt-vga collect --host NAME --images tmp/review   # posters and contact sheets for the bundle
+uv run tt-vga diagnose tt06/tt_um_x --images tmp/review # local Claude Code CLI, structured answer
+uv run tt-vga diagnose tt06/tt_um_x --images tmp/review --apply   # also write the proposed override
+```
+
+The agent gets the project's documentation, its sources at the taped-out
+commit, the harness, the result and timing data and the images, and answers
+with a cause (wrong inputs, wrong clock, needs stimulus, static by design,
+not VGA, project broken, harness bug, tool limitation), evidence, and an
+optional override. Every answer is appended to the project's `result.json`
+and its cost to `data/diagnosis_usage.jsonl`. This is used by hand while
+the pipeline is being developed; a pass over every failure is a later step.
 
 ## Decisions so far
 
