@@ -14,7 +14,8 @@ from ttvga.targets import load_targets
 
 STATUS_MD = ROOT / "docs" / "status.md"
 STATUS_JSON = DATA_DIR / "status.json"
-VERDICT_ORDER = ["ok", "static", "partial", "blank", "no-sync", "bad-timing", "unstable-sync", "sim-timeout",
+VERDICT_ORDER = ["ok", "static", "barely-moving", "partial", "blank", "no-sync", "bad-timing", "unstable-sync",
+                 "sim-timeout",
                  "sim-crashed", "build-failed", "fetch-failed", "encode-failed", "error", "skipped"]
 
 

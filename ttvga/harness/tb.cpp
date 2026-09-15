@@ -392,6 +392,10 @@ int main(int argc, char** argv) {
 
     // ---- Capture.
     std::vector<uint8_t> frame(static_cast<size_t>(width) * height * 3, 0);
+    std::vector<uint8_t> prev(frame.size(), 0);      // last frame, to measure motion
+    std::vector<uint8_t> ever(static_cast<size_t>(width) * height, 0);  // pixels that ever changed
+    uint64_t colours = 0;                            // bitmask of the 64 possible RGB values
+    double delta_sum = 0;                            // mean fraction of pixels changing per frame
     std::vector<uint64_t> hashes;
     std::unordered_set<uint64_t> distinct;
     uint64_t frames = 0, uniform_frames = 0, black_frames = 0, short_lines = 0, long_lines = 0, lines_seen = 0;
@@ -406,9 +410,19 @@ int main(int argc, char** argv) {
         uint64_t h = fnv1a(frame.data(), frame.size());
         hashes.push_back(h); distinct.insert(h);
         bool uniform = true;
-        for (size_t i = 3; i < frame.size() && uniform; i += 3)
-            uniform = frame[i] == frame[0] && frame[i + 1] == frame[1] && frame[i + 2] == frame[2];
+        size_t changed = 0;
+        const size_t pixels = static_cast<size_t>(width) * height;
+        for (size_t p = 0; p < pixels; p++) {
+            const uint8_t* c = &frame[p * 3];
+            const uint8_t* q = &prev[p * 3];
+            if (uniform && (c[0] != frame[0] || c[1] != frame[1] || c[2] != frame[2])) uniform = false;
+            // 2 bits per channel came out of the design, so 64 colours are possible.
+            colours |= 1ull << (((c[0] / 85) << 4) | ((c[1] / 85) << 2) | (c[2] / 85));
+            if (c[0] != q[0] || c[1] != q[1] || c[2] != q[2]) { changed++; if (frames) ever[p] = 1; }
+        }
+        if (frames) delta_sum += static_cast<double>(changed) / static_cast<double>(pixels);
         if (uniform) { uniform_frames++; if (frame[0] == 0 && frame[1] == 0 && frame[2] == 0) black_frames++; }
+        prev.swap(frame);
         std::fill(frame.begin(), frame.end(), 0);
         frames++;
     };
@@ -470,6 +484,7 @@ int main(int argc, char** argv) {
                      "  \"mode\": \"%s\",\n  \"clocks_per_pixel\": %.4f,\n  \"width\": %d,\n  \"height\": %d,\n  \"fps\": %.4f,\n"
                      "  \"frames\": %llu,\n  \"target_frames\": %llu,\n  \"distinct_frames\": %zu,\n"
                      "  \"uniform_frames\": %llu,\n  \"black_frames\": %llu,\n"
+                     "  \"colours\": %d,\n  \"mean_frame_delta\": %.6f,\n  \"pixels_ever_changed\": %.6f,\n"
                      "  \"lines_seen\": %llu,\n  \"short_lines\": %llu,\n  \"long_lines\": %llu,\n"
                      "  \"clocks_simulated\": %llu,\n  \"sim_seconds\": %.3f,\n  \"wall_seconds\": %.1f,\n"
                      "  \"clocks_per_wall_second\": %.0f,\n  \"ffmpeg_status\": %d,\n  \"frame_hashes\": [",
@@ -481,6 +496,10 @@ int main(int argc, char** argv) {
                  mode ? mode->name : "unknown", cpp, width, height, fps,
                  (unsigned long long)frames, (unsigned long long)target_frames, distinct.size(),
                  (unsigned long long)uniform_frames, (unsigned long long)black_frames,
+                 __builtin_popcountll(colours),
+                 frames > 1 ? delta_sum / static_cast<double>(frames - 1) : 0.0,
+                 static_cast<double>(std::count(ever.begin(), ever.end(), 1)) /
+                     static_cast<double>(std::max<size_t>(1, ever.size())),
                  (unsigned long long)lines_seen, (unsigned long long)short_lines, (unsigned long long)long_lines,
                  (unsigned long long)clock, clock / opt.clock_hz, wall_s, clock / std::max(wall_s, 1e-3), rc);
     for (size_t i = 0; i < hashes.size(); i++)
@@ -488,8 +507,13 @@ int main(int argc, char** argv) {
     std::fprintf(tj, "]\n}\n");
     std::fclose(tj);
     if (!opt.quiet)
-        std::fprintf(stderr, "tb: %s: %llu frames (%zu distinct, %llu uniform), %llu clocks in %.1fs wall (%.2f Mclk/s)\n",
+        std::fprintf(stderr, "tb: %s: %llu frames (%zu distinct, %llu uniform, %d colours, %.3f%% of pixels change "
+                             "per frame, %.1f%% ever), %llu clocks in %.1fs wall (%.2f Mclk/s)\n",
                      status, (unsigned long long)frames, distinct.size(), (unsigned long long)uniform_frames,
+                     __builtin_popcountll(colours),
+                     100.0 * (frames > 1 ? delta_sum / static_cast<double>(frames - 1) : 0.0),
+                     100.0 * static_cast<double>(std::count(ever.begin(), ever.end(), 1)) /
+                         static_cast<double>(std::max<size_t>(1, ever.size())),
                      (unsigned long long)clock, wall_s, clock / std::max(wall_s, 1e-3) / 1e6);
     return std::strcmp(status, "ok") == 0 ? 0 : 3;
 }

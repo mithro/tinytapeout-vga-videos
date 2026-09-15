@@ -16,6 +16,7 @@ Verdicts, in the order they are checked:
 | encode-failed          | ffmpeg problem                                              |
 | blank                  | nearly every frame is one flat colour                       |
 | static                 | a picture, but it never changes: fine, or needs stimulus    |
+| barely-moving          | a picture that changes too little to be worth watching      |
 | ok                     | stable raster with changing content                         |
 
 `static` and `ok` are both successes; `static` is "successful but may need
@@ -30,7 +31,7 @@ from pathlib import Path
 
 from ttvga import RESULTS_DIR
 
-SUCCESS = {"ok", "static", "partial"}
+SUCCESS = {"ok", "static", "partial", "barely-moving"}
 
 
 def verdict(result: dict) -> tuple[str, str]:
@@ -72,10 +73,21 @@ def verdict(result: dict) -> tuple[str, str]:
         return "blank", f"{uniform}/{frames} frames are {colour} ({mode})"
     # Two distinct frames can already be an animation (Nyan cat alternates two
     # frames), so only a single unchanging frame counts as static.
+    size = f"{timing.get('width')}x{timing.get('height')}"
     if distinct <= 1:
-        return "static", f"{distinct} distinct frame(s) in {frames} ({mode}, {timing.get('width')}x{timing.get('height')})"
-    return "ok", (f"{distinct} distinct frames of {frames} ({mode}, {timing.get('width')}x{timing.get('height')}, "
-                  f"{timing.get('fps', 0):.1f} fps)")
+        return "static", f"{distinct} distinct frame(s) in {frames} ({mode}, {size}, {timing.get('colours', '?')} colours)"
+    delta = timing.get("mean_frame_delta")
+    ever = timing.get("pixels_ever_changed")
+    if delta is not None and delta < 0.0005 and (ever or 0) < 0.02:
+        # A clock digit ticking over is a real picture but a dull video, and a
+        # design stuck on a few pixels looks the same from here: say so.
+        return "barely-moving", (f"{100 * delta:.3f}% of pixels change per frame, {100 * (ever or 0):.2f}% ever "
+                                 f"({mode}, {size}, {timing.get('colours', '?')} colours)")
+    extra = ""
+    if delta is not None:
+        extra = f", {100 * delta:.2f}% of pixels change per frame, {timing.get('colours', '?')} colours"
+    return "ok", (f"{distinct} distinct frames of {frames} ({mode}, {size}, "
+                  f"{timing.get('fps', 0):.1f} fps{extra})")
 
 
 def analyze_all(results_dir: Path = RESULTS_DIR) -> list[dict]:

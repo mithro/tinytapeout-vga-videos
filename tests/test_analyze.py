@@ -44,3 +44,16 @@ def test_content_verdicts():
     static = {"stage": "encode", "error": None, "timing": timing(distinct_frames=1)}
     assert verdict(static)[0] == "static"
     assert verdict({"stage": "encode", "error": "poster failed", "timing": timing()})[0] == "encode-failed"
+
+
+def test_barely_moving_is_told_apart_from_a_lively_picture():
+    dull = {"stage": "encode", "error": None,
+            "timing": timing(distinct_frames=40, mean_frame_delta=0.0001, pixels_ever_changed=0.004, colours=3)}
+    assert verdict(dull)[0] == "barely-moving"
+    lively = {"stage": "encode", "error": None,
+              "timing": timing(distinct_frames=40, mean_frame_delta=0.02, pixels_ever_changed=0.5, colours=12)}
+    assert verdict(lively)[0] == "ok"
+    # A big area changing rarely still counts as a real video.
+    sweep = {"stage": "encode", "error": None,
+             "timing": timing(distinct_frames=40, mean_frame_delta=0.0001, pixels_ever_changed=0.6, colours=8)}
+    assert verdict(sweep)[0] == "ok"
