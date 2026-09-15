@@ -2,23 +2,27 @@
   "id": "ttihp25a/tt_um_gfg_development_tinymandelbrot",
   "shuttle": "ttihp25a",
   "macro": "tt_um_gfg_development_tinymandelbrot",
-  "started": "2026-09-15T04:35:25+00:00",
+  "started": "2026-09-15T10:35:18+00:00",
   "host": "big-storage",
-  "override": null,
+  "override": {
+    "inputs": "tt_um_gfg_development_tinymandelbrot.inputs"
+  },
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.4,
-    "build": 10.4,
-    "simulate": 430.8,
-    "encode": 3.6
+    "fetch": 1.6,
+    "build": 13.3,
+    "simulate": 634.0,
+    "encode": 4.0
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
     "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
   },
+  "auto_ui_in": null,
+  "qspi": null,
   "timing": {
-    "status": "ok",
+    "status": "unstable-sync",
     "clock_hz": 25175000,
     "first_sync_clock": 1066,
     "hsync_active_low": false,
@@ -29,44 +33,44 @@
     "vsync_pulse_clocks": 4224,
     "line_clocks_range": [
       1056,
-      1056
+      1259808
     ],
     "frame_clocks_range": [
       663168,
-      663168
+      1989504
     ],
     "mode": "800x600@60",
     "clocks_per_pixel": 1.0,
     "width": 800,
     "height": 600,
     "fps": 37.9617,
-    "frames": 2278,
+    "frames": 2277,
     "target_frames": 2278,
-    "distinct_frames": 1,
-    "uniform_frames": 2278,
-    "black_frames": 2278,
-    "lines_seen": 1431176,
+    "distinct_frames": 2,
+    "uniform_frames": 2276,
+    "black_frames": 2276,
+    "lines_seen": 1430775,
     "short_lines": 0,
-    "long_lines": 0,
-    "clocks_simulated": 1513354666,
-    "sim_seconds": 60.113,
-    "wall_seconds": 430.8,
-    "clocks_per_wall_second": 3513085,
+    "long_lines": 1,
+    "clocks_simulated": 1514189536,
+    "sim_seconds": 60.147,
+    "wall_seconds": 634.0,
+    "clocks_per_wall_second": 2388339,
     "ffmpeg_status": 0,
-    "frame_hashes_count": 2278
+    "frame_hashes_count": 2277
   },
   "videos": {
     "10s.avi": {
-      "bytes": 2258326,
-      "sha256": "d8c88286b42532c9a358766e608109b31c451a5c8e2d571bbe69d2c2870c57bb"
+      "bytes": 2258778,
+      "sha256": "1f59f62f55e92f3fb52ee238f8aeb4b8c27470009b9f6739fbe0b4514e8deb39"
     },
     "30s.avi": {
-      "bytes": 6757678,
-      "sha256": "4f21c3b2a867b6c57741bc56cd1af85d8950010fff3f51c08c3c90e2a0b3b249"
+      "bytes": 6758130,
+      "sha256": "ab7c9cff6bac46be6b82fcbbc5d0400c7f62ba43305632580e64b9a740b6e32c"
     },
     "60s.avi": {
-      "bytes": 13509670,
-      "sha256": "c2b47a58cd04d92a1211d94f0b7fbe2c645bcc07b727ddaaa877456d670e5a5f"
+      "bytes": 13504194,
+      "sha256": "cf9f5062f9173f4c7fed54f3887ab0035fbaee08fb6b775119bd83b8409e7269"
     },
     "contact.png": {
       "bytes": 8504,
@@ -77,9 +81,9 @@
       "sha256": "93cc0757ea10a8a90e863a82a4d3820e54f7bf4f684265a8321029a1a63d5455"
     }
   },
-  "build_log_tail": "po/src/vga_timing.v /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/repo/src/bit_serial_mult.v /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/repo/src/radix4_serial_mult.v /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/repo/src/mandelbrot_alu.v /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/repo/src/mandelbrot.v /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/repo/src/project.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.369 MB sources in 10 modules, into 0.130 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 10.310 s (elab=0.006, cvt=0.017, bld=10.273); cpu 0.037 s on 1 threads; allocated 21.480 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 2031616: line 1056 clocks, 628 lines, hsync active-high, vsync active-high, mode 800x600@60, 1.000 clk/px, 800x600 @ 37.962 fps\ntb: ok: 2278 frames (1 distinct, 2278 uniform), 1513354666 clocks in 430.8s wall (3.51 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/60s.avi -vf select='not(mod(n\\,142))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T04:42:52+00:00",
-  "verdict": "blank",
-  "reason": "2278/2278 frames are black (800x600@60)"
+  "build_log_tail": "o/src/vga_timing.v /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/repo/src/bit_serial_mult.v /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/repo/src/radix4_serial_mult.v /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/repo/src/mandelbrot_alu.v /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/repo/src/mandelbrot.v /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/repo/src/project.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.511 MB sources in 576 modules, into 0.130 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 13.192 s (elab=0.024, cvt=0.018, bld=13.117); cpu 0.075 s on 1 threads; allocated 28.355 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttihp25a/tt_um_gfg_development_tinymandelbrot/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --inputs /home/ttvga/ttvga/overrides/ttihp25a/tt_um_gfg_development_tinymandelbrot.inputs\ntb: sync at clock 2031616: line 1056 clocks, 628 lines, hsync active-high, vsync active-high, mode 800x600@60, 1.000 clk/px, 800x600 @ 37.962 fps\ntb: unstable-sync: 2277 frames (2 distinct, 2276 uniform), 1514189536 clocks in 634.0s wall (2.39 Mclk/s)\n[exit 3]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/60s.avi -vf select='not(mod(n\\,142))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttihp25a/tt_um_gfg_development_tinymandelbrot/contact.png\n[exit 0]\n",
+  "finished": "2026-09-15T10:46:11+00:00",
+  "verdict": "unstable-sync",
+  "reason": "line 1056 clocks, 628 lines, hsync transitions ?"
 }

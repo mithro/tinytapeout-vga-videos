@@ -17,6 +17,7 @@ Standard library only: the host has no packages installed.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
 import json
 import os
@@ -367,6 +368,14 @@ def main() -> int:
     patch = (args.overrides / shuttle / ov["patch"]) if ov.get("patch") else None
 
     work.mkdir(parents=True, exist_ok=True)
+    # One job per project at a time: two runs sharing a work directory delete
+    # each other's output and both end up with nothing.
+    lock = (work / ".lock").open("w")
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        print(f"job: {target['id']}: already running elsewhere, skipped", file=sys.stderr)
+        return 0
     for old in ("build.log", "sim.log", "result.json"):
         (work / old).unlink(missing_ok=True)
     result = {

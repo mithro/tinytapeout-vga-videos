@@ -2,21 +2,25 @@
   "id": "ttihp0p4/tt_um_snake_game",
   "shuttle": "ttihp0p4",
   "macro": "tt_um_snake_game",
-  "started": "2026-09-15T05:03:51+00:00",
+  "started": "2026-09-15T10:30:31+00:00",
   "host": "big-storage",
-  "override": null,
+  "override": {
+    "inputs": "tt_um_snake_game.inputs"
+  },
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.7,
-    "build": 10.8,
-    "simulate": 469.0,
-    "encode": 3.7
+    "fetch": 1.5,
+    "build": 12.7,
+    "simulate": 605.4,
+    "encode": 4.3
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
     "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
   },
+  "auto_ui_in": null,
+  "qspi": null,
   "timing": {
     "status": "ok",
     "clock_hz": 25175000,
@@ -42,7 +46,7 @@
     "fps": 59.9405,
     "frames": 3596,
     "target_frames": 3596,
-    "distinct_frames": 1,
+    "distinct_frames": 10,
     "uniform_frames": 0,
     "black_frames": 0,
     "lines_seen": 1888362,
@@ -50,36 +54,36 @@
     "long_lines": 0,
     "clocks_simulated": 1512393612,
     "sim_seconds": 60.075,
-    "wall_seconds": 469.0,
-    "clocks_per_wall_second": 3224825,
+    "wall_seconds": 605.3,
+    "clocks_per_wall_second": 2498487,
     "ffmpeg_status": 0,
     "frame_hashes_count": 3596
   },
   "videos": {
     "10s.avi": {
-      "bytes": 6008086,
-      "sha256": "31743c9fd9018cdc37f25d2bdef19393728937454ea32d4f35ab26d77dc764c5"
+      "bytes": 7837234,
+      "sha256": "ce378d979cb8d9f567036f49e8ed56f0e8852c93d61b90be7ac3611d23e33758"
     },
     "30s.avi": {
-      "bytes": 18002882,
-      "sha256": "e06b77afac4bcb2d2206373631268fd87434b8fb936d16c60f8bee09f621d70b"
+      "bytes": 27359352,
+      "sha256": "1ac3ad43395a915ff0ba8249fa39640aeaf594d22be19a8ec11cbaa625450760"
     },
     "60s.avi": {
-      "bytes": 35980070,
-      "sha256": "f428cb6120a2246bcc78af3ec6107f102572e318160185db5b4736255a26610d"
+      "bytes": 56618106,
+      "sha256": "2e563049ae47630035103f321fbd92e399a73677990ad2e0ab6d6e6867b02064"
     },
     "contact.png": {
-      "bytes": 10332,
-      "sha256": "b0857f2bb9d70d8e568ccc68ea512e09f858e82fc9b726c91a0c253023e72865"
+      "bytes": 11599,
+      "sha256": "0688badc65ec0e02a05b67e513d60c386662e597be6bec605665ee534acf263d"
     },
     "poster.png": {
-      "bytes": 4281,
-      "sha256": "1fb398486b630b3e1fc99eb20fe84d297ffabfd496bc8f341e6101c759961ab8"
+      "bytes": 4280,
+      "sha256": "fc917ff57821e4270526fdab0cd4639cf079f419b67129c90dba799b36f390ac"
     }
   },
-  "build_log_tail": "vga/work/ttihp0p4/tt_um_snake_game/repo/src/control.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/snake.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/shiftreg.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/apple.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/random.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/sound.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/vga.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/vga_sync.sv\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.470 MB sources in 13 modules, into 0.295 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 10.726 s (elab=0.011, cvt=0.050, bld=10.649); cpu 0.077 s on 1 threads; allocated 23.727 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (1 distinct, 0 uniform), 1512393612 clocks in 469.0s wall (3.22 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T05:11:57+00:00",
-  "verdict": "static",
-  "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)"
+  "build_log_tail": "ga/work/ttihp0p4/tt_um_snake_game/repo/src/control.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/snake.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/shiftreg.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/apple.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/random.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/sound.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/vga.sv /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/repo/src/vga_sync.sv\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.601 MB sources in 579 modules, into 0.295 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 12.574 s (elab=0.042, cvt=0.083, bld=12.386); cpu 0.188 s on 1 threads; allocated 28.988 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttihp0p4/tt_um_snake_game/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --inputs /home/ttvga/ttvga/overrides/ttihp0p4/tt_um_snake_game.inputs\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (10 distinct, 0 uniform), 1512393612 clocks in 605.3s wall (2.50 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttihp0p4/tt_um_snake_game/contact.png\n[exit 0]\n",
+  "finished": "2026-09-15T10:40:56+00:00",
+  "verdict": "ok",
+  "reason": "10 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)"
 }

@@ -2,21 +2,25 @@
   "id": "ttsky26a/tt_um_maze",
   "shuttle": "ttsky26a",
   "macro": "tt_um_maze",
-  "started": "2026-09-15T05:06:23+00:00",
+  "started": "2026-09-15T10:47:37+00:00",
   "host": "big-storage",
-  "override": null,
+  "override": {
+    "gamepad": "tt_um_maze.gamepad"
+  },
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.2,
-    "build": 10.6,
-    "simulate": 396.4,
-    "encode": 4.9
+    "fetch": 1.3,
+    "build": 11.1,
+    "simulate": 504.0,
+    "encode": 6.3
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
     "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
   },
+  "auto_ui_in": null,
+  "qspi": null,
   "timing": {
     "status": "ok",
     "clock_hz": 25175000,
@@ -42,7 +46,7 @@
     "fps": 59.9405,
     "frames": 3596,
     "target_frames": 3596,
-    "distinct_frames": 1,
+    "distinct_frames": 3,
     "uniform_frames": 0,
     "black_frames": 0,
     "lines_seen": 1888362,
@@ -50,36 +54,36 @@
     "long_lines": 0,
     "clocks_simulated": 1512393611,
     "sim_seconds": 60.075,
-    "wall_seconds": 396.4,
-    "clocks_per_wall_second": 3815799,
+    "wall_seconds": 503.9,
+    "clocks_per_wall_second": 3001113,
     "ffmpeg_status": 0,
     "frame_hashes_count": 3596
   },
   "videos": {
     "10s.avi": {
-      "bytes": 25806886,
-      "sha256": "541b758fc1a4931ce23b957a613d850915f528f7b25803249d86ab22d08e1008"
+      "bytes": 25820716,
+      "sha256": "d7534d4c8f50851787dc7639bcc78e272813867979b64efbb901e1caae9977b4"
     },
     "30s.avi": {
-      "bytes": 77366284,
-      "sha256": "6770ae38949b5b63ab51419d2e2f3771ac7e3c7b8d1473473fb7c0810689fcd9"
+      "bytes": 77444702,
+      "sha256": "4a1c5f68ec19dea072da7c1e902aeed6123178fdfb73419ce6a7abfb0bd030ba"
     },
     "60s.avi": {
-      "bytes": 154640878,
-      "sha256": "f629b41fa2039c45bcfb6dfb3cf323e71e9452f0c8a35922b1c22444b566892b"
+      "bytes": 154798650,
+      "sha256": "38cf8070aff7c4e50c892d32d90e6b31d32a8c7485df5e277029cf545c4b83ee"
     },
     "contact.png": {
-      "bytes": 49668,
-      "sha256": "65447c920715a4284c5ee10cad22ffeb5fdd7d21d20b77e822f594426f864a9a"
+      "bytes": 50874,
+      "sha256": "d0362bb29e25a11f1f10d3eb94f607eee71d9b747d7159e0760d43ee1d02ea99"
     },
     "poster.png": {
-      "bytes": 25603,
-      "sha256": "9512a2cc96eebdc008ae3ec0a66f95e288572745580d2aaba8cf61bf166deb38"
+      "bytes": 25620,
+      "sha256": "16a460d9acf3ebc8fd8c1e08bd2043b4bfe09ff98f081712302cd8e3ab6dfecc"
     }
   },
-  "build_log_tail": "tsky26a/tt_um_maze/repo/src -y /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/repo/src --relative-includes /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/repo/src/tt_um_maze.v /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/repo/src/hsync_generator.v /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/repo/src/gamepad_pmod.v /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/repo/src/maze.v /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/repo/src/prbs_generator.v /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/repo/src/single_port_sync_ram.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_maze/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_maze/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.313 MB sources in 22 modules, into 0.089 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 10.450 s (elab=0.014, cvt=0.026, bld=10.379); cpu 0.070 s on 1 threads; allocated 24.289 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (1 distinct, 0 uniform), 1512393611 clocks in 396.4s wall (3.82 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T05:13:17+00:00",
-  "verdict": "static",
-  "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480)"
+  "build_log_tail": "ttsky26a/tt_um_maze/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/repo/src/tt_um_maze.v /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/repo/src/hsync_generator.v /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/repo/src/gamepad_pmod.v /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/repo/src/maze.v /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/repo/src/prbs_generator.v /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/repo/src/single_port_sync_ram.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_maze/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_maze/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.471 MB sources in 588 modules, into 0.089 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.034 s (elab=0.030, cvt=0.020, bld=10.942); cpu 0.093 s on 1 threads; allocated 31.180 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky26a/tt_um_maze/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --gamepad /home/ttvga/ttvga/overrides/ttsky26a/tt_um_maze.gamepad\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (3 distinct, 0 uniform), 1512393611 clocks in 503.9s wall (3.00 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttsky26a/tt_um_maze/contact.png\n[exit 0]\n",
+  "finished": "2026-09-15T10:56:21+00:00",
+  "verdict": "ok",
+  "reason": "3 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)"
 }

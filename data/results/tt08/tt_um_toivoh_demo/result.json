@@ -2,23 +2,24 @@
   "id": "tt08/tt_um_toivoh_demo",
   "shuttle": "tt08",
   "macro": "tt_um_toivoh_demo",
-  "started": "2026-09-15T05:57:01+00:00",
+  "started": "2026-09-15T10:14:09+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.6,
-    "build": 12.6,
-    "simulate": 1801.4,
-    "encode": 17.5
+    "fetch": 1.5,
+    "build": 14.2,
+    "simulate": 2834.1,
+    "encode": 14.9
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
     "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
   },
+  "auto_ui_in": null,
   "timing": {
-    "status": "sim-timeout",
+    "status": "ok",
     "clock_hz": 50400000,
     "first_sync_clock": 784172,
     "hsync_active_low": false,
@@ -40,46 +41,46 @@
     "width": 640,
     "height": 480,
     "fps": 60.0,
-    "frames": 2983,
+    "frames": 3600,
     "target_frames": 3600,
-    "distinct_frames": 2841,
+    "distinct_frames": 3458,
     "uniform_frames": 143,
     "black_frames": 143,
-    "lines_seen": 1567036,
+    "lines_seen": 1890503,
     "short_lines": 0,
     "long_lines": 0,
-    "clocks_simulated": 2510600787,
-    "sim_seconds": 49.814,
-    "wall_seconds": 1801.3,
-    "clocks_per_wall_second": 1393746,
+    "clocks_simulated": 3028147372,
+    "sim_seconds": 60.082,
+    "wall_seconds": 2834.1,
+    "clocks_per_wall_second": 1068470,
     "ffmpeg_status": 0,
-    "frame_hashes_count": 2983
+    "frame_hashes_count": 3600
   },
   "videos": {
     "10s.avi": {
       "bytes": 37728864,
-      "sha256": "ccd6c8d94e87415d4c873ad4e7c2b0dab20714233b502d81efabf413bc2a5db9"
+      "sha256": "1d2a08b61d818291e9e74168d05b618265162903a1d75f4504983db18a0a04f0"
     },
     "30s.avi": {
       "bytes": 277167150,
-      "sha256": "a3e23eb9ac52b7a769ab94d40fd78b034f2718ec8f236798381b292aac1f6388"
+      "sha256": "08ac4c73bf929ae495296a436965cc1826620befee76dd5c4d1f0bce740458fd"
     },
     "60s.avi": {
-      "bytes": 633073776,
-      "sha256": "ea2da19b4dd1bd94fd7facc0edbaf48d21c2bdd04d7dde0d76b3305e1232b883"
+      "bytes": 847528228,
+      "sha256": "5c4c89f2f8485d85aedd7d2e607138a385809e1b35ea8ef4e26e7c7827a31340"
     },
     "contact.png": {
-      "bytes": 1159614,
-      "sha256": "d0c7618b3bb97d680f7d575bd6c64078d17bd3a20928278ec9e64c42cbec3761"
+      "bytes": 1309008,
+      "sha256": "a5090e0136e9effd8b27bd5319f6ac5cd7961d74170bced8e813ba417d1a0643"
     },
     "poster.png": {
       "bytes": 105006,
       "sha256": "694b9e792ec48ea5094900e60ba6c2e4160f1742d40644147f403495d25d1f28"
     }
   },
-  "build_log_tail": "oivoh_demo/repo/src/demo.sv /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/sine_table_generated3.v /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/logo_table_generated.v /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/graphics.sv /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/raster_scan2.sv /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/tinysynth.sv /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/alu_code_generated.v /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/memories.sv\nmake: Entering directory '/home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.963 MB sources in 584 modules, into 0.620 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 12.426 s (elab=0.077, cvt=0.280, bld=11.975); cpu 0.451 s on 1 threads; allocated 36.254 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/build/Vtop --clock-hz 50400000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 3342336: line 1600 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 2.000 clk/px, 640x480 @ 60.000 fps\ntb: sim-timeout: 2983 frames (2841 distinct, 143 uniform), 2510600787 clocks in 1801.3s wall (1.39 Mclk/s)\n\n[timeout after 1800.0s]\n[finished after SIGTERM, exit 3]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/60s.avi -vf select='not(mod(n\\,186))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T06:27:36+00:00",
-  "verdict": "partial",
-  "reason": "2983 of 3600 frames in 1801 s wall (640x480@60, 1.39 Mclk/s)"
+  "build_log_tail": "oivoh_demo/repo/src/demo.sv /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/sine_table_generated3.v /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/logo_table_generated.v /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/graphics.sv /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/raster_scan2.sv /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/tinysynth.sv /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/alu_code_generated.v /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/repo/src/memories.sv\nmake: Entering directory '/home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.963 MB sources in 584 modules, into 0.620 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 14.044 s (elab=0.101, cvt=0.340, bld=12.264); cpu 0.524 s on 1 threads; allocated 36.281 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/build/Vtop --clock-hz 50400000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/tt08/tt_um_toivoh_demo/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 3342336: line 1600 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 2.000 clk/px, 640x480 @ 60.000 fps\ntb: ok: 3600 frames (3458 distinct, 143 uniform), 3028147372 clocks in 2834.1s wall (1.07 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/60s.avi -vf select='not(mod(n\\,225))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/tt08/tt_um_toivoh_demo/contact.png\n[exit 0]\n",
+  "finished": "2026-09-15T11:01:57+00:00",
+  "verdict": "ok",
+  "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)"
 }
