@@ -162,7 +162,7 @@ def queue(args: argparse.Namespace) -> int:
     host = resolve_host(args.host)
     if args.action == "start":
         jobs = args.jobs or host.jobs
-        q = (f"python3 ~/{REMOTE_ROOT}/harness/queue.py --root ~/{REMOTE_ROOT} --jobs {jobs} "
+        q = (f"python3 ~/{REMOTE_ROOT}/harness/runqueue.py --root ~/{REMOTE_ROOT} --jobs {jobs} "
              f"--seconds {args.seconds} --timeout {args.timeout}")
         if args.only:
             q += f" --only {shlex.quote(args.only)}"
@@ -173,7 +173,7 @@ def queue(args: argparse.Namespace) -> int:
         script = f"""
 set -e
 if tmux has-session -t ttvga 2>/dev/null; then echo "queue already running (tmux session ttvga)"; exit 1; fi
-tmux new-session -d -s ttvga {shlex.quote(q + "; echo QUEUE-EXITED; sleep 60")}
+tmux new-session -d -s ttvga {shlex.quote(q + f" 2>>~/{REMOTE_ROOT}/queue-stderr.log; echo QUEUE-EXITED; sleep 60")}
 sleep 2
 tail -n 3 ~/{REMOTE_ROOT}/queue.log
 """

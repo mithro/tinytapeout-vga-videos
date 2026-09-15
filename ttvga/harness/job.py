@@ -269,6 +269,12 @@ def main() -> int:
             result["timings"][stage] = round(time.monotonic() - t0, 1)
             if error:
                 break
+            if stage == "simulate":
+                # No raster found: there is nothing to encode. Partial or unstable
+                # rasters are still encoded because the clip helps diagnosis.
+                status = json.loads((work / "out" / "timing.json").read_text()).get("status")
+                if status in ("no-sync", "bad-timing"):
+                    break
     timing_path = work / "out" / "timing.json"
     if timing_path.exists():
         shutil.copy(timing_path, work / "timing.json")

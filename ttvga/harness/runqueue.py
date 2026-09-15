@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Run job.py for many projects in parallel. Runs on the host, usually inside tmux.
 
-Usage: queue.py --targets targets.json --root ~/ttvga --jobs 40 [--only tt08,ttsky26a/tt_um_x] [--redo]
+Usage: runqueue.py --targets targets.json --root ~/ttvga --jobs 40 [--only tt08,ttsky26a/tt_um_x] [--redo]
 
 Projects that already have work/<shuttle>/<macro>/result.json are skipped
 unless --redo is given, so the queue can be killed and restarted at any time.

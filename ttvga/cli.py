@@ -11,10 +11,12 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="tt-vga", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
 
-    from ttvga import remote, targets
+    from ttvga import analyze, remote, report, targets
 
     targets.add_parser(sub)
     remote.add_parsers(sub)
+    analyze.add_parser(sub)
+    report.add_parser(sub)
 
     args = parser.parse_args(argv)
     return args.func(args) or 0
