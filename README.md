@@ -20,13 +20,32 @@ Simulations run on a remote host under a dedicated unprivileged user; see
 
 Per project: `60s.avi`, `30s.avi`, `10s.avi` (MJPEG, native resolution,
 the measured frame rate), `poster.png` (a frame from 5 s in) and
-`contact.png` (16 frames across the clip). Examples from the pilot:
+`contact.png` (16 frames across the clip).
 
-| Sushi demo (ttcad25a), contact sheet | Metaballs (tt08), poster | Not a dinosaur (ttihp26a), poster |
+| Maze (ttsky26a), contact sheet | Achtung (ttsky26c), contact sheet |
+| --- | --- |
+| ![](docs/examples/ttsky26a_tt_um_maze_contact.png) | ![](docs/examples/ttsky26c_tt_um_ja_achtung_1x1_contact.png) |
+
+| Metaballs (tt08) | Donut (tt08) | Not a dinosaur (ttihp26a) |
 | --- | --- | --- |
-| ![](docs/examples/ttcad25a_tt_um_sushi_demo_contact.png) | ![](docs/examples/tt08_tt_um_johshoff_metaballs_poster.png) | ![](docs/examples/ttihp26a_tt_um_not_a_dinosaur_poster.png) |
+| ![](docs/examples/tt08_tt_um_johshoff_metaballs_poster.png) | ![](docs/examples/tt08_tt_um_dendraws_donut_poster.png) | ![](docs/examples/ttihp26a_tt_um_not_a_dinosaur_poster.png) |
+
+Achtung keeps its playfield in the QSPI Pmod's PSRAM, so it draws nothing
+until the memory answers; the donut is a still image by design. Telling
+those two cases apart is what the verdicts below are for.
 
 The current counts per verdict and shuttle are in [docs/status.md](docs/status.md).
+
+| Verdict | Meaning |
+| --- | --- |
+| ok | a stable raster with changing content |
+| static | a picture that never changes: by design, or waiting for input |
+| barely-moving | a picture that changes too little to be worth watching |
+| partial | the wall-clock limit cut the clip short |
+| blank | nearly every frame is one flat colour |
+| no-sync, bad-timing, unstable-sync | no usable raster came out of the pins |
+| build-failed, fetch-failed, sim-timeout | the project never got as far as a picture |
+| skipped | analog or Wokwi projects, which this pipeline cannot simulate |
 
 ## Usage
 
