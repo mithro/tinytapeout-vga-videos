@@ -2,21 +2,25 @@
   "id": "ttsky26c/tt_um_ja_achtung_1x1",
   "shuttle": "ttsky26c",
   "macro": "tt_um_ja_achtung_1x1",
-  "started": "2026-09-15T05:28:20+00:00",
+  "started": "2026-09-15T10:23:04+00:00",
   "host": "big-storage",
-  "override": null,
+  "override": {
+    "gamepad": "tt_um_ja_achtung_1x1.gamepad"
+  },
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 2.1,
-    "build": 12.1,
-    "simulate": 657.2,
-    "encode": 2.9
+    "fetch": 1.4,
+    "build": 13.3,
+    "simulate": 125.4,
+    "encode": 0.8
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
     "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
   },
+  "auto_ui_in": null,
+  "qspi": "cs0=0,cs1=6,cs2=7,sck=3,sd0=1,sd1=2,sd2=4,sd3=5",
   "timing": {
     "status": "ok",
     "clock_hz": 50000000,
@@ -40,46 +44,46 @@
     "width": 640,
     "height": 480,
     "fps": 59.5238,
-    "frames": 3571,
-    "target_frames": 3571,
-    "distinct_frames": 1,
-    "uniform_frames": 3571,
-    "black_frames": 3571,
-    "lines_seen": 1875277,
+    "frames": 476,
+    "target_frames": 476,
+    "distinct_frames": 56,
+    "uniform_frames": 3,
+    "black_frames": 3,
+    "lines_seen": 250402,
     "short_lines": 0,
     "long_lines": 0,
-    "clocks_simulated": 3003787210,
-    "sim_seconds": 60.076,
-    "wall_seconds": 657.2,
-    "clocks_per_wall_second": 4570412,
+    "clocks_simulated": 403987210,
+    "sim_seconds": 8.08,
+    "wall_seconds": 125.3,
+    "clocks_per_wall_second": 3223167,
     "ffmpeg_status": 0,
-    "frame_hashes_count": 3571
+    "frame_hashes_count": 476
   },
   "videos": {
     "10s.avi": {
-      "bytes": 2287174,
-      "sha256": "268aa4e94a153ffddebcfe3aaf59fe9b37e990b1292cda9b21b35d392b85ef5d"
+      "bytes": 2838452,
+      "sha256": "03165da11cd1ab78ee416207224619b0347fff7189f581f3c9183d2602c089b0"
     },
     "30s.avi": {
-      "bytes": 6842494,
-      "sha256": "3280129746487d33b40123389890be21fff6d749a115fc2dce99e3156e4cff43"
+      "bytes": 2838452,
+      "sha256": "03165da11cd1ab78ee416207224619b0347fff7189f581f3c9183d2602c089b0"
     },
     "60s.avi": {
-      "bytes": 13675474,
-      "sha256": "271b300d7dc365af8244fca323b5e283a82cb5b3245d62f2bb33cd51eb20c187"
+      "bytes": 2838452,
+      "sha256": "231109287f232666cfec25eb0d9a0971927dcc7c588a709d8728ecae329644b5"
     },
     "contact.png": {
-      "bytes": 5758,
-      "sha256": "ab13cfb0e75353e322778d62284b4403961bbbad0d28fd9e85f925d22b3efa7f"
+      "bytes": 7976,
+      "sha256": "0a3ca7f890ff4c6dfbda7d3b9a3255df81d245830c08f57b9144a0bb285aae90"
     },
     "poster.png": {
-      "bytes": 1966,
-      "sha256": "724319c36b0ea551aa309b59afed2e46bb1255b254b235f4dcfc77d96f1c6931"
+      "bytes": 2606,
+      "sha256": "3f266ec9be0599db7d3aaf4c5b00db17a51829de3fa1c39fd365e8f59d83c9bc"
     }
   },
-  "build_log_tail": "14.2.3)\n    6 | module tt_um_ja_achtung_1x1 (\n      |        ^~~~~~~~~~~~~~~~~~~~\n                       /home/ttvga/ttvga/work/ttsky26c/tt_um_ja_achtung_1x1/repo/src/psram_controller.v:14:8: ... Location of module with timescale\n   14 | module psram_controller #(\n      |        ^~~~~~~~~~~~~~~~\n                       ... For warning description see https://verilator.org/warn/TIMESCALEMOD?v=5.053\n                       ... Use \"/* verilator lint_off TIMESCALEMOD */\" and lint_on around source to disable this message.\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26c/tt_um_ja_achtung_1x1/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26c/tt_um_ja_achtung_1x1/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.240 MB sources in 7 modules, into 0.132 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.948 s (elab=0.006, cvt=0.024, bld=11.905); cpu 0.044 s on 1 threads; allocated 21.691 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky26c/tt_um_ja_achtung_1x1/build/Vtop --clock-hz 50000000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky26c/tt_um_ja_achtung_1x1/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 3342336: line 1600 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 2.000 clk/px, 640x480 @ 59.524 fps\ntb: ok: 3571 frames (1 distinct, 3571 uniform), 3003787210 clocks in 657.2s wall (4.57 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/60s.avi -vf select='not(mod(n\\,223))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T05:39:35+00:00",
-  "verdict": "blank",
-  "reason": "3571/3571 frames are black (640x480@60)"
+  "build_log_tail": ".2.3)\n    6 | module tt_um_ja_achtung_1x1 (\n      |        ^~~~~~~~~~~~~~~~~~~~\n                       /home/ttvga/ttvga/work/ttsky26c/tt_um_ja_achtung_1x1/repo/src/psram_controller.v:14:8: ... Location of module with timescale\n   14 | module psram_controller #(\n      |        ^~~~~~~~~~~~~~~~\n                       ... For warning description see https://verilator.org/warn/TIMESCALEMOD?v=5.053\n                       ... Use \"/* verilator lint_off TIMESCALEMOD */\" and lint_on around source to disable this message.\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26c/tt_um_ja_achtung_1x1/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26c/tt_um_ja_achtung_1x1/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.368 MB sources in 573 modules, into 0.132 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 13.148 s (elab=0.023, cvt=0.026, bld=13.067); cpu 0.081 s on 1 threads; allocated 28.484 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky26c/tt_um_ja_achtung_1x1/build/Vtop --clock-hz 50000000 --seconds 8.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky26c/tt_um_ja_achtung_1x1/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --gamepad /home/ttvga/ttvga/overrides/ttsky26c/tt_um_ja_achtung_1x1.gamepad --qspi cs0=0,cs1=6,cs2=7,sck=3,sd0=1,sd1=2,sd2=4,sd3=5\ntb: QSPI model on uio: cs0=0 sd0=1 sd1=2 sck=3 sd2=4 sd3=5 cs1=6 cs2=7 (flash: test pattern)\ntb: sync at clock 3342336: line 1600 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 2.000 clk/px, 640x480 @ 59.524 fps\ntb: ok: 476 frames (56 distinct, 3 uniform), 403987210 clocks in 125.3s wall (3.22 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 3.998 -i /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/60s.avi -vf select='not(mod(n\\,29))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttsky26c/tt_um_ja_achtung_1x1/contact.png\n[exit 0]\n",
+  "finished": "2026-09-15T10:25:25+00:00",
+  "verdict": "ok",
+  "reason": "56 distinct frames of 476 (640x480@60, 640x480, 59.5 fps)"
 }

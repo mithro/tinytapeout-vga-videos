@@ -89,7 +89,11 @@ def rsync_from(host: Host, source: str, dest: Path, extra: list[str] | None = No
     cmd = ["rsync", "-a", "--mkpath", "-e", " ".join(shlex.quote(c) for c in host.ssh_cmd())]
     cmd += extra or []
     cmd += [f"{host.ssh}:{source}", str(dest)]
-    subprocess.run(cmd, check=True)
+    p = subprocess.run(cmd)
+    # 24 means a file disappeared while copying: a job on the host rewrote its
+    # result. Everything else came across, so collecting during a run is fine.
+    if p.returncode not in (0, 24):
+        raise subprocess.CalledProcessError(p.returncode, cmd)
 
 
 # ---------------------------------------------------------------------------

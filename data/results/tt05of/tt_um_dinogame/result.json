@@ -2,21 +2,24 @@
   "id": "tt05of/tt_um_dinogame",
   "shuttle": "tt05of",
   "macro": "tt_um_dinogame",
-  "started": "2026-09-15T04:13:26+00:00",
+  "started": "2026-09-15T10:18:37+00:00",
   "host": "big-storage",
-  "override": null,
+  "override": {
+    "inputs": "tt_um_dinogame.inputs"
+  },
   "stage": "encode",
   "error": null,
   "timings": {
     "fetch": 1.2,
-    "build": 11.3,
-    "simulate": 340.3,
-    "encode": 5.2
+    "build": 15.8,
+    "simulate": 439.0,
+    "encode": 4.7
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
     "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
   },
+  "auto_ui_in": null,
   "timing": {
     "status": "ok",
     "clock_hz": 25175000,
@@ -42,7 +45,7 @@
     "fps": 59.7518,
     "frames": 3585,
     "target_frames": 3585,
-    "distinct_frames": 1,
+    "distinct_frames": 175,
     "uniform_frames": 0,
     "black_frames": 0,
     "lines_seen": 1886179,
@@ -50,36 +53,36 @@
     "long_lines": 0,
     "clocks_simulated": 1512533917,
     "sim_seconds": 60.081,
-    "wall_seconds": 340.3,
-    "clocks_per_wall_second": 4444992,
+    "wall_seconds": 439.0,
+    "clocks_per_wall_second": 3445309,
     "ffmpeg_status": 0,
     "frame_hashes_count": 3585
   },
   "videos": {
     "10s.avi": {
       "bytes": 7383810,
-      "sha256": "e154aeacf40e5548969808271e7cacd5a04372365b160721dc9565613c91163e"
+      "sha256": "d0fba5db6f227f6d1fbf66073e04feb28e5780cfedfed863ae7ba808cf0ac1f2"
     },
     "30s.avi": {
-      "bytes": 22127720,
-      "sha256": "234f3979c929e6327aa148b88f0c9f475b98ddcd90244b96d6c4ed5ae4ec7d15"
+      "bytes": 23085318,
+      "sha256": "5dc6a82221a988e7d325bec85bdcee635a055599fadc5a685c6d0894544be082"
     },
     "60s.avi": {
-      "bytes": 44237416,
-      "sha256": "9b8750caa3a06c0cc8f364f9b4ec7047dce64f492c60b434cd25436bfb839f2f"
+      "bytes": 47284486,
+      "sha256": "9025ed285304b1539a1ef8223076a4ab07e44775900997cc61bf63f2623d074c"
     },
     "contact.png": {
-      "bytes": 19440,
-      "sha256": "1928c87d18280a1f250a7291def83ff8be96e19b6b4e19bc91e3aadffb3bbc0e"
+      "bytes": 25781,
+      "sha256": "75244e8cadd2fd23a1c29ee86154c37843614f260e39b93967ed806eee48699d"
     },
     "poster.png": {
       "bytes": 8198,
       "sha256": "83050b624dfb715a4226a01b26b9c7f92aeef1ba788fa222f6b05a180165aa67"
     }
   },
-  "build_log_tail": "me/repo/src/dinogame.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/dinosprite.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/jumping.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/rendering.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/rng.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/score.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/scroll.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/vga.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/tt_um_dinogame.sv\nmake: Entering directory '/home/ttvga/ttvga/work/tt05of/tt_um_dinogame/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/tt05of/tt_um_dinogame/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.435 MB sources in 11 modules, into 0.163 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.198 s (elab=0.007, cvt=0.022, bld=11.153); cpu 0.045 s on 1 threads; allocated 22.664 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 801 clocks, 526 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.752 fps\ntb: ok: 3585 frames (1 distinct, 0 uniform), 1512533917 clocks in 340.3s wall (4.44 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T04:19:25+00:00",
-  "verdict": "static",
-  "reason": "1 distinct frame(s) in 3585 (640x480@60, 640x480)"
+  "build_log_tail": "e/repo/src/dinogame.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/dinosprite.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/jumping.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/rendering.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/rng.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/score.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/scroll.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/vga.v /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/repo/src/tt_um_dinogame.sv\nmake: Entering directory '/home/ttvga/ttvga/work/tt05of/tt_um_dinogame/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/tt05of/tt_um_dinogame/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.572 MB sources in 577 modules, into 0.163 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 15.732 s (elab=0.040, cvt=0.036, bld=15.606); cpu 0.126 s on 1 threads; allocated 28.469 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/tt05of/tt_um_dinogame/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --inputs /home/ttvga/ttvga/overrides/tt05of/tt_um_dinogame.inputs\ntb: sync at clock 1703936: line 801 clocks, 526 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.752 fps\ntb: ok: 3585 frames (175 distinct, 0 uniform), 1512533917 clocks in 439.0s wall (3.45 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/tt05of/tt_um_dinogame/contact.png\n[exit 0]\n",
+  "finished": "2026-09-15T10:26:19+00:00",
+  "verdict": "ok",
+  "reason": "175 distinct frames of 3585 (640x480@60, 640x480, 59.8 fps)"
 }
