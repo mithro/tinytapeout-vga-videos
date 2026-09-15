@@ -16,6 +16,18 @@ Status: design under review. See `PROGRESS.md` for the work log and
 Simulations run on a remote host under a dedicated unprivileged user; see
 `docs/host-setup.md`. The repository never names the host.
 
+## What comes out
+
+Per project: `60s.avi`, `30s.avi`, `10s.avi` (MJPEG, native resolution,
+the measured frame rate), `poster.png` (a frame from 5 s in) and
+`contact.png` (16 frames across the clip). Examples from the pilot:
+
+| Sushi demo (ttcad25a), contact sheet | Metaballs (tt08), poster | Not a dinosaur (ttihp26a), poster |
+| --- | --- | --- |
+| ![](docs/examples/ttcad25a_tt_um_sushi_demo_contact.png) | ![](docs/examples/tt08_tt_um_johshoff_metaballs_poster.png) | ![](docs/examples/ttihp26a_tt_um_not_a_dinosaur_poster.png) |
+
+The current counts per verdict and shuttle are in [docs/status.md](docs/status.md).
+
 ## Usage
 
 ```
