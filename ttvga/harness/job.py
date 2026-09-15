@@ -100,13 +100,20 @@ def fetch(target: dict, repo_dir: Path, log: Path, patch: Path | None = None) ->
         if run(cmd, log, cwd=repo_dir, timeout=600, env=env) != 0:
             return f"{cmd[1]} failed"
     # Submodules are rare but do occur (shared libraries of Verilog modules).
-    # Their URLs are often SSH, which would hang waiting for a key: use HTTPS.
+    # Their URLs are usually SSH, which hangs without a key, and an `insteadOf`
+    # rewrite is not enough, so edit .gitmodules itself before fetching.
     if (repo_dir / ".gitmodules").exists():
-        run(["git", "config", "url.https://github.com/.insteadOf", "git@github.com:"], log, cwd=repo_dir, env=env)
-        run(["git", "config", "--add", "url.https://github.com/.insteadOf", "ssh://git@github.com/"], log,
-            cwd=repo_dir, env=env)
+        env["GIT_SSH_COMMAND"] = "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10"
+        listing = subprocess.run(["git", "config", "-f", ".gitmodules", "--get-regexp", r"submodule\..*\.url"],
+                                 cwd=repo_dir, capture_output=True, text=True, env=env)
+        for line in listing.stdout.splitlines():
+            key, _, url = line.partition(" ")
+            https = re.sub(r"^(git@github\.com:|ssh://git@github\.com/)", "https://github.com/", url.strip())
+            if https != url.strip():
+                run(["git", "config", "-f", ".gitmodules", key, https], log, cwd=repo_dir, env=env)
+        run(["git", "submodule", "sync", "-q", "--recursive"], log, cwd=repo_dir, timeout=120, env=env)
         run(["git", "submodule", "update", "-q", "--init", "--depth", "1", "--recursive"], log, cwd=repo_dir,
-            timeout=600, env=env)
+            timeout=300, env=env)
     if patch is not None:
         if run(["git", "apply", "--whitespace=nowarn", str(patch)], log, cwd=repo_dir, timeout=60, env=env) != 0:
             return "patch did not apply"
