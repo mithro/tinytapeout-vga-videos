@@ -41,13 +41,34 @@ Learned:
 - Hooks in this environment block inline python, stderr-to-null redirects
   and some compound commands; write scripts to files instead.
 
+Pilot outcome (5 projects, 60 s each, 5 parallel jobs, 10 minutes wall):
+- 4 of 5 produced good videos first time: Metaballs (800x600@72),
+  VGA donut (48 MHz: 1525 clocks per 640x480 line, so 1.906 clocks per
+  pixel; the first decoder only handled integer ratios and produced a
+  stretched 1342-wide frame, now fixed by fractional resampling),
+  sushi demo, not-a-dinosaur (runs without input, needs a jump button
+  for a more interesting clip: "needs-stimulus").
+- Rebecca's VGA timing experiments needed a write pulse on ui_in[7];
+  with `overrides/tt09/...yaml` it is a stable 640x480@60 with the pattern
+  changing at 20 s and 40 s.
+- Speed: 6.7 to 7.1 M clocks per wall second per job; 60 s of video takes
+  4 to 10 minutes of wall time per project. 440 projects on 40 jobs is
+  about 1.5 hours.
+- `tt-vga diagnose` tried once on the timing experiments (before the
+  override was applied): model claude-sonnet-5, 8 turns, $0.19, correct
+  cause (wrong-inputs) and a usable override. Note it could read the
+  repo's existing override because the CLI runs inside the repo; for a
+  fair test hide it or run before writing one.
+- Overrides moved to YAML compiled on the laptop (seconds, button names)
+  and Gamepad Pmod emulation added to tb.cpp; not yet exercised.
+- Example images committed under `docs/examples/`.
+
 Next:
-- Read the pilot results (`tt-vga collect`, `analyze`, `report`), commit
-  `docs/status.md`, copy one poster and contact sheet into `docs/examples/`.
-- Fix whatever the pilot shows, then run all 440 with 40 jobs.
-- Add the Gamepad Pmod emulator and the input-script expansion in job.py.
-- Write `tt-vga diagnose` (ad hoc use only until the owner agrees to a
-  full automated pass).
+- Full run of all 440 targets with 40 jobs; collect, analyze, report.
+- Then review verdict groups: no-sync and blank first (most likely
+  wrong-inputs / wrong-clock), static (stimulus), build-failed (source
+  layout, SystemVerilog, includes).
+- Exercise the gamepad emulation on a gamepad game.
 
 ## 2026-09-15: research and design
 

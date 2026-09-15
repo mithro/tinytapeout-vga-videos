@@ -276,22 +276,24 @@ int main(int argc, char** argv) {
     const uint64_t line_clocks = hs.period;
     pad_line_clocks = line_clocks;
     const int lines = static_cast<int>((vs.period + line_clocks / 2) / line_clocks);
+    // Match a mode by line count, then by the sync pulse's share of the line. The
+    // clocks-per-pixel ratio may be fractional: a 48 MHz design producing 640x480
+    // timing has 1525 clocks per 800-pixel line, so pixels are resampled.
     const Mode* mode = nullptr;
-    int cpp = 1;  // clocks per pixel
+    double cpp = 1.0;  // clocks per pixel
     double best = 0.03;
     for (const Mode& m : MODES) {
-        for (int k = 1; k <= 4; k++) {
-            double eh = std::fabs(static_cast<double>(line_clocks) - static_cast<double>(m.line_px) * k) / (m.line_px * k);
-            double ev = std::fabs(static_cast<double>(lines) - m.lines) / m.lines;
-            // The sync pulse width breaks ties between modes with similar totals (800x600@60 vs @75).
-            double ep = std::fabs(static_cast<double>(hs.pulse) - static_cast<double>(m.hpulse) * k) / (m.line_px * k);
-            double e = std::max(eh, ev) + ep * 0.1;
-            if (e < best) { best = e; mode = &m; cpp = k; }
-        }
+        double k = static_cast<double>(line_clocks) / m.line_px;
+        if (k < 0.9 || k > 4.5) continue;
+        double ev = std::fabs(static_cast<double>(lines) - m.lines) / m.lines;
+        double ep = std::fabs(static_cast<double>(hs.pulse) / line_clocks - static_cast<double>(m.hpulse) / m.line_px);
+        double e = ev + ep;
+        if (e < best) { best = e; mode = &m; cpp = k; }
     }
     int width, height, hback, vback;
     if (mode) {
         width = mode->width; height = mode->height; hback = mode->hback; vback = mode->vback;
+        if (std::fabs(cpp - std::round(cpp)) < 0.01) cpp = std::round(cpp);
     } else {
         // Unknown mode: keep everything after the sync pulses at one clock per pixel.
         width = static_cast<int>(line_clocks - hs.pulse);
@@ -304,7 +306,7 @@ int main(int argc, char** argv) {
     const uint64_t clock_limit = clock + static_cast<uint64_t>((opt.seconds + 2.5 / fps) * opt.clock_hz);
 
     if (!opt.quiet)
-        std::fprintf(stderr, "tb: sync at clock %llu: line %llu clocks, %d lines, hsync %s, vsync %s, mode %s, %d clk/px, %dx%d @ %.3f fps\n",
+        std::fprintf(stderr, "tb: sync at clock %llu: line %llu clocks, %d lines, hsync %s, vsync %s, mode %s, %.3f clk/px, %dx%d @ %.3f fps\n",
                      (unsigned long long)clock, (unsigned long long)line_clocks, lines,
                      hs.active_low ? "active-low" : "active-high", vs.active_low ? "active-low" : "active-high",
                      mode ? mode->name : "unknown", cpp, width, height, fps);
@@ -326,7 +328,8 @@ int main(int argc, char** argv) {
     uint64_t line_min = UINT64_MAX, line_max = 0, frame_min = UINT64_MAX, frame_max = 0;
     bool in_frame = false, prev_h = false, prev_v = false;
     uint64_t line_start = 0, last_line_start = 0, last_frame_start = 0;
-    int y = -1;
+    int y = -1, last_px = -1;
+    const double half = cpp / 2.0;   // sample in the middle of each pixel period
 
     auto emit_frame = [&]() {
         std::fwrite(frame.data(), 1, frame.size(), ff);
@@ -363,12 +366,15 @@ int main(int argc, char** argv) {
                 else if (d > line_clocks + line_clocks / 50) long_lines++;
             }
             last_line_start = line_start = clock;
+            last_px = -1;
             if (in_frame) y++;
         }
         if (in_frame && y >= 0 && !h_pulse) {
-            const uint64_t x_clock = clock - line_start;
-            if (x_clock % cpp == static_cast<uint64_t>(cpp / 2)) {
-                const int px = static_cast<int>(x_clock / cpp) - hback;
+            const double x_clock = static_cast<double>(clock - line_start);
+            const int pixel = static_cast<int>((x_clock + half) / cpp);
+            if (pixel != last_px) {           // first clock inside a new pixel period
+                last_px = pixel;
+                const int px = pixel - hback;
                 const int py = y - vback;
                 if (px >= 0 && px < width && py >= 0 && py < height) {
                     uint8_t* p = &frame[(static_cast<size_t>(py) * width + px) * 3];
@@ -391,7 +397,7 @@ int main(int argc, char** argv) {
                      "  \"hsync_active_low\": %s,\n  \"vsync_active_low\": %s,\n"
                      "  \"line_clocks\": %llu,\n  \"lines\": %d,\n  \"hsync_pulse_clocks\": %llu,\n  \"vsync_pulse_clocks\": %llu,\n"
                      "  \"line_clocks_range\": [%llu, %llu],\n  \"frame_clocks_range\": [%llu, %llu],\n"
-                     "  \"mode\": \"%s\",\n  \"clocks_per_pixel\": %d,\n  \"width\": %d,\n  \"height\": %d,\n  \"fps\": %.4f,\n"
+                     "  \"mode\": \"%s\",\n  \"clocks_per_pixel\": %.4f,\n  \"width\": %d,\n  \"height\": %d,\n  \"fps\": %.4f,\n"
                      "  \"frames\": %llu,\n  \"target_frames\": %llu,\n  \"distinct_frames\": %zu,\n"
                      "  \"uniform_frames\": %llu,\n  \"black_frames\": %llu,\n"
                      "  \"lines_seen\": %llu,\n  \"short_lines\": %llu,\n  \"long_lines\": %llu,\n"

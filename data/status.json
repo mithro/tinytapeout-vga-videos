@@ -1,0 +1,67 @@
+{
+  "attempted": 5,
+  "generated": "2026-09-15 04:10 UTC",
+  "projects": {
+    "tt08/tt_um_a1k0n_vgadonut": {
+      "reason": "3597 distinct frames of 3597 (unknown, 1342x523, 60.0 fps)",
+      "verdict": "ok",
+      "videos": [
+        "10s.avi",
+        "30s.avi",
+        "60s.avi",
+        "contact.png",
+        "poster.png"
+      ]
+    },
+    "tt08/tt_um_johshoff_metaballs": {
+      "reason": "4325 distinct frames of 4331 (800x600@72, 800x600, 72.2 fps)",
+      "verdict": "ok",
+      "videos": [
+        "10s.avi",
+        "30s.avi",
+        "60s.avi",
+        "contact.png",
+        "poster.png"
+      ]
+    },
+    "tt09/tt_um_rebeccargb_vga_timing_experiments": {
+      "reason": "5 distinct frames of 2697 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
+      "videos": [
+        "10s.avi",
+        "30s.avi",
+        "60s.avi",
+        "contact.png",
+        "poster.png"
+      ]
+    },
+    "ttcad25a/tt_um_sushi_demo": {
+      "reason": "641 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps)",
+      "verdict": "ok",
+      "videos": [
+        "10s.avi",
+        "30s.avi",
+        "60s.avi",
+        "contact.png",
+        "poster.png"
+      ]
+    },
+    "ttihp26a/tt_um_not_a_dinosaur": {
+      "reason": "152 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "verdict": "ok",
+      "videos": [
+        "10s.avi",
+        "30s.avi",
+        "60s.avi",
+        "contact.png",
+        "poster.png"
+      ]
+    }
+  },
+  "succeeded": 5,
+  "targets": 440,
+  "verdicts": {
+    "ok": 5,
+    "pending": 435
+  }
+}
