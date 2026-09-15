@@ -1,0 +1,7 @@
+# Derived from the project's own pin names by `tt-vga stimulus`.
+# ui[3] is a UART receive pin, held high so the line reads as idle.
+# Correct it by hand if the design wants something else.
+
+inputs:
+  - at: 0
+    ui_in: 8

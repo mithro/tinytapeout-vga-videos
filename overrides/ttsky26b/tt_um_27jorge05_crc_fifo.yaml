@@ -1,0 +1,11 @@
+# Derived from the project's own pin names by `tt-vga stimulus`.
+# One pin at a time, from the pin names: start ui[6].
+# Correct it by hand if the design wants something else.
+
+inputs:
+  - at: 0
+    ui_in: 0
+  - at: 3.0s
+    ui_in: 64
+  - at: 3.05s
+    ui_in: 0
