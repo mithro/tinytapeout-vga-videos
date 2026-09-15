@@ -207,8 +207,14 @@ def collect(args: argparse.Namespace) -> int:
     host = resolve_host(args.host)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     rsync_from(host, f"{REMOTE_ROOT}/work/", RESULTS_DIR,
-               extra=["--include", "*/", "--include", "result.json", "--include", "timing.json",
-                      "--exclude", "*", "--prune-empty-dirs"])
+               extra=["--include", "*/", "--include", "result.json", "--exclude", "*", "--prune-empty-dirs"])
+    # The per-frame hash list is only useful on the host; keep the committed results small.
+    for path in RESULTS_DIR.glob("*/*/result.json"):
+        result = json.loads(path.read_text())
+        timing = result.get("timing") or {}
+        if "frame_hashes" in timing:
+            timing["frame_hashes_count"] = len(timing.pop("frame_hashes"))
+            path.write_text(json.dumps(result, indent=2) + "\n")
     if args.images:
         dest = Path(args.images)
         rsync_from(host, f"{REMOTE_ROOT}/videos/", dest,

@@ -1,4 +1,3 @@
 cache/
-results/
-!results/.gitkeep
 overrides-compiled/
+diagnosis/
