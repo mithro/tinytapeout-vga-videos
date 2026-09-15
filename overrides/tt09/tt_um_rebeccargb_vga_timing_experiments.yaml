@@ -1,0 +1,4 @@
+# The design only starts generating sync after a write pulse on ui_in[7]
+# with ui_in[3:0] = 0 (register 0 = reset to the 640x480@60 defaults).
+# See the project's "how to test".
+inputs: tt_um_rebeccargb_vga_timing_experiments.inputs
