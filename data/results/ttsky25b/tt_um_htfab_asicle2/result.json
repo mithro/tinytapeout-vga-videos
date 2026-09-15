@@ -2,17 +2,18 @@
   "id": "ttsky25b/tt_um_htfab_asicle2",
   "shuttle": "ttsky25b",
   "macro": "tt_um_htfab_asicle2",
-  "started": "2026-09-15T10:43:54+00:00",
+  "started": "2026-09-15T11:18:35+00:00",
   "host": "big-storage",
   "override": {
     "gamepad": "tt_um_htfab_asicle2.gamepad"
   },
-  "stage": "simulate",
-  "error": "model exited 0 without timing.json",
+  "stage": "encode",
+  "error": null,
   "timings": {
-    "fetch": 1.2,
-    "build": 13.5,
-    "simulate": 833.8
+    "fetch": 1.3,
+    "build": 10.6,
+    "simulate": 520.3,
+    "encode": 3.6
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -20,31 +21,69 @@
   },
   "auto_ui_in": null,
   "qspi": "cs0=0,cs1=6,cs2=7,sck=3,sd0=1,sd1=2,sd2=4,sd3=5",
+  "timing": {
+    "status": "ok",
+    "clock_hz": 25175000,
+    "first_sync_clock": 392011,
+    "hsync_active_low": false,
+    "vsync_active_low": false,
+    "line_clocks": 800,
+    "lines": 525,
+    "hsync_pulse_clocks": 96,
+    "vsync_pulse_clocks": 1600,
+    "line_clocks_range": [
+      800,
+      800
+    ],
+    "frame_clocks_range": [
+      420000,
+      420000
+    ],
+    "mode": "640x480@60",
+    "clocks_per_pixel": 1.0,
+    "width": 640,
+    "height": 480,
+    "fps": 59.9405,
+    "frames": 3596,
+    "target_frames": 3596,
+    "distinct_frames": 2,
+    "uniform_frames": 0,
+    "black_frames": 0,
+    "lines_seen": 1888362,
+    "short_lines": 0,
+    "long_lines": 0,
+    "clocks_simulated": 1512393611,
+    "sim_seconds": 60.075,
+    "wall_seconds": 520.3,
+    "clocks_per_wall_second": 2906914,
+    "ffmpeg_status": 0,
+    "frame_hashes_count": 3596
+  },
   "videos": {
     "10s.avi": {
-      "bytes": 10636486,
-      "sha256": "6959aec270107ff95e23eb33ebb1029f4e96798e98f5e01c52b35cf37e0bb144"
+      "bytes": 10636414,
+      "sha256": "6e2ce66fc85c280361982e77fdd9ebca0ec603b91c3044019bef3f09898c171c"
     },
     "30s.avi": {
-      "bytes": 31880368,
-      "sha256": "1a94f9c6176b46ae89e05ac5ed01f5e137776344d96abd6ad1eb76e6ea19a88c"
+      "bytes": 31870054,
+      "sha256": "3861f74e0a53be46a087ca631801ed964ca16440050ff4d40a033d69b15d4060"
     },
     "60s.avi": {
-      "bytes": 63719614,
-      "sha256": "2e3f505ff519576f4ce276149d7a138abc2aa6d0d8bec0e97a065b4e614445a4"
+      "bytes": 63696988,
+      "sha256": "f048d2fc917dfda2c868f6cb27a7d872c9a3ce0d0d726209f894870bdf14a6b9"
     },
     "contact.png": {
-      "bytes": 22051,
-      "sha256": "18bba14af0464010250959e336eb0a47010c5f8508316d826b38b696249622df"
+      "bytes": 22695,
+      "sha256": "397e7455b399176805b92dade6b6a1a2ee58da9d4db04c24a33115474333e1da"
     },
     "poster.png": {
       "bytes": 8460,
       "sha256": "b4dda9981a252f889eabc8bd55cde57fc6593442102199cce2609657a186bfcd"
     }
   },
-  "build_log_tail": "v /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/qspi_fifo.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/qspi_top.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/game_board.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/game_feedback.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/game_logic.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/game_top.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/project.sv\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.847 MB sources in 585 modules, into 0.321 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 13.433 s (elab=0.031, cvt=0.062, bld=13.295); cpu 0.138 s on 1 threads; allocated 29.586 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --gamepad /home/ttvga/ttvga/overrides/ttsky25b/tt_um_htfab_asicle2.gamepad --qspi cs0=0,cs1=6,cs2=7,sck=3,sd0=1,sd1=2,sd2=4,sd3=5\ntb: QSPI model on uio: cs0=0 sd0=1 sd1=2 sck=3 sd2=4 sd3=5 cs1=6 cs2=7 (flash: test pattern)\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (2 distinct, 0 uniform), 1512393611 clocks in 833.8s wall (1.81 Mclk/s)\n[exit 0]\n",
-  "finished": "2026-09-15T10:58:03+00:00",
-  "verdict": "sim-crashed",
-  "reason": "model exited 0 without timing.json"
+  "build_log_tail": "v /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/qspi_fifo.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/qspi_top.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/game_board.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/game_feedback.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/game_logic.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/game_top.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/repo/src/project.sv\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.847 MB sources in 585 modules, into 0.321 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 10.413 s (elab=0.026, cvt=0.057, bld=10.282); cpu 0.130 s on 1 threads; allocated 29.613 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky25b/tt_um_htfab_asicle2/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --gamepad /home/ttvga/ttvga/overrides/ttsky25b/tt_um_htfab_asicle2.gamepad --qspi cs0=0,cs1=6,cs2=7,sck=3,sd0=1,sd1=2,sd2=4,sd3=5\ntb: QSPI model on uio: cs0=0 sd0=1 sd1=2 sck=3 sd2=4 sd3=5 cs1=6 cs2=7 (flash: test pattern)\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (2 distinct, 0 uniform), 1512393611 clocks in 520.3s wall (2.91 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky25b/tt_um_htfab_asicle2/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttsky25b/tt_um_htfab_asicle2/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky25b/tt_um_htfab_asicle2/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttsky25b/tt_um_htfab_asicle2/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttsky25b/tt_um_htfab_asicle2/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttsky25b/tt_um_htfab_asicle2/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky25b/tt_um_htfab_asicle2/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttsky25b/tt_um_htfab_asicle2/contact.png\n[exit 0]\n",
+  "finished": "2026-09-15T11:27:32+00:00",
+  "verdict": "ok",
+  "reason": "2 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)"
 }

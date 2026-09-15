@@ -143,8 +143,34 @@ override supplies a file, so flash-backed projects (photo frame, RLE
 video player) will show that pattern rather than their intended artwork.
 Re-running all 35.
 
+State after the stimulus, QSPI and clobber-repair batches: 341 ok, 32
+static, 380 with videos of 440. The stimulus batch alone turned 38 of 103
+into ok; the QSPI model fixed tiny_shader (4 shuttles), atari2600 (2),
+asicle2 (3), achtung (2), oguz, raybox-zero.
+
+Two lessons worth keeping:
+- Running two batches over overlapping projects let two jobs share a work
+  directory and delete each other's output ("model exited 0 without
+  timing.json", 16 projects). Each job now takes an exclusive lock.
+- `tt-vga collect` failed while jobs were running because rsync exits 24
+  when a file disappears mid-copy. That code is now accepted.
+
+The testbench now measures how much a clip moves: how many of the 64
+possible colours appear, what fraction of pixels change per frame, and
+what fraction ever change. A new verdict "barely-moving" separates a
+design stuck on a few pixels from a real animation, which is what
+"verify a useful video" needs. Everything measured before that change
+lacks the numbers, so a full re-run of all 440 with the final harness
+gives one consistent dataset.
+
+Still blank and content-dependent: the RLE video player (4 shuttles),
+TinyGPU (2), the 8-bit processor, sandsim, badGPU. They read artwork or
+programs from flash that nobody has; the modelled flash holds a test
+pattern. Supplying a real image per project is an override away
+(`flash: image.bin`) but needs the project's own format.
+
 Next:
-- Collect the four batches (slow, submodule, stimulus, QSPI), report, commit.
+- Full re-run of all 440 with the final harness (40 jobs, 3 hour limit).
 - Judge the stimulus results: did pressing buttons produce motion?
 - Remaining build failures need per-project work: generated ROM macros
   (atari2600), GDS-only macros (cartrip), VHDL (pixel_processor), a
