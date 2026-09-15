@@ -1,9 +1,9 @@
 {
   "attempted": 440,
-  "generated": "2026-09-15 11:35 UTC",
+  "generated": "2026-09-15 15:06 UTC",
   "projects": {
     "tt05/tt_um_algofoogle_vga_spi_rom": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 5 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -14,7 +14,7 @@
       ]
     },
     "tt05/tt_um_dinogame": {
-      "reason": "175 distinct frames of 3585 (640x480@60, 640x480, 59.8 fps)",
+      "reason": "175 distinct frames of 3585 (640x480@60, 640x480, 59.8 fps, 0.01% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -25,7 +25,7 @@
       ]
     },
     "tt05/tt_um_flappy_vga_cutout1": {
-      "reason": "34 distinct frames of 3599 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "34 distinct frames of 3599 (640x480@60, 640x480, 60.0 fps, 0.02% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -36,7 +36,7 @@
       ]
     },
     "tt05/tt_um_no_time_for_squares_tommythorn": {
-      "reason": "61 distinct frames of 4500 (640x480@75, 640x480, 75.0 fps)",
+      "reason": "61 distinct frames of 4500 (640x480@75, 640x480, 75.0 fps, 0.00% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -47,8 +47,8 @@
       ]
     },
     "tt05/tt_um_tomkeddie_a": {
-      "reason": "636 distinct frames of 3736 (640x480@60, 640x504, 62.3 fps)",
-      "verdict": "ok",
+      "reason": "0.003% of pixels change per frame, 0.57% ever (640x480@60, 640x504, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -58,7 +58,7 @@
       ]
     },
     "tt05/tt_um_wokwi_380409393770716161": {
-      "reason": "1 distinct frame(s) in 3624 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3624 (640x480@60, 640x480, 3 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -69,7 +69,7 @@
       ]
     },
     "tt05of/tt_um_algofoogle_vga_spi_rom": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 5 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -80,7 +80,7 @@
       ]
     },
     "tt05of/tt_um_dinogame": {
-      "reason": "175 distinct frames of 3585 (640x480@60, 640x480, 59.8 fps)",
+      "reason": "175 distinct frames of 3585 (640x480@60, 640x480, 59.8 fps, 0.01% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -91,7 +91,7 @@
       ]
     },
     "tt05of/tt_um_flappy_vga_cutout1": {
-      "reason": "34 distinct frames of 3599 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "34 distinct frames of 3599 (640x480@60, 640x480, 60.0 fps, 0.02% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -102,7 +102,7 @@
       ]
     },
     "tt05of/tt_um_no_time_for_squares_tommythorn": {
-      "reason": "61 distinct frames of 4500 (640x480@75, 640x480, 75.0 fps)",
+      "reason": "61 distinct frames of 4500 (640x480@75, 640x480, 75.0 fps, 0.00% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -113,8 +113,8 @@
       ]
     },
     "tt05of/tt_um_tomkeddie_a": {
-      "reason": "636 distinct frames of 3736 (640x480@60, 640x504, 62.3 fps)",
-      "verdict": "ok",
+      "reason": "0.003% of pixels change per frame, 0.57% ever (640x480@60, 640x504, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -124,7 +124,7 @@
       ]
     },
     "tt05of/tt_um_wokwi_380409393770716161": {
-      "reason": "1 distinct frame(s) in 3624 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3624 (640x480@60, 640x480, 3 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -145,7 +145,7 @@
       "videos": []
     },
     "tt06/tt_um_histefan_top": {
-      "reason": "189 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "189 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps, 0.00% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -156,7 +156,7 @@
       ]
     },
     "tt06/tt_um_tiny_shader_mole99": {
-      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.49% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -178,7 +178,7 @@
       ]
     },
     "tt06/tt_um_tomkeddie_a": {
-      "reason": "2427 distinct frames of 3576 (640x480@60, 640x480, 59.6 fps)",
+      "reason": "2427 distinct frames of 3576 (640x480@60, 640x480, 59.6 fps, 0.00% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -200,7 +200,7 @@
       ]
     },
     "tt07/tt_um_algofoogle_raybox_zero": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 3 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -222,7 +222,7 @@
       ]
     },
     "tt07/tt_um_rejunity_vga": {
-      "reason": "1024 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "1024 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 11.15% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -233,7 +233,7 @@
       ]
     },
     "tt07/tt_um_tinytapeout_dvd_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.32% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -244,7 +244,7 @@
       ]
     },
     "tt07/tt_um_vga_perlin": {
-      "reason": "82 distinct frames of 4369 (640x480@72, 640x480, 72.8 fps)",
+      "reason": "82 distinct frames of 4369 (640x480@72, 640x480, 72.8 fps, 6.25% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -266,7 +266,7 @@
       ]
     },
     "tt08/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -277,7 +277,7 @@
       ]
     },
     "tt08/tt_um_MichaelBell_canon": {
-      "reason": "1986 distinct frames of 3375 (800x600@56, 800x600, 56.2 fps)",
+      "reason": "1986 distinct frames of 3375 (800x600@56, 800x600, 56.2 fps, 6.68% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -288,7 +288,7 @@
       ]
     },
     "tt08/tt_um_MichaelBell_mandelbrot": {
-      "reason": "103 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps)",
+      "reason": "103 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps, 10.21% of pixels change per frame, 15 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -299,7 +299,7 @@
       ]
     },
     "tt08/tt_um_a1k0n_demo": {
-      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps, 39.53% of pixels change per frame, 58 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -310,7 +310,7 @@
       ]
     },
     "tt08/tt_um_a1k0n_nyancat": {
-      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 47.63% of pixels change per frame, 26 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -321,7 +321,7 @@
       ]
     },
     "tt08/tt_um_a1k0n_vgadonut": {
-      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps, 22.85% of pixels change per frame, 14 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -337,7 +337,7 @@
       "videos": []
     },
     "tt08/tt_um_bytex64_munch": {
-      "reason": "2990 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "2990 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 5.05% of pixels change per frame, 22 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -348,7 +348,7 @@
       ]
     },
     "tt08/tt_um_cfib_demo": {
-      "reason": "2320 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "2320 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 1.41% of pixels change per frame, 19 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -364,7 +364,7 @@
       "videos": []
     },
     "tt08/tt_um_dendraws_donut": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 4 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -375,7 +375,7 @@
       ]
     },
     "tt08/tt_um_edwintorok": {
-      "reason": "49 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps)",
+      "reason": "49 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps, 1.01% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -386,7 +386,7 @@
       ]
     },
     "tt08/tt_um_favoritohjs_scroller": {
-      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 95.93% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -408,7 +408,7 @@
       ]
     },
     "tt08/tt_um_htfab_bouncy_capsule": {
-      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 3.25% of pixels change per frame, 44 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -419,7 +419,7 @@
       ]
     },
     "tt08/tt_um_jmack2201": {
-      "reason": "3552 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3552 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.25% of pixels change per frame, 15 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -430,7 +430,7 @@
       ]
     },
     "tt08/tt_um_johshoff_metaballs": {
-      "reason": "4325 distinct frames of 4331 (800x600@72, 800x600, 72.2 fps)",
+      "reason": "4325 distinct frames of 4331 (800x600@72, 800x600, 72.2 fps, 0.30% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -441,7 +441,7 @@
       ]
     },
     "tt08/tt_um_nvious_graphics": {
-      "reason": "534 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "534 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.64% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -452,7 +452,7 @@
       ]
     },
     "tt08/tt_um_nyan": {
-      "reason": "2 distinct frames of 3434 (640x480@60, 640x480, 57.2 fps)",
+      "reason": "2 distinct frames of 3434 (640x480@60, 640x480, 57.2 fps, 0.76% of pixels change per frame, 14 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -463,7 +463,7 @@
       ]
     },
     "tt08/tt_um_patater_demokit": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 37.41% of pixels change per frame, 19 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -474,7 +474,7 @@
       ]
     },
     "tt08/tt_um_quarren42_demoscene_top": {
-      "reason": "203 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "203 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.09% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -485,7 +485,7 @@
       ]
     },
     "tt08/tt_um_rejunity_vga_logo": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 37.97% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -496,7 +496,7 @@
       ]
     },
     "tt08/tt_um_rejunity_vga_test01": {
-      "reason": "1832 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "1832 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 14.71% of pixels change per frame, 28 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -507,7 +507,7 @@
       ]
     },
     "tt08/tt_um_tinytapeout_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.47% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -518,7 +518,7 @@
       ]
     },
     "tt08/tt_um_toivoh_demo": {
-      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 10.17% of pixels change per frame, 21 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -529,7 +529,7 @@
       ]
     },
     "tt08/tt_um_toivoh_demo_deluxe": {
-      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 9.20% of pixels change per frame, 21 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -540,7 +540,7 @@
       ]
     },
     "tt08/tt_um_vga_cbtest": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 3 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -551,7 +551,7 @@
       ]
     },
     "tt08/tt_um_vga_glyph_mode": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.92% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -562,7 +562,7 @@
       ]
     },
     "tt08/tt_um_yuri_panchul_sea_battle_vga_game": {
-      "reason": "2702 distinct frames of 3286 (640x480@60, 640x480, 54.8 fps)",
+      "reason": "2702 distinct frames of 3286 (640x480@60, 640x480, 54.8 fps, 3.16% of pixels change per frame, 6 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -573,7 +573,7 @@
       ]
     },
     "tt08/tt_um_zec_square1": {
-      "reason": "512 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "512 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 0.78% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -584,7 +584,7 @@
       ]
     },
     "tt09/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -606,7 +606,7 @@
       ]
     },
     "tt09/tt_um_a1k0n_nyancat": {
-      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 47.63% of pixels change per frame, 26 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -617,7 +617,7 @@
       ]
     },
     "tt09/tt_um_rebeccargb_colorbars": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 11 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -628,7 +628,7 @@
       ]
     },
     "tt09/tt_um_rebeccargb_tt09ball_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.55% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -639,7 +639,7 @@
       ]
     },
     "tt09/tt_um_rebeccargb_vga_pride": {
-      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.06% of pixels change per frame, 14 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -650,7 +650,7 @@
       ]
     },
     "tt09/tt_um_rebeccargb_vga_timing_experiments": {
-      "reason": "5 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "5 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.04% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -666,7 +666,7 @@
       "videos": []
     },
     "tt09/tt_um_rejunity_vga_logo": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 37.85% of pixels change per frame, 12 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -677,7 +677,7 @@
       ]
     },
     "tt09/tt_um_rejunity_vga_test01": {
-      "reason": "1832 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "1832 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 14.71% of pixels change per frame, 28 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -688,7 +688,7 @@
       ]
     },
     "tt09/tt_um_toivoh_demo": {
-      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 10.17% of pixels change per frame, 21 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -710,7 +710,7 @@
       ]
     },
     "tt09/tt_um_znah_vga_ca": {
-      "reason": "2048 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "2048 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 47.66% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -721,7 +721,7 @@
       ]
     },
     "ttcad25a/tt_um_10_vga_crossyroad": {
-      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 1.13% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -732,7 +732,7 @@
       ]
     },
     "ttcad25a/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -743,7 +743,7 @@
       ]
     },
     "ttcad25a/tt_um_MichaelBell_canon": {
-      "reason": "1986 distinct frames of 3375 (800x600@56, 800x600, 56.2 fps)",
+      "reason": "1986 distinct frames of 3375 (800x600@56, 800x600, 56.2 fps, 6.68% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -754,7 +754,7 @@
       ]
     },
     "ttcad25a/tt_um_MichaelBell_mandelbrot": {
-      "reason": "103 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps)",
+      "reason": "103 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps, 10.21% of pixels change per frame, 15 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -765,7 +765,7 @@
       ]
     },
     "ttcad25a/tt_um_a1k0n_demo": {
-      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps, 39.53% of pixels change per frame, 58 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -776,7 +776,7 @@
       ]
     },
     "ttcad25a/tt_um_a1k0n_nyancat": {
-      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 47.63% of pixels change per frame, 26 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -787,7 +787,7 @@
       ]
     },
     "ttcad25a/tt_um_a1k0n_vgadonut": {
-      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps, 22.85% of pixels change per frame, 14 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -798,8 +798,8 @@
       ]
     },
     "ttcad25a/tt_um_algofoogle_raybox_zero": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
-      "verdict": "static",
+      "reason": "0.000% of pixels change per frame, 0.08% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -814,7 +814,7 @@
       "videos": []
     },
     "ttcad25a/tt_um_algofoogle_vga": {
-      "reason": "3564 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3564 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.26% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -825,7 +825,7 @@
       ]
     },
     "ttcad25a/tt_um_bytex64_munch": {
-      "reason": "2990 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "2990 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 5.05% of pixels change per frame, 22 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -836,7 +836,7 @@
       ]
     },
     "ttcad25a/tt_um_cfib_demo": {
-      "reason": "2320 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "2320 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 1.41% of pixels change per frame, 19 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -852,7 +852,7 @@
       "videos": []
     },
     "ttcad25a/tt_um_dendraws_donut": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 4 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -863,7 +863,7 @@
       ]
     },
     "ttcad25a/tt_um_edwintorok": {
-      "reason": "49 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps)",
+      "reason": "49 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps, 1.01% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -874,7 +874,7 @@
       ]
     },
     "ttcad25a/tt_um_favoritohjs_scroller": {
-      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 95.93% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -885,8 +885,8 @@
       ]
     },
     "ttcad25a/tt_um_gamepad_pmod_demo": {
-      "reason": "10 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.000% of pixels change per frame, 0.24% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -907,7 +907,7 @@
       ]
     },
     "ttcad25a/tt_um_htfab_bouncy_capsule": {
-      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 3.25% of pixels change per frame, 44 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -918,7 +918,7 @@
       ]
     },
     "ttcad25a/tt_um_htfab_checkers": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 11.15% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -929,7 +929,7 @@
       ]
     },
     "ttcad25a/tt_um_jmack2201": {
-      "reason": "3552 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3552 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.25% of pixels change per frame, 15 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -940,7 +940,7 @@
       ]
     },
     "ttcad25a/tt_um_johshoff_metaballs": {
-      "reason": "4325 distinct frames of 4331 (800x600@72, 800x600, 72.2 fps)",
+      "reason": "4325 distinct frames of 4331 (800x600@72, 800x600, 72.2 fps, 0.30% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -951,7 +951,7 @@
       ]
     },
     "ttcad25a/tt_um_luke_clock": {
-      "reason": "61 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "61 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.09% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -962,7 +962,7 @@
       ]
     },
     "ttcad25a/tt_um_nvious_graphics": {
-      "reason": "534 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "534 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.64% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -973,7 +973,7 @@
       ]
     },
     "ttcad25a/tt_um_nyan": {
-      "reason": "2 distinct frames of 3434 (640x480@60, 640x480, 57.2 fps)",
+      "reason": "2 distinct frames of 3434 (640x480@60, 640x480, 57.2 fps, 0.76% of pixels change per frame, 14 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -984,7 +984,7 @@
       ]
     },
     "ttcad25a/tt_um_patater_demokit": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 37.41% of pixels change per frame, 19 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -995,7 +995,7 @@
       ]
     },
     "ttcad25a/tt_um_quarren42_demoscene_top": {
-      "reason": "203 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "203 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.09% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1006,7 +1006,7 @@
       ]
     },
     "ttcad25a/tt_um_rejunity_vga_logo": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 37.97% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1017,7 +1017,7 @@
       ]
     },
     "ttcad25a/tt_um_rejunity_vga_test01": {
-      "reason": "1832 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "1832 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 14.71% of pixels change per frame, 28 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1028,7 +1028,7 @@
       ]
     },
     "ttcad25a/tt_um_spacewar": {
-      "reason": "347 distinct frames of 7143 (640x480@60, 640x480, 119.0 fps)",
+      "reason": "347 distinct frames of 7143 (640x480@60, 640x480, 119.0 fps, 0.00% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1039,7 +1039,7 @@
       ]
     },
     "ttcad25a/tt_um_sushi_demo": {
-      "reason": "641 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps)",
+      "reason": "641 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps, 0.06% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1050,7 +1050,7 @@
       ]
     },
     "ttcad25a/tt_um_tiny_shader_mole99": {
-      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.49% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1061,7 +1061,7 @@
       ]
     },
     "ttcad25a/tt_um_tinytapeout_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.47% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1072,7 +1072,7 @@
       ]
     },
     "ttcad25a/tt_um_toivoh_demo": {
-      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 1.33% of pixels change per frame, 10 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1083,7 +1083,7 @@
       ]
     },
     "ttcad25a/tt_um_toivoh_demo_deluxe": {
-      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 9.20% of pixels change per frame, 21 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1094,7 +1094,7 @@
       ]
     },
     "ttcad25a/tt_um_vga_cbtest": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 3 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -1105,7 +1105,7 @@
       ]
     },
     "ttcad25a/tt_um_vga_glyph_mode": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.92% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1116,7 +1116,7 @@
       ]
     },
     "ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game": {
-      "reason": "2702 distinct frames of 3286 (640x480@60, 640x480, 54.8 fps)",
+      "reason": "2702 distinct frames of 3286 (640x480@60, 640x480, 54.8 fps, 3.16% of pixels change per frame, 6 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1127,7 +1127,7 @@
       ]
     },
     "ttcad25a/tt_um_zec_square1": {
-      "reason": "512 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "512 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 0.78% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1138,7 +1138,7 @@
       ]
     },
     "ttcad25a/tt_um_zerotoasic_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.65% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1149,7 +1149,7 @@
       ]
     },
     "ttgf0p1/tt_um_algofoogle_raybox_zero": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 3 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -1160,7 +1160,7 @@
       ]
     },
     "ttgf0p1/tt_um_dinogame": {
-      "reason": "175 distinct frames of 3585 (640x480@60, 640x480, 59.8 fps)",
+      "reason": "175 distinct frames of 3585 (640x480@60, 640x480, 59.8 fps, 0.01% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1171,7 +1171,7 @@
       ]
     },
     "ttgf0p1/tt_um_flappy_vga_cutout1": {
-      "reason": "34 distinct frames of 3599 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "34 distinct frames of 3599 (640x480@60, 640x480, 60.0 fps, 0.02% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1182,7 +1182,7 @@
       ]
     },
     "ttgf0p1/tt_um_no_time_for_squares_tommythorn": {
-      "reason": "61 distinct frames of 4500 (640x480@75, 640x480, 75.0 fps)",
+      "reason": "61 distinct frames of 4500 (640x480@75, 640x480, 75.0 fps, 0.00% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1193,8 +1193,8 @@
       ]
     },
     "ttgf0p1/tt_um_tomkeddie_a": {
-      "reason": "636 distinct frames of 3736 (640x480@60, 640x504, 62.3 fps)",
-      "verdict": "ok",
+      "reason": "0.003% of pixels change per frame, 0.57% ever (640x480@60, 640x504, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1204,7 +1204,7 @@
       ]
     },
     "ttgf0p2/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1215,7 +1215,7 @@
       ]
     },
     "ttgf0p2/tt_um_a1k0n_nyancat": {
-      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 47.63% of pixels change per frame, 26 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1226,8 +1226,8 @@
       ]
     },
     "ttgf0p2/tt_um_algofoogle_raybox_zero": {
-      "reason": "7 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.000% of pixels change per frame, 0.07% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1242,8 +1242,8 @@
       "videos": []
     },
     "ttgf0p2/tt_um_htfab_asicle2": {
-      "reason": "2 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.001% of pixels change per frame, 0.52% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1258,7 +1258,7 @@
       "videos": []
     },
     "ttgf0p2/tt_um_kbeckmann_flame": {
-      "reason": "512 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "512 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 2.74% of pixels change per frame, 43 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1269,7 +1269,7 @@
       ]
     },
     "ttgf0p2/tt_um_rejunity_vga_logo": {
-      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 68.22% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1280,7 +1280,7 @@
       ]
     },
     "ttgf0p2/tt_um_rejunity_vga_test01": {
-      "reason": "1832 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1832 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 14.88% of pixels change per frame, 28 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1291,7 +1291,7 @@
       ]
     },
     "ttgf0p2/tt_um_waferspace_vga_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.05% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1302,7 +1302,7 @@
       ]
     },
     "ttgf0p3/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1313,7 +1313,7 @@
       ]
     },
     "ttgf0p3/tt_um_AbAdA_2048": {
-      "reason": "15 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "15 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.03% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1324,7 +1324,7 @@
       ]
     },
     "ttgf0p3/tt_um_a1k0n_nyancat": {
-      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 47.63% of pixels change per frame, 26 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1340,7 +1340,7 @@
       "videos": []
     },
     "ttgf0p3/tt_um_combined": {
-      "reason": "3578 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3578 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.39% of pixels change per frame, 6 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1351,7 +1351,7 @@
       ]
     },
     "ttgf0p3/tt_um_waferspace_vga_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.05% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1362,7 +1362,7 @@
       ]
     },
     "ttgf26a/tt_um_algofoogle_dottee": {
-      "reason": "3340 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3340 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 63.94% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1373,7 +1373,7 @@
       ]
     },
     "ttgf26a/tt_um_danielpenas42": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 2 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -1384,7 +1384,7 @@
       ]
     },
     "ttgf26a/tt_um_fer_logo_music_vga": {
-      "reason": "3574 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3574 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.25% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1395,7 +1395,7 @@
       ]
     },
     "ttgf26a/tt_um_happyhop_deadcast2": {
-      "reason": "3582 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3582 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.08% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1411,7 +1411,7 @@
       "videos": []
     },
     "ttgf26a/tt_um_logoUACJ_MOGA": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.67% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1427,7 +1427,7 @@
       "videos": []
     },
     "ttgf26a/tt_um_uacj": {
-      "reason": "3575 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3575 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.39% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1438,7 +1438,7 @@
       ]
     },
     "ttgf26a/tt_um_uacj_bouncing_DVD_screensaver": {
-      "reason": "3575 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3575 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.16% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1449,7 +1449,7 @@
       ]
     },
     "ttgf26a/tt_um_waferspace_vga_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.05% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1460,7 +1460,7 @@
       ]
     },
     "ttgf26b/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1476,7 +1476,7 @@
       "videos": []
     },
     "ttgf26b/tt_um_ljhahne_pong": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.16% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1487,7 +1487,7 @@
       ]
     },
     "ttgf26b/tt_um_waferspace_vga_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.05% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1498,7 +1498,7 @@
       ]
     },
     "ttihp0p1/tt_um_algofoogle_raybox_zero": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 3 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -1509,7 +1509,7 @@
       ]
     },
     "ttihp0p1/tt_um_dinogame": {
-      "reason": "175 distinct frames of 3585 (640x480@60, 640x480, 59.8 fps)",
+      "reason": "175 distinct frames of 3585 (640x480@60, 640x480, 59.8 fps, 0.01% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1520,7 +1520,7 @@
       ]
     },
     "ttihp0p1/tt_um_flappy_vga_cutout1": {
-      "reason": "34 distinct frames of 3599 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "34 distinct frames of 3599 (640x480@60, 640x480, 60.0 fps, 0.02% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1531,7 +1531,7 @@
       ]
     },
     "ttihp0p1/tt_um_no_time_for_squares_tommythorn": {
-      "reason": "61 distinct frames of 4500 (640x480@75, 640x480, 75.0 fps)",
+      "reason": "61 distinct frames of 4500 (640x480@75, 640x480, 75.0 fps, 0.00% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1542,8 +1542,8 @@
       ]
     },
     "ttihp0p1/tt_um_tomkeddie_a": {
-      "reason": "636 distinct frames of 3736 (640x480@60, 640x504, 62.3 fps)",
-      "verdict": "ok",
+      "reason": "0.003% of pixels change per frame, 0.57% ever (640x480@60, 640x504, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1553,7 +1553,7 @@
       ]
     },
     "ttihp0p2/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1564,7 +1564,7 @@
       ]
     },
     "ttihp0p2/tt_um_MichaelBell_canon": {
-      "reason": "1986 distinct frames of 3375 (800x600@56, 800x600, 56.2 fps)",
+      "reason": "1986 distinct frames of 3375 (800x600@56, 800x600, 56.2 fps, 6.68% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1575,7 +1575,7 @@
       ]
     },
     "ttihp0p2/tt_um_MichaelBell_mandelbrot": {
-      "reason": "278 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps)",
+      "reason": "278 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps, 28.13% of pixels change per frame, 17 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1597,7 +1597,7 @@
       ]
     },
     "ttihp0p2/tt_um_a1k0n_demo": {
-      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps, 39.53% of pixels change per frame, 58 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1608,7 +1608,7 @@
       ]
     },
     "ttihp0p2/tt_um_a1k0n_nyancat": {
-      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 47.63% of pixels change per frame, 26 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1619,7 +1619,7 @@
       ]
     },
     "ttihp0p2/tt_um_a1k0n_vgadonut": {
-      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps, 22.85% of pixels change per frame, 14 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1630,8 +1630,8 @@
       ]
     },
     "ttihp0p2/tt_um_algofoogle_raybox_zero": {
-      "reason": "7 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.000% of pixels change per frame, 0.07% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1641,7 +1641,7 @@
       ]
     },
     "ttihp0p2/tt_um_algofoogle_tinyvga_fun_wrapper": {
-      "reason": "829 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "829 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 2.06% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1652,7 +1652,7 @@
       ]
     },
     "ttihp0p2/tt_um_cfib_demo": {
-      "reason": "2320 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "2320 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 1.41% of pixels change per frame, 19 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1668,7 +1668,7 @@
       "videos": []
     },
     "ttihp0p2/tt_um_edwintorok": {
-      "reason": "49 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps)",
+      "reason": "49 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps, 1.01% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1679,7 +1679,7 @@
       ]
     },
     "ttihp0p2/tt_um_favoritohjs_scroller": {
-      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 95.93% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1690,7 +1690,7 @@
       ]
     },
     "ttihp0p2/tt_um_htfab_bouncy_capsule": {
-      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 3.25% of pixels change per frame, 44 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1701,7 +1701,7 @@
       ]
     },
     "ttihp0p2/tt_um_no_time_for_squares_tommythorn": {
-      "reason": "61 distinct frames of 4500 (640x480@75, 640x480, 75.0 fps)",
+      "reason": "61 distinct frames of 4500 (640x480@75, 640x480, 75.0 fps, 0.00% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1712,7 +1712,7 @@
       ]
     },
     "ttihp0p2/tt_um_rebeccargb_colorbars": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 11 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -1723,7 +1723,7 @@
       ]
     },
     "ttihp0p2/tt_um_rebeccargb_vga_pride": {
-      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.06% of pixels change per frame, 14 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1734,7 +1734,7 @@
       ]
     },
     "ttihp0p2/tt_um_rejunity_vga_logo": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 37.85% of pixels change per frame, 12 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1745,7 +1745,7 @@
       ]
     },
     "ttihp0p2/tt_um_rejunity_vga_test01": {
-      "reason": "1832 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "1832 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 14.71% of pixels change per frame, 28 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1756,7 +1756,7 @@
       ]
     },
     "ttihp0p2/tt_um_tinytapeout_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.47% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1767,7 +1767,7 @@
       ]
     },
     "ttihp0p2/tt_um_toivoh_demo_deluxe": {
-      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 9.20% of pixels change per frame, 21 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1789,7 +1789,7 @@
       ]
     },
     "ttihp0p2/tt_um_tomkeddie_a": {
-      "reason": "2427 distinct frames of 3576 (640x480@60, 640x480, 59.6 fps)",
+      "reason": "2427 distinct frames of 3576 (640x480@60, 640x480, 59.6 fps, 0.00% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1800,7 +1800,7 @@
       ]
     },
     "ttihp0p2/tt_um_vga_glyph_mode": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.92% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1811,7 +1811,7 @@
       ]
     },
     "ttihp0p3/tt_um_a1k0n_demo": {
-      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps, 39.41% of pixels change per frame, 58 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1827,7 +1827,7 @@
       "videos": []
     },
     "ttihp0p3/tt_um_algofoogle_fun_vga_clock": {
-      "reason": "3567 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3567 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 7.81% of pixels change per frame, 15 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1838,7 +1838,7 @@
       ]
     },
     "ttihp0p3/tt_um_arud4172_ROOTS_vga": {
-      "reason": "3594 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3594 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 3.00% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1849,7 +1849,7 @@
       ]
     },
     "ttihp0p3/tt_um_bleeptrack_prism": {
-      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.05% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1860,7 +1860,7 @@
       ]
     },
     "ttihp0p3/tt_um_ihp_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 2.09% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1871,7 +1871,7 @@
       ]
     },
     "ttihp0p3/tt_um_zerotoasic_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.65% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1882,7 +1882,7 @@
       ]
     },
     "ttihp0p4/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1898,7 +1898,7 @@
       "videos": []
     },
     "ttihp0p4/tt_um_algofoogle_raybox_zero": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 3 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -1914,7 +1914,7 @@
       "videos": []
     },
     "ttihp0p4/tt_um_glyph_mode_hd": {
-      "reason": "627 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "627 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.12% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1925,8 +1925,8 @@
       ]
     },
     "ttihp0p4/tt_um_htfab_asicle2": {
-      "reason": "2 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.001% of pixels change per frame, 0.52% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -1936,7 +1936,7 @@
       ]
     },
     "ttihp0p4/tt_um_silicon_strummer": {
-      "reason": "24 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "24 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.06% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1947,7 +1947,7 @@
       ]
     },
     "ttihp0p4/tt_um_snake_game": {
-      "reason": "10 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "10 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1958,7 +1958,7 @@
       ]
     },
     "ttihp0p4/tt_um_tinytapeout_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.47% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1969,7 +1969,7 @@
       ]
     },
     "ttihp0p4/tt_um_toivoh_demo": {
-      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 1.37% of pixels change per frame, 10 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1980,7 +1980,7 @@
       ]
     },
     "ttihp0p4/tt_um_urish_rings": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.45% of pixels change per frame, 16 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -1991,7 +1991,7 @@
       ]
     },
     "ttihp25a/tt_um_10_vga_crossyroad": {
-      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 1.13% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2002,7 +2002,7 @@
       ]
     },
     "ttihp25a/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2013,7 +2013,7 @@
       ]
     },
     "ttihp25a/tt_um_MichaelBell_canon": {
-      "reason": "1986 distinct frames of 3375 (800x600@56, 800x600, 56.2 fps)",
+      "reason": "1986 distinct frames of 3375 (800x600@56, 800x600, 56.2 fps, 6.68% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2024,7 +2024,7 @@
       ]
     },
     "ttihp25a/tt_um_MichaelBell_mandelbrot": {
-      "reason": "103 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps)",
+      "reason": "103 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps, 10.21% of pixels change per frame, 15 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2046,7 +2046,7 @@
       ]
     },
     "ttihp25a/tt_um_a1k0n_demo": {
-      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps, 39.53% of pixels change per frame, 58 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2057,7 +2057,7 @@
       ]
     },
     "ttihp25a/tt_um_a1k0n_nyancat": {
-      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 47.63% of pixels change per frame, 26 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2068,7 +2068,7 @@
       ]
     },
     "ttihp25a/tt_um_a1k0n_vgadonut": {
-      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3597 distinct frames of 3597 (640x480@60, 640x480, 60.0 fps, 22.85% of pixels change per frame, 14 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2079,7 +2079,7 @@
       ]
     },
     "ttihp25a/tt_um_algofoogle_vga": {
-      "reason": "3564 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3564 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.26% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2090,7 +2090,7 @@
       ]
     },
     "ttihp25a/tt_um_bytex64_munch": {
-      "reason": "2990 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "2990 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 5.05% of pixels change per frame, 22 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2101,7 +2101,7 @@
       ]
     },
     "ttihp25a/tt_um_cfib_demo": {
-      "reason": "2320 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "2320 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 1.41% of pixels change per frame, 19 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2117,7 +2117,7 @@
       "videos": []
     },
     "ttihp25a/tt_um_dendraws_donut": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 4 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -2128,7 +2128,7 @@
       ]
     },
     "ttihp25a/tt_um_edwintorok": {
-      "reason": "49 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps)",
+      "reason": "49 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps, 1.01% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2139,7 +2139,7 @@
       ]
     },
     "ttihp25a/tt_um_favoritohjs_scroller": {
-      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 95.93% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2150,8 +2150,8 @@
       ]
     },
     "ttihp25a/tt_um_gamepad_pmod_demo": {
-      "reason": "10 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.000% of pixels change per frame, 0.24% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2172,7 +2172,7 @@
       ]
     },
     "ttihp25a/tt_um_htfab_bouncy_capsule": {
-      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 3.25% of pixels change per frame, 44 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2183,7 +2183,7 @@
       ]
     },
     "ttihp25a/tt_um_htfab_checkers": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 11.15% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2194,7 +2194,7 @@
       ]
     },
     "ttihp25a/tt_um_jmack2201": {
-      "reason": "3552 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3552 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.25% of pixels change per frame, 15 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2205,7 +2205,7 @@
       ]
     },
     "ttihp25a/tt_um_johshoff_metaballs": {
-      "reason": "4325 distinct frames of 4331 (800x600@72, 800x600, 72.2 fps)",
+      "reason": "4325 distinct frames of 4331 (800x600@72, 800x600, 72.2 fps, 0.30% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2216,7 +2216,7 @@
       ]
     },
     "ttihp25a/tt_um_luke_clock": {
-      "reason": "61 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "61 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.09% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2227,7 +2227,7 @@
       ]
     },
     "ttihp25a/tt_um_nvious_graphics": {
-      "reason": "534 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "534 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.64% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2238,7 +2238,7 @@
       ]
     },
     "ttihp25a/tt_um_nyan": {
-      "reason": "2 distinct frames of 3434 (640x480@60, 640x480, 57.2 fps)",
+      "reason": "2 distinct frames of 3434 (640x480@60, 640x480, 57.2 fps, 0.76% of pixels change per frame, 14 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2249,7 +2249,7 @@
       ]
     },
     "ttihp25a/tt_um_patater_demokit": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 37.41% of pixels change per frame, 19 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2260,7 +2260,7 @@
       ]
     },
     "ttihp25a/tt_um_quarren42_demoscene_top": {
-      "reason": "203 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "203 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.09% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2271,7 +2271,7 @@
       ]
     },
     "ttihp25a/tt_um_rebeccargb_colorbars": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 11 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -2282,7 +2282,7 @@
       ]
     },
     "ttihp25a/tt_um_rebeccargb_tt09ball_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.55% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2293,7 +2293,7 @@
       ]
     },
     "ttihp25a/tt_um_rebeccargb_vga_pride": {
-      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.06% of pixels change per frame, 14 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2304,7 +2304,7 @@
       ]
     },
     "ttihp25a/tt_um_rebeccargb_vga_timing_experiments": {
-      "reason": "5 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "5 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.04% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2315,7 +2315,7 @@
       ]
     },
     "ttihp25a/tt_um_rejunity_atari2600": {
-      "reason": "1609 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1609 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 60.63% of pixels change per frame, 13 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2326,7 +2326,7 @@
       ]
     },
     "ttihp25a/tt_um_rejunity_vga_logo": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 37.85% of pixels change per frame, 12 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2337,7 +2337,7 @@
       ]
     },
     "ttihp25a/tt_um_rejunity_vga_test01": {
-      "reason": "1832 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "1832 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 14.71% of pixels change per frame, 28 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2348,7 +2348,7 @@
       ]
     },
     "ttihp25a/tt_um_spacewar": {
-      "reason": "347 distinct frames of 7143 (640x480@60, 640x480, 119.0 fps)",
+      "reason": "347 distinct frames of 7143 (640x480@60, 640x480, 119.0 fps, 0.00% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2359,7 +2359,7 @@
       ]
     },
     "ttihp25a/tt_um_sushi_demo": {
-      "reason": "641 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps)",
+      "reason": "641 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps, 0.06% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2370,7 +2370,7 @@
       ]
     },
     "ttihp25a/tt_um_tiny_shader_mole99": {
-      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.49% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2381,7 +2381,7 @@
       ]
     },
     "ttihp25a/tt_um_tinytapeout_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.47% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2392,7 +2392,7 @@
       ]
     },
     "ttihp25a/tt_um_toivoh_demo_deluxe": {
-      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3458 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 9.20% of pixels change per frame, 21 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2408,7 +2408,7 @@
       "videos": []
     },
     "ttihp25a/tt_um_toivoh_demo_tt10": {
-      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 1.33% of pixels change per frame, 10 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2430,7 +2430,7 @@
       ]
     },
     "ttihp25a/tt_um_vga_cbtest": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 3 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -2441,7 +2441,7 @@
       ]
     },
     "ttihp25a/tt_um_vga_glyph_mode": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.92% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2452,7 +2452,7 @@
       ]
     },
     "ttihp25a/tt_um_yuri_panchul_sea_battle_vga_game": {
-      "reason": "2702 distinct frames of 3286 (640x480@60, 640x480, 54.8 fps)",
+      "reason": "2702 distinct frames of 3286 (640x480@60, 640x480, 54.8 fps, 3.16% of pixels change per frame, 6 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2463,7 +2463,7 @@
       ]
     },
     "ttihp25a/tt_um_zec_square1": {
-      "reason": "512 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "512 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 0.78% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2474,7 +2474,7 @@
       ]
     },
     "ttihp25a/tt_um_znah_vga_ca": {
-      "reason": "2048 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "2048 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 47.66% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2485,7 +2485,7 @@
       ]
     },
     "ttihp25b/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2496,7 +2496,7 @@
       ]
     },
     "ttihp25b/tt_um_bleeptrack_prism": {
-      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.05% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2507,8 +2507,8 @@
       ]
     },
     "ttihp25b/tt_um_gamepad_pmod_demo": {
-      "reason": "11 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.001% of pixels change per frame, 0.95% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2518,7 +2518,7 @@
       ]
     },
     "ttihp25b/tt_um_ihp_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 2.09% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2529,7 +2529,7 @@
       ]
     },
     "ttihp25b/tt_um_rejunity_atari2600": {
-      "reason": "1609 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1609 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 60.63% of pixels change per frame, 13 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2540,7 +2540,7 @@
       ]
     },
     "ttihp25b/tt_um_tinytapeout_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.47% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2551,7 +2551,7 @@
       ]
     },
     "ttihp25b/tt_um_zerotoasic_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.65% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2562,7 +2562,7 @@
       ]
     },
     "ttihp26a/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2573,7 +2573,7 @@
       ]
     },
     "ttihp26a/tt_um_FTEVE_FISH": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.32% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2584,7 +2584,7 @@
       ]
     },
     "ttihp26a/tt_um_Jan_three_body_solution": {
-      "reason": "410 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "410 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 3.74% of pixels change per frame, 6 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2600,7 +2600,7 @@
       "videos": []
     },
     "ttihp26a/tt_um_RongGi_tiny_dino": {
-      "reason": "2145 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "2145 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.22% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2611,7 +2611,7 @@
       ]
     },
     "ttihp26a/tt_um_adriantrummer_checker": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 9.64% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2622,7 +2622,7 @@
       ]
     },
     "ttihp26a/tt_um_embeddedinn_vga": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 4.48% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2633,7 +2633,7 @@
       ]
     },
     "ttihp26a/tt_um_ezelioli_blockvga": {
-      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 6.06% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2644,7 +2644,7 @@
       ]
     },
     "ttihp26a/tt_um_faaaa": {
-      "reason": "3533 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3533 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 3.83% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2655,7 +2655,7 @@
       ]
     },
     "ttihp26a/tt_um_gschultz_bouncingcheckers": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.40% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2671,7 +2671,7 @@
       "videos": []
     },
     "ttihp26a/tt_um_matth_fischer_vgaTT": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.45% of pixels change per frame, 16 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2682,7 +2682,7 @@
       ]
     },
     "ttihp26a/tt_um_mattvenn_vgatest": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 9.16% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2704,7 +2704,7 @@
       ]
     },
     "ttihp26a/tt_um_mo_module": {
-      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 3.11% of pixels change per frame, 32 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2715,7 +2715,7 @@
       ]
     },
     "ttihp26a/tt_um_moss_display": {
-      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.90% of pixels change per frame, 6 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2726,8 +2726,8 @@
       ]
     },
     "ttihp26a/tt_um_not_a_dinosaur": {
-      "reason": "152 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.000% of pixels change per frame, 0.49% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2737,7 +2737,7 @@
       ]
     },
     "ttihp26a/tt_um_phsauter_vga_maze": {
-      "reason": "11 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "11 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.04% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2748,7 +2748,7 @@
       ]
     },
     "ttihp26a/tt_um_pmiotti_squares_hypnosis": {
-      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 3.11% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2759,7 +2759,7 @@
       ]
     },
     "ttihp26a/tt_um_pong": {
-      "reason": "161 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "161 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.08% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2770,7 +2770,7 @@
       ]
     },
     "ttihp26a/tt_um_rebeccargb_vga_pride": {
-      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.06% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2781,7 +2781,7 @@
       ]
     },
     "ttihp26a/tt_um_rejunity_vga_logo": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 68.20% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2792,7 +2792,7 @@
       ]
     },
     "ttihp26a/tt_um_snake_game": {
-      "reason": "10 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "10 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2803,7 +2803,7 @@
       ]
     },
     "ttihp26a/tt_um_thomasherzog_plasma": {
-      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 6.27% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2814,8 +2814,8 @@
       ]
     },
     "ttihp26a/tt_um_tobiasgreiser_move_vga_square": {
-      "reason": "96 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
-      "verdict": "ok",
+      "reason": "0.001% of pixels change per frame, 0.47% ever (640x480@60, 640x480, 2 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2825,7 +2825,7 @@
       ]
     },
     "ttihp26a/tt_um_tomolt_rasterizer": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 3 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -2836,7 +2836,7 @@
       ]
     },
     "ttihp26a/tt_um_urish_rings": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.45% of pixels change per frame, 16 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2847,7 +2847,7 @@
       ]
     },
     "ttihp26a/tt_um_vga_ca": {
-      "reason": "2048 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "2048 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 33.17% of pixels change per frame, 50 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2858,7 +2858,7 @@
       ]
     },
     "ttihp26a/tt_um_vga_example": {
-      "reason": "8 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "8 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.07% of pixels change per frame, 10 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2869,7 +2869,7 @@
       ]
     },
     "ttihp26a/tt_um_vga_leonllrmc": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 4 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -2880,7 +2880,7 @@
       ]
     },
     "ttihp26a/tt_um_zouzias": {
-      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 24.91% of pixels change per frame, 32 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2891,7 +2891,7 @@
       ]
     },
     "ttsky25a/tt_um_10_vga_crossyroad": {
-      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "3571 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 1.13% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2902,7 +2902,7 @@
       ]
     },
     "ttsky25a/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2913,7 +2913,7 @@
       ]
     },
     "ttsky25a/tt_um_7FM_ShadyPong": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 5 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -2924,7 +2924,7 @@
       ]
     },
     "ttsky25a/tt_um_MichaelBell_mandelbrot": {
-      "reason": "103 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps)",
+      "reason": "103 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps, 10.21% of pixels change per frame, 15 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2946,7 +2946,7 @@
       ]
     },
     "ttsky25a/tt_um_RoyTr16": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 5 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -2957,7 +2957,7 @@
       ]
     },
     "ttsky25a/tt_um_SummerTT_HDL": {
-      "reason": "87 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "87 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.10% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2973,7 +2973,7 @@
       "videos": []
     },
     "ttsky25a/tt_um_edwintorok": {
-      "reason": "49 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps)",
+      "reason": "49 distinct frames of 3607 (640x480@60, 640x480, 60.1 fps, 1.01% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -2984,8 +2984,8 @@
       ]
     },
     "ttsky25a/tt_um_gamepad_pmod_demo": {
-      "reason": "11 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.001% of pixels change per frame, 0.95% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -2995,8 +2995,8 @@
       ]
     },
     "ttsky25a/tt_um_limpix31_r0": {
-      "reason": "3619 distinct frames of 3619 (800x600@60, 800x600, 60.3 fps)",
-      "verdict": "ok",
+      "reason": "0.013% of pixels change per frame, 0.01% ever (800x600@60, 800x600, 64 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3011,7 +3011,7 @@
       "videos": []
     },
     "ttsky25a/tt_um_nvious_graphics": {
-      "reason": "712 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "712 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.78% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3022,7 +3022,7 @@
       ]
     },
     "ttsky25a/tt_um_quarren42_demoscene_top": {
-      "reason": "203 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "203 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.09% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3033,7 +3033,7 @@
       ]
     },
     "ttsky25a/tt_um_rebeccargb_colorbars": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 11 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -3044,7 +3044,7 @@
       ]
     },
     "ttsky25a/tt_um_rebeccargb_tt09ball_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.55% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3055,7 +3055,7 @@
       ]
     },
     "ttsky25a/tt_um_rebeccargb_vga_pride": {
-      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.06% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3066,7 +3066,7 @@
       ]
     },
     "ttsky25a/tt_um_rebeccargb_vga_timing_experiments": {
-      "reason": "5 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "5 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.04% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3082,7 +3082,7 @@
       "videos": []
     },
     "ttsky25a/tt_um_rom_vga_screensaver": {
-      "reason": "3576 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3576 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.90% of pixels change per frame, 59 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3093,7 +3093,7 @@
       ]
     },
     "ttsky25a/tt_um_sjsu": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.00% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3104,7 +3104,7 @@
       ]
     },
     "ttsky25a/tt_um_sleepwell": {
-      "reason": "3516 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3516 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 0.16% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3120,7 +3120,7 @@
       "videos": []
     },
     "ttsky25a/tt_um_tinytapeout_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.47% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3131,7 +3131,7 @@
       ]
     },
     "ttsky25a/tt_um_vga_example": {
-      "reason": "3594 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3594 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.37% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3142,7 +3142,7 @@
       ]
     },
     "ttsky25a/tt_um_vga_glyph_mode": {
-      "reason": "627 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "627 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.12% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3153,7 +3153,7 @@
       ]
     },
     "ttsky25a/tt_um_vga_hello_world": {
-      "reason": "1080 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1080 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 6.19% of pixels change per frame, 24 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3164,7 +3164,7 @@
       ]
     },
     "ttsky25b/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3180,7 +3180,7 @@
       "videos": []
     },
     "ttsky25b/tt_um_bouncing_squares": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 4.02% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3202,7 +3202,7 @@
       ]
     },
     "ttsky25b/tt_um_flappy_vga_cutout1": {
-      "reason": "34 distinct frames of 3599 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "34 distinct frames of 3599 (640x480@60, 640x480, 60.0 fps, 0.02% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3213,8 +3213,8 @@
       ]
     },
     "ttsky25b/tt_um_htfab_asicle2": {
-      "reason": "2 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.001% of pixels change per frame, 0.52% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3224,7 +3224,7 @@
       ]
     },
     "ttsky25b/tt_um_lukasdragoste_vga_patterns": {
-      "reason": "10 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "10 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.16% of pixels change per frame, 52 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3246,7 +3246,7 @@
       ]
     },
     "ttsky25b/tt_um_rebeccargb_vga_pride": {
-      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.06% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3257,7 +3257,7 @@
       ]
     },
     "ttsky25b/tt_um_rejunity_vga_playground": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 85.21% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3268,7 +3268,7 @@
       ]
     },
     "ttsky25b/tt_um_rom_vga_screensaver": {
-      "reason": "3576 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3576 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.90% of pixels change per frame, 59 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3279,7 +3279,7 @@
       ]
     },
     "ttsky25b/tt_um_tiny_shader_v2_mole99": {
-      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 24.97% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3290,7 +3290,7 @@
       ]
     },
     "ttsky25b/tt_um_tinytapeout_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.47% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3301,7 +3301,7 @@
       ]
     },
     "ttsky25b/tt_um_verilog_meetup_template_project_example": {
-      "reason": "1939 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "1939 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.12% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3312,7 +3312,7 @@
       ]
     },
     "ttsky25b/tt_um_zerotoasic_logo_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.65% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3323,7 +3323,7 @@
       ]
     },
     "ttsky26a/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3334,7 +3334,7 @@
       ]
     },
     "ttsky26a/tt_um_5482582_cat_vga": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.48% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3345,7 +3345,7 @@
       ]
     },
     "ttsky26a/tt_um_AlephNaNsea_space_time_waves_and_filaments": {
-      "reason": "32 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "32 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.47% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3356,7 +3356,7 @@
       ]
     },
     "ttsky26a/tt_um_AmitChen1415": {
-      "reason": "7 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "7 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.01% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3367,7 +3367,7 @@
       ]
     },
     "ttsky26a/tt_um_BellaB05_Hearts": {
-      "reason": "32 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "32 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 6.21% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3378,7 +3378,7 @@
       ]
     },
     "ttsky26a/tt_um_ChristmasTree_MaligayangPasko": {
-      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.12% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3389,7 +3389,7 @@
       ]
     },
     "ttsky26a/tt_um_JAIMEPRYOR0_VGA_YAY": {
-      "reason": "85 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "85 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 11.10% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3400,7 +3400,7 @@
       ]
     },
     "ttsky26a/tt_um_NguyenHuuHenry_vga_project": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.20% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3422,7 +3422,7 @@
       ]
     },
     "ttsky26a/tt_um_algofoogle_dottee": {
-      "reason": "3340 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3340 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 63.88% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3438,8 +3438,8 @@
       "videos": []
     },
     "ttsky26a/tt_um_bad_ode_plotter_vga": {
-      "reason": "124 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.000% of pixels change per frame, 0.57% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3449,7 +3449,7 @@
       ]
     },
     "ttsky26a/tt_um_cmos_inverter": {
-      "reason": "160 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "160 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.50% of pixels change per frame, 12 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3460,7 +3460,7 @@
       ]
     },
     "ttsky26a/tt_um_demoscenettsky": {
-      "reason": "842 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "842 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 16.93% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3471,7 +3471,7 @@
       ]
     },
     "ttsky26a/tt_um_dinukuk_MYVGA_GLIDER": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.45% of pixels change per frame, 16 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3482,7 +3482,7 @@
       ]
     },
     "ttsky26a/tt_um_ds_missile_command": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 2 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -3493,7 +3493,7 @@
       ]
     },
     "ttsky26a/tt_um_electron65_vga": {
-      "reason": "255 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "255 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.12% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3504,7 +3504,7 @@
       ]
     },
     "ttsky26a/tt_um_gerardvt_clash_poc": {
-      "reason": "256 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "256 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 6.98% of pixels change per frame, 15 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3515,7 +3515,7 @@
       ]
     },
     "ttsky26a/tt_um_gerardvt_spade_poc": {
-      "reason": "64 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "64 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 24.93% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3526,7 +3526,7 @@
       ]
     },
     "ttsky26a/tt_um_glyph_mode_hd": {
-      "reason": "627 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "627 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.11% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3537,7 +3537,7 @@
       ]
     },
     "ttsky26a/tt_um_goose": {
-      "reason": "2 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "2 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.11% of pixels change per frame, 10 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3548,7 +3548,7 @@
       ]
     },
     "ttsky26a/tt_um_goose_game": {
-      "reason": "153 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "153 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.02% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3559,7 +3559,7 @@
       ]
     },
     "ttsky26a/tt_um_immrudul_w7khan": {
-      "reason": "400 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "400 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 1.20% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3570,7 +3570,7 @@
       ]
     },
     "ttsky26a/tt_um_jackthoene_frogger": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.14% of pixels change per frame, 13 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3581,7 +3581,7 @@
       ]
     },
     "ttsky26a/tt_um_johshoff_metaballs": {
-      "reason": "4325 distinct frames of 4331 (800x600@72, 800x600, 72.2 fps)",
+      "reason": "4325 distinct frames of 4331 (800x600@72, 800x600, 72.2 fps, 0.32% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3592,7 +3592,7 @@
       ]
     },
     "ttsky26a/tt_um_katomata": {
-      "reason": "2701 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "2701 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 6.53% of pixels change per frame, 52 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3603,7 +3603,7 @@
       ]
     },
     "ttsky26a/tt_um_kilian_interference": {
-      "reason": "1022 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1022 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 3.15% of pixels change per frame, 22 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3614,7 +3614,7 @@
       ]
     },
     "ttsky26a/tt_um_kolontsov_journey": {
-      "reason": "2146 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "2146 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 38.68% of pixels change per frame, 31 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3625,7 +3625,7 @@
       ]
     },
     "ttsky26a/tt_um_liamolucko_vga": {
-      "reason": "512 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "512 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.45% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3647,7 +3647,7 @@
       ]
     },
     "ttsky26a/tt_um_mastensg_ttsky26a_demo": {
-      "reason": "3578 distinct frames of 3578 (640x480@60, 640x480, 59.6 fps)",
+      "reason": "3578 distinct frames of 3578 (640x480@60, 640x480, 59.6 fps, 18.26% of pixels change per frame, 32 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3658,8 +3658,8 @@
       ]
     },
     "ttsky26a/tt_um_maze": {
-      "reason": "3 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.001% of pixels change per frame, 0.86% ever (640x480@60, 640x480, 5 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3669,7 +3669,7 @@
       ]
     },
     "ttsky26a/tt_um_nebula": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 8.15% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3680,7 +3680,7 @@
       ]
     },
     "ttsky26a/tt_um_odgrip_demoscene_ttsky26a": {
-      "reason": "64 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "64 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 5.94% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3691,7 +3691,7 @@
       ]
     },
     "ttsky26a/tt_um_pakesson_vga_rocket": {
-      "reason": "972 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "972 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.20% of pixels change per frame, 12 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3702,7 +3702,7 @@
       ]
     },
     "ttsky26a/tt_um_parakeet": {
-      "reason": "170 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "170 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.28% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3713,7 +3713,7 @@
       ]
     },
     "ttsky26a/tt_um_pettit_galton": {
-      "reason": "3539 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3539 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.03% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3724,8 +3724,8 @@
       ]
     },
     "ttsky26a/tt_um_pong": {
-      "reason": "61 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.046% of pixels change per frame, 1.39% ever (640x480@60, 640x480, 5 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3740,7 +3740,7 @@
       "videos": []
     },
     "ttsky26a/tt_um_rebeccargb_vga_pride": {
-      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.06% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3756,7 +3756,7 @@
       "videos": []
     },
     "ttsky26a/tt_um_rom_vga_screensaver": {
-      "reason": "3576 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3576 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.90% of pixels change per frame, 59 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3767,7 +3767,7 @@
       ]
     },
     "ttsky26a/tt_um_scottshuynh_ad_astra": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.22% of pixels change per frame, 22 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3778,7 +3778,7 @@
       ]
     },
     "ttsky26a/tt_um_shalindra_vga_rings": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.45% of pixels change per frame, 16 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3789,7 +3789,7 @@
       ]
     },
     "ttsky26a/tt_um_shiho_space_invaders": {
-      "reason": "450 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "450 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.03% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3800,7 +3800,7 @@
       ]
     },
     "ttsky26a/tt_um_shimmydee_checkers": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 10.96% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3811,7 +3811,7 @@
       ]
     },
     "ttsky26a/tt_um_siliconimist": {
-      "reason": "3560 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3560 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.54% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3822,8 +3822,8 @@
       ]
     },
     "ttsky26a/tt_um_spacewar_top": {
-      "reason": "9 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.039% of pixels change per frame, 0.29% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3833,7 +3833,7 @@
       ]
     },
     "ttsky26a/tt_um_toivoh_demo": {
-      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 4.04% of pixels change per frame, 10 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3844,7 +3844,7 @@
       ]
     },
     "ttsky26a/tt_um_toivoh_demo_1tile": {
-      "reason": "3508 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3508 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 0.70% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3855,7 +3855,7 @@
       ]
     },
     "ttsky26a/tt_um_toivoh_demo_4tile": {
-      "reason": "3598 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3598 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 2.47% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3866,7 +3866,7 @@
       ]
     },
     "ttsky26a/tt_um_tomvdsch_cyclonerunner": {
-      "reason": "72 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "72 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.01% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3877,8 +3877,8 @@
       ]
     },
     "ttsky26a/tt_um_topadi": {
-      "reason": "61 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
-      "verdict": "ok",
+      "reason": "0.000% of pixels change per frame, 0.35% ever (640x480@60, 640x480, 6 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -3888,7 +3888,7 @@
       ]
     },
     "ttsky26a/tt_um_vga_example_directional_toggle": {
-      "reason": "129 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "129 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 3.11% of pixels change per frame, 32 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3899,7 +3899,7 @@
       ]
     },
     "ttsky26a/tt_um_vga_ocarina": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 8 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -3910,7 +3910,7 @@
       ]
     },
     "ttsky26a/tt_um_vighnesh_sawant_plane": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 2.11% of pixels change per frame, 10 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3921,7 +3921,7 @@
       ]
     },
     "ttsky26a/tt_um_xxsahanaxx_hwsec_glitch": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.45% of pixels change per frame, 16 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3932,7 +3932,7 @@
       ]
     },
     "ttsky26b/tt_um_27jorge05_crc_fifo": {
-      "reason": "2 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "2 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.00% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3943,7 +3943,7 @@
       ]
     },
     "ttsky26b/tt_um_28add11_latchup": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 36.31% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3954,7 +3954,7 @@
       ]
     },
     "ttsky26b/tt_um_AlephNaNsea_decentvgachipIEEEIESIPSPH": {
-      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.81% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3965,7 +3965,7 @@
       ]
     },
     "ttsky26b/tt_um_AlephNaNsea_space_time_waves_and_filaments": {
-      "reason": "32 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "32 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.47% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3976,7 +3976,7 @@
       ]
     },
     "ttsky26b/tt_um_Edward2005lol_Slot_Machine_Top": {
-      "reason": "24 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "24 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.16% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -3987,7 +3987,7 @@
       ]
     },
     "ttsky26b/tt_um_Halcy0nnnn": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 2 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -3998,7 +3998,7 @@
       ]
     },
     "ttsky26b/tt_um_Halcy0nnnn_1": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 2 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -4009,7 +4009,7 @@
       ]
     },
     "ttsky26b/tt_um_IEEE_OpenSilicon_SubmissionCredits": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 3 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -4020,7 +4020,7 @@
       ]
     },
     "ttsky26b/tt_um_KK_VGA01": {
-      "reason": "116 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "116 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.00% of pixels change per frame, 13 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4031,7 +4031,7 @@
       ]
     },
     "ttsky26b/tt_um_LAT": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 2 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -4042,7 +4042,7 @@
       ]
     },
     "ttsky26b/tt_um_RaphRaphyRofl_VerilogIEEEBounce": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.58% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4053,7 +4053,7 @@
       ]
     },
     "ttsky26b/tt_um_abhinavputhran_raycast": {
-      "reason": "55 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "55 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.22% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4064,8 +4064,8 @@
       ]
     },
     "ttsky26b/tt_um_array_mult_vga": {
-      "reason": "1039 of 3571 frames in 1800 s wall (640x480@60, 0.24 Mclk/s)",
-      "verdict": "partial",
+      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 9 colours)",
+      "verdict": "static",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4075,7 +4075,7 @@
       ]
     },
     "ttsky26b/tt_um_bytex64_wave_hi": {
-      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3596 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 3.58% of pixels change per frame, 13 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4086,7 +4086,7 @@
       ]
     },
     "ttsky26b/tt_um_calebulboaca_calebcheckers": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 11.15% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4097,7 +4097,7 @@
       ]
     },
     "ttsky26b/tt_um_datdt_charizard": {
-      "reason": "96 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "96 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 17.09% of pixels change per frame, 20 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4108,7 +4108,7 @@
       ]
     },
     "ttsky26b/tt_um_devil_nyancat": {
-      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 6.98% of pixels change per frame, 13 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4119,8 +4119,8 @@
       ]
     },
     "ttsky26b/tt_um_digitalclock": {
-      "reason": "336 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
-      "verdict": "ok",
+      "reason": "0.032% of pixels change per frame, 1.86% ever (640x480@60, 640x480, 4 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4135,7 +4135,7 @@
       "videos": []
     },
     "ttsky26b/tt_um_erika24": {
-      "reason": "147 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "147 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.05% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4146,7 +4146,7 @@
       ]
     },
     "ttsky26b/tt_um_flappy_vga_Akul18": {
-      "reason": "60 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "60 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.02% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4157,7 +4157,7 @@
       ]
     },
     "ttsky26b/tt_um_harveywong85_harveywilly": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 73.34% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4168,7 +4168,7 @@
       ]
     },
     "ttsky26b/tt_um_iporre_rm121": {
-      "reason": "1828 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1828 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.04% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4179,7 +4179,7 @@
       ]
     },
     "ttsky26b/tt_um_jasonbrave_terre": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.14% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4190,7 +4190,7 @@
       ]
     },
     "ttsky26b/tt_um_leongamboa_OpenSilicon_SubmissionChapterLogo": {
-      "reason": "2050 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "2050 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.46% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4201,7 +4201,7 @@
       ]
     },
     "ttsky26b/tt_um_leozqi_onetile": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 11.15% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4212,7 +4212,7 @@
       ]
     },
     "ttsky26b/tt_um_lfearn_latchup": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 31.40% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4223,7 +4223,7 @@
       ]
     },
     "ttsky26b/tt_um_llhtimlam_movingscreen": {
-      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 3.11% of pixels change per frame, 32 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4234,7 +4234,7 @@
       ]
     },
     "ttsky26b/tt_um_magnetofield_ieee": {
-      "reason": "3573 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3573 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.39% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4245,7 +4245,7 @@
       ]
     },
     "ttsky26b/tt_um_noah_azz_demo": {
-      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 6.23% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4256,7 +4256,7 @@
       ]
     },
     "ttsky26b/tt_um_peterhan_ReactionGame": {
-      "reason": "7 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "7 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.02% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4267,7 +4267,7 @@
       ]
     },
     "ttsky26b/tt_um_rebeccargb_vga_pride": {
-      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.06% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4278,7 +4278,7 @@
       ]
     },
     "ttsky26b/tt_um_rom_vga_screensaver": {
-      "reason": "3576 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3576 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.90% of pixels change per frame, 59 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4289,7 +4289,7 @@
       ]
     },
     "ttsky26b/tt_um_rule30_vga": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 3 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -4300,7 +4300,7 @@
       ]
     },
     "ttsky26b/tt_um_rv32_vga": {
-      "reason": "7 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "7 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.07% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4311,7 +4311,7 @@
       ]
     },
     "ttsky26b/tt_um_rwnt_vgatest": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 36.26% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4333,7 +4333,7 @@
       ]
     },
     "ttsky26b/tt_um_silicon_art_vga_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.47% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4344,7 +4344,7 @@
       ]
     },
     "ttsky26b/tt_um_theandelope_checkers": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.45% of pixels change per frame, 16 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4355,8 +4355,8 @@
       ]
     },
     "ttsky26b/tt_um_tiny3d_kevinqian11": {
-      "reason": "16 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
-      "verdict": "ok",
+      "reason": "0.000% of pixels change per frame, 0.16% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4366,7 +4366,7 @@
       ]
     },
     "ttsky26b/tt_um_tron_game": {
-      "reason": "13 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "13 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.00% of pixels change per frame, 10 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4377,7 +4377,7 @@
       ]
     },
     "ttsky26b/tt_um_vga": {
-      "reason": "870 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "870 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 51.38% of pixels change per frame, 64 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4388,8 +4388,8 @@
       ]
     },
     "ttsky26b/tt_um_vga_ascii": {
-      "reason": "34 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
-      "verdict": "ok",
+      "reason": "0.010% of pixels change per frame, 1.96% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4399,7 +4399,7 @@
       ]
     },
     "ttsky26b/tt_um_vga_glyph_mode_clone": {
-      "reason": "620 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "620 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.02% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4410,7 +4410,7 @@
       ]
     },
     "ttsky26b/tt_um_vga_yusefkarim": {
-      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "1024 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.33% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4421,7 +4421,7 @@
       ]
     },
     "ttsky26b/tt_um_zlj8800_tiny_tapeout_v2": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.15% of pixels change per frame, 2 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4432,7 +4432,7 @@
       ]
     },
     "ttsky26c/tt_um_1DC_vga_dyoa": {
-      "reason": "15 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "15 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.06% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4443,7 +4443,7 @@
       ]
     },
     "ttsky26c/tt_um_2048_vga_game": {
-      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "16 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.01% of pixels change per frame, 3 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4454,7 +4454,7 @@
       ]
     },
     "ttsky26c/tt_um_dragonochi": {
-      "reason": "10 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "10 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.20% of pixels change per frame, 7 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4465,7 +4465,7 @@
       ]
     },
     "ttsky26c/tt_um_ehofmannbr_pmodvga_06": {
-      "reason": "65 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "65 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 1.67% of pixels change per frame, 9 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4476,7 +4476,7 @@
       ]
     },
     "ttsky26c/tt_um_group02_seethebeat": {
-      "reason": "1 distinct frame(s) in 3619 (800x600@60, 800x600, ? colours)",
+      "reason": "1 distinct frame(s) in 3619 (800x600@60, 800x600, 5 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -4492,8 +4492,8 @@
       "videos": []
     },
     "ttsky26c/tt_um_ja_achtung_1x1": {
-      "reason": "56 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
-      "verdict": "ok",
+      "reason": "0.000% of pixels change per frame, 0.46% ever (640x480@60, 640x480, 2 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "10s.avi",
         "30s.avi",
@@ -4503,7 +4503,7 @@
       ]
     },
     "ttsky26c/tt_um_ja_achtung_1x2": {
-      "reason": "11 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps)",
+      "reason": "11 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.00% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4514,7 +4514,7 @@
       ]
     },
     "ttsky26c/tt_um_jonahsaunders_slsvga": {
-      "reason": "2320 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "2320 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.49% of pixels change per frame, 6 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4525,7 +4525,7 @@
       ]
     },
     "ttsky26c/tt_um_kul_conway": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 2 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -4536,7 +4536,7 @@
       ]
     },
     "ttsky26c/tt_um_moein_maleki_arm16": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 2 colours)",
       "verdict": "static",
       "videos": [
         "10s.avi",
@@ -4547,7 +4547,7 @@
       ]
     },
     "ttsky26c/tt_um_neuropong": {
-      "reason": "2052 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "2052 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.13% of pixels change per frame, 5 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4569,7 +4569,7 @@
       ]
     },
     "ttsky26c/tt_um_np523_pong": {
-      "reason": "640 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "640 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.02% of pixels change per frame, 4 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4580,7 +4580,7 @@
       ]
     },
     "ttsky26c/tt_um_rebeccargb_vga_pride": {
-      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "4 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.06% of pixels change per frame, 11 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4591,7 +4591,7 @@
       ]
     },
     "ttsky26c/tt_um_rom_vga_screensaver": {
-      "reason": "3576 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3576 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.90% of pixels change per frame, 59 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4602,7 +4602,7 @@
       ]
     },
     "ttsky26c/tt_um_silicon_art_vga_screensaver": {
-      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3568 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.47% of pixels change per frame, 33 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4613,7 +4613,7 @@
       ]
     },
     "ttsky26c/tt_um_ttsky26c_oguz": {
-      "reason": "8 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "8 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 5.53% of pixels change per frame, 8 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4624,7 +4624,7 @@
       ]
     },
     "ttsky26c/tt_um_urish_rings": {
-      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "128 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 12.45% of pixels change per frame, 16 colours)",
       "verdict": "ok",
       "videos": [
         "10s.avi",
@@ -4655,12 +4655,12 @@
   "targets": 440,
   "verdicts": {
     "bad-timing": 1,
+    "barely-moving": 26,
     "blank": 18,
     "build-failed": 9,
     "fetch-failed": 1,
     "no-sync": 12,
-    "ok": 351,
-    "partial": 1,
+    "ok": 326,
     "skipped": 9,
     "static": 34,
     "unstable-sync": 4

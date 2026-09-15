@@ -1,6 +1,6 @@
 # Status
 
-Generated 2026-09-15 11:35 UTC by `tt-vga report`. Do not edit by hand.
+Generated 2026-09-15 15:06 UTC by `tt-vga report`. Do not edit by hand.
 
 - Targets: 440
 - Attempted: 440
@@ -12,9 +12,9 @@ Generated 2026-09-15 11:35 UTC by `tt-vga report`. Do not edit by hand.
 
 | Verdict | Count |
 | --- | ---: |
-| ok | 351 |
+| ok | 326 |
 | static | 34 |
-| partial | 1 |
+| barely-moving | 26 |
 | blank | 18 |
 | no-sync | 12 |
 | bad-timing | 1 |
@@ -25,32 +25,32 @@ Generated 2026-09-15 11:35 UTC by `tt-vga report`. Do not edit by hand.
 
 ## Per shuttle
 
-| Shuttle | Targets | ok | static | partial | blank | no-sync | bad-timing | unstable-sync | build-failed | fetch-failed | skipped |
+| Shuttle | Targets | ok | static | barely-moving | blank | no-sync | bad-timing | unstable-sync | build-failed | fetch-failed | skipped |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| tt05 | 6 | 4 | 2 |  |  |  |  |  |  |  |  |
-| tt05of | 6 | 4 | 2 |  |  |  |  |  |  |  |  |
+| tt05 | 6 | 3 | 2 | 1 |  |  |  |  |  |  |  |
+| tt05of | 6 | 3 | 2 | 1 |  |  |  |  |  |  |  |
 | tt06 | 6 | 3 |  |  | 1 |  |  |  |  | 1 | 1 |
 | tt07 | 7 | 3 | 1 |  | 3 |  |  |  |  |  |  |
-| ttihp0p1 | 5 | 4 | 1 |  |  |  |  |  |  |  |  |
+| ttihp0p1 | 5 | 3 | 1 | 1 |  |  |  |  |  |  |  |
 | tt08 | 30 | 25 | 2 |  |  | 1 |  | 1 |  |  | 1 |
-| ttihp0p2 | 24 | 20 | 1 |  | 2 | 1 |  |  |  |  |  |
+| ttihp0p2 | 24 | 19 | 1 | 1 | 2 | 1 |  |  |  |  |  |
 | tt09 | 13 | 9 | 1 |  | 2 |  |  |  | 1 |  |  |
-| ttihp25a | 46 | 38 | 3 |  | 2 | 1 |  | 1 | 1 |  |  |
+| ttihp25a | 46 | 37 | 3 | 1 | 2 | 1 |  | 1 | 1 |  |  |
 | ttihp0p3 | 7 | 6 |  |  |  |  |  |  |  |  | 1 |
-| ttcad25a | 40 | 34 | 3 |  |  | 1 |  | 1 |  |  | 1 |
-| ttihp25b | 7 | 7 |  |  |  |  |  |  |  |  |  |
-| ttsky25a | 27 | 19 | 3 |  | 1 | 1 | 1 |  | 1 |  | 1 |
-| ttgf0p1 | 5 | 4 | 1 |  |  |  |  |  |  |  |  |
-| ttsky25b | 15 | 12 |  |  | 1 |  |  | 1 |  |  | 1 |
-| ttgf0p2 | 10 | 8 |  |  |  | 1 |  |  | 1 |  |  |
-| ttihp26a | 31 | 26 | 2 |  | 1 | 1 |  |  | 1 |  |  |
-| ttihp0p4 | 11 | 8 | 1 |  |  | 1 |  |  | 1 |  |  |
-| ttsky26a | 57 | 50 | 2 |  | 2 | 1 |  |  | 1 |  | 1 |
-| ttsky26b | 46 | 38 | 5 | 1 | 1 | 1 |  |  |  |  |  |
+| ttcad25a | 40 | 33 | 2 | 2 |  | 1 |  | 1 |  |  | 1 |
+| ttihp25b | 7 | 6 |  | 1 |  |  |  |  |  |  |  |
+| ttsky25a | 27 | 17 | 3 | 2 | 1 | 1 | 1 |  | 1 |  | 1 |
+| ttgf0p1 | 5 | 3 | 1 | 1 |  |  |  |  |  |  |  |
+| ttsky25b | 15 | 11 |  | 1 | 1 |  |  | 1 |  |  | 1 |
+| ttgf0p2 | 10 | 6 |  | 2 |  | 1 |  |  | 1 |  |  |
+| ttihp26a | 31 | 24 | 2 | 2 | 1 | 1 |  |  | 1 |  |  |
+| ttihp0p4 | 11 | 7 | 1 | 1 |  | 1 |  |  | 1 |  |  |
+| ttsky26a | 57 | 45 | 2 | 5 | 2 | 1 |  |  | 1 |  | 1 |
+| ttsky26b | 46 | 35 | 6 | 3 | 1 | 1 |  |  |  |  |  |
 | ttgf26a | 10 | 7 | 1 |  |  | 1 |  |  | 1 |  |  |
 | ttgf26b | 4 | 3 |  |  |  |  |  |  | 1 |  |  |
 | ttgf0p3 | 6 | 5 |  |  |  |  |  |  |  |  | 1 |
-| ttsky26c | 21 | 14 | 3 |  | 2 | 1 |  |  |  |  | 1 |
+| ttsky26c | 21 | 13 | 3 | 1 | 2 | 1 |  |  |  |  | 1 |
 
 ## Not yet producing a video
 

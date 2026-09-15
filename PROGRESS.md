@@ -180,10 +180,36 @@ harness, including the motion statistics. If this log has no later
 entry, check `tt-vga queue status --host big`, then collect, analyze,
 report and commit.
 
+Full re-run finished 2026-09-15 14:40 UTC (about 2.5 hours, 40 jobs).
+Every project measured by the same harness:
+
+| verdict | count |
+| --- | ---: |
+| ok | 326 |
+| static | 34 |
+| barely-moving | 26 |
+| blank | 18 |
+| no-sync | 12 |
+| skipped (analog, Wokwi) | 9 |
+| build-failed | 9 |
+| unstable-sync | 4 |
+| fetch-failed, bad-timing | 1 each |
+
+386 projects have a watchable clip; 408 have video files of some kind
+(the extra 22 are blank or unstable but still worth keeping for
+diagnosis). 203 GB on the host.
+
+`tt-vga index` now writes `data/index.json`, `data/index.html` (uploaded
+to the root of the video directory, so it is browsable and will work if
+that directory is ever served over HTTP) and `docs/videos.md`.
+
 Next:
-- Collect the full re-run, report, commit, and pick the examples for the
-  README from the best-scoring clips.
-- Ask the owner about the automated diagnosis pass over what is left.
+- Ask the owner before any automated diagnosis pass over what is left.
+- Groups left, in rough order of how many projects they would recover:
+  26 barely-moving and 34 static (mostly games that need better play
+  than one button press at a time, plus genuinely still images);
+  18 blank and 12 no-sync (content in flash, a serial or SPI host, or a
+  VGA input signal); 9 build failures needing per-project work.
 - Judge the stimulus results: did pressing buttons produce motion?
 - Remaining build failures need per-project work: generated ROM macros
   (atari2600), GDS-only macros (cartrip), VHDL (pixel_processor), a

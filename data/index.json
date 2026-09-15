@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-15 14:58 UTC",
+  "generated": "2026-09-15 15:06 UTC",
   "count": 440,
   "projects": [
     {
@@ -21898,7 +21898,7 @@
         "gamepad"
       ],
       "verdict": "ok",
-      "reason": "3539 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps)",
+      "reason": "3539 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.03% of pixels change per frame, 8 colours)",
       "has_video": true,
       "video": {
         "dir": "ttsky26a/tt_um_pettit_galton",
@@ -21931,9 +21931,9 @@
         "seconds": 59.99,
         "frames": 3596,
         "distinct_frames": 3539,
-        "colours": null,
-        "mean_frame_delta": null,
-        "pixels_ever_changed": null,
+        "colours": 8,
+        "mean_frame_delta": 0.00025,
+        "pixels_ever_changed": 0.137783,
         "hsync_active_low": true,
         "vsync_active_low": true,
         "line_clocks": 800,
@@ -21943,13 +21943,13 @@
       "simulation": {
         "clock_hz": 25175000,
         "clocks": 1512393610,
-        "wall_seconds": 3908.2,
-        "clocks_per_wall_second": 386980,
+        "wall_seconds": 3436.8,
+        "clocks_per_wall_second": 440062,
         "auto_ui_in": null,
         "qspi": null,
         "override": null,
         "host": "big-storage",
-        "finished": "2026-09-15T11:19:37+00:00",
+        "finished": "2026-09-15T14:12:38+00:00",
         "tools": {
           "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
           "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
@@ -24145,7 +24145,7 @@
         "tt-audio"
       ],
       "verdict": "ok",
-      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps)",
+      "reason": "3483 distinct frames of 3600 (640x480@60, 640x480, 60.0 fps, 4.04% of pixels change per frame, 10 colours)",
       "has_video": true,
       "video": {
         "dir": "ttsky26a/tt_um_toivoh_demo",
@@ -24178,9 +24178,9 @@
         "seconds": 60.0,
         "frames": 3600,
         "distinct_frames": 3483,
-        "colours": null,
-        "mean_frame_delta": null,
-        "pixels_ever_changed": null,
+        "colours": 10,
+        "mean_frame_delta": 0.040394,
+        "pixels_ever_changed": 0.998437,
         "hsync_active_low": true,
         "vsync_active_low": true,
         "line_clocks": 1600,
@@ -24190,13 +24190,13 @@
       "simulation": {
         "clock_hz": 50400000,
         "clocks": 3028198635,
-        "wall_seconds": 3765.7,
-        "clocks_per_wall_second": 804153,
+        "wall_seconds": 3208.1,
+        "clocks_per_wall_second": 943912,
         "auto_ui_in": null,
         "qspi": null,
         "override": null,
         "host": "big-storage",
-        "finished": "2026-09-15T11:17:21+00:00",
+        "finished": "2026-09-15T14:15:53+00:00",
         "tools": {
           "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
           "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
@@ -28183,7 +28183,7 @@
         "tiny-vga"
       ],
       "verdict": "static",
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, ? colours)",
+      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 9 colours)",
       "has_video": true,
       "video": {
         "dir": "ttsky26b/tt_um_array_mult_vga",
@@ -28216,9 +28216,9 @@
         "seconds": 59.99,
         "frames": 3571,
         "distinct_frames": 1,
-        "colours": null,
-        "mean_frame_delta": null,
-        "pixels_ever_changed": null,
+        "colours": 9,
+        "mean_frame_delta": 0.0,
+        "pixels_ever_changed": 0.0,
         "hsync_active_low": true,
         "vsync_active_low": true,
         "line_clocks": 800,
@@ -28228,13 +28228,13 @@
       "simulation": {
         "clock_hz": 25000000,
         "clocks": 1501893610,
-        "wall_seconds": 6237.8,
-        "clocks_per_wall_second": 240773,
+        "wall_seconds": 5247.4,
+        "clocks_per_wall_second": 286215,
         "auto_ui_in": null,
         "qspi": null,
         "override": null,
         "host": "big-storage",
-        "finished": "2026-09-15T11:58:26+00:00",
+        "finished": "2026-09-15T15:01:58+00:00",
         "tools": {
           "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
           "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"

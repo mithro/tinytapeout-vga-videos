@@ -1,6 +1,6 @@
 # Videos
 
-Generated 2026-09-15 14:58 UTC by `tt-vga index`. Do not edit by hand.
+Generated 2026-09-15 15:06 UTC by `tt-vga index`. Do not edit by hand.
 
 One row per project. The clips themselves are on the simulation host under
 `videos/<shuttle>/<macro>/`; this table says what each one contains.
@@ -309,7 +309,7 @@ ever is the share that change at any point in the clip.
 | `ttsky26a/tt_um_rom_vga_screensaver` | VGA Screensaver with embedded bitmap ROM | ok | 640x480 | 59.9 | 0.9% | 84.8% | 59 | 50 MB |
 | `ttsky26a/tt_um_algofoogle_dottee` | DOTTEE VGA demo | ok | 640x480 | 59.9 | 63.9% | 99.8% | 64 | 1422 MB |
 | `ttsky26a/tt_um_immrudul_w7khan` | Mrudul and Wahhaj Demoscene F2025 | ok | 640x480 | 59.5 | 1.2% | 31.2% | 3 | 68 MB |
-| `ttsky26a/tt_um_pettit_galton` | Tiny Galton | ok | 640x480 | 59.9 |  |  |  | 145 MB |
+| `ttsky26a/tt_um_pettit_galton` | Tiny Galton | ok | 640x480 | 59.9 | 0.025% | 13.8% | 8 | 145 MB |
 | `ttsky26a/tt_um_toivoh_demo_4tile` | Underflow Cubed [TTSKY26a demo competition] | ok | 640x480 | 60.0 | 2.47% | 99.8% | 11 | 263 MB |
 | `ttsky26a/tt_um_bad_ode_plotter_vga` | Bad VGA ODE Plotter | barely-moving | 640x480 | 59.9 | 0.0003% | 0.573% | 3 | 21 MB |
 | `ttsky26a/tt_um_kolontsov_journey` | Journey | ok | 640x480 | 59.5 | 38.7% | 99.8% | 31 | 1221 MB |
@@ -340,7 +340,7 @@ ever is the share that change at any point in the clip.
 | `ttsky26a/tt_um_AmitChen1415` | Tiny Blackjack | ok | 640x480 | 59.5 | 0.0058% | 13.7% | 4 | 67 MB |
 | `ttsky26a/tt_um_gerardvt_spade_poc` | Interactive XOR Plasma (Spade HDL) | ok | 640x480 | 59.5 | 24.9% | 99.8% | 64 | 1081 MB |
 | `ttsky26a/tt_um_spacewar_top` | Spacewar | barely-moving | 640x480 | 59.9 | 0.039% | 0.292% | 3 | 22 MB |
-| `ttsky26a/tt_um_toivoh_demo` | Orion Iron Ion [TTSKY26a demo competition] | ok | 640x480 | 60.0 |  |  |  | 213 MB |
+| `ttsky26a/tt_um_toivoh_demo` | Orion Iron Ion [TTSKY26a demo competition] | ok | 640x480 | 60.0 | 4.04% | 99.8% | 10 | 213 MB |
 | `ttsky26a/tt_um_ChristmasTree_MaligayangPasko` | ChristmasTree_MaligayangPasko | ok | 640x480 | 59.9 | 0.118% | 0.118% | 9 | 279 MB |
 | `ttsky26a/tt_um_topadi` | time | barely-moving | 640x480 | 60.0 | 0.0002% | 0.354% | 6 | 22 MB |
 | `ttsky26a/tt_um_siliconimist` | Siliconimist Demoscene | ok | 640x480 | 59.9 | 12.5% | 97.7% | 4 | 1180 MB |
@@ -394,7 +394,7 @@ ever is the share that change at any point in the clip.
 | `ttsky26b/tt_um_devil_nyancat` | IEEE Devil Nyan Cat VGA | ok | 640x480 | 59.9 | 6.98% | 94.8% | 13 | 302 MB |
 | `ttsky26b/tt_um_datdt_charizard` | IEEE VGA Charizard Flamethrower | ok | 640x480 | 59.9 | 17.1% | 25.5% | 20 | 350 MB |
 | `ttsky26b/tt_um_silicon_art_vga_screensaver` | VGA Screensaver with Silicon Art ROM | ok | 640x480 | 59.9 | 1.47% | 87.7% | 33 | 74 MB |
-| `ttsky26b/tt_um_array_mult_vga` | 4x4 Array Multiplier with VGA Visualization | static | 640x480 | 59.5 |  |  |  | 155 MB |
+| `ttsky26b/tt_um_array_mult_vga` | 4x4 Array Multiplier with VGA Visualization | static | 640x480 | 59.5 | 0% | 0% | 9 | 155 MB |
 | `ttsky26b/tt_um_rule30_vga` | IEEE Rule 30 Cellular Automaton VGA Display | static | 640x480 | 59.5 | 0% | 0% | 3 | 255 MB |
 | `ttsky26b/tt_um_jasonbrave_terre` | Terre VGA | ok | 640x480 | 59.9 | 0.135% | 66.8% | 2 | 20 MB |
 | `ttsky26b/tt_um_noah_azz_demo` | My First TT Demo | ok | 640x480 | 59.9 | 6.23% | 99.6% | 11 | 588 MB |
