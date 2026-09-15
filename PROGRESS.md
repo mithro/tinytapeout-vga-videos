@@ -93,10 +93,26 @@ Still open after the fixes (for the diagnosis phase):
   than two lines: check what the design puts on the vsync pin) and
   nitelich_conway.
 - One repo is gone (alex-segura/tt06-pong).
-Re-run of the 46 affected projects started 05:57 UTC.
+Re-run of the 46 affected projects started 05:57 UTC. In parallel, the 19
+no-sync/bad-timing projects were re-run with the new input-bit probe
+(calibration-only run per single ui_in bit; first bit with sync wins,
+recorded as `auto_ui_in`). Early probe results: photo_frame, vga_tester
+and spi_mem stay no-sync (external hardware or serial commands needed).
+Other notes:
+- "static" now means exactly one distinct frame: Nyan cat alternates two
+  frames and was wrongly called static. 71 static remain, mostly games
+  waiting for a player (dino, snake, flappy, pong, 2048, maze, missile
+  command, spacewar, gamepad demo) plus real still images (colour bars,
+  pride flag, cbtest). These are the "needs-stimulus" set for the gamepad
+  emulation and the diagnosis phase.
+- Re-hardened projects renamed on the shuttle (tt_um_toivoh_demo_tt08/
+  tt10 on ttihp25a) declare the original module name; job.py now falls
+  back to the single tt_um_ module found in the sources. tt10 builds and
+  syncs; tt08 still lacks `np_latch_registers`, a file the re-harden repo
+  added (source list differs from the project repo at that commit).
 
 Next:
-- Collect the re-run, report, commit.
+- Collect the re-run and the probe batch, report, commit.
 - Then review verdict groups: no-sync and blank first (most likely
   wrong-inputs / wrong-clock), static (stimulus), build-failed (source
   layout, SystemVerilog, includes).
