@@ -169,8 +169,21 @@ programs from flash that nobody has; the modelled flash holds a test
 pattern. Supplying a real image per project is an override away
 (`flash: image.bin`) but needs the project's own format.
 
+The 24 slow designs all finished their full 60 s clips with a 3 hour
+limit (39 to 104 minutes each): 21 ok, 2 blank (retro console), 1 static
+(array multiplier). So the wall-clock limit, not the designs, was the
+problem.
+
+Final full re-run of all 440 started 2026-09-15 12:05 UTC (40 jobs,
+3 hour limit, `--redo`) so every project is measured by the same
+harness, including the motion statistics. If this log has no later
+entry, check `tt-vga queue status --host big`, then collect, analyze,
+report and commit.
+
 Next:
-- Full re-run of all 440 with the final harness (40 jobs, 3 hour limit).
+- Collect the full re-run, report, commit, and pick the examples for the
+  README from the best-scoring clips.
+- Ask the owner about the automated diagnosis pass over what is left.
 - Judge the stimulus results: did pressing buttons produce motion?
 - Remaining build failures need per-project work: generated ROM macros
   (atari2600), GDS-only macros (cartrip), VHDL (pixel_processor), a
