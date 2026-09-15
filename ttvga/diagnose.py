@@ -178,9 +178,16 @@ def run_claude(bundle: Path, model: str, budget: float, effort: str | None) -> d
         cmd += ["--effort", effort]
     prompt = f"{PROMPT}\nThe bundle directory is {bundle}. Start by reading {bundle}/project.md and {bundle}/result.json."
     p = subprocess.run(cmd, input=prompt, capture_output=True, text=True, timeout=1800)
+    (bundle / "claude-output.json").write_text(p.stdout)
+    (bundle / "claude-stderr.txt").write_text(p.stderr)
     if p.returncode != 0 and not p.stdout.strip():
         raise RuntimeError(f"claude exited {p.returncode}: {p.stderr.strip()[-2000:]}")
-    return json.loads(p.stdout)
+    out = json.loads(p.stdout)
+    if isinstance(out, list):
+        # Some CLI versions print the whole message list; the last "result" entry is the summary.
+        results = [m for m in out if isinstance(m, dict) and m.get("type") == "result"]
+        out = results[-1] if results else (out[-1] if out and isinstance(out[-1], dict) else {})
+    return out
 
 
 def run(args: argparse.Namespace) -> int:
