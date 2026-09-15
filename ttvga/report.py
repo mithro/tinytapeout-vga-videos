@@ -14,7 +14,7 @@ from ttvga.targets import load_targets
 
 STATUS_MD = ROOT / "docs" / "status.md"
 STATUS_JSON = DATA_DIR / "status.json"
-VERDICT_ORDER = ["ok", "static", "blank", "no-sync", "bad-timing", "unstable-sync", "sim-timeout",
+VERDICT_ORDER = ["ok", "static", "partial", "blank", "no-sync", "bad-timing", "unstable-sync", "sim-timeout",
                  "sim-crashed", "build-failed", "fetch-failed", "encode-failed", "error", "skipped"]
 
 
@@ -38,7 +38,7 @@ def run(args: argparse.Namespace) -> int:
         f"Generated {generated} by `tt-vga report`. Do not edit by hand.", "",
         f"- Targets: {len(targets)}",
         f"- Attempted: {done}",
-        f"- Videos produced (ok + static): {succeeded}",
+        f"- Videos produced (ok + static + partial): {succeeded}",
         f"- Pending: {total['pending']}", "",
         "## Verdicts", "",
         "| Verdict | Count |", "| --- | ---: |",

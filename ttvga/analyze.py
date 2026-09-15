@@ -8,7 +8,8 @@ Verdicts, in the order they are checked:
 | skipped                | not attempted (analog, Wokwi, ...)                          |
 | fetch-failed           | repo or commit not reachable                                |
 | build-failed           | Verilator could not build the sources                       |
-| sim-timeout            | wall-clock limit hit before enough frames                   |
+| partial                | wall-clock limit hit, but a clip of at least 1 s exists      |
+| sim-timeout            | wall-clock limit hit before a usable clip                   |
 | no-sync                | no periodic hsync/vsync seen during calibration             |
 | bad-timing             | sync seen but not a plausible raster                        |
 | unstable-sync          | line or frame period varied by more than 1%                 |
@@ -29,7 +30,7 @@ from pathlib import Path
 
 from ttvga import RESULTS_DIR
 
-SUCCESS = {"ok", "static"}
+SUCCESS = {"ok", "static", "partial"}
 
 
 def verdict(result: dict) -> tuple[str, str]:
@@ -47,6 +48,11 @@ def verdict(result: dict) -> tuple[str, str]:
         if not timing:
             return "sim-crashed", error
     status = timing.get("status")
+    if status == "sim-timeout" and timing.get("frames", 0) >= 60 and result.get("videos"):
+        # Killed at the wall-clock limit but a usable clip was written.
+        return "partial", (f"{timing['frames']} of {timing.get('target_frames', '?')} frames in "
+                           f"{timing.get('wall_seconds', 0):.0f} s wall ({timing.get('mode')}, "
+                           f"{timing.get('clocks_per_wall_second', 0) / 1e6:.2f} Mclk/s)")
     if status in ("no-sync", "bad-timing", "unstable-sync", "sim-timeout"):
         detail = (f"line {timing.get('line_clocks') or timing.get('hsync_period_clocks')} clocks, "
                   f"{timing.get('lines', '?')} lines, hsync transitions {timing.get('hsync_transitions', '?')}")

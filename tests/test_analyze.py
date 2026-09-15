@@ -26,6 +26,16 @@ def test_timing_status_wins_over_encode_error():
     assert verdict(r)[0] == "unstable-sync"
 
 
+def test_partial_clip_after_wall_clock_limit():
+    t = timing(status="sim-timeout", frames=900, target_frames=3600, wall_seconds=1800, clocks_per_wall_second=1.2e6)
+    with_video = {"stage": "encode", "error": None, "timing": t, "videos": {"60s.avi": {}}}
+    assert verdict(with_video)[0] == "partial"
+    no_video = {"stage": "simulate", "error": None, "timing": t}
+    assert verdict(no_video)[0] == "sim-timeout"
+    too_short = {"stage": "encode", "error": None, "timing": timing(status="sim-timeout", frames=10), "videos": {"60s.avi": {}}}
+    assert verdict(too_short)[0] == "sim-timeout"
+
+
 def test_content_verdicts():
     ok = {"stage": "encode", "error": None, "timing": timing()}
     assert verdict(ok)[0] == "ok"
