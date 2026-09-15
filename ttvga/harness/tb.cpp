@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <csignal>
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
@@ -159,6 +160,11 @@ SyncInfo analyse(const SyncTracker& t) {
     return s;
 }
 
+// SIGTERM from the job runner's wall-clock limit: stop cleanly so ffmpeg can
+// finish the AVI and timing.json reports what was captured so far.
+volatile std::sig_atomic_t g_stop = 0;
+void on_signal(int) { g_stop = 1; }
+
 uint64_t fnv1a(const uint8_t* p, size_t n) {
     uint64_t h = 1469598103934665603ULL;
     for (size_t i = 0; i < n; i++) { h ^= p[i]; h *= 1099511628211ULL; }
@@ -193,6 +199,8 @@ int main(int argc, char** argv) {
     const auto t_start = std::chrono::steady_clock::now();
     auto wall = [&]() { return std::chrono::duration<double>(std::chrono::steady_clock::now() - t_start).count(); };
 
+    std::signal(SIGTERM, on_signal);
+    std::signal(SIGINT, on_signal);
     VerilatedContext ctx;
     ctx.commandArgs(argc, argv);
     Vtop top{&ctx};
@@ -238,7 +246,7 @@ int main(int argc, char** argv) {
     SyncInfo hs, vs;
     const uint64_t calib_limit = static_cast<uint64_t>(opt.calib_seconds * opt.clock_hz);
     const uint64_t check_every = 1 << 16;
-    while (clock < calib_limit) {
+    while (clock < calib_limit && !g_stop) {
         tick();
         const uint8_t uo = top.uo_out;
         ht.feed(uo & 0x80, clock);
@@ -343,7 +351,7 @@ int main(int argc, char** argv) {
         frames++;
     };
 
-    while (frames < target_frames && clock < clock_limit) {
+    while (frames < target_frames && clock < clock_limit && !g_stop) {
         tick();
         const uint8_t uo = top.uo_out;
         const bool h_pulse = hs.active_low ? !(uo & 0x80) : !!(uo & 0x80);
@@ -390,7 +398,7 @@ int main(int argc, char** argv) {
     top.final();
 
     const char* status = "ok";
-    if (frames < target_frames / 2) status = "sim-timeout";
+    if (g_stop || frames < target_frames / 2) status = "sim-timeout";
     else if (frame_max > frame_min + frame_min / 100 || long_lines + short_lines > lines_seen / 100) status = "unstable-sync";
     const double wall_s = wall();
     std::fprintf(tj, "{\n  \"status\": \"%s\",\n  \"clock_hz\": %.0f,\n  \"first_sync_clock\": %llu,\n"

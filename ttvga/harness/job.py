@@ -44,15 +44,28 @@ def sha256(path: Path) -> str:
 
 
 def run(cmd: list[str], log: Path, cwd: Path | None = None, timeout: float | None = None,
-        env: dict[str, str] | None = None) -> int:
-    """Run a command, appending its output to `log`. Returns the exit code (124 on timeout)."""
+        env: dict[str, str] | None = None, grace: float = 0.0) -> int:
+    """Run a command, appending its output to `log`. Returns the exit code (124 on timeout).
+
+    With `grace`, a timeout first sends SIGTERM and waits that long for the
+    command to finish on its own (the model then closes ffmpeg cleanly).
+    """
     with log.open("a") as f:
         f.write(f"\n$ {' '.join(cmd)}\n")
         f.flush()
+        p = subprocess.Popen(cmd, cwd=cwd, stdout=f, stderr=subprocess.STDOUT, env=env)
         try:
-            p = subprocess.run(cmd, cwd=cwd, stdout=f, stderr=subprocess.STDOUT, timeout=timeout, env=env)
+            p.wait(timeout=timeout)
         except subprocess.TimeoutExpired:
             f.write(f"\n[timeout after {timeout}s]\n")
+            p.terminate()
+            try:
+                p.wait(timeout=grace or 5)
+                f.write(f"[finished after SIGTERM, exit {p.returncode}]\n")
+            except subprocess.TimeoutExpired:
+                p.kill()
+                p.wait()
+                f.write("[killed]\n")
             return 124
         f.write(f"[exit {p.returncode}]\n")
         return p.returncode
@@ -86,7 +99,11 @@ def fetch(target: dict, repo_dir: Path, log: Path, patch: Path | None = None) ->
         if run(cmd, log, cwd=repo_dir, timeout=600, env=env) != 0:
             return f"{cmd[1]} failed"
     # Submodules are rare but do occur (shared libraries of Verilog modules).
+    # Their URLs are often SSH, which would hang waiting for a key: use HTTPS.
     if (repo_dir / ".gitmodules").exists():
+        run(["git", "config", "url.https://github.com/.insteadOf", "git@github.com:"], log, cwd=repo_dir, env=env)
+        run(["git", "config", "--add", "url.https://github.com/.insteadOf", "ssh://git@github.com/"], log,
+            cwd=repo_dir, env=env)
         run(["git", "submodule", "update", "-q", "--init", "--depth", "1", "--recursive"], log, cwd=repo_dir,
             timeout=600, env=env)
     if patch is not None:
@@ -98,8 +115,15 @@ def fetch(target: dict, repo_dir: Path, log: Path, patch: Path | None = None) ->
 def build(target: dict, ov: dict, repo_dir: Path, build_dir: Path, log: Path, tools: dict) -> str | None:
     """Verilate the sources with tb.cpp. Returns an error string or None."""
     src = repo_dir / "src"
-    sources = ov.get("sources") or target["source_files"]
-    missing = [s for s in sources if not (src / s).exists()]
+    cells = Path(__file__).resolve().parent / "cells"
+    sources = list(ov.get("sources") or target["source_files"])
+    # IHP re-hardens of sky130 projects list a polyfill the project repo never
+    # had (the shuttle added it); the same file also stands in for sky130
+    # standard cells instantiated directly in RTL.
+    for i, s in enumerate(sources):
+        if Path(s).name == "sky130_polyfill.v" and not (src / s).exists():
+            sources[i] = str(cells / "sky130_polyfill.v")
+    missing = [s for s in sources if not (src / s).exists() and not Path(s).is_absolute()]
     if missing:
         return "missing sources: " + ", ".join(missing)
     top = ov.get("top_module") or target["top_module"]
@@ -113,9 +137,12 @@ def build(target: dict, ov: dict, repo_dir: Path, build_dir: Path, log: Path, to
         "-Wno-fatal", "-Wno-lint", "-Wno-style", "-Wno-MULTIDRIVEN", "-Wno-UNOPTFLAT",
         "-CFLAGS", "-std=c++17", "-MAKEFLAGS", "OPT_FAST=-O2",
         "-I" + str(src), "-y", str(src), "--relative-includes",
+        # Behavioural models for PDK cells instantiated by name (latches, clock
+        # gates, buffers): sky130 polyfill from Tiny Tapeout, IHP sg13g2 models.
+        "-y", str(cells), "+libext+.v+.sv",
     ]
     flags = list(ov.get("verilator_flags") or [])
-    files = [str(src / s) for s in sources if not s.endswith((".vh", ".svh", ".h"))]
+    files = [s if Path(s).is_absolute() else str(src / s) for s in sources if not s.endswith((".vh", ".svh", ".h"))]
     tb = str(Path(__file__).resolve().parent / "tb.cpp")
     rc = run(base + flags + [tb] + files, log, cwd=src, timeout=1800)
     text = log.read_text()
@@ -151,8 +178,8 @@ def simulate(target: dict, ov: dict, repo_dir: Path, build_dir: Path, work: Path
         if ov.get(key):
             cmd += [f"--{key}", str((args.overrides / target["shuttle"] / ov[key]).resolve())]
     # $readmem paths in Tiny Tapeout projects are usually relative to src/.
-    rc = run(cmd, log, cwd=repo_dir / "src", timeout=args.timeout)
-    if rc == 124:
+    rc = run(cmd, log, cwd=repo_dir / "src", timeout=args.timeout, grace=120)
+    if rc == 124 and not (out / "timing.json").exists():
         return "wall-clock limit"
     if not (out / "timing.json").exists():
         return f"model exited {rc} without timing.json"
