@@ -111,8 +111,40 @@ Other notes:
   syncs; tt08 still lacks `np_latch_registers`, a file the re-harden repo
   added (source list differs from the project repo at that commit).
 
+After the polyfill re-run and the input probe (all 440 attempted):
+288 ok, 71 static, 24 partial, 20 blank, 13 build-failed, 12 no-sync,
+9 skipped, 1 each fetch-failed / bad-timing / unstable-sync. 383 videos.
+- The input probe found the tennis game's pin-mapping select on all six
+  shuttles (ui[7] high = Tiny VGA, low = Digilent, which puts sync on
+  uio). Recorded as explicit overrides.
+- The decoder now keeps the horizontal crop from a matching mode when the
+  frame has a non-standard number of lines (tennis: 799-clock lines, 506
+  lines), instead of falling back to a stretched raw crop.
+- 24 projects are simply slow (0.24 to 3 Mclk/s: the toivoh demos, bouncy
+  capsule, mandelbrot, galton, array_mult). They now get a partial clip
+  instead of nothing; re-running with a 3 hour limit to finish them.
+- Submodule fetch still hung with an insteadOf rewrite, so .gitmodules is
+  rewritten to HTTPS directly (raybox-zero on four shuttles).
+- `tt-vga stimulus` derives input scripts from the pin names the authors
+  wrote in info.yaml: 55 overrides for static/blank/no-sync projects (16
+  gamepad, the rest one pin at a time). Interface pins (video in, SPI,
+  memory, config) are deliberately left alone. Re-running all 103.
+- The Claude CLI hit its session limit during diagnosis (resets 16:10
+  Adelaide). Two empty answers were removed from the results. Diagnosis
+  so far: 3 real answers, $0.76 total, both causes correct.
+
 Next:
-- Collect the re-run and the probe batch, report, commit.
+- Collect the three batches (slow, submodule, stimulus), report, commit.
+- Judge the stimulus results: did pressing buttons produce motion?
+- Remaining build failures need per-project work: generated ROM macros
+  (atari2600), GDS-only macros (cartrip), VHDL (pixel_processor), a
+  Verilator parse bug on `~&` (prime_quine), PDK ring oscillators
+  (vgaringosc, vga_trng: not meaningfully simulatable), and one file the
+  IHP re-harden added (toivoh_demo_tt08).
+- The QSPI flash/PSRAM group (rle_vga, photo_frame, tinygpu, sandsim,
+  achtung, madech, spi_mem) needs a behavioural memory model in the
+  testbench: a framebuffer in PSRAM is common, so this is the single
+  biggest remaining unlock. Design it next.
 - Then review verdict groups: no-sync and blank first (most likely
   wrong-inputs / wrong-clock), static (stimulus), build-failed (source
   layout, SystemVerilog, includes).
