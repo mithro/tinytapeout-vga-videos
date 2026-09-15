@@ -1,18 +1,18 @@
 # Status
 
-Generated 2026-09-15 05:52 UTC by `tt-vga report`. Do not edit by hand.
+Generated 2026-09-15 06:02 UTC by `tt-vga report`. Do not edit by hand.
 
 - Targets: 440
 - Attempted: 426
-- Videos produced (ok + static): 345
+- Videos produced (ok + static + partial): 345
 - Pending: 14
 
 ## Verdicts
 
 | Verdict | Count |
 | --- | ---: |
-| ok | 270 |
-| static | 75 |
+| ok | 274 |
+| static | 71 |
 | blank | 20 |
 | no-sync | 13 |
 | bad-timing | 7 |
@@ -31,12 +31,12 @@ Generated 2026-09-15 05:52 UTC by `tt-vga report`. Do not edit by hand.
 | tt06 | 6 | 1 | 1 |  |  | 1 |  |  | 1 | 1 | 1 |
 | tt07 | 7 | 3 |  | 3 |  |  |  | 1 |  |  |  |
 | ttihp0p1 | 5 | 2 | 1 |  |  | 1 |  | 1 |  |  |  |
-| tt08 | 30 | 19 | 3 | 1 | 1 |  |  | 3 |  | 1 | 2 |
+| tt08 | 30 | 20 | 2 | 1 | 1 |  |  | 3 |  | 1 | 2 |
 | ttihp0p2 | 24 | 15 | 3 | 1 | 1 | 1 |  |  |  |  | 3 |
 | tt09 | 13 | 6 | 2 | 2 |  |  |  | 3 |  |  |  |
-| ttihp25a | 46 | 27 | 7 | 3 | 2 |  |  | 6 |  |  | 1 |
+| ttihp25a | 46 | 28 | 6 | 3 | 2 |  |  | 6 |  |  | 1 |
 | ttihp0p3 | 7 | 6 |  |  |  |  |  |  |  | 1 |  |
-| ttcad25a | 40 | 26 | 6 | 1 | 1 |  |  | 2 |  | 1 | 3 |
+| ttcad25a | 40 | 27 | 5 | 1 | 1 |  |  | 2 |  | 1 | 3 |
 | ttihp25b | 7 | 6 | 1 |  |  |  |  |  |  |  |  |
 | ttsky25a | 27 | 15 | 5 | 1 | 2 | 1 |  | 2 |  | 1 |  |
 | ttgf0p1 | 5 | 2 | 1 |  |  | 1 |  | 1 |  |  |  |
@@ -44,7 +44,7 @@ Generated 2026-09-15 05:52 UTC by `tt-vga report`. Do not edit by hand.
 | ttgf0p2 | 10 | 6 | 2 |  | 1 |  |  | 1 |  |  |  |
 | ttihp26a | 31 | 22 | 5 | 1 | 1 |  |  | 1 |  |  | 1 |
 | ttihp0p4 | 11 | 4 | 3 |  | 1 |  |  | 2 |  |  | 1 |
-| ttsky26a | 57 | 42 | 7 | 2 |  |  |  | 4 |  | 1 | 1 |
+| ttsky26a | 57 | 43 | 6 | 2 |  |  |  | 4 |  | 1 | 1 |
 | ttsky26b | 46 | 31 | 12 | 1 | 1 |  |  |  |  |  | 1 |
 | ttgf26a | 10 | 7 | 1 |  | 1 |  |  | 1 |  |  |  |
 | ttgf26b | 4 | 3 |  |  |  |  |  | 1 |  |  |  |
