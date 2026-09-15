@@ -1,0 +1,15 @@
+# Pinned toolchain installed into the ttvga user's home on the simulation host.
+# Everything is a plain tarball; nothing is installed system-wide.
+
+[oss-cad-suite]
+version = "2026-09-14"
+url = "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2026-09-14/oss-cad-suite-linux-x64-20260914.tgz"
+dir = "oss-cad-suite"
+check = "oss-cad-suite/bin/verilator"
+
+[ffmpeg]
+version = "n8.1.2-52-g5a03dfa0f6 (BtbN autobuild-2026-09-14-13-17)"
+url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-09-14-13-17/ffmpeg-n8.1.2-52-g5a03dfa0f6-linux64-gpl-8.1.tar.xz"
+dir = "ffmpeg"
+strip = 1
+check = "ffmpeg/bin/ffmpeg"

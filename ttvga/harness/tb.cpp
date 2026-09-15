@@ -33,13 +33,17 @@ struct Mode {
     int vpulse, vback, height; // lines
 };
 
-// Common modes. Pixel clocks: 25.175, 31.5, 36, 40, 65, 74.25, 108 MHz.
+// VESA/industry modes. Pixel clocks (MHz): 25.175, 31.5, 36, 40, 49.5, 50, 65, 74.25, 75, 108.
 const Mode MODES[] = {
     {"640x480@60", 800, 525, 96, 48, 640, 2, 33, 480},
     {"640x480@72", 832, 520, 40, 128, 640, 3, 28, 480},
+    {"640x480@75", 840, 500, 64, 120, 640, 3, 16, 480},
     {"800x600@56", 1024, 625, 72, 128, 800, 2, 22, 600},
     {"800x600@60", 1056, 628, 128, 88, 800, 4, 23, 600},
+    {"800x600@72", 1040, 666, 120, 64, 800, 6, 23, 600},
+    {"800x600@75", 1056, 625, 80, 160, 800, 3, 21, 600},
     {"1024x768@60", 1344, 806, 136, 160, 1024, 6, 29, 768},
+    {"1024x768@70", 1328, 806, 136, 144, 1024, 6, 29, 768},
     {"1280x720@60", 1650, 750, 40, 220, 1280, 5, 20, 720},
     {"1280x1024@60", 1688, 1066, 112, 248, 1280, 3, 38, 1024},
 };
@@ -226,7 +230,9 @@ int main(int argc, char** argv) {
         for (int k = 1; k <= 4; k++) {
             double eh = std::fabs(static_cast<double>(line_clocks) - static_cast<double>(m.line_px) * k) / (m.line_px * k);
             double ev = std::fabs(static_cast<double>(lines) - m.lines) / m.lines;
-            double e = std::max(eh, ev);
+            // The sync pulse width breaks ties between modes with similar totals (800x600@60 vs @75).
+            double ep = std::fabs(static_cast<double>(hs.pulse) - static_cast<double>(m.hpulse) * k) / (m.line_px * k);
+            double e = std::max(eh, ev) + ep * 0.1;
             if (e < best) { best = e; mode = &m; cpp = k; }
         }
     }

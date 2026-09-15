@@ -127,7 +127,7 @@ def build(target: dict, ov: dict, repo_dir: Path, build_dir: Path, log: Path, to
         "--prefix", "Vtop", "--top-module", top, "-Mdir", str(build_dir),
         "-O3", "--x-assign", "fast", "--x-initial", "fast",
         "-Wno-fatal", "-Wno-lint", "-Wno-style", "-Wno-MULTIDRIVEN", "-Wno-UNOPTFLAT",
-        "-CFLAGS", "-O2", "-CFLAGS", "-std=c++17",
+        "-CFLAGS", "-std=c++17", "-MAKEFLAGS", "OPT_FAST=-O2",
         "-I" + str(src), "-y", str(src), "--relative-includes",
     ]
     flags = list(ov.get("verilator_flags") or [])
@@ -179,6 +179,11 @@ def encode(work: Path, videos: Path, log: Path, tools: dict) -> str | None:
     src = work / "out" / "60s.avi"
     if not src.exists() or src.stat().st_size == 0:
         return "no 60s.avi"
+    timing = json.loads((work / "out" / "timing.json").read_text())
+    frames, fps = timing.get("frames", 0), timing.get("fps", 60.0)
+    duration = frames / fps if fps else 0.0
+    poster_at = min(5.0, duration / 2)                 # content has usually settled by 5 s
+    step = max(1, frames // 16)                        # 16 frames spread over the clip
     if videos.exists():
         shutil.rmtree(videos)
     videos.mkdir(parents=True)
@@ -188,12 +193,13 @@ def encode(work: Path, videos: Path, log: Path, tools: dict) -> str | None:
         if run([ff, "-hide_banner", "-loglevel", "error", "-y", "-i", str(videos / "60s.avi"), "-t", str(secs),
                 "-c", "copy", str(videos / f"{secs}s.avi")], log, timeout=600) != 0:
             return f"ffmpeg cut {secs}s failed"
-    run([ff, "-hide_banner", "-loglevel", "error", "-y", "-ss", "5", "-i", str(videos / "60s.avi"),
+    run([ff, "-hide_banner", "-loglevel", "error", "-y", "-ss", f"{poster_at:.3f}", "-i", str(videos / "60s.avi"),
          "-frames:v", "1", str(videos / "poster.png")], log, timeout=600)
-    # 16 frames spread over the clip, half size, in a 4x4 grid.
     run([ff, "-hide_banner", "-loglevel", "error", "-y", "-i", str(videos / "60s.avi"),
-         "-vf", "select='not(mod(n\\,225))',scale=iw/2:-1,tile=4x4", "-frames:v", "1",
+         "-vf", f"select='not(mod(n\\,{step}))',scale=iw/2:-1,tile=4x4", "-frames:v", "1",
          str(videos / "contact.png")], log, timeout=600)
+    if not (videos / "poster.png").exists():
+        return "poster failed"
     return None
 
 
