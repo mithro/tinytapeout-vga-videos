@@ -32,7 +32,24 @@ Decisions from the owner:
 - MJPEG, native resolution; storage is not a concern.
 - At most two sub-agents at once.
 
-Open questions: see "Questions" in the README until answered.
+Answers from the owner (2026-09-15):
+- Start on the largest host now; the dedicated user on the other three
+  hosts is to be requested from the Claude Code session that owns the
+  hetzner-ansible repository (on the owner's desktop), not created by hand.
+- The changed host key on one host was expected; accepted.
+- A new dedicated key pair (`~/.ssh/ttvga_ed25519` on the laptop) is used
+  for the `ttvga` user. Never committed.
+- AI diagnosis may be used ad hoc while developing and debugging, but the
+  fully automated diagnosis of all failures must NOT be started without
+  asking and discussing first; it is one of the last things to do.
+- Review images (poster, contact sheet) stay on the simulation host for
+  now. Commit only a few as documentation examples. A GitHub Pages gallery
+  may come later.
+- Static output is "successful but potentially needs more work": report it
+  as a success, then explore whether it is static by design or needs more
+  stimulus.
+- Defaults chosen by me, not asked: 30 minute wall-clock limit per
+  simulation, MJPEG `-q:v 2` in AVI, repo settings as project-search.
 
 Next:
 - Get answers to the open questions.
