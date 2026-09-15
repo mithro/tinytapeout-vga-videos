@@ -89,3 +89,12 @@ def test_stats_summarise_the_whole_set():
     assert s["helped_by"]["probed_input"] == 1 and s["helped_by"]["qspi_memory"] == 0
     assert s["liveliest"][0]["id"] == "tt08/tt_um_x"
     assert s["motion"]["median"] == 0.0123
+
+
+def test_thumbnail_offers_the_animation_and_the_contact_sheet():
+    page = write_html([record(TARGET, RESULT)], "now")
+    assert 'data-gif="tt08/tt_um_x/preview.gif"' in page
+    assert 'data-poster="tt08/tt_um_x/poster.png"' in page
+    assert 'href="tt08/tt_um_x/contact.png"' in page
+    assert "button.play" in page                      # the handler is on the page
+    assert 'aria-label="Play a preview of A demo"' in page

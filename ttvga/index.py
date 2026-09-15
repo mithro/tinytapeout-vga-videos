@@ -33,6 +33,27 @@ VIDEOS_MD = ROOT / "docs" / "videos.md"
 PROJECT_URL = "https://tinytapeout.com/chips/{shuttle}/{macro}"
 CLIPS = ("60s.avi", "30s.avi", "10s.avi")
 
+# Clicking a poster swaps in the animation and starts it; clicking again puts
+# the still back, so a page of 400 posters never loads 400 animations at once.
+PLAY_SCRIPT = """<script>
+document.addEventListener('click', function (event) {
+  var button = event.target.closest('button.play');
+  if (!button) return;
+  var img = button.querySelector('img');
+  var playing = button.classList.toggle('playing');
+  var badge = button.querySelector('.badge');
+  img.onerror = function () {                 // no animation for this one
+    img.onerror = null;
+    img.src = button.dataset.poster;
+    button.classList.remove('playing');
+    badge.textContent = 'no preview';
+  };
+  // A fresh query string restarts an animation that has already played.
+  img.src = playing ? button.dataset.gif + '?' + Date.now() : button.dataset.poster;
+  badge.textContent = playing ? 'stop' : 'play';
+});
+</script>"""
+
 
 def record(target: dict, result: dict | None) -> dict:
     """One project's entry: what it is, what was simulated, what came out."""
@@ -282,6 +303,13 @@ def write_html(entries: list[dict], generated: str) -> str:
         "th,td{text-align:left;padding:.4rem .5rem;border-bottom:1px solid #e7e5ee;vertical-align:top}",
         "th{font-weight:500;color:#555;background:#f2f1f6;position:sticky;top:2.6rem}",
         "img{display:block;width:160px;height:auto;border:1px solid #e7e5ee;background:#000}",
+        ".play{display:block;padding:0;border:0;background:none;cursor:pointer;position:relative}",
+        ".play .badge{position:absolute;left:.3rem;bottom:.4rem;background:rgba(28,27,46,.75);color:#fff;",
+        "  border-radius:.8rem;padding:0 .4rem;font-size:.75rem;line-height:1.4}",
+        ".play:hover .badge,.play:focus-visible .badge{background:#544ead}",
+        ".play.playing .badge{background:#8afbfd;color:#1c1b2e}",
+        ".play:focus-visible{outline:2px solid #544ead;outline-offset:2px}",
+        ".frames{font-size:.8rem}",
         "td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}",
         ".v{display:inline-block;padding:.05rem .4rem;border-radius:.6rem;font-size:.85em;white-space:nowrap}",
         ".ok{background:#dcf5e3;color:#14532d}.static{background:#e8e6f6;color:#312a6d}",
@@ -310,7 +338,13 @@ def write_html(entries: list[dict], generated: str) -> str:
         out.append("<table><tr><th>Preview</th><th>Project</th><th>Result</th><th>Video</th><th>Files</th></tr>")
         for e in rows:
             v, d = e["video"], e["video"].get("dir")
-            preview = f'<a href="{d}/contact.png"><img src="{d}/poster.png" alt="" loading="lazy"></a>' if e["has_video"] else ""
+            # The poster is the still; clicking it swaps in the animation.
+            preview = (f'<button class="play" type="button" data-poster="{d}/poster.png" '
+                       f'data-gif="{d}/preview.gif" aria-label="Play a preview of '
+                       f'{html.escape(e["title"] or e["macro"], quote=True)}">'
+                       f'<img src="{d}/poster.png" alt="" loading="lazy">'
+                       f'<span class="badge">play</span></button>'
+                       f'<a class="frames" href="{d}/contact.png">all frames</a>') if e["has_video"] else ""
             files = " ".join(f'<a href="{d}/{n}">{n[:-4]}</a> <span class="num">{size(v["files"][n]["bytes"])}</span>'
                              for n in CLIPS if n in v["files"])
             shape = (f'{v.get("width")}&times;{v.get("height")} {v.get("mode") or ""}<br>'
@@ -332,7 +366,9 @@ def write_html(entries: list[dict], generated: str) -> str:
                 "</tr>")
         out.append("</table>")
     out.append("<p>Made by <a href=\"https://github.com/mithro/tinytapeout-vga-videos\">tinytapeout-vga-videos</a>. "
-               "Project sources and documentation belong to their authors.</p></body></html>")
+               "Project sources and documentation belong to their authors.</p>")
+    out.append(PLAY_SCRIPT)
+    out.append("</body></html>")
     return "\n".join(out) + "\n"
 
 

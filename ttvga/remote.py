@@ -208,6 +208,24 @@ tail -n {args.lines} ~/{REMOTE_ROOT}/queue.log 2>/dev/null || true
     return 2
 
 
+def rerender(args: argparse.Namespace) -> int:
+    """Rebuild posters, contact sheets and animations from the clips already on the host."""
+    host = resolve_host(args.host)
+    cmd = (f"python3 ~/{REMOTE_ROOT}/harness/rerender.py --videos ~/{REMOTE_VIDEOS} "
+           f"--root ~/{REMOTE_ROOT} --jobs {args.jobs or host.jobs}")
+    if args.only:
+        cmd += f" --only {shlex.quote(args.only)}"
+    if args.background:
+        script = f"""
+set -e
+if tmux has-session -t ttvga-rerender 2>/dev/null; then echo "rerender already running"; exit 1; fi
+tmux new-session -d -s ttvga-rerender {shlex.quote(cmd + f" > ~/{REMOTE_ROOT}/rerender.log 2>&1; echo RERENDER-DONE >> ~/{REMOTE_ROOT}/rerender.log")}
+echo "started in tmux session ttvga-rerender; watch ~/{REMOTE_ROOT}/rerender.log"
+"""
+        return ssh(host, script, check=False).returncode
+    return ssh(host, cmd, check=False, timeout=14400).returncode
+
+
 def collect(args: argparse.Namespace) -> int:
     """Pull every result.json (and timing.json) from the host into data/results/."""
     host = resolve_host(args.host)
@@ -252,6 +270,12 @@ def add_parsers(sub: argparse._SubParsersAction) -> None:
     p.add_argument("--timeout", type=float, default=1800.0)
     p.add_argument("--lines", type=int, default=20, help="log lines to show for status")
     p.set_defaults(func=queue)
+    p = sub.add_parser("rerender", help="rebuild posters, contact sheets and animations from the clips on the host")
+    common(p)
+    p.add_argument("--jobs", type=int, default=0)
+    p.add_argument("--only", default="", help="comma separated shuttles or <shuttle>/<macro> ids")
+    p.add_argument("--background", action="store_true", help="run in a tmux session instead of waiting")
+    p.set_defaults(func=rerender)
     p = sub.add_parser("collect", help="pull result.json files into data/results/")
     common(p)
     p.add_argument("--images", help="also pull poster and contact images into this local directory")

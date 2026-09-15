@@ -297,16 +297,56 @@ def simulate(target: dict, ov: dict, repo_dir: Path, build_dir: Path, work: Path
     return None
 
 
+# The contact sheet's grid lines. A pale neutral, because the frames
+# themselves often have coloured borders that a strong colour would echo.
+GRID_COLOUR = "0xd8d5e0"
+GRID_GAP = 6
+GIF_WIDTH = 320
+GIF_FPS = 12
+GIF_SECONDS = 6.0
+
+
+def render_previews(videos: Path, log: Path, tools: dict, frames: int, fps: float) -> str | None:
+    """Make the still and moving previews from 60s.avi: poster, contact sheet, animation."""
+    ff = tools["ffmpeg"]
+    src = videos / "60s.avi"
+    duration = frames / fps if fps else 0.0
+    quiet = ["-hide_banner", "-loglevel", "error", "-y"]
+
+    # A frame from about 5 s in: by then most designs have drawn something.
+    poster_at = min(5.0, duration / 2)
+    run([ff, *quiet, "-ss", f"{poster_at:.3f}", "-i", str(src), "-frames:v", "1",
+         str(videos / "poster.png")], log, timeout=600)
+
+    # 16 frames spread across the clip, half size, with grid lines between them
+    # so one frame's black background cannot be mistaken for its neighbour's.
+    step = max(1, frames // 16)
+    run([ff, *quiet, "-i", str(src),
+         "-vf", f"select='not(mod(n\\,{step}))',scale=iw/2:-1,"
+                f"tile=4x4:padding={GRID_GAP}:margin={GRID_GAP}:color={GRID_COLOUR}",
+         "-frames:v", "1", str(videos / "contact.png")], log, timeout=900)
+
+    # A short animation for the index page. The source has at most 64 colours,
+    # so a generated palette is exact, and nearest-neighbour scaling keeps the
+    # pixel edges hard instead of smearing them.
+    length = min(GIF_SECONDS, duration) if duration else GIF_SECONDS
+    start = min(5.0, max(0.0, duration - length))
+    run([ff, *quiet, "-ss", f"{start:.3f}", "-t", f"{length:.3f}", "-i", str(src),
+         "-vf", f"fps={GIF_FPS},scale={GIF_WIDTH}:-1:flags=neighbor,split[a][b];"
+                f"[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none",
+         "-loop", "0", str(videos / "preview.gif")], log, timeout=900)
+
+    missing = [n for n in ("poster.png", "contact.png", "preview.gif") if not (videos / n).exists()]
+    return ("failed to render " + ", ".join(missing)) if missing else None
+
+
 def encode(work: Path, videos: Path, log: Path, tools: dict) -> str | None:
-    """Cut 30 s and 10 s clips, a poster and a contact sheet from 60s.avi."""
+    """Cut 30 s and 10 s clips and the previews from 60s.avi."""
     src = work / "out" / "60s.avi"
     if not src.exists() or src.stat().st_size == 0:
         return "no 60s.avi"
     timing = json.loads((work / "out" / "timing.json").read_text())
     frames, fps = timing.get("frames", 0), timing.get("fps", 60.0)
-    duration = frames / fps if fps else 0.0
-    poster_at = min(5.0, duration / 2)                 # content has usually settled by 5 s
-    step = max(1, frames // 16)                        # 16 frames spread over the clip
     if videos.exists():
         shutil.rmtree(videos)
     videos.mkdir(parents=True)
@@ -316,14 +356,7 @@ def encode(work: Path, videos: Path, log: Path, tools: dict) -> str | None:
         if run([ff, "-hide_banner", "-loglevel", "error", "-y", "-i", str(videos / "60s.avi"), "-t", str(secs),
                 "-c", "copy", str(videos / f"{secs}s.avi")], log, timeout=600) != 0:
             return f"ffmpeg cut {secs}s failed"
-    run([ff, "-hide_banner", "-loglevel", "error", "-y", "-ss", f"{poster_at:.3f}", "-i", str(videos / "60s.avi"),
-         "-frames:v", "1", str(videos / "poster.png")], log, timeout=600)
-    run([ff, "-hide_banner", "-loglevel", "error", "-y", "-i", str(videos / "60s.avi"),
-         "-vf", f"select='not(mod(n\\,{step}))',scale=iw/2:-1,tile=4x4", "-frames:v", "1",
-         str(videos / "contact.png")], log, timeout=600)
-    if not (videos / "poster.png").exists():
-        return "poster failed"
-    return None
+    return render_previews(videos, log, tools, frames, fps)
 
 
 def tool_versions(tools: dict) -> dict:
