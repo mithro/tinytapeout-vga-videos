@@ -138,8 +138,9 @@ def build(target: dict, ov: dict, repo_dir: Path, build_dir: Path, log: Path, to
         "-CFLAGS", "-std=c++17", "-MAKEFLAGS", "OPT_FAST=-O2",
         "-I" + str(src), "-y", str(src), "--relative-includes",
         # Behavioural models for PDK cells instantiated by name (latches, clock
-        # gates, buffers): sky130 polyfill from Tiny Tapeout, IHP sg13g2 models.
-        "-y", str(cells), "+libext+.v+.sv",
+        # gates, buffers). A `-v` library file only contributes modules that are
+        # actually referenced.
+        "-v", str(cells / "sky130_polyfill.v"),
     ]
     flags = list(ov.get("verilator_flags") or [])
     files = [s if Path(s).is_absolute() else str(src / s) for s in sources if not s.endswith((".vh", ".svh", ".h"))]

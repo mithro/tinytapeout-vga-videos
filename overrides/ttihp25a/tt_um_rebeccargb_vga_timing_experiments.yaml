@@ -1,0 +1,27 @@
+# The design only starts generating sync after a write pulse on ui_in[7]
+# with ui_in[3:0] = 0 (register 0 = reset to the 640x480@60 defaults).
+# See the project's "how to test". Later pulses on register 1 step through
+# the test patterns so the clip shows more than one.
+inputs:
+  - at: 0
+    ui_in: 0x00
+  - at: 1000
+    ui_in: 0x80
+  - at: 2000
+    ui_in: 0x00
+  - at: 20s
+    ui_in: 0x01
+  - at: 20.001s
+    ui_in: 0x81
+  - at: 20.002s
+    ui_in: 0x01
+  - at: 20.003s
+    ui_in: 0x00
+  - at: 40s
+    ui_in: 0x01
+  - at: 40.001s
+    ui_in: 0x81
+  - at: 40.002s
+    ui_in: 0x01
+  - at: 40.003s
+    ui_in: 0x00
