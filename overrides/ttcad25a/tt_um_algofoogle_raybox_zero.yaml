@@ -1,11 +1,15 @@
 # Derived from the project's own pin names by `tt-vga stimulus`.
-# UART receive on ui[3] held high. One pin at a time, from the pin names: start ui[0].
+# One pin at a time, from the pin names: step ui[4], step ui[5].
 # Correct it by hand if the design wants something else.
 
 inputs:
   - at: 0
-    ui_in: 8
+    ui_in: 0
   - at: 3.0s
-    ui_in: 9
+    ui_in: 16
   - at: 3.05s
-    ui_in: 8
+    ui_in: 0
+  - at: 6.5s
+    ui_in: 32
+  - at: 6.55s
+    ui_in: 0

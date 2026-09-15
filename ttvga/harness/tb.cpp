@@ -11,6 +11,7 @@
 //   bit 7 hsync, bit 3 vsync, bits 0..2 = R1 G1 B1, bits 4..6 = R0 G0 B0.
 
 #include "Vtop.h"
+#include "qspi.h"
 #include "verilated.h"
 
 #include <algorithm>
@@ -57,6 +58,8 @@ struct Options {
     std::string ffmpeg = "ffmpeg";
     std::string inputs;           // optional input script
     std::string gamepad;          // optional gamepad button script
+    std::string qspi;             // "" (off), "default", or a pin map
+    std::string flash;            // file to preload into the modelled flash
     int ui_in = 0, uio_in = 0;    // constant inputs when no script
     bool quiet = false;
 };
@@ -188,6 +191,8 @@ int main(int argc, char** argv) {
         else if (a == "--ffmpeg") opt.ffmpeg = next();
         else if (a == "--inputs") opt.inputs = next();
         else if (a == "--gamepad") opt.gamepad = next();
+        else if (a == "--qspi") opt.qspi = next();
+        else if (a == "--flash") opt.flash = next();
         else if (a == "--ui-in") opt.ui_in = parse_int(next());
         else if (a == "--uio-in") opt.uio_in = parse_int(next());
         else if (a == "--quiet") opt.quiet = true;
@@ -204,6 +209,39 @@ int main(int argc, char** argv) {
     VerilatedContext ctx;
     ctx.commandArgs(argc, argv);
     Vtop top{&ctx};
+    // QSPI Pmod model (flash and two PSRAMs on the bidirectional pins).
+    ttvga::QspiBus qspi;
+    const bool use_qspi = !opt.qspi.empty();
+    if (use_qspi) {
+        if (opt.qspi != "default") {
+            // "cs0=0,sd0=1,sd1=2,sck=3,sd2=4,sd3=5,cs1=6,cs2=7"
+            size_t pos = 0;
+            std::string spec = opt.qspi + ",";
+            while ((pos = spec.find(',')) != std::string::npos) {
+                std::string item = spec.substr(0, pos);
+                spec.erase(0, pos + 1);
+                const size_t eq = item.find('=');
+                if (eq == std::string::npos) continue;
+                const std::string key = item.substr(0, eq);
+                const int bit = std::atoi(item.c_str() + eq + 1);
+                if (key == "cs0") qspi.pins.cs_flash = bit;
+                else if (key == "sd0") qspi.pins.sd0 = bit;
+                else if (key == "sd1") qspi.pins.sd1 = bit;
+                else if (key == "sck") qspi.pins.sck = bit;
+                else if (key == "sd2") qspi.pins.sd2 = bit;
+                else if (key == "sd3") qspi.pins.sd3 = bit;
+                else if (key == "cs1") qspi.pins.cs_ram_a = bit;
+                else if (key == "cs2") qspi.pins.cs_ram_b = bit;
+            }
+        }
+        qspi.init(opt.flash);
+        if (!opt.quiet)
+            std::fprintf(stderr, "tb: QSPI model on uio: cs0=%d sd0=%d sd1=%d sck=%d sd2=%d sd3=%d cs1=%d cs2=%d%s\n",
+                         qspi.pins.cs_flash, qspi.pins.sd0, qspi.pins.sd1, qspi.pins.sck, qspi.pins.sd2,
+                         qspi.pins.sd3, qspi.pins.cs_ram_a, qspi.pins.cs_ram_b,
+                         opt.flash.empty() ? " (flash: test pattern)" : " (flash: file)");
+    }
+
     std::vector<InputEvent> events = load_inputs(opt.inputs);
     std::vector<GamepadEvent> pad_events = load_gamepad(opt.gamepad);
     const bool use_gamepad = !opt.gamepad.empty();
@@ -232,6 +270,12 @@ int main(int argc, char** argv) {
         }
         top.clk = 0; top.eval(); ctx.timeInc(1);
         top.clk = 1; top.eval(); ctx.timeInc(1);
+        if (use_qspi) {
+            // Answer the design's memory bus. Re-evaluating only when the
+            // lines actually change keeps the common case at one eval.
+            const uint8_t v = qspi.step(top.uio_out, top.uio_oe, top.uio_in);
+            if (v != top.uio_in) { top.uio_in = v; top.eval(); }
+        }
         clock++;
     };
 

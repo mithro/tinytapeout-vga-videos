@@ -81,7 +81,8 @@ def classify(pinout: dict[str, str]) -> tuple[dict[str, int], dict[str, list[int
         bit = pin_index(pin)
         if bit is None or not raw:
             continue
-        name = raw.lower()
+        # Underscores separate words here: SPI_START is a SPI pin, not a start button.
+        name = re.sub(r"[^a-z0-9]+", " ", raw.lower()).strip()
         is_gamepad = False
         for role, pattern in GAMEPAD_PINS.items():
             if re.search(pattern, name):

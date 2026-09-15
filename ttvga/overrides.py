@@ -18,6 +18,8 @@ Keys:
     sources: [a.v, b.v]         # replaces info.yaml source_files
     top_module: tt_um_x
     patch: fix.diff             # unified diff applied to the clone, relative to the YAML
+    qspi: "off"                 # or a pin map, e.g. "cs0=0,sd0=1,sd1=2,sck=3,cs1=6"
+    flash: image.bin            # contents for the modelled flash, relative to the YAML
     skip: "reason"              # do not simulate
     inputs:                     # timed changes of ui_in / uio_in
       - at: 0s                  # seconds ("3s"), milliseconds ("250ms") or clocks (int)
@@ -52,7 +54,7 @@ DEFAULT_CLOCK_HZ = 25_175_000
 GAMEPAD_BUTTONS = {"b": 0, "y": 1, "select": 2, "start": 3, "up": 4, "down": 5, "left": 6, "right": 7,
                    "a": 8, "x": 9, "l": 10, "r": 11}
 PLAIN_KEYS = ("clock_hz", "seconds", "calib_seconds", "ui_in", "uio_in", "verilator_flags", "sources",
-              "top_module", "skip")
+              "top_module", "skip", "qspi")
 
 
 def to_clocks(value: int | float | str, clock_hz: int) -> int:
@@ -121,6 +123,9 @@ def compile_one(yaml_path: Path, target: dict | None, out_dir: Path) -> dict:
     if ov.get("patch"):
         shutil.copy(yaml_path.parent / ov["patch"], out_dir / f"{macro}.diff")
         compiled["patch"] = f"{macro}.diff"
+    if ov.get("flash"):
+        shutil.copy(yaml_path.parent / ov["flash"], out_dir / f"{macro}.flash.bin")
+        compiled["flash"] = f"{macro}.flash.bin"
     (out_dir / f"{macro}.json").write_text(json.dumps(compiled, indent=2) + "\n")
     return compiled
 

@@ -178,6 +178,42 @@ def build(target: dict, ov: dict, repo_dir: Path, build_dir: Path, log: Path, to
     return None
 
 
+# How a project names the pins of the QSPI Pmod, in the order they are tried.
+# The first pattern that matches a pin claims it.
+QSPI_NAMES = [
+    ("sck", r"\b(sck|sclk|spi[_ ]?clk|qspi[_ ]?sck|psram[_ ]?sck|flash[_ ]?clk|clk)\b"),
+    ("sd0", r"\b(sd0|io0|dq0|d0|si|mosi|sio0)\b"),
+    ("sd1", r"\b(sd1|io1|dq1|d1|so|miso|sio1)\b"),
+    ("sd2", r"\b(sd2|io2|dq2|d2|wp|sio2)\b"),
+    ("sd3", r"\b(sd3|io3|dq3|d3|hold|sio3)\b"),
+    ("cs0", r"\b(cs|cs0|csb|cs_n|csn|ncs|flash[_ ]?cs|spi[_ ]?cs)\b"),
+    ("cs1", r"\b(cs1|ram[_ ]?a|psram[_ ]?cs|ram[_ ]?cs1?)\b"),
+    ("cs2", r"\b(cs2|ram[_ ]?b|psram[_ ]?b|ram[_ ]?cs2)\b"),
+]
+
+
+def detect_qspi(pinout: dict) -> str | None:
+    """Return a `--qspi` pin map when the bidirectional pins look like the QSPI Pmod."""
+    found: dict[str, int] = {}
+    for pin, raw in sorted(pinout.items()):
+        m = re.fullmatch(r"uio\[(\d)\]", pin)
+        if not m or not raw:
+            continue
+        bit = int(m.group(1))
+        # "SD0 / SCK" means the project can be wired either way: take the first.
+        # Underscores are separators here, not part of a word: QSPI_SD0 is SD0.
+        name = re.sub(r"[^a-z0-9]+", " ", raw.split("/")[0].strip().lower())
+        for role, pattern in QSPI_NAMES:
+            if role in found:
+                continue
+            if re.search(pattern, name):
+                found[role] = bit
+                break
+    if not {"sck", "sd0", "sd1"} <= set(found) or not ({"cs0", "cs1", "cs2"} & set(found)):
+        return None
+    return ",".join(f"{k}={v}" for k, v in sorted(found.items()))
+
+
 def timing_status(out: Path) -> str | None:
     try:
         return json.loads((out / "timing.json").read_text()).get("status")
@@ -200,6 +236,13 @@ def model_cmd(target: dict, ov: dict, build_dir: Path, out: Path, tools: dict, a
     for key in ("inputs", "gamepad"):
         if ov.get(key):
             cmd += [f"--{key}", str((args.overrides / target["shuttle"] / ov[key]).resolve())]
+    qspi = ov.get("qspi")
+    if qspi is None and not args.no_qspi:
+        qspi = detect_qspi(target["pinout"])
+    if qspi and qspi != "off":
+        cmd += ["--qspi", qspi]
+        if ov.get("flash"):
+            cmd += ["--flash", str((args.overrides / target["shuttle"] / ov["flash"]).resolve())]
     return cmd
 
 
@@ -304,6 +347,7 @@ def main() -> int:
     ap.add_argument("--timeout", type=float, default=1800.0, help="wall-clock limit for the simulation")
     ap.add_argument("--keep-build", action="store_true")
     ap.add_argument("--no-probe", action="store_true", help="do not try single input bits when there is no sync")
+    ap.add_argument("--no-qspi", action="store_true", help="do not model a QSPI flash/PSRAM on the bidir pins")
     args = ap.parse_args()
     args.overrides = args.overrides or args.root / "overrides"
 
@@ -329,6 +373,7 @@ def main() -> int:
         "id": target["id"], "shuttle": shuttle, "macro": macro, "started": now(),
         "host": os.uname().nodename, "override": ov or None, "stage": None, "error": None,
         "timings": {}, "tools": tool_versions(tools), "auto_ui_in": None,
+        "qspi": ov.get("qspi") if ov.get("qspi") is not None else detect_qspi(target["pinout"]),
     }
     error = ov.get("skip") or target.get("skip")
     if error:
