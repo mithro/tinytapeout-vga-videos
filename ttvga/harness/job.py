@@ -20,6 +20,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -127,6 +128,17 @@ def build(target: dict, ov: dict, repo_dir: Path, build_dir: Path, log: Path, to
     if missing:
         return "missing sources: " + ", ".join(missing)
     top = ov.get("top_module") or target["top_module"]
+    # Re-hardened projects are sometimes renamed on the shuttle (tt_um_x_tt08)
+    # while the repo at the recorded commit still declares the original name.
+    declared = set()
+    for s in sources:
+        p = Path(s) if Path(s).is_absolute() else src / s
+        if p.suffix in (".v", ".sv") and p.exists():
+            declared.update(re.findall(r"^\s*module\s+(tt_um_\w+)", p.read_text(errors="replace"), re.M))
+    if top not in declared and len(declared) == 1:
+        with log.open("a") as f:
+            f.write(f"top module {top} not declared; using {next(iter(declared))}\n")
+        top = next(iter(declared))
     if build_dir.exists():
         shutil.rmtree(build_dir)
     build_dir.mkdir(parents=True)
