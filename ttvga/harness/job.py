@@ -171,33 +171,77 @@ def build(target: dict, ov: dict, repo_dir: Path, build_dir: Path, log: Path, to
     return None
 
 
-def simulate(target: dict, ov: dict, repo_dir: Path, build_dir: Path, work: Path, log: Path, tools: dict,
-             args: argparse.Namespace) -> str | None:
-    """Run the Verilated model. Writes timing.json and 60s.avi. Returns an error string or None."""
+def timing_status(out: Path) -> str | None:
+    try:
+        return json.loads((out / "timing.json").read_text()).get("status")
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def model_cmd(target: dict, ov: dict, build_dir: Path, out: Path, tools: dict, args: argparse.Namespace,
+              seconds: float, ui_in: int | None = None) -> list[str]:
     clock_hz = int(ov.get("clock_hz") or target.get("clock_hz") or 0) or DEFAULT_CLOCK_HZ
-    seconds = float(ov.get("seconds") or args.seconds)
-    out = work / "out"
-    if out.exists():
-        shutil.rmtree(out)
-    out.mkdir()
     cmd = [str(build_dir / "Vtop"), "--clock-hz", str(clock_hz), "--seconds", str(seconds),
            "--calib-seconds", str(ov.get("calib_seconds") or args.calib_seconds),
            "--out", str(out), "--ffmpeg", tools["ffmpeg"]]
-    if ov.get("ui_in") is not None:
-        cmd += ["--ui-in", str(ov["ui_in"])]
+    if ui_in is None:
+        ui_in = ov.get("ui_in")
+    if ui_in is not None:
+        cmd += ["--ui-in", str(ui_in)]
     if ov.get("uio_in") is not None:
         cmd += ["--uio-in", str(ov["uio_in"])]
     for key in ("inputs", "gamepad"):
         if ov.get(key):
             cmd += [f"--{key}", str((args.overrides / target["shuttle"] / ov[key]).resolve())]
+    return cmd
+
+
+def simulate(target: dict, ov: dict, repo_dir: Path, build_dir: Path, work: Path, log: Path, tools: dict,
+             args: argparse.Namespace, result: dict) -> str | None:
+    """Run the Verilated model. Writes timing.json and 60s.avi. Returns an error string or None."""
+    seconds = float(ov.get("seconds") or args.seconds)
+    out = work / "out"
+    if out.exists():
+        shutil.rmtree(out)
+    out.mkdir()
     # $readmem paths in Tiny Tapeout projects are usually relative to src/.
-    rc = run(cmd, log, cwd=repo_dir / "src", timeout=args.timeout, grace=120)
+    cwd = repo_dir / "src"
+    rc = run(model_cmd(target, ov, build_dir, out, tools, args, seconds), log, cwd=cwd, timeout=args.timeout, grace=120)
     if rc == 124 and not (out / "timing.json").exists():
         return "wall-clock limit"
     if not (out / "timing.json").exists():
         return f"model exited {rc} without timing.json"
     if (out / "timing.json").stat().st_size == 0:
         return f"model exited {rc} with an empty timing.json"
+
+    # No raster with the default inputs and nothing specified by hand: many
+    # designs want a mode-select or start bit. Probe each single input bit
+    # with a calibration-only run and keep the first one that syncs.
+    if (timing_status(out) in ("no-sync", "bad-timing") and not args.no_probe
+            and not any(ov.get(k) is not None for k in ("ui_in", "inputs", "gamepad"))):
+        probe = work / "probe"
+        found = None
+        for ui_in in [1 << i for i in range(8)] + [0xff]:
+            if probe.exists():
+                shutil.rmtree(probe)
+            probe.mkdir()
+            run(model_cmd(target, ov, build_dir, probe, tools, args, 0.05, ui_in) + ["--quiet"], log, cwd=cwd,
+                timeout=300, grace=10)
+            status = timing_status(probe)
+            with log.open("a") as f:
+                f.write(f"probe ui_in=0x{ui_in:02x}: {status}\n")
+            if status not in ("no-sync", "bad-timing", None):
+                found = ui_in
+                break
+        shutil.rmtree(probe, ignore_errors=True)
+        if found is not None:
+            result["auto_ui_in"] = found
+            shutil.rmtree(out)
+            out.mkdir()
+            rc = run(model_cmd(target, ov, build_dir, out, tools, args, seconds, found), log, cwd=cwd,
+                     timeout=args.timeout, grace=120)
+            if not (out / "timing.json").exists() or (out / "timing.json").stat().st_size == 0:
+                return f"model exited {rc} without timing.json (after probe)"
     return None
 
 
@@ -252,6 +296,7 @@ def main() -> int:
     ap.add_argument("--calib-seconds", type=float, default=1.0)
     ap.add_argument("--timeout", type=float, default=1800.0, help="wall-clock limit for the simulation")
     ap.add_argument("--keep-build", action="store_true")
+    ap.add_argument("--no-probe", action="store_true", help="do not try single input bits when there is no sync")
     args = ap.parse_args()
     args.overrides = args.overrides or args.root / "overrides"
 
@@ -276,7 +321,7 @@ def main() -> int:
     result = {
         "id": target["id"], "shuttle": shuttle, "macro": macro, "started": now(),
         "host": os.uname().nodename, "override": ov or None, "stage": None, "error": None,
-        "timings": {}, "tools": tool_versions(tools),
+        "timings": {}, "tools": tool_versions(tools), "auto_ui_in": None,
     }
     error = ov.get("skip") or target.get("skip")
     if error:
@@ -291,21 +336,16 @@ def main() -> int:
             elif stage == "build":
                 error = build(target, ov, repo_dir, build_dir, work / "build.log", tools)
             elif stage == "simulate":
-                error = simulate(target, ov, repo_dir, build_dir, work, work / "sim.log", tools, args)
+                error = simulate(target, ov, repo_dir, build_dir, work, work / "sim.log", tools, args, result)
             elif stage == "encode":
                 error = encode(work, videos, work / "sim.log", tools)
             result["timings"][stage] = round(time.monotonic() - t0, 1)
             if error:
                 break
-            if stage == "simulate":
+            if stage == "simulate" and timing_status(work / "out") in ("no-sync", "bad-timing"):
                 # No raster found: there is nothing to encode. Partial or unstable
                 # rasters are still encoded because the clip helps diagnosis.
-                try:
-                    status = json.loads((work / "out" / "timing.json").read_text()).get("status")
-                except (OSError, json.JSONDecodeError):
-                    status = None
-                if status in ("no-sync", "bad-timing"):
-                    break
+                break
     timing_path = work / "out" / "timing.json"
     if timing_path.exists():
         shutil.copy(timing_path, work / "timing.json")
