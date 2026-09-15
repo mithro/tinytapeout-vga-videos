@@ -2,13 +2,13 @@
   "id": "ttgf26a/tt_um_pixel_processor",
   "shuttle": "ttgf26a",
   "macro": "tt_um_pixel_processor",
-  "started": "2026-09-15T05:25:02+00:00",
+  "started": "2026-09-15T05:57:04+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "build",
   "error": "verilator failed",
   "timings": {
-    "fetch": 3.1,
+    "fetch": 1.5,
     "build": 0.1
   },
   "tools": {
@@ -16,7 +16,7 @@
     "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
   },
   "build_log_tail": "al := 3;\n      |                         ^\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:197:23: syntax error, unexpected ':', expecting ',' or ';'\n  197 |     constant cSineLUT : aSineLUT := (\n      |                       ^\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:217:23: syntax error, unexpected ':', expecting ',' or ';'\n  217 |     constant cRampLUT : aRampLUT := (\n      |                       ^\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:237:26: syntax error, unexpected ':', expecting IDENTIFIER or IDENTIFIER-for-pathpulse or randomize\n  237 |     function lfsrand(reg : in std_ulogic_vector(5 downto 0)) return std_ulogic_vector;\n      |                          ^\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:243:26: syntax error, unexpected ':', expecting IDENTIFIER or IDENTIFIER-for-pathpulse or randomize\n  243 |     function lfsrand(reg : in std_ulogic_vector(5 downto 0)) \n      |                          ^\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:258:21: syntax error, unexpected IDENTIFIER, expecting ';'\n  258 | package BitmapRomFH is\n      |                     ^~\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:261:24: syntax error, unexpected ':', expecting ',' or ';'\n  261 |  constant cBitmapRomFH : aBitmap := (\n      |                        ^\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:314:1: syntax error, unexpected --\n  314 | -- File: BitmapRomHSD.vhd\n      | ^~\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:321:22: syntax error, unexpected IDENTIFIER, expecting ';'\n  321 | package BitmapRomHSD is\n      |                      ^~\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:324:25: syntax error, unexpected ':', expecting ',' or ';'\n  324 |  constant cBitmapRomHSD : aBitmap := (\n      |                         ^\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:377:1: syntax error, unexpected --\n  377 | -- File: BitmapRomTT.vhd\n      | ^~\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:384:21: syntax error, unexpected IDENTIFIER, expecting ';'\n  384 | package BitmapRomTT is\n      |                     ^~\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:387:24: syntax error, unexpected ':', expecting ',' or ';'\n  387 |  constant cBitmapRomTT : aBitmap := (\n      |                        ^\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:440:1: syntax error, unexpected --\n  440 | -- File: BitmapRomCredits.vhd\n      | ^~\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:447:26: syntax error, unexpected IDENTIFIER, expecting ';'\n  447 | package BitmapRomCredits is\n      |                          ^~\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:450:29: syntax error, unexpected ':', expecting ',' or ';'\n  450 |  constant cBitmapRomCredits : aBitmap := (\n      |                             ^\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:503:1: syntax error, unexpected --\n  503 | -- File: BitmapRomFlagpole.vhd\n      | ^~\n%Error: /home/ttvga/ttvga/work/ttgf26a/tt_um_pixel_processor/repo/src/tt_um_pixel_processor.vhdl:511:27: syntax error, unexpected IDENTIFIER, expecting ';'\n  511 | package BitmapRomFlagpole is\n      |                           ^~\n%Error: Exiting due to too many errors encountered; --error-limit=50\n[exit 1]\n",
-  "finished": "2026-09-15T05:25:06+00:00",
+  "finished": "2026-09-15T05:57:05+00:00",
   "verdict": "build-failed",
   "reason": "verilator failed"
 }
