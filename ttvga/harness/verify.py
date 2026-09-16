@@ -10,9 +10,12 @@ Every check here exists because something got past the ones before it:
   stopped while it was being written;
 - a clip can exist at a plausible size and still be truncated, so a sample is
   decoded from end to end rather than probed;
-- and a WebM can decode perfectly in every software player and still not play
+- a WebM can decode perfectly in every software player and still not play
   in Chrome on a machine with a hardware VP9 decoder, if it is full range.
-  That one is checked on every file, because it is invisible otherwise.
+  That one is checked on every file, because it is invisible otherwise;
+- and a run's record can say it captured sound while the published clip is
+  silent, because the encode that made the sound wrote somewhere else. The
+  record is what the index believes, so the two have to be compared.
 
 Exits non-zero if anything fails, so it can gate a publish.
 
@@ -22,6 +25,7 @@ Standard library only: the host has no packages installed.
 from __future__ import annotations
 
 import argparse
+import json
 import random
 import subprocess
 import sys
@@ -35,11 +39,23 @@ sys.path.insert(0, str(HERE))
 from encode import GIF_SECONDS, LENGTHS, clip_names, preview_names, stem_for  # noqa: E402
 
 
-def probe(ffprobe: str, path: Path, entries: str) -> str:
-    out = subprocess.run([ffprobe, "-v", "error", "-select_streams", "v:0",
+def probe(ffprobe: str, path: Path, entries: str, stream: str = "v:0") -> str:
+    out = subprocess.run([ffprobe, "-v", "error", "-select_streams", stream,
                           "-show_entries", entries, "-of", "csv=p=0", str(path)],
                          capture_output=True, text=True)
     return out.stdout.strip()
+
+
+def claims_audio(root: Path, name: str) -> bool:
+    """Whether this project's own record says the run captured its sound."""
+    result = root / "work" / name / "result.json"
+    if not result.exists():
+        return False
+    try:
+        timing = (json.loads(result.read_text()).get("timing") or {})
+    except (json.JSONDecodeError, OSError):
+        return False
+    return bool(timing.get("audio_driven")) and bool(timing.get("audio_samples"))
 
 
 def decodes(ffmpeg: str, path: Path) -> tuple[bool, str]:
@@ -140,6 +156,18 @@ def main() -> int:
                     broken += 1
                     failures.extend(f"{name}: {b}" for b in bad)
         print(f"  decoded in full: {len(sample) - broken} of {len(sample)} sampled")
+
+    # 5. a clip whose record claims sound has to have some
+    claimed = [(name, stem, d) for name, stem, d in found if claims_audio(args.root, name)]
+    if claimed:
+        silent = 0
+        for name, stem, d in claimed:
+            missing = [f.name for f in (d / f"{stem}_{LENGTHS[0]}s.mp4", d / f"{stem}_{LENGTHS[0]}s.webm")
+                       if f.exists() and not probe(ffprobe, f, "stream=codec_type", stream="a:0")]
+            if missing:
+                silent += 1
+                failures.append(f"{name}: run captured audio but {', '.join(missing)} has no audio track")
+        print(f"  clips with the sound their record claims: {len(claimed) - silent} of {len(claimed)}")
 
     if failures:
         print(f"\n{len(failures)} problems:")
