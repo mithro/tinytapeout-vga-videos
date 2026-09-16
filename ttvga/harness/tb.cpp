@@ -61,7 +61,51 @@ struct Options {
     std::string qspi;             // "" (off), "default", or a pin map
     std::string flash;            // file to preload into the modelled flash
     int ui_in = 0, uio_in = 0;    // constant inputs when no script
+    double audio_rate = 192000.0; // audio sample rate, as the playground uses
+    bool no_audio = false;
     bool quiet = false;
+};
+
+// The Audio Pmod carries one bit on uio[7]. The playground reads it as
+// `(uio_out & uio_oe) >> 7`: only while the design is driving that pin, so a
+// design that leaves it an input is silent rather than stuck high.
+//
+// Sampling follows the playground's AudioEngine. The bit is averaged over each
+// sample period, which is the decimation, and then a moving average stands in
+// for the 20 kHz low-pass filter on the Pmod itself. The playground runs this
+// at 192 kHz because a higher rate leaves more room above the filter; the file
+// is resampled to something ordinary when it is muxed into the video.
+struct AudioCapture {
+    double ticks_per_sample = 0;
+    double phase = 0;             // fractional, so the rate stays exact over a minute
+    double acc = 0;
+    double ticks = 0;
+    size_t filter = 1;
+    size_t qi = 0;
+    std::vector<float> queue;
+    std::vector<float> samples;
+    bool driven = false;          // did the design ever drive uio[7]?
+
+    void begin(double clock_hz, double rate) {
+        ticks_per_sample = clock_hz / rate;
+        filter = std::max<size_t>(1, static_cast<size_t>(std::ceil(rate / 20000.0)));
+        queue.assign(filter, 0.0f);
+    }
+
+    void feed(uint8_t uio_out, uint8_t uio_oe) {
+        if (uio_oe & 0x80) driven = true;
+        acc += static_cast<double>((uio_out & uio_oe) >> 7);
+        ticks += 1.0;
+        phase += 1.0;
+        if (phase < ticks_per_sample) return;
+        phase -= ticks_per_sample;
+        queue[qi] = static_cast<float>(ticks > 0 ? acc / ticks : 0.0);
+        qi = (qi + 1) % filter;
+        float sum = 0;
+        for (float v : queue) sum += v;
+        samples.push_back(sum / static_cast<float>(filter));
+        acc = 0; ticks = 0;
+    }
 };
 
 struct InputEvent { uint64_t clock; int ui_in; int uio_in; };
@@ -188,6 +232,8 @@ int main(int argc, char** argv) {
         else if (a == "--seconds") opt.seconds = std::atof(next().c_str());
         else if (a == "--calib-seconds") opt.calib_seconds = std::atof(next().c_str());
         else if (a == "--out") opt.out_dir = next();
+        else if (a == "--audio-rate") opt.audio_rate = std::atof(next().c_str());
+        else if (a == "--no-audio") opt.no_audio = true;
         else if (a == "--ffmpeg") opt.ffmpeg = next();
         else if (a == "--inputs") opt.inputs = next();
         else if (a == "--gamepad") opt.gamepad = next();
@@ -429,8 +475,15 @@ int main(int argc, char** argv) {
         frames++;
     };
 
+    AudioCapture audio;
+    audio.begin(opt.clock_hz, opt.audio_rate);
+    bool audio_started = false;
+
     while (frames < target_frames && clock < clock_limit && !g_stop) {
         tick();
+        // Audio runs only while a frame is being captured, so the track starts
+        // where the picture does and the two stay in step.
+        if (!opt.no_audio && audio_started) audio.feed(top.uio_out, top.uio_oe);
         const uint8_t uo = top.uo_out;
         const bool h_pulse = hs.active_low ? !(uo & 0x80) : !!(uo & 0x80);
         const bool v_pulse = vs.active_low ? !(uo & 0x08) : !!(uo & 0x08);
@@ -443,6 +496,7 @@ int main(int argc, char** argv) {
             }
             last_frame_start = clock;
             in_frame = true; y = -1;
+            audio_started = true;
         }
         if (prev_h && !h_pulse) {                       // hsync pulse ended: new line
             if (last_line_start) {
@@ -475,6 +529,18 @@ int main(int argc, char** argv) {
     int rc = pclose(ff);
     top.final();
 
+    // The audio track, mono 32 bit float at opt.audio_rate. Written raw
+    // because the job runner muxes it, and only when the design actually drove
+    // the pin: a silent file would be noise in every sense.
+    size_t audio_written = 0;
+    if (audio.driven && !audio.samples.empty()) {
+        const std::string apath = opt.out_dir + "/capture.f32";
+        if (FILE* af = std::fopen(apath.c_str(), "wb")) {
+            audio_written = std::fwrite(audio.samples.data(), sizeof(float), audio.samples.size(), af);
+            std::fclose(af);
+        }
+    }
+
     const char* status = "ok";
     if (g_stop || frames < target_frames / 2) status = "sim-timeout";
     else if (frame_max > frame_min + frame_min / 100 || long_lines + short_lines > lines_seen / 100) status = "unstable-sync";
@@ -489,7 +555,9 @@ int main(int argc, char** argv) {
                      "  \"colours\": %d,\n  \"mean_frame_delta\": %.6f,\n  \"pixels_ever_changed\": %.6f,\n"
                      "  \"lines_seen\": %llu,\n  \"short_lines\": %llu,\n  \"long_lines\": %llu,\n"
                      "  \"clocks_simulated\": %llu,\n  \"sim_seconds\": %.3f,\n  \"wall_seconds\": %.1f,\n"
-                     "  \"clocks_per_wall_second\": %.0f,\n  \"ffmpeg_status\": %d,\n  \"frame_hashes\": [",
+                     "  \"clocks_per_wall_second\": %.0f,\n  \"ffmpeg_status\": %d,\n"
+                     "  \"audio_driven\": %s,\n  \"audio_rate\": %.0f,\n  \"audio_samples\": %zu,\n"
+                     "  \"frame_hashes\": [",
                  status, opt.clock_hz, (unsigned long long)first_sync_clock,
                  hs.active_low ? "true" : "false", vs.active_low ? "true" : "false",
                  (unsigned long long)line_clocks, lines, (unsigned long long)hs.pulse, (unsigned long long)vs.pulse,
@@ -503,7 +571,8 @@ int main(int argc, char** argv) {
                  static_cast<double>(std::count(ever.begin(), ever.end(), 1)) /
                      static_cast<double>(std::max<size_t>(1, ever.size())),
                  (unsigned long long)lines_seen, (unsigned long long)short_lines, (unsigned long long)long_lines,
-                 (unsigned long long)clock, clock / opt.clock_hz, wall_s, clock / std::max(wall_s, 1e-3), rc);
+                 (unsigned long long)clock, clock / opt.clock_hz, wall_s, clock / std::max(wall_s, 1e-3), rc,
+                 audio.driven ? "true" : "false", opt.audio_rate, audio_written);
     for (size_t i = 0; i < hashes.size(); i++)
         std::fprintf(tj, "%s\"%016llx\"", i ? ", " : "", (unsigned long long)hashes[i]);
     std::fprintf(tj, "]\n}\n");

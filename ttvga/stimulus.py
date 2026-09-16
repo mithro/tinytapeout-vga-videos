@@ -48,6 +48,13 @@ BUTTONS = [
 GAMEPAD_PINS = {"latch": r"(gamepad|snes|nes|pad).*latch|latch.*(gamepad|snes|nes|pad)",
                 "clock": r"(gamepad|snes|nes|pad).*(clk|clock)|(clk|clock).*(gamepad|snes|nes|pad)",
                 "data": r"(gamepad|snes|nes|pad).*data|data.*(gamepad|snes|nes|pad)"}
+# The Gamepad Pmod is wired to fixed pins, so a project that uses one does not
+# have to name them for us to drive it. From the playground's own example:
+#     .pmod_data(ui_in[6]), .pmod_clk(ui_in[5]), .pmod_latch(ui_in[4])
+# which agrees with its InputController packing the pins as
+#     (data << 6) | (clock << 5) | (latch << 4)
+GAMEPAD_STANDARD = {"latch": 4, "clock": 5, "data": 6}
+GAMEPAD_ANY = r"\b(gamepad|snes|nes)\b"
 UART_RX = r"\b(uart[_ ]?rx|rx|rxd|serial[_ ]?in|rx[_ ]?in)\b"
 # Names that must not be driven. Either the pin stops the picture, or it is
 # part of an interface (a video input, a serial bus, a memory) where a lone
@@ -112,16 +119,43 @@ def schedule(count: int, seconds: float) -> list[float]:
     return [FIRST + i * EVERY for i in range(min(count, slots))]
 
 
+def wants_gamepad(target: dict) -> str | None:
+    """Why this project looks wired to a Gamepad Pmod, or None.
+
+    Projects name these pins inconsistently: some spell out `gamepad_latch`,
+    some label all three simply `gamepad`, and some declare the Pmod and leave
+    the pin names blank. The wiring is fixed whichever way they write it, so
+    any of those is enough to go on.
+    """
+    if any("gamepad" in str(p).lower() for p in (target.get("pmods") or [])):
+        return "the project declares a Gamepad Pmod"
+    pinout = target.get("pinout") or {}
+    named = [b for b in GAMEPAD_STANDARD.values()
+             if re.search(GAMEPAD_ANY,
+                          re.sub(r"[^a-z0-9]+", " ", str(pinout.get(f"ui[{b}]", "")).lower()))]
+    if len(named) == len(GAMEPAD_STANDARD):
+        return "ui[4], ui[5] and ui[6] are all named for a gamepad"
+    return None
+
+
 def derive(target: dict, seconds: float = 60.0) -> tuple[dict, str] | None:
     """Return (override dict, explanation) for a project, or None if nothing to drive."""
     gamepad, buttons, uart = classify(target["pinout"])
+    standard = None
+    if len(gamepad) != 3:
+        standard = wants_gamepad(target)
+        if standard:
+            # The pins did not name their roles, but the Pmod's wiring is fixed.
+            gamepad = dict(GAMEPAD_STANDARD)
     if len(gamepad) == 3:
         # One button at a time, directions twice as they show movement best.
         order = ["start", "a", "right", "down", "left", "up", "a", "right", "up", "select", "b", "left", "down"]
         events = [{"at": f"{at}s", "hold": [name], "for": f"{HOLD}s"}
                   for at, name in zip(schedule(len(order), seconds), order)]
-        why = (f"Gamepad Pmod pins found (latch ui[{gamepad['latch']}], clock ui[{gamepad['clock']}], "
-               f"data ui[{gamepad['data']}]); the protocol is emulated and one button is held at a time.")
+        found = f"assumed from the standard wiring because {standard}" if standard else "found"
+        why = (f"Gamepad Pmod pins {found} (latch ui[{gamepad['latch']}], "
+               f"clock ui[{gamepad['clock']}], data ui[{gamepad['data']}]); the protocol is "
+               f"emulated and one button is held at a time.")
         return {"gamepad": events}, why
 
     if not buttons and not uart:

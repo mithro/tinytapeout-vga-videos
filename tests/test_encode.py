@@ -116,3 +116,55 @@ def test_webm_upscales_only_when_asked(tmp_path, monkeypatch):
     encode.encode_webm(tmp_path / "in.avi", tmp_path / "out.webm", tmp_path / "log",
                        "ffmpeg", "30,10", upscale=True)
     assert "iw*2:ih*2" in " ".join(calls[0])
+
+
+def test_audio_is_muxed_when_the_design_drove_the_pin(tmp_path, monkeypatch):
+    """The Audio Pmod carries one bit on uio[7]; the capture becomes a track."""
+    import encode
+
+    calls = []
+    monkeypatch.setattr(encode, "run", lambda cmd, *a, **k: calls.append(cmd) or 0)
+    work = tmp_path / "work"
+    work.mkdir()
+    (work / "capture.avi").write_bytes(b"x")
+    (work / encode.AUDIO_RAW).write_bytes(b"\0" * 4096)
+    videos = tmp_path / "out"
+    videos.mkdir()
+    for n in encode.clip_names("tt08_tt_um_x"):
+        (videos / n).write_bytes(b"x")
+    encode.transcode(work / "capture.avi", videos, "tt08_tt_um_x", tmp_path / "log", "ffmpeg")
+
+    mp4 = next(c for c in calls if c[-1].endswith("_60s.mp4"))
+    assert "f32le" in mp4 and "aac" in mp4
+    webm = next(c for c in calls if c[-1].endswith("_60s.webm"))
+    assert "f32le" in webm and "libopus" in webm
+
+
+def test_no_audio_track_when_the_pin_was_never_driven(tmp_path, monkeypatch):
+    import encode
+
+    calls = []
+    monkeypatch.setattr(encode, "run", lambda cmd, *a, **k: calls.append(cmd) or 0)
+    work = tmp_path / "work"
+    work.mkdir()
+    (work / "capture.avi").write_bytes(b"x")          # no capture.f32 beside it
+    videos = tmp_path / "out"
+    videos.mkdir()
+    for n in encode.clip_names("tt08_tt_um_x"):
+        (videos / n).write_bytes(b"x")
+    encode.transcode(work / "capture.avi", videos, "tt08_tt_um_x", tmp_path / "log", "ffmpeg")
+
+    mp4 = next(c for c in calls if c[-1].endswith("_60s.mp4"))
+    assert "-an" in mp4 and "f32le" not in mp4
+
+
+def test_rewriting_webm_keeps_the_audio_already_in_the_mp4(tmp_path, monkeypatch):
+    """The raw capture is long gone by then, so the track is copied across."""
+    import encode
+
+    calls = []
+    monkeypatch.setattr(encode, "run", lambda cmd, *a, **k: calls.append(cmd) or 0)
+    (tmp_path / "tt08_tt_um_x_60s.mp4").write_bytes(b"x")
+    encode.rewrite_webm(tmp_path, "tt08_tt_um_x", tmp_path / "log", "ffmpeg")
+    webm = next(c for c in calls if c[-1].endswith("_60s.webm"))
+    assert "0:a?" in webm and "libopus" in webm

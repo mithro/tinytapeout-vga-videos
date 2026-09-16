@@ -1,0 +1,44 @@
+# Derived from the project's own pin names by `tt-vga stimulus`.
+# Gamepad Pmod pins assumed from the standard wiring because ui[4], ui[5] and ui[6] are all named for a gamepad (latch ui[4], clock ui[5], data ui[6]); the protocol is emulated and one button is held at a time.
+# Correct it by hand if the design wants something else.
+
+gamepad:
+  - at: 3.0s
+    hold: [start]
+    for: 0.4s
+  - at: 6.5s
+    hold: [a]
+    for: 0.4s
+  - at: 10.0s
+    hold: [right]
+    for: 0.4s
+  - at: 13.5s
+    hold: [down]
+    for: 0.4s
+  - at: 17.0s
+    hold: [left]
+    for: 0.4s
+  - at: 20.5s
+    hold: [up]
+    for: 0.4s
+  - at: 24.0s
+    hold: [a]
+    for: 0.4s
+  - at: 27.5s
+    hold: [right]
+    for: 0.4s
+  - at: 31.0s
+    hold: [up]
+    for: 0.4s
+  - at: 34.5s
+    hold: [select]
+    for: 0.4s
+  - at: 38.0s
+    hold: [b]
+    for: 0.4s
+  - at: 41.5s
+    hold: [left]
+    for: 0.4s
+  - at: 45.0s
+    hold: [down]
+    for: 0.4s

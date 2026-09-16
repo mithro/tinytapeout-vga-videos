@@ -1,0 +1,71 @@
+# Derived from the project's own pin names by `tt-vga stimulus`.
+# One pin at a time, from the pin names: action ui[0], action ui[1], action ui[2], action ui[3], action ui[4], action ui[5], action ui[6], action ui[7].
+# Correct it by hand if the design wants something else.
+
+inputs:
+  - at: 0
+    ui_in: 0
+  - at: 3.0s
+    ui_in: 1
+  - at: 3.05s
+    ui_in: 0
+  - at: 6.5s
+    ui_in: 2
+  - at: 6.55s
+    ui_in: 0
+  - at: 10.0s
+    ui_in: 4
+  - at: 10.05s
+    ui_in: 0
+  - at: 13.5s
+    ui_in: 8
+  - at: 13.55s
+    ui_in: 0
+  - at: 17.0s
+    ui_in: 16
+  - at: 17.05s
+    ui_in: 0
+  - at: 20.5s
+    ui_in: 32
+  - at: 20.55s
+    ui_in: 0
+  - at: 24.0s
+    ui_in: 64
+  - at: 24.05s
+    ui_in: 0
+  - at: 27.5s
+    ui_in: 128
+  - at: 27.55s
+    ui_in: 0
+  - at: 31.0s
+    ui_in: 1
+  - at: 31.05s
+    ui_in: 0
+  - at: 34.5s
+    ui_in: 2
+  - at: 34.55s
+    ui_in: 0
+  - at: 38.0s
+    ui_in: 4
+  - at: 38.05s
+    ui_in: 0
+  - at: 41.5s
+    ui_in: 8
+  - at: 41.55s
+    ui_in: 0
+  - at: 45.0s
+    ui_in: 16
+  - at: 45.05s
+    ui_in: 0
+  - at: 48.5s
+    ui_in: 32
+  - at: 48.55s
+    ui_in: 0
+  - at: 52.0s
+    ui_in: 64
+  - at: 52.05s
+    ui_in: 0
+  - at: 55.5s
+    ui_in: 128
+  - at: 55.55s
+    ui_in: 0

@@ -80,6 +80,18 @@ GIF_SECONDS = 8.0
 # thumbnail jumping when the animation replaces it.
 PREVIEW_START = 5.0
 
+# The captured audio, if the design drove the Audio Pmod pin. It arrives as
+# mono 32 bit float at this rate; ffmpeg resamples it when encoding.
+AUDIO_RAW = "capture.f32"
+AUDIO_RATE = 192000
+# The captured signal is a PWM bit averaged into 0..1, so it carries a large DC
+# offset. Removing it costs nothing audible -- 20 Hz is below the Audio Pmod's
+# own passband -- and without it the track wastes most of its headroom and can
+# click at the start and end.
+AUDIO_FILTER = "highpass=f=20"
+AUDIO_MP4 = ["-c:a", "aac", "-b:a", "128k"]
+AUDIO_WEBM = ["-c:a", "libopus", "-b:a", "128k"]
+
 QUIET = ["-hide_banner", "-loglevel", "error", "-y"]
 
 
@@ -109,6 +121,14 @@ def run(cmd: list[str], log: Path, cwd: Path | None = None, timeout: float | Non
             return 124
         f.write(f"[exit {p.returncode}]\n")
         return p.returncode
+
+
+def audio_input(src_dir: Path) -> list[str]:
+    """ffmpeg arguments for the captured audio, or nothing if there is none."""
+    raw = src_dir / AUDIO_RAW
+    if not raw.exists() or raw.stat().st_size == 0:
+        return []
+    return ["-f", "f32le", "-ar", str(AUDIO_RATE), "-ac", "1", "-i", str(raw)]
 
 
 def stem_for(shuttle: str, macro: str) -> str:
@@ -158,14 +178,17 @@ def transcode(src: Path, videos: Path, stem: str, log: Path, ffmpeg: str) -> str
     cuts = ",".join(str(s) for s in LENGTHS[1:])
     full = LENGTHS[0]
 
+    audio = audio_input(src.parent)
+    audio_opts = ([*AUDIO_MP4, "-af", AUDIO_FILTER, "-shortest"] if audio else ["-an"])
     mp4 = videos / f"{stem}_{full}s.mp4"
-    if run([ffmpeg, *QUIET, "-i", str(src), "-vf", UPSCALE,
+    if run([ffmpeg, *QUIET, "-i", str(src), *audio, "-vf", UPSCALE,
             "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p",
-            "-maxrate", MAX_BITRATE, "-bufsize", BUFSIZE,
+            "-maxrate", MAX_BITRATE, "-bufsize", BUFSIZE, *audio_opts,
             "-force_key_frames", cuts, "-movflags", "+faststart", str(mp4)], log, timeout=3600) != 0:
         return "ffmpeg h264 failed"
 
-    if (err := encode_webm(src, videos / f"{stem}_{full}s.webm", log, ffmpeg, cuts, upscale=True)):
+    if (err := encode_webm(src, videos / f"{stem}_{full}s.webm", log, ffmpeg, cuts,
+                           upscale=True, audio=audio)):
         return err
 
     for secs in LENGTHS[1:]:
@@ -180,7 +203,7 @@ def transcode(src: Path, videos: Path, stem: str, log: Path, ffmpeg: str) -> str
 
 
 def encode_webm(src: Path, dest: Path, log: Path, ffmpeg: str, cuts: str,
-                upscale: bool) -> str | None:
+                upscale: bool, audio: list[str] | None = None) -> str | None:
     """Write one WebM. `upscale` is False when the source is already 2x.
 
     VP9 at its default deadline is far slower than x264 for no visible gain on
@@ -194,9 +217,15 @@ def encode_webm(src: Path, dest: Path, log: Path, ffmpeg: str, cuts: str,
     and becomes the ceiling.
     """
     vf = f"{UPSCALE},{WEBM_COLOUR}" if upscale else WEBM_COLOUR
-    if run([ffmpeg, *QUIET, "-i", str(src), "-vf", vf,
+    # When re-encoding from a published MP4 the audio is already in it, so it
+    # is copied across rather than taken from a raw file that may be long gone.
+    if audio is None:
+        audio, audio_opts = [], [*AUDIO_WEBM, "-map", "0:v:0", "-map", "0:a?"]
+    else:
+        audio_opts = ([*AUDIO_WEBM, "-af", AUDIO_FILTER, "-shortest"] if audio else ["-an"])
+    if run([ffmpeg, *QUIET, "-i", str(src), *audio, "-vf", vf,
             "-c:v", "libvpx-vp9", "-crf", "36", "-b:v", MAX_BITRATE, "-pix_fmt", "yuv420p",
-            *WEBM_COLOUR_FLAGS,
+            *WEBM_COLOUR_FLAGS, *audio_opts,
             "-deadline", "good", "-cpu-used", "4", "-row-mt", "1", "-threads", "4",
             "-tile-columns", "2", "-force_key_frames", cuts, str(dest)], log, timeout=7200) != 0:
         return "ffmpeg vp9 failed"
