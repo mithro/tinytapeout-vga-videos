@@ -25,7 +25,7 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
-from ttvga import HARNESS_DIR, OVERRIDES_DIR, RESULTS_DIR, TARGETS_JSON
+from ttvga import HARNESS_DIR, RESULTS_DIR, TARGETS_JSON
 
 CONFIG_PATH = Path.home() / ".config" / "tinytapeout-vga-videos" / "config.toml"
 FORBIDDEN_USERS = {"root", "tim", "ansible"}
@@ -232,6 +232,14 @@ echo "started in tmux session ttvga-rerender; watch ~/{REMOTE_ROOT}/rerender.log
     return ssh(host, cmd, check=False, timeout=14400).returncode
 
 
+def verify(args: argparse.Namespace) -> int:
+    """Check on the host that what is published is complete and playable."""
+    host = resolve_host(args.host)
+    cmd = (f"python3 ~/{REMOTE_ROOT}/harness/verify.py --videos ~/{REMOTE_VIDEOS} "
+           f"--root ~/{REMOTE_ROOT} --decode {args.decode}")
+    return ssh(host, cmd, check=False, timeout=7200).returncode
+
+
 def collect(args: argparse.Namespace) -> int:
     """Pull every result.json (and timing.json) from the host into data/results/."""
     host = resolve_host(args.host)
@@ -330,6 +338,11 @@ def add_parsers(sub: argparse._SubParsersAction) -> None:
     p.add_argument("--rewrite-webm", action="store_true",
                    help="rebuild the WebM clips from the published MP4")
     p.set_defaults(func=rerender)
+    p = sub.add_parser("verify", help="check the published clips are complete and playable")
+    common(p)
+    p.add_argument("--decode", type=int, default=40,
+                   help="how many projects to decode in full (0 to skip)")
+    p.set_defaults(func=verify)
     p = sub.add_parser("collect", help="pull result.json files into data/results/")
     common(p)
     p.add_argument("--images", help="also pull poster and contact images into this local directory")
