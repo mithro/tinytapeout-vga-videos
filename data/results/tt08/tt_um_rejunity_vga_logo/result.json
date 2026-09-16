@@ -66,24 +66,24 @@
       "sha256": "337e4a777b90aa576c651e5a37ddc47436bf8daa3a0f886245291caf571faaae"
     },
     "tt08_tt_um_rejunity_vga_logo_10s.webm": {
-      "bytes": 16300369,
-      "sha256": "96161032f797354ecd7c51c031d6e38614193d2a510f0431636d4e715d558453"
+      "bytes": 14023870,
+      "sha256": "a0ba6c391aa26aa05df5a36955ea2f0c39283fb5ca48867b857ad5fb1aa5fae5"
     },
     "tt08_tt_um_rejunity_vga_logo_30s.mp4": {
       "bytes": 46077995,
       "sha256": "00a4ba5b115d495509b10a6b61f9a870c4da0c045323b4908c334d56291b6d89"
     },
     "tt08_tt_um_rejunity_vga_logo_30s.webm": {
-      "bytes": 47545329,
-      "sha256": "2ff2d739025f9923fca9ccf8994a1a0728d9d25e2b0b693e2dc5b8c94ed51bb6"
+      "bytes": 41340903,
+      "sha256": "653c9b7c4726cd60be209ab3871220fce9cfe42bc0f76e43529f9d8fd5553915"
     },
     "tt08_tt_um_rejunity_vga_logo_60s.mp4": {
       "bytes": 90978906,
       "sha256": "726b077f6d83b941cfaf6b394573c02928c769c98980909c811d397cd2597e9e"
     },
     "tt08_tt_um_rejunity_vga_logo_60s.webm": {
-      "bytes": 94610329,
-      "sha256": "3c74458be1fe9e738fddb6acafb7d53bea54a8df3bab0a2215db0a69f1ea32b6"
+      "bytes": 82475001,
+      "sha256": "0cac3874e4dedae42a523ce3c4c26e677ae59425a211a5bcb5f420554cab1efa"
     },
     "tt08_tt_um_rejunity_vga_logo_contact.png": {
       "bytes": 2166762,
@@ -94,8 +94,8 @@
       "sha256": "b6f2c60a479e14e679046ef75f4754b396dbf96ee95e6daa15239fc5b8452ed7"
     },
     "tt08_tt_um_rejunity_vga_logo_preview.gif": {
-      "bytes": 1340105,
-      "sha256": "4069af32f4cf6d5fb884d9710b6fc427caa64ff373d2833acfb583bdb0e46751"
+      "bytes": 3093016,
+      "sha256": "7dcef4f30815bf1695f1b434dfbb70300846071cce2aa0ce3d2a1a83bca1702c"
     }
   },
   "build_log_tail": "x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/tt08/tt_um_rejunity_vga_logo/repo/src -y /home/ttvga/ttvga/work/tt08/tt_um_rejunity_vga_logo/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/tt08/tt_um_rejunity_vga_logo/repo/src/hvsync_generator.v /home/ttvga/ttvga/work/tt08/tt_um_rejunity_vga_logo/repo/src/project.v\nmake: Entering directory '/home/ttvga/ttvga/work/tt08/tt_um_rejunity_vga_logo/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/tt08/tt_um_rejunity_vga_logo/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.154 MB sources in 571 modules, into 0.062 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.028 s (elab=0.017, cvt=0.011, bld=10.972); cpu 0.056 s on 1 threads; allocated 27.270 MB\n[exit 0]\n",

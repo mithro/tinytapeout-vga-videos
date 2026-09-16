@@ -66,24 +66,24 @@
       "sha256": "6239a35f21b2c3a728174b1c53a1ccd49dd735b8779072527092df217cd47cee"
     },
     "ttihp0p3_tt_um_arud4172_ROOTS_vga_10s.webm": {
-      "bytes": 3371484,
-      "sha256": "1f02fbcfcc95df387ffe6b6821b2d624e66441490860fb34cb811ec00827dc4d"
+      "bytes": 2979920,
+      "sha256": "2da020ad337c964a175335b9826eb2bcceb85f800a2434ce9fbbdb4df6f02263"
     },
     "ttihp0p3_tt_um_arud4172_ROOTS_vga_30s.mp4": {
       "bytes": 11054977,
       "sha256": "9c0887d9ec0824ade557180715442fdaa17398f0849dd3afbe4c10b68815475f"
     },
     "ttihp0p3_tt_um_arud4172_ROOTS_vga_30s.webm": {
-      "bytes": 10346968,
-      "sha256": "7aa461862eea5e31d9d522866a72a561c3c2c1720d13430fbfb256cbecc78dc6"
+      "bytes": 9253305,
+      "sha256": "f03890fb5674056e49b91cd90e8281c30b73b4887a546c448d108881e8012275"
     },
     "ttihp0p3_tt_um_arud4172_ROOTS_vga_60s.mp4": {
       "bytes": 21927919,
       "sha256": "7c4acee372c16ffe7784725323fbac93dd5d6ee75b421716eab5fb19de8daba9"
     },
     "ttihp0p3_tt_um_arud4172_ROOTS_vga_60s.webm": {
-      "bytes": 20651434,
-      "sha256": "35c7e38786a437aaf0a6626d85913629943b1fc6ef2c5ba519b7eaea2533ef5a"
+      "bytes": 18491426,
+      "sha256": "a8739e32f54caabe047896299087f28ffd7d304cda02d40c3875ad730df38d42"
     },
     "ttihp0p3_tt_um_arud4172_ROOTS_vga_contact.png": {
       "bytes": 853521,
@@ -94,8 +94,8 @@
       "sha256": "50c12dbea276e2a064ff339acfffbf52eeab13347c8a2e4f2ed3bec2e067a722"
     },
     "ttihp0p3_tt_um_arud4172_ROOTS_vga_preview.gif": {
-      "bytes": 660962,
-      "sha256": "b0546c1ab8d27c083c36bf4e20030c480b57db66bbf02a7e87c444ff87ec371a"
+      "bytes": 1064354,
+      "sha256": "02ddf21ca7d930c34f29367d50c861402f096514dbd05bfa5374ba5a2875f18f"
     }
   },
   "build_log_tail": "eration -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -x c++-header Vtop__pch.h -o Vtop__pch.h.slow.gch\ng++   -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -include Vtop__pch.h.slow -c Vtop__ConstPool__0__Slow.cpp\ng++   -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -include Vtop__pch.h.slow -c Vtop___024root__Slow.cpp\ng++   -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -include Vtop__pch.h.slow -c Vtop___024root__0__Slow.cpp\ng++   -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -include Vtop__pch.h.slow -c Vtop___024root__1__Slow.cpp\ng++   -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -include Vtop__pch.h.slow -c Vtop__Syms__Slow.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp0p3/tt_um_arud4172_ROOTS_vga/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.695 MB sources in 572 modules, into 0.565 MB in 7 C++ files needing 0.000 MB\n- Verilator: Walltime 18.300 s (elab=0.097, cvt=0.185, bld=17.900); cpu 0.400 s on 1 threads; allocated 45.680 MB\n[exit 0]\n",

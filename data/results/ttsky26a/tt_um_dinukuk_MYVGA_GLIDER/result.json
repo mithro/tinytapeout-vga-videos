@@ -66,24 +66,24 @@
       "sha256": "c70ef44dae90207e79916cd1020d76c1f7472eeece8d4f6443ad56cdcdeb8657"
     },
     "ttsky26a_tt_um_dinukuk_MYVGA_GLIDER_10s.webm": {
-      "bytes": 1958409,
-      "sha256": "62c0f4e7df6656a540a278010981e1710b023d0e615bd8a25fdf7a6cc2690900"
+      "bytes": 1290171,
+      "sha256": "0a8613c6f7bce89e9754d87a1fe1ed42af5543c6cc3fb0154b2596aaec7c77ad"
     },
     "ttsky26a_tt_um_dinukuk_MYVGA_GLIDER_30s.mp4": {
       "bytes": 6186692,
       "sha256": "78a4b14b2fa2bceb42a34854524c8f4ee7e3b14665d7c3bda002488fdbb9d099"
     },
     "ttsky26a_tt_um_dinukuk_MYVGA_GLIDER_30s.webm": {
-      "bytes": 6044550,
-      "sha256": "9270740776961376076f788489e0d276c6e7e42283fb8c8129ae16dcfcb6352e"
+      "bytes": 3918512,
+      "sha256": "754d471bc10736f668ebac9200c62059aed9a94a7ec5361ad62ac14e24cf8532"
     },
     "ttsky26a_tt_um_dinukuk_MYVGA_GLIDER_60s.mp4": {
       "bytes": 14800836,
       "sha256": "6a086d4e4e071d023b89cef68f7c0f387609bb33dfd6688a8c293299f4f5b55c"
     },
     "ttsky26a_tt_um_dinukuk_MYVGA_GLIDER_60s.webm": {
-      "bytes": 12079084,
-      "sha256": "f2e1d7a3b814b72decf3148160b0533648776f3f272bd2459d44b58a9c6ce6bd"
+      "bytes": 8281105,
+      "sha256": "84c7bce77c378186181adcdd35b3462a2b63298d72dfc53a4ed070ee4f80d768"
     },
     "ttsky26a_tt_um_dinukuk_MYVGA_GLIDER_contact.png": {
       "bytes": 766946,
@@ -94,8 +94,8 @@
       "sha256": "7e1bb10d8f49f22d6701555cbb46a461c17b5a07a3264e1779ba763cc43b0edb"
     },
     "ttsky26a_tt_um_dinukuk_MYVGA_GLIDER_preview.gif": {
-      "bytes": 834667,
-      "sha256": "57cb76706a1ee1f549e763f5e5f0baac7c3fb77b170d26c67bddf9b64df170bc"
+      "bytes": 2332598,
+      "sha256": "4dc44725952cd3483c5cf495ae45ab4e5ddeaa869a056179c6f518cb8bdfb337"
     }
   },
   "build_log_tail": " --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttsky26a/tt_um_dinukuk_MYVGA_GLIDER/repo/src -y /home/ttvga/ttvga/work/ttsky26a/tt_um_dinukuk_MYVGA_GLIDER/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttsky26a/tt_um_dinukuk_MYVGA_GLIDER/repo/src/project.v /home/ttvga/ttvga/work/ttsky26a/tt_um_dinukuk_MYVGA_GLIDER/repo/src/hvsync_generator.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_dinukuk_MYVGA_GLIDER/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_dinukuk_MYVGA_GLIDER/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.146 MB sources in 570 modules, into 0.057 MB in 5 C++ files needing 0.000 MB\n- Verilator: Walltime 11.303 s (elab=0.017, cvt=0.009, bld=11.252); cpu 0.052 s on 1 threads; allocated 27.012 MB\n[exit 0]\n",

@@ -66,24 +66,24 @@
       "sha256": "22cd64596f61c299f2ce21a5d5759beda60ce25a93b7f4b3eb14fba7a489fb5f"
     },
     "ttihp25a_tt_um_tiny_shader_mole99_10s.webm": {
-      "bytes": 2517114,
-      "sha256": "553ecae6e2267c0ce2d2a99d9c69fe22a40356f29ee723089fc6031cc9a9c960"
+      "bytes": 2438172,
+      "sha256": "aa5a884209aa0b8730e84bbdd0d6aa0e0d161098c66a9237cc7394aee8b63956"
     },
     "ttihp25a_tt_um_tiny_shader_mole99_30s.mp4": {
       "bytes": 14440397,
       "sha256": "9fe14ebe259faf567c8e859bc508fc52d0d40c2f4514047ddd44d67661295862"
     },
     "ttihp25a_tt_um_tiny_shader_mole99_30s.webm": {
-      "bytes": 7195606,
-      "sha256": "386c73e271f82d91189b5cd969bc6665b69e6d16e2c84ebed150af8fd69a88f1"
+      "bytes": 6247979,
+      "sha256": "329b1ce3fd3a16e5df7b10036f340340709d6776a7cd7a523ce92abb8a3a5c4a"
     },
     "ttihp25a_tt_um_tiny_shader_mole99_60s.mp4": {
       "bytes": 28531868,
       "sha256": "e9fdebe7890929fde1516379be11a2d657233d84870cde6d73778e866a038bef"
     },
     "ttihp25a_tt_um_tiny_shader_mole99_60s.webm": {
-      "bytes": 14110500,
-      "sha256": "48fe1dc97446b4cefef9d4598753c5a6fe207ed55fe27d191cf81b06738c584f"
+      "bytes": 12014744,
+      "sha256": "9fb1e0e544c4fd1d44125ffd5d81f9caea8dd58c09a798066e7b5898837488f4"
     },
     "ttihp25a_tt_um_tiny_shader_mole99_contact.png": {
       "bytes": 1434503,
@@ -94,8 +94,8 @@
       "sha256": "8d3809bb2eb38f645d069adb74e03cea83fbb0d554db910e1ae037402048c42f"
     },
     "ttihp25a_tt_um_tiny_shader_mole99_preview.gif": {
-      "bytes": 681046,
-      "sha256": "b546f6e10116bd4a9d7d8d935f246c5e2191c99c7f04b00214b7b4fbb7b0604c"
+      "bytes": 1127825,
+      "sha256": "873e513eb3d25ff32962e80e5a384c2fb9dc29d981bd3e5e4b7d59a4b697a12b"
     }
   },
   "build_log_tail": "ader_mole99/repo/src/tt_um_tiny_shader_mole99.sv /home/ttvga/ttvga/work/ttihp25a/tt_um_tiny_shader_mole99/repo/src/tiny_shader_top.sv /home/ttvga/ttvga/work/ttihp25a/tt_um_tiny_shader_mole99/repo/src/shader_execute.sv /home/ttvga/ttvga/work/ttihp25a/tt_um_tiny_shader_mole99/repo/src/shader_memory.sv /home/ttvga/ttvga/work/ttihp25a/tt_um_tiny_shader_mole99/repo/src/spi_receiver.sv /home/ttvga/ttvga/work/ttihp25a/tt_um_tiny_shader_mole99/repo/src/timing.sv /home/ttvga/ttvga/work/ttihp25a/tt_um_tiny_shader_mole99/repo/src/synchronizer.sv\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_tiny_shader_mole99/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_tiny_shader_mole99/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.376 MB sources in 575 modules, into 0.114 MB in 5 C++ files needing 0.000 MB\n- Verilator: Walltime 11.522 s (elab=0.020, cvt=0.016, bld=11.452); cpu 0.071 s on 1 threads; allocated 27.762 MB\n[exit 0]\n",

@@ -66,24 +66,24 @@
       "sha256": "412e8429bc8d6a4cea242457451d68910a1d32bd6a7eeab54e08ec9f2e71f7b5"
     },
     "tt08_tt_um_edwintorok_10s.webm": {
-      "bytes": 564882,
-      "sha256": "6b5a941c73c6582698006389d84d840c9950178129f9a09ce5aa7d343c915ad1"
+      "bytes": 1065351,
+      "sha256": "b1ac384003d03fcf737065cebcf5dbbfecd9e37c9a195564c5777f7c92640d75"
     },
     "tt08_tt_um_edwintorok_30s.mp4": {
       "bytes": 1827191,
       "sha256": "efb027d85b857b1136f67a93df7809579239176384770fe779178510301b53ef"
     },
     "tt08_tt_um_edwintorok_30s.webm": {
-      "bytes": 1719228,
-      "sha256": "35a5601a5c840e74f961ddc9d097dfee3f92a160684f81dbd2b88a6a98d83e8b"
+      "bytes": 3166569,
+      "sha256": "1fe3a732d26070a67046085e1ccd0bd1dae5d730879b8544f7a91cc64c2bc819"
     },
     "tt08_tt_um_edwintorok_60s.mp4": {
       "bytes": 3625963,
       "sha256": "671e7a96ee530fb366f0d1cfe5d857e54c54331e29ffa1b650cd618018a7b2a8"
     },
     "tt08_tt_um_edwintorok_60s.webm": {
-      "bytes": 3379619,
-      "sha256": "b9eff6461738bc0b19b2a3b16664dbadbeb624a83ca64af56d97ebc216f82d1e"
+      "bytes": 6347572,
+      "sha256": "f49808875744ac1bd2f8d14832cdd933b2cddb8258ef0cb988d3898ac1eb827a"
     },
     "tt08_tt_um_edwintorok_contact.png": {
       "bytes": 424579,
@@ -94,8 +94,8 @@
       "sha256": "e5ce3161275b550bd3a85159d298a848cb07dce257cb52a24a4122967782550e"
     },
     "tt08_tt_um_edwintorok_preview.gif": {
-      "bytes": 826085,
-      "sha256": "383352448cd7307d4054fbea56fec7715254dce44a8a64bd63eb546b0e576c6c"
+      "bytes": 583710,
+      "sha256": "ea9839ace3c5ec3263ae6779dfdeb88b9cedfd9ee4332aa02fc9cb7287357f7a"
     }
   },
   "build_log_tail": "                                                                  : ... This will be executed as a blocking assignment '='!\n 3135 |             _995 <= _803;\n      |                  ^~\n%Warning-COMBDLY: /home/ttvga/ttvga/work/tt08/tt_um_edwintorok/repo/src/generated.v:3278:9: Non-blocking assignment '<=' in combinational logic process\n                                                                                          : ... This will be executed as a blocking assignment '='!\n 3278 |         case (_1151)\n      |         ^~~~\nmake: Entering directory '/home/ttvga/ttvga/work/tt08/tt_um_edwintorok/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/tt08/tt_um_edwintorok/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.314 MB sources in 570 modules, into 0.148 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.455 s (elab=0.041, cvt=0.058, bld=11.302); cpu 0.153 s on 1 threads; allocated 33.508 MB\n[exit 0]\n",

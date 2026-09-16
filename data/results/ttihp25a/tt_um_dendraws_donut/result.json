@@ -66,24 +66,24 @@
       "sha256": "aa57e8e735ae1b03fe3252648f68fdf895b03f9325a35203f2857b283f424a59"
     },
     "ttihp25a_tt_um_dendraws_donut_10s.webm": {
-      "bytes": 422268,
-      "sha256": "e73e1677b5db86786f2f527f982af5f2b4721d430eaf5ed9a8d1b6f04c5a8358"
+      "bytes": 378564,
+      "sha256": "f2b059feb5d39464a27228cd957245d4380bfa907b2b206da3972be9ad9efa5d"
     },
     "ttihp25a_tt_um_dendraws_donut_30s.mp4": {
       "bytes": 520833,
       "sha256": "67713ac80bd9fce4eec5afff9bdda4a54e4341cef4b58362cd08db6dc51c05ac"
     },
     "ttihp25a_tt_um_dendraws_donut_30s.webm": {
-      "bytes": 1261938,
-      "sha256": "647911efeba8a4f903d4a75d069c1f221a8dec5f43a1fb1b2646c50febbe9dfd"
+      "bytes": 1142575,
+      "sha256": "b76fa0dd482437765592b139462711d02baf390b60537b809913b6fdc99653a6"
     },
     "ttihp25a_tt_um_dendraws_donut_60s.mp4": {
       "bytes": 961214,
       "sha256": "0c9b840d05b217a761a652199e838d5abb626068247fa85998f5fbedbe0d0f49"
     },
     "ttihp25a_tt_um_dendraws_donut_60s.webm": {
-      "bytes": 2519863,
-      "sha256": "c430ee893d516d8c1563c3fa86b8444c5949e2485d828363d0f795b380dc961c"
+      "bytes": 2272510,
+      "sha256": "6d4ade96741c69bfe047c8b927dbc78e2153e81758945b90222e2bbe4188019f"
     },
     "ttihp25a_tt_um_dendraws_donut_contact.png": {
       "bytes": 150729,
@@ -94,8 +94,8 @@
       "sha256": "dffc8aa1aee1935a673f1d4b48c0a4d9f0fa51a886971f29973219807fe24b14"
     },
     "ttihp25a_tt_um_dendraws_donut_preview.gif": {
-      "bytes": 23538,
-      "sha256": "65e947643d23312d2d1c4d611a1d2664e54da0b92bc8f385b482aecc19b18713"
+      "bytes": 22411,
+      "sha256": "976d3bed19dfc020935f8940fb03e4f8d2707df731f1a76f38133e1ebde9c21a"
     }
   },
   "build_log_tail": "/ttvga/ttvga/work/ttihp25a/tt_um_dendraws_donut/repo/src -y /home/ttvga/ttvga/work/ttihp25a/tt_um_dendraws_donut/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttihp25a/tt_um_dendraws_donut/repo/src/project.v /home/ttvga/ttvga/work/ttihp25a/tt_um_dendraws_donut/repo/src/hvsync_generator.v /home/ttvga/ttvga/work/ttihp25a/tt_um_dendraws_donut/repo/src/square.v /home/ttvga/ttvga/work/ttihp25a/tt_um_dendraws_donut/repo/src/lod.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_dendraws_donut/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_dendraws_donut/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.250 MB sources in 572 modules, into 0.304 MB in 6 C++ files needing 0.001 MB\n- Verilator: Walltime 11.341 s (elab=0.021, cvt=0.048, bld=11.239); cpu 0.101 s on 1 threads; allocated 27.887 MB\n[exit 0]\n",

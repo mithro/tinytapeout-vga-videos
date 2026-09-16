@@ -66,24 +66,24 @@
       "sha256": "a88967bb654288ece67ac7e517226b00ddf68dee84309644a009395dc1f1b74c"
     },
     "tt08_tt_um_yuri_panchul_sea_battle_vga_game_10s.webm": {
-      "bytes": 2079698,
-      "sha256": "2046482fc1d1a57ff14b37c534235e0494aedbbe10f630170ce8de6a943e4c87"
+      "bytes": 1384962,
+      "sha256": "6f9f8d9eb8b4da431e2a8a2d1ad05e537cdd8039dad28193f9ae71c6bb76401d"
     },
     "tt08_tt_um_yuri_panchul_sea_battle_vga_game_30s.mp4": {
       "bytes": 9378321,
       "sha256": "07abfdbaa2aecf6aacb87739149fb0fa2d0041dd0888c94531e223b2bd8ab93c"
     },
     "tt08_tt_um_yuri_panchul_sea_battle_vga_game_30s.webm": {
-      "bytes": 6308735,
-      "sha256": "2cdb360dc83c5b5519816068e3ea6af4676c8ff82ef91d147c79820abea6ec3b"
+      "bytes": 4743548,
+      "sha256": "3deab63dddcd8d979c52bdd54d9a17d27805bc42c0a14e1a699b5db69e86117b"
     },
     "tt08_tt_um_yuri_panchul_sea_battle_vga_game_60s.mp4": {
       "bytes": 16039158,
       "sha256": "8b866d734fe79223d4a51f1f330b6625337de819341168a1d714d8065145dbf8"
     },
     "tt08_tt_um_yuri_panchul_sea_battle_vga_game_60s.webm": {
-      "bytes": 10388494,
-      "sha256": "cd69bd2d25adaee004eaedca023af2642321bf1f2862783f310847eada479066"
+      "bytes": 7900536,
+      "sha256": "e9808266fad8e9ceda1cef5612523a8d2997cc3f059c1dd3743a0303c81cca5b"
     },
     "tt08_tt_um_yuri_panchul_sea_battle_vga_game_contact.png": {
       "bytes": 401514,
@@ -94,8 +94,8 @@
       "sha256": "2be90ce6455d1d51954a38474ec4eb34c94cb28862b595ede6e583cdd02498b1"
     },
     "tt08_tt_um_yuri_panchul_sea_battle_vga_game_preview.gif": {
-      "bytes": 168168,
-      "sha256": "a4d13efc9aba660552fac4a7210a35e14e71579ccb48cddedc64069a0730b911"
+      "bytes": 7940,
+      "sha256": "768a0c487779f8e60a189b4e120530922a91b9da58e8f73b301d91cbb82453aa"
     }
   },
   "build_log_tail": "message.\n%Warning-WIDTHCONCAT: /home/ttvga/ttvga/work/tt08/tt_um_yuri_panchul_sea_battle_vga_game/repo/src/game_timer.sv:26:34: Unsized numbers/parameters not allowed in replications.\n                                                                                                                     : ... note: In instance 'tt_um_yuri_panchul_sea_battle_vga_game.i_game_and_vga.i_game_top.timer'\n   26 |            if (counter == { width, 1'b0 })\n      |                                  ^\nmake: Entering directory '/home/ttvga/ttvga/work/tt08/tt_um_yuri_panchul_sea_battle_vga_game/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/tt08/tt_um_yuri_panchul_sea_battle_vga_game/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.593 MB sources in 584 modules, into 0.231 MB in 6 C++ files needing 0.001 MB\n- Verilator: Walltime 13.424 s (elab=0.034, cvt=2.128, bld=11.217); cpu 1.225 s on 1 threads; allocated 29.180 MB\n[exit 0]\n",

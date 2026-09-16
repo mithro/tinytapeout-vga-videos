@@ -66,24 +66,24 @@
       "sha256": "a14392db7b02ba265f910dfb3f26135cb6609a8ada7a4bcc5c03a201d6d66e7e"
     },
     "ttcad25a_tt_um_htfab_checkers_10s.webm": {
-      "bytes": 14330176,
-      "sha256": "3f93a39e2d047bca3d87a2f52ea06e931b3c0395ab23700ded9c555bce5e74cf"
+      "bytes": 13857309,
+      "sha256": "1d85ea057df9b5c3dd7b44f754bf40415df493d49c9be85e9a62a1731f9a168f"
     },
     "ttcad25a_tt_um_htfab_checkers_30s.mp4": {
       "bytes": 46127457,
       "sha256": "366eb250fc00b5883f26aab1e04ce2c1e74c3ea459ea6403c2c2587887fe87d0"
     },
     "ttcad25a_tt_um_htfab_checkers_30s.webm": {
-      "bytes": 43055286,
-      "sha256": "a461db2f46f3898d58880ec2a5e2dbcc336aed34192f7f6b1822c4cc4803cb84"
+      "bytes": 41543433,
+      "sha256": "d529fc7ea578affdbdf8fb4e44802fefb88341de382715e278ac096e00843aa9"
     },
     "ttcad25a_tt_um_htfab_checkers_60s.mp4": {
       "bytes": 90996340,
       "sha256": "9e2336077ede35fe99a22638a0719606c867e550bb45663d201540b7d5f031dd"
     },
     "ttcad25a_tt_um_htfab_checkers_60s.webm": {
-      "bytes": 85880112,
-      "sha256": "8736f68baf17f1488b3297074c25c3c3dbd3f9d89f013684525bd1b9091d71f5"
+      "bytes": 84523579,
+      "sha256": "70bba12cd95c809d6add95c74013f4bc9e9f4d4aaf1b1d795aeccd4ad3644210"
     },
     "ttcad25a_tt_um_htfab_checkers_contact.png": {
       "bytes": 1631909,
@@ -94,8 +94,8 @@
       "sha256": "6d3c79256edead35e44a745c191e6f0cc2656093d194c6d1698aa94de00d4efd"
     },
     "ttcad25a_tt_um_htfab_checkers_preview.gif": {
-      "bytes": 1460889,
-      "sha256": "7c943d2da609caa6075acd03f0e4eeea9b7d6486299331c8a1ef3c567ad587b9"
+      "bytes": 3751226,
+      "sha256": "274ccab6006c686dbad5db1a42a463dcacd4818c249b226688980a0417b6b1c5"
     }
   },
   "build_log_tail": "module layer_b (\n      |        ^~~~~~~\n%Warning-TIMESCALEMOD: /home/ttvga/ttvga/work/ttcad25a/tt_um_htfab_checkers/repo/src/layer_a/layer_a.v:6:8: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)\n    6 | module layer_a(pix_y, counter, switches, below, above, pix_x);\n      |        ^~~~~~~\n                       /home/ttvga/ttvga/work/ttcad25a/tt_um_htfab_checkers/repo/src/layer_b/layer_b.v:8:8: ... Location of module with timescale\n    8 | module layer_b (\n      |        ^~~~~~~\nmake: Entering directory '/home/ttvga/ttvga/work/ttcad25a/tt_um_htfab_checkers/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttcad25a/tt_um_htfab_checkers/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.277 MB sources in 575 modules, into 0.079 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.321 s (elab=0.023, cvt=0.020, bld=11.243); cpu 0.079 s on 1 threads; allocated 27.613 MB\n[exit 0]\n",

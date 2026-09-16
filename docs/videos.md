@@ -1,11 +1,11 @@
 # Videos
 
-Generated 2026-09-16 09:35 UTC by `tt-vga index`. Do not edit by hand.
+Generated 2026-09-16 10:48 UTC by `tt-vga index`. Do not edit by hand.
 
 ## Statistics
 
 - Projects: 440, with video: 408
-- Footage: 26.3 GB holding 408 minutes
+- Footage: 25.5 GB holding 408 minutes
 - Simulated: 708 billion clock cycles in 69 hours of machine time
 - Speed: 4.0 million cycles per second (median), 6 minutes per project (median)
 - Motion: median 0.78% of pixels change per frame; 191 clips change more than 1%, 55 not at all

@@ -66,24 +66,24 @@
       "sha256": "b740fc7912ccfce5cae72ae36f0ece8f3588d61f7d3c4aa4e080e72be19f22c3"
     },
     "ttsky26a_tt_um_siliconimist_10s.webm": {
-      "bytes": 20960194,
-      "sha256": "aac77d80f0003be119ea141e6f50ffdaf1d6df7a5ba4bb3bc13237546205e0b8"
+      "bytes": 20683287,
+      "sha256": "de942a7519db664b9d3a7f18a208bb6c004364bd09c16b9be45f592064db1a8b"
     },
     "ttsky26a_tt_um_siliconimist_30s.mp4": {
       "bytes": 45776345,
       "sha256": "fd8da06232f0c4cfe182791d440e8489de4c160daafa8cbc4c302f4ab54ba216"
     },
     "ttsky26a_tt_um_siliconimist_30s.webm": {
-      "bytes": 63465055,
-      "sha256": "d0babab7024acf5cb7c67e4fd9575abb30e67fe8b60838aaf5ef5303485c47da"
+      "bytes": 61861015,
+      "sha256": "78bda54600c8f5483440eacfdfff02d211b599b199074a38670f24b231e88e6e"
     },
     "ttsky26a_tt_um_siliconimist_60s.mp4": {
       "bytes": 90847218,
       "sha256": "448ede3b329a2cd85454c3b854b79ef2d23d87152e6b6367508a5ce7b53dbed1"
     },
     "ttsky26a_tt_um_siliconimist_60s.webm": {
-      "bytes": 127464694,
-      "sha256": "50c22fffcccf930af5df06bf4e414f7a8800cf166eedca62e480fb28e15cfb73"
+      "bytes": 123583248,
+      "sha256": "e8b63fc0f6616c1738fe6689779bc62f9387cbee571d6cf67b96abf4c1b3dc55"
     },
     "ttsky26a_tt_um_siliconimist_contact.png": {
       "bytes": 1324862,
@@ -94,8 +94,8 @@
       "sha256": "5184e27c247ab9696e2f5609582d0374c5dccbaae77334fc06144b54fc949dd9"
     },
     "ttsky26a_tt_um_siliconimist_preview.gif": {
-      "bytes": 1068946,
-      "sha256": "7e4035954e33a08c8ccb45d025e04dc2f56d638838bc4d8b7e3dd584b740e75c"
+      "bytes": 2641100,
+      "sha256": "e98003b3804c623b0633a79e91dce9d51fb917600024c400b02f61cb716cd5da"
     }
   },
   "build_log_tail": "v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttsky26a/tt_um_siliconimist/repo/src/project.v /home/ttvga/ttvga/work/ttsky26a/tt_um_siliconimist/repo/src/hvsync_generator.v /home/ttvga/ttvga/work/ttsky26a/tt_um_siliconimist/repo/src/palette.v /home/ttvga/ttvga/work/ttsky26a/tt_um_siliconimist/repo/src/bitmap_rom.v /home/ttvga/ttvga/work/ttsky26a/tt_um_siliconimist/repo/src/text_scroller.v /home/ttvga/ttvga/work/ttsky26a/tt_um_siliconimist/repo/src/chiptune.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_siliconimist/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_siliconimist/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.476 MB sources in 574 modules, into 0.134 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.425 s (elab=0.032, cvt=0.042, bld=11.305); cpu 0.120 s on 1 threads; allocated 31.676 MB\n[exit 0]\n",

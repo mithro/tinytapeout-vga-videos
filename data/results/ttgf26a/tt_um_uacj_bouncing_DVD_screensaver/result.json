@@ -66,24 +66,24 @@
       "sha256": "6846bbdc71f567fcdcc2bb15e5d66a45841b205044cd5c20afd2ed64b6ee0ff5"
     },
     "ttgf26a_tt_um_uacj_bouncing_DVD_screensaver_10s.webm": {
-      "bytes": 577671,
-      "sha256": "748b0df9c25b0b0ef2f81bf21f045e545de919c36c86b44025368ba045e5e6ce"
+      "bytes": 172491,
+      "sha256": "8c4d6ec6d28ce038b4a8c783c90eb03862360468d95dc5e5b4c5eca954dd593d"
     },
     "ttgf26a_tt_um_uacj_bouncing_DVD_screensaver_30s.mp4": {
       "bytes": 270990,
       "sha256": "e2b17ca4806c8664de265cf9e0a3b27bb02bb04fa717ca04a283b28b284acc85"
     },
     "ttgf26a_tt_um_uacj_bouncing_DVD_screensaver_30s.webm": {
-      "bytes": 1734064,
-      "sha256": "6cc59bd794f7f3bb41dd3ec2bee05892362fd842cd5aaac72efa632d7919fe82"
+      "bytes": 537521,
+      "sha256": "cd896be566f43d1d9926a87340a7c60ee70dddc05b4b042788dadfe24e7b83be"
     },
     "ttgf26a_tt_um_uacj_bouncing_DVD_screensaver_60s.mp4": {
       "bytes": 532574,
       "sha256": "ce9744e505b2ee8e987467d09c55ec82249f660524a8533bb33f75bbf8628136"
     },
     "ttgf26a_tt_um_uacj_bouncing_DVD_screensaver_60s.webm": {
-      "bytes": 3467701,
-      "sha256": "42a739b951cc4121971ee593d17144d1542257b5005a09bb9b55b09c887a9e49"
+      "bytes": 1109888,
+      "sha256": "1c035cea2af3c1b8fbc739a950e71d6606fc8f829dbbb3ccdb7883eee9d09607"
     },
     "ttgf26a_tt_um_uacj_bouncing_DVD_screensaver_contact.png": {
       "bytes": 32822,
@@ -94,8 +94,8 @@
       "sha256": "ccd093559cd625835ef8b7bbd501b6595af1f7874cdaa595bff8f1f3eea2bb41"
     },
     "ttgf26a_tt_um_uacj_bouncing_DVD_screensaver_preview.gif": {
-      "bytes": 30588,
-      "sha256": "ff6b145ce15b435ba8c112f5a4b0f36b2d0569069e4a8612ab9408b4c2420160"
+      "bytes": 53670,
+      "sha256": "93eb849890397a58f0137118407da4a7c9a609a08175012dc9608d8e2e91a27b"
     }
   },
   "build_log_tail": "c --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttgf26a/tt_um_uacj_bouncing_DVD_screensaver/repo/src/hvsync_generator.v /home/ttvga/ttvga/work/ttgf26a/tt_um_uacj_bouncing_DVD_screensaver/repo/src/palette.v /home/ttvga/ttvga/work/ttgf26a/tt_um_uacj_bouncing_DVD_screensaver/repo/src/bitmap_rom.v /home/ttvga/ttvga/work/ttgf26a/tt_um_uacj_bouncing_DVD_screensaver/repo/src/tt_um_uacj_bouncing_DVD_screensaver.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttgf26a/tt_um_uacj_bouncing_DVD_screensaver/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttgf26a/tt_um_uacj_bouncing_DVD_screensaver/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.245 MB sources in 572 modules, into 0.119 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.088 s (elab=0.023, cvt=0.023, bld=11.008); cpu 0.080 s on 1 threads; allocated 28.680 MB\n[exit 0]\n",

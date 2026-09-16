@@ -66,24 +66,24 @@
       "sha256": "2dd92b91b5058652e710c7015d71e80068146a82aa0e670aecf49be682a3d844"
     },
     "ttihp25a_tt_um_MichaelBell_canon_10s.webm": {
-      "bytes": 342466,
-      "sha256": "c8e183044728ba623bab4d223548e61992a889ff72d2ee36d113204c9653c8fa"
+      "bytes": 131683,
+      "sha256": "2f6af05641fd1ad3d8d9c470c8999ab90ec604079541f185032788131ab077b4"
     },
     "ttihp25a_tt_um_MichaelBell_canon_30s.mp4": {
       "bytes": 3514178,
       "sha256": "f2d7c98458931cf8c7f2da7bbb4728ce1c3e2dd8786f3cb31225e5b15574220c"
     },
     "ttihp25a_tt_um_MichaelBell_canon_30s.webm": {
-      "bytes": 5234421,
-      "sha256": "d104f5480816e44a1385dfe9c3c9a93aff29f904657cf3c2f5d364cac96b9d6d"
+      "bytes": 5026402,
+      "sha256": "a383896e8723dae2f5f7df517ceadf521511e12bbd96ef754314b9b70d4547fe"
     },
     "ttihp25a_tt_um_MichaelBell_canon_60s.mp4": {
       "bytes": 13374323,
       "sha256": "f32157682545e22539538c1c5978fae5f9095a4767d09877e409bb315406735f"
     },
     "ttihp25a_tt_um_MichaelBell_canon_60s.webm": {
-      "bytes": 14695942,
-      "sha256": "67cb2117b11144c20552ac7cc39d30d1f400eba283a262320a388b7874dfb8de"
+      "bytes": 12167147,
+      "sha256": "15afa05e0da39fe2653f116599f5693560b1b0ef93b426e0b6f7e0ebf883ac76"
     },
     "ttihp25a_tt_um_MichaelBell_canon_contact.png": {
       "bytes": 821662,
@@ -94,8 +94,8 @@
       "sha256": "c057b0721ac0c102752f75d6d821a1676089ba12d95538f2df557fe75948b3e6"
     },
     "ttihp25a_tt_um_MichaelBell_canon_preview.gif": {
-      "bytes": 195706,
-      "sha256": "cc15c147c760c61b446bc009ba95c6e2da6229467b713c659f4605e111e5f9fa"
+      "bytes": 46311,
+      "sha256": "cdf15d8853e8399c1164db67c3e8c261fd8663412d5c59b69ff4dfe420e255ed"
     }
   },
   "build_log_tail": ": Duplicate declaration of module: 'sky130_fd_sc_hd__xor3_4'\n  595 | module sky130_fd_sc_hd__xor3_4(input VPWR, VGND, VPB, VNB, A, B, C, output X); polyfill__xor3 pf(.A, .B, .C, .X); endmodule\n      |        ^~~~~~~~~~~~~~~~~~~~~~~\n                 /home/ttvga/ttvga/harness/cells/sky130_polyfill.v:595:8: ... Location of original declaration\n  595 | module sky130_fd_sc_hd__xor3_4(input VPWR, VGND, VPB, VNB, A, B, C, output X); polyfill__xor3 pf(.A, .B, .C, .X); endmodule\n      |        ^~~~~~~~~~~~~~~~~~~~~~~\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_MichaelBell_canon/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_MichaelBell_canon/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.820 MB sources in 576 modules, into 0.650 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 12.454 s (elab=0.043, cvt=0.098, bld=12.221); cpu 0.233 s on 1 threads; allocated 35.871 MB\n[exit 0]\n",

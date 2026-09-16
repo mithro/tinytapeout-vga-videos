@@ -66,24 +66,24 @@
       "sha256": "af7712ebe25e39f5e4eea6e9b913974d749db0401aec387fb8f3483676a49d0c"
     },
     "ttsky26b_tt_um_AlephNaNsea_space_time_waves_and_filaments_10s.webm": {
-      "bytes": 14372591,
-      "sha256": "4ac373d385e572e47056dd791faa7f24e890886e00ddc2e98f751b9201935ddd"
+      "bytes": 14062527,
+      "sha256": "a35dfbdc6800a5f11bca9821d4d2011bb4a8694eb564ca9b08324df89f8c976b"
     },
     "ttsky26b_tt_um_AlephNaNsea_space_time_waves_and_filaments_30s.mp4": {
       "bytes": 46228287,
       "sha256": "ebcedd98d87b9f83f2194804a9132e4df52ff55b1153b2889f6705cd104e36d3"
     },
     "ttsky26b_tt_um_AlephNaNsea_space_time_waves_and_filaments_30s.webm": {
-      "bytes": 42898846,
-      "sha256": "1723673455e85735cfa57c9f2bcd66bfc844cc9a8c459982ee265180182b2ec8"
+      "bytes": 42129877,
+      "sha256": "2116f653959c466084dd681ffd93189755bd19f19c74b7d9767679079f73dcee"
     },
     "ttsky26b_tt_um_AlephNaNsea_space_time_waves_and_filaments_60s.mp4": {
       "bytes": 91156447,
       "sha256": "ec55b4bcf9c1d92f3b4c60f2b1cae7dcd48c3350a4be45363382538646204bf5"
     },
     "ttsky26b_tt_um_AlephNaNsea_space_time_waves_and_filaments_60s.webm": {
-      "bytes": 84035637,
-      "sha256": "508a37eaf9555746bc9e89f7943b424f2c6bbff2750245d905af2c3e8d735c8c"
+      "bytes": 84173078,
+      "sha256": "2248a911eb57da3b4f2e925ef7f9b2279189186e45212e3ff1141061032a09ed"
     },
     "ttsky26b_tt_um_AlephNaNsea_space_time_waves_and_filaments_contact.png": {
       "bytes": 1620799,
@@ -94,8 +94,8 @@
       "sha256": "20fa733cbf86765d36b697d28ba20f5fa80e0789c7887b048e35b93d6f928c71"
     },
     "ttsky26b_tt_um_AlephNaNsea_space_time_waves_and_filaments_preview.gif": {
-      "bytes": 1347865,
-      "sha256": "67f1ec0db51d84c59d084b72cc07a9f1c4d949096eab46524fa0b837f93a484f"
+      "bytes": 3356270,
+      "sha256": "add1d64884fd0872ae88c2acc8e7802bb53b4a71151cb7a5da17c110d92f3f4d"
     }
   },
   "build_log_tail": "/ttvga/ttvga/work/ttsky26b/tt_um_AlephNaNsea_space_time_waves_and_filaments/repo/src -y /home/ttvga/ttvga/work/ttsky26b/tt_um_AlephNaNsea_space_time_waves_and_filaments/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttsky26b/tt_um_AlephNaNsea_space_time_waves_and_filaments/repo/src/project.v /home/ttvga/ttvga/work/ttsky26b/tt_um_AlephNaNsea_space_time_waves_and_filaments/repo/src/hvsync_generator.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26b/tt_um_AlephNaNsea_space_time_waves_and_filaments/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26b/tt_um_AlephNaNsea_space_time_waves_and_filaments/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.167 MB sources in 570 modules, into 0.105 MB in 5 C++ files needing 0.000 MB\n- Verilator: Walltime 11.399 s (elab=0.022, cvt=0.015, bld=11.332); cpu 0.068 s on 1 threads; allocated 27.500 MB\n[exit 0]\n",
