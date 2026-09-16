@@ -138,7 +138,15 @@ def transcode(src: Path, videos: Path, stem: str, log: Path, ffmpeg: str) -> str
     webm = videos / f"{stem}_{full}s.webm"
     if run([ffmpeg, *QUIET, "-i", str(src), "-vf", UPSCALE,
             "-c:v", "libvpx-vp9", "-crf", "36", "-b:v", MAX_BITRATE, "-pix_fmt", "yuv420p",
-            "-deadline", "good", "-cpu-used", "2", "-row-mt", "1", "-threads", "4",
+            # `cpu-used` is VP9's speed against compression knob, and it has to
+            # be turned up here. At 2, VP9 was taking twenty-one of every
+            # twenty-two encoder slots on the host and single clips were running
+            # twelve minutes, which put the whole set at about seven hours for a
+            # format that measures no smaller than the MP4 beside it. At 4 the
+            # files grow a few per cent and the run becomes tractable.
+            # `tile-columns` lets a 1280-wide frame be split across threads.
+            "-deadline", "good", "-cpu-used", "4", "-row-mt", "1", "-threads", "4",
+            "-tile-columns", "2",
             "-force_key_frames", cuts, str(webm)], log, timeout=7200) != 0:
         return "ffmpeg vp9 failed"
 

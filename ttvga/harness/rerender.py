@@ -27,7 +27,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from encode import LENGTHS, render_previews, stem_for, transcode  # noqa: E402
+from encode import LENGTHS, clip_names, render_previews, stem_for, transcode  # noqa: E402
 
 # What the published directory held before the clips became browser-playable.
 LEGACY = ("60s.avi", "30s.avi", "10s.avi", "poster.png", "contact.png", "preview.gif")
@@ -94,7 +94,11 @@ def main() -> int:
         log = work / "rerender.log" if work.exists() else videos / "rerender.log"
         mp4 = videos / f"{stem}_{LENGTHS[0]}s.mp4"
         moved = False
-        if not mp4.exists():
+        # Every clip, not just the first one written. A run stopped part way
+        # through a project leaves the MP4 without its WebM or its cuts, and
+        # keying the resume on the MP4 alone would call that project finished
+        # and leave it short five files for good.
+        if [n for n in clip_names(stem) if not (videos / n).exists()]:
             if args.previews_only:
                 return name, f"no {mp4.name}", False
             error = transcode(videos / LEGACY_CAPTURE, videos, stem, log, ffmpeg)
