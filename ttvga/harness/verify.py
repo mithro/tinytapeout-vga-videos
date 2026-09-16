@@ -15,7 +15,10 @@ Every check here exists because something got past the ones before it:
   That one is checked on every file, because it is invisible otherwise;
 - and a run's record can say it captured sound while the published clip is
   silent, because the encode that made the sound wrote somewhere else. The
-  record is what the index believes, so the two have to be compared.
+  record is what the index believes, so the two have to be compared. The
+  rate is checked with it: left to itself ffmpeg followed the 192 kHz capture
+  into 96 kHz AAC, which is unusual enough that some decoders refuse it, and
+  the clip plays perfectly everywhere it was tested.
 
 Exits non-zero if anything fails, so it can gate a publish.
 
@@ -36,7 +39,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from encode import GIF_SECONDS, LENGTHS, clip_names, preview_names, stem_for  # noqa: E402
+from encode import AUDIO_OUT_RATE, GIF_SECONDS, LENGTHS, clip_names, preview_names, stem_for  # noqa: E402
 
 
 def probe(ffprobe: str, path: Path, entries: str, stream: str = "v:0") -> str:
@@ -162,11 +165,18 @@ def main() -> int:
     if claimed:
         silent = 0
         for name, stem, d in claimed:
-            missing = [f.name for f in (d / f"{stem}_{LENGTHS[0]}s.mp4", d / f"{stem}_{LENGTHS[0]}s.webm")
-                       if f.exists() and not probe(ffprobe, f, "stream=codec_type", stream="a:0")]
-            if missing:
+            bad = []
+            for f in (d / f"{stem}_{LENGTHS[0]}s.mp4", d / f"{stem}_{LENGTHS[0]}s.webm"):
+                if not f.exists():
+                    continue
+                rate = probe(ffprobe, f, "stream=sample_rate", stream="a:0")
+                if not rate:
+                    bad.append(f"{f.name} has no audio track")
+                elif rate != AUDIO_OUT_RATE:
+                    bad.append(f"{f.name} is {rate} Hz, expected {AUDIO_OUT_RATE}")
+            if bad:
                 silent += 1
-                failures.append(f"{name}: run captured audio but {', '.join(missing)} has no audio track")
+                failures.append(f"{name}: run captured audio but {'; '.join(bad)}")
         print(f"  clips with the sound their record claims: {len(claimed) - silent} of {len(claimed)}")
 
     if failures:
