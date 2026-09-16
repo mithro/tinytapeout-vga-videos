@@ -102,3 +102,30 @@ def test_thumbnail_offers_the_animation_and_the_contact_sheet():
     assert 'href="tt08/tt_um_x/tt08_tt_um_x_contact.png"' in page
     assert "button.play" in page                      # the handler is on the page
     assert 'aria-label="Play a preview of A demo"' in page
+
+
+def test_playground_link_pins_the_commit_that_was_simulated():
+    from ttvga.index import playground
+
+    url = playground(record(TARGET, RESULT))
+    assert url == "https://vga-playground.com/?repo=https://github.com/a/b&ref=abc123"
+    assert "playground" in write_html([record(TARGET, RESULT)], "now")
+
+
+def test_clips_are_listed_as_a_table_of_length_by_codec():
+    page = write_html([record(TARGET, RESULT)], "now")
+    assert '<table class="clips">' in page
+    assert "<th>webm</th>" in page and "<th>mp4</th>" in page
+    assert '<th class="len">60s</th>' in page
+    # 30 s is absent from the fixture, so that row is not offered at all.
+    assert '<th class="len">30s</th>' not in page
+
+
+def test_sticky_headings_sit_above_the_thumbnails():
+    # `.play` is positioned and comes later in the document, so without an
+    # explicit z-index the sticky heading and header row paint behind it.
+    page = write_html([record(TARGET, RESULT)], "now")
+    heading = next(l for l in page.splitlines() if l.startswith("h2{"))
+    header = next(l for l in page.splitlines() if l.startswith("th{"))
+    assert "position:sticky" in heading and "z-index:3" in heading
+    assert "position:sticky" in header and "z-index:2" in header

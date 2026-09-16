@@ -44,7 +44,10 @@ GRID_COLOUR = "0xd8d5e0"
 GRID_GAP = 6
 GIF_WIDTH = 320
 GIF_FPS = 12
-GIF_SECONDS = 6.0
+# How long the animation plays for. It covers the whole clip regardless: frames
+# are sampled evenly across the full length and replayed at GIF_FPS, so this is
+# the length of the preview, not the length of video it represents.
+GIF_SECONDS = 8.0
 
 QUIET = ["-hide_banner", "-loglevel", "error", "-y"]
 
@@ -155,13 +158,25 @@ def render_previews(videos: Path, stem: str, log: Path, ffmpeg: str, frames: int
                 f"tile=4x4:padding={GRID_GAP}:margin={GRID_GAP}:color={GRID_COLOUR}",
          "-frames:v", "1", str(videos / f"{stem}_contact.png")], log, timeout=900)
 
-    # A short animation for the index page. The source has at most 64 colours,
-    # so a generated palette is exact, and nearest-neighbour scaling keeps the
-    # pixel edges hard instead of smearing them.
-    length = min(GIF_SECONDS, duration) if duration else GIF_SECONDS
-    start = min(5.0, max(0.0, duration - length))
-    run([ffmpeg, *QUIET, "-ss", f"{start:.3f}", "-t", f"{length:.3f}", "-i", str(src),
-         "-vf", f"fps={GIF_FPS},scale={GIF_WIDTH}:-1:flags=neighbor,split[a][b];"
+    # A short animation for the index page, covering the whole clip rather than
+    # a window of it: a design that only changes after forty seconds looked
+    # static in a six second excerpt taken from the start. Frames are sampled
+    # evenly across the full length and retimed to GIF_FPS, which makes the
+    # preview a time-lapse of the entire video.
+    #
+    # `fps` picks the frames and `setpts` retimes them. Retiming rather than
+    # setting an output rate matters: `-r` would pad the run back out by
+    # duplicating frames instead of playing the sampled ones faster.
+    if duration > GIF_SECONDS:
+        sample_fps = (GIF_SECONDS * GIF_FPS) / duration
+        speed = GIF_FPS / sample_fps
+        timing = f"fps={sample_fps:.6f},setpts=PTS/{speed:.6f},"
+    else:
+        timing = f"fps={GIF_FPS},"
+    # The source draws at most 64 colours, so a generated palette is exact, and
+    # nearest-neighbour scaling keeps the pixel edges hard instead of smearing.
+    run([ffmpeg, *QUIET, "-i", str(src),
+         "-vf", f"{timing}scale={GIF_WIDTH}:-1:flags=neighbor,split[a][b];"
                 f"[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none",
          "-loop", "0", str(videos / f"{stem}_preview.gif")], log, timeout=900)
 

@@ -22,6 +22,7 @@ import html
 import json
 import sys
 from datetime import datetime, timezone
+from urllib.parse import quote
 
 from ttvga import DATA_DIR, HARNESS_DIR, ROOT
 from ttvga.analyze import SUCCESS, analyze_all
@@ -38,6 +39,12 @@ INDEX_JSON = DATA_DIR / "index.json"
 INDEX_HTML = DATA_DIR / "index.html"
 VIDEOS_MD = ROOT / "docs" / "videos.md"
 PROJECT_URL = "https://tinytapeout.com/chips/{shuttle}/{macro}"
+
+# The VGA playground runs a project in the browser. It reads `info.yaml` from
+# the repository to find the sources, so it takes the repository rather than
+# the chip. Pinning `ref` to the commit that was simulated means the playground
+# shows the same source the clip came from, not whatever main has become.
+PLAYGROUND_URL = "https://vga-playground.com/?repo={repo}&ref={commit}"
 
 # Both codecs are published for every length. WebM is offered first because it
 # is the smaller of the two; a browser that cannot decode VP9 falls through to
@@ -127,6 +134,11 @@ def record(target: dict, result: dict | None) -> dict:
     if not entry["has_video"]:
         entry["video"] = {"dir": entry["video"]["dir"], "files": {}}
     return entry
+
+
+def playground(entry: dict) -> str:
+    """Where to run this project in the browser, at the commit that was simulated."""
+    return PLAYGROUND_URL.format(repo=quote(entry["repo"], safe=":/"), commit=quote(entry["commit"], safe=""))
 
 
 def count(n: float | None) -> str:
@@ -311,11 +323,11 @@ def write_html(entries: list[dict], generated: str) -> str:
         "<title>Tiny Tapeout VGA videos</title>", "<style>",
         "body{font:14px/1.5 system-ui,sans-serif;margin:0;padding:1.5rem;background:#faf9fb;color:#1c1b2e}",
         "h1{font-weight:400;font-size:1.6rem;margin:0 0 .25rem}",
-        "h2{font-weight:500;font-size:1.1rem;margin:2rem 0 .5rem;position:sticky;top:0;background:#faf9fb;padding:.4rem 0}",
+        "h2{font-weight:500;font-size:1.1rem;margin:2rem 0 .5rem;position:sticky;top:0;background:#faf9fb;padding:.4rem 0;z-index:3}",
         "p.lede{color:#555;margin:.25rem 0 1rem;max-width:60rem}",
         "table{border-collapse:collapse;width:100%;margin-bottom:1rem;background:#fff}",
         "th,td{text-align:left;padding:.4rem .5rem;border-bottom:1px solid #e7e5ee;vertical-align:top}",
-        "th{font-weight:500;color:#555;background:#f2f1f6;position:sticky;top:2.6rem}",
+        "th{font-weight:500;color:#555;background:#f2f1f6;position:sticky;top:2.6rem;z-index:2}",
         "img{display:block;width:160px;height:auto;border:1px solid #e7e5ee;background:#000}",
         ".play{display:block;padding:0;border:0;background:none;cursor:pointer;position:relative}",
         ".play .badge{position:absolute;left:.3rem;bottom:.4rem;background:rgba(28,27,46,.75);color:#fff;",
@@ -326,7 +338,11 @@ def write_html(entries: list[dict], generated: str) -> str:
         ".frames{font-size:.8rem}",
         "td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}",
         ".num{color:#5c5870;font-variant-numeric:tabular-nums}",
-        ".len{display:inline-block;min-width:2.4em;color:#5c5870}",
+        ".clips{width:auto;margin:0;background:none;font-size:.85rem}",
+        ".clips th,.clips td{border:0;padding:.1rem .45rem .1rem 0;position:static;background:none;white-space:nowrap}",
+        ".clips th{font-weight:500;color:#5c5870}",
+        ".clips td{font-variant-numeric:tabular-nums}",
+        ".clips .len{color:#5c5870;font-weight:500}",
         ".v{display:inline-block;padding:.05rem .4rem;border-radius:.6rem;font-size:.85em;white-space:nowrap}",
         ".ok{background:#dcf5e3;color:#14532d}.static{background:#e8e6f6;color:#312a6d}",
         ".barely-moving{background:#fdf3d7;color:#6b4e00}.partial{background:#fdf3d7;color:#6b4e00}",
@@ -363,17 +379,21 @@ f"Every file is named for its shuttle and project. Generated {generated}.</p>",
                        f'<img src="{d}/{s}_poster.png" alt="" loading="lazy">'
                        f'<span class="badge">play</span></button>'
                        f'<a class="frames" href="{d}/{s}_contact.png">all frames</a>') if e["has_video"] else ""
-            # One row per length, both codecs on it: the link plays in the
-            # browser, and the file it saves is named for the project.
+            # A small table: a row per length, a column per codec. The link
+            # plays in the browser, and the file it saves is named for the
+            # project rather than being another 60s.mp4 in the downloads folder.
             rows = []
             for secs in LENGTHS:
-                have = [(ext, f"{s}_{secs}s.{ext}") for ext, _ in FORMATS if f"{s}_{secs}s.{ext}" in v["files"]]
-                if have:
-                    links = " ".join(f'<a href="{d}/{n}">{ext}</a> '
-                                     f'<span class="num">{size(v["files"][n]["bytes"])}</span>'
-                                     for ext, n in have)
-                    rows.append(f'<span class="len">{secs}s</span> {links}')
-            files = "<br>".join(rows)
+                cells = []
+                for ext, _ in FORMATS:
+                    n = f"{s}_{secs}s.{ext}"
+                    cells.append(f'<td><a href="{d}/{n}">{size(v["files"][n]["bytes"]) or ext}</a></td>'
+                                 if n in v["files"] else "<td></td>")
+                if any(c != "<td></td>" for c in cells):
+                    rows.append(f'<tr><th class="len">{secs}s</th>{"".join(cells)}</tr>')
+            files = ('<table class="clips"><tr><th></th>'
+                     + "".join(f"<th>{ext}</th>" for ext, _ in FORMATS)
+                     + "</tr>" + "".join(rows) + "</table>") if rows else ""
             shape = (f'{v.get("width")}&times;{v.get("height")} {v.get("mode") or ""}<br>'
                      f'{v.get("fps") or 0:.1f} fps, {v.get("seconds") or 0:.0f} s<br>'
                      f'{motion(v)} of pixels change per frame, {ever(v)} ever<br>'
@@ -385,7 +405,8 @@ f"Every file is named for its shuttle and project. Generated {generated}.</p>",
                 f'<td><strong>{html.escape(e["title"] or e["macro"])}</strong><br>{html.escape(e["author"] or "")}<br>'
                 f'<code>{html.escape(e["macro"])}</code><br>'
                 f'<a href="{html.escape(e["page"])}">chip page</a> &middot; '
-                f'<a href="{html.escape(e["repo"])}">source</a></td>'
+                f'<a href="{html.escape(e["repo"])}">source</a> &middot; '
+                f'<a href="{html.escape(playground(e))}">playground</a></td>'
                 f'<td><span class="v {cls(e["verdict"])}">{html.escape(e["verdict"])}</span><br>'
                 f'<small>{html.escape(e["reason"])}</small></td>'
                 f"<td>{shape}</td>"
