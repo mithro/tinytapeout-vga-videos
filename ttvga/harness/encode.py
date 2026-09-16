@@ -23,6 +23,7 @@ Standard library only: the host has no packages installed.
 from __future__ import annotations
 
 import hashlib
+import json
 import subprocess
 from pathlib import Path
 
@@ -123,12 +124,24 @@ def run(cmd: list[str], log: Path, cwd: Path | None = None, timeout: float | Non
         return p.returncode
 
 
-def audio_input(src_dir: Path) -> list[str]:
-    """ffmpeg arguments for the captured audio, or nothing if there is none."""
+def audio_input(src_dir: Path, rate: float | None = None) -> list[str]:
+    """ffmpeg arguments for the captured audio, or nothing if there is none.
+
+    The rate comes from the simulation's own record where there is one. Raw
+    samples carry no rate of their own, so guessing it wrong here would not
+    fail: it would silently play the sound at the wrong pitch.
+    """
     raw = src_dir / AUDIO_RAW
     if not raw.exists() or raw.stat().st_size == 0:
         return []
-    return ["-f", "f32le", "-ar", str(AUDIO_RATE), "-ac", "1", "-i", str(raw)]
+    if rate is None:
+        timing = src_dir / "timing.json"
+        if timing.exists():
+            try:
+                rate = float(json.loads(timing.read_text()).get("audio_rate") or 0) or None
+            except (json.JSONDecodeError, ValueError, TypeError):
+                rate = None
+    return ["-f", "f32le", "-ar", str(int(rate or AUDIO_RATE)), "-ac", "1", "-i", str(raw)]
 
 
 def stem_for(shuttle: str, macro: str) -> str:
@@ -168,7 +181,8 @@ def published_files(videos: Path) -> dict:
             for p in sorted(videos.iterdir()) if p.is_file()}
 
 
-def transcode(src: Path, videos: Path, stem: str, log: Path, ffmpeg: str) -> str | None:
+def transcode(src: Path, videos: Path, stem: str, log: Path, ffmpeg: str,
+              audio_rate: float | None = None) -> str | None:
     """Write the full-length clip in both codecs, then cut the shorter ones.
 
     Keyframes are forced at each cut point so the shorter clips can be copied
@@ -178,7 +192,7 @@ def transcode(src: Path, videos: Path, stem: str, log: Path, ffmpeg: str) -> str
     cuts = ",".join(str(s) for s in LENGTHS[1:])
     full = LENGTHS[0]
 
-    audio = audio_input(src.parent)
+    audio = audio_input(src.parent, audio_rate)
     audio_opts = ([*AUDIO_MP4, "-af", AUDIO_FILTER, "-shortest"] if audio else ["-an"])
     mp4 = videos / f"{stem}_{full}s.mp4"
     if run([ffmpeg, *QUIET, "-i", str(src), *audio, "-vf", UPSCALE,

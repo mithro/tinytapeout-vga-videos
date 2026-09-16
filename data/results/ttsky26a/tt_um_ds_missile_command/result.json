@@ -2,16 +2,18 @@
   "id": "ttsky26a/tt_um_ds_missile_command",
   "shuttle": "ttsky26a",
   "macro": "tt_um_ds_missile_command",
-  "started": "2026-09-15T13:15:54+00:00",
+  "started": "2026-09-16T11:52:35+00:00",
   "host": "big-storage",
-  "override": null,
+  "override": {
+    "gamepad": "tt_um_ds_missile_command.gamepad"
+  },
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.7,
-    "build": 12.3,
-    "simulate": 536.1,
-    "encode": 4.1
+    "fetch": 1.8,
+    "build": 9.7,
+    "simulate": 454.9,
+    "encode": 70.0
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -44,63 +46,63 @@
     "fps": 59.5238,
     "frames": 3571,
     "target_frames": 3571,
-    "distinct_frames": 1,
+    "distinct_frames": 548,
     "uniform_frames": 0,
     "black_frames": 0,
-    "colours": 2,
-    "mean_frame_delta": 0.0,
-    "pixels_ever_changed": 0.0,
+    "colours": 6,
+    "mean_frame_delta": 0.000577,
+    "pixels_ever_changed": 0.996357,
     "lines_seen": 1875237,
     "short_lines": 0,
     "long_lines": 0,
     "clocks_simulated": 1501893611,
     "sim_seconds": 60.076,
-    "wall_seconds": 536.1,
-    "clocks_per_wall_second": 2801777,
+    "wall_seconds": 454.9,
+    "clocks_per_wall_second": 3301810,
     "ffmpeg_status": 0,
     "frame_hashes_count": 3571
   },
   "videos": {
     "ttsky26a_tt_um_ds_missile_command_10s.mp4": {
-      "bytes": 48044,
-      "sha256": "2e8c847e8c4305043916de71482aad5a760c18849f022df04a3cb08178eb2974"
+      "bytes": 94006,
+      "sha256": "25096e20582a4289cf4c9cd92ccc5722b14c4a6bfbaa355e11b53481ae4df490"
     },
     "ttsky26a_tt_um_ds_missile_command_10s.webm": {
-      "bytes": 57653,
-      "sha256": "0e1ad77c58383be100a27525e9847ef4d557dd1adb629707161ed67f0d7809b2"
+      "bytes": 168782,
+      "sha256": "e6d83689217d06076106b07de995a70ecb47b388d1cb8324c9da511b0e441d8b"
     },
     "ttsky26a_tt_um_ds_missile_command_30s.mp4": {
-      "bytes": 133804,
-      "sha256": "3dc9d9911bf1364a8bf0fb34c8b96d873943ff727ecfd1b5729452d3d3613d08"
+      "bytes": 236461,
+      "sha256": "9ee0d4cb1cc0580a2ddcb85d436a0093798ac539f19ad9faa65b93211fce7bfa"
     },
     "ttsky26a_tt_um_ds_missile_command_30s.webm": {
-      "bytes": 167159,
-      "sha256": "b84c864229d89cb786d072f5ccdc01ae4e99dbb6f6ec0e6696bded702394e135"
+      "bytes": 463045,
+      "sha256": "e42621b15bc643332f9771e9480bcc4f9d2a5d3166b7f75c5e59d2ce83da15cf"
     },
     "ttsky26a_tt_um_ds_missile_command_60s.mp4": {
-      "bytes": 260713,
-      "sha256": "57508edf26792aa09f627df75f2097ac4255bb6a4784dc52837790027ba6d436"
+      "bytes": 362430,
+      "sha256": "83740fb5363dd0a80728e8789224194b4754b1377190fd25bd925d7577054435"
     },
     "ttsky26a_tt_um_ds_missile_command_60s.webm": {
-      "bytes": 328390,
-      "sha256": "ad6a8fa1091ef126a4630af34ba79a7d3b59e36699b7d9c6f91921362ef87468"
+      "bytes": 601294,
+      "sha256": "900bcfe9dd59d0a5db0aac77ea15b1ca74e7e92bc41e01a9f14bf413ab9452a0"
     },
     "ttsky26a_tt_um_ds_missile_command_contact.png": {
-      "bytes": 18338,
-      "sha256": "727b4ec9f59c016f27d9c2dc6e3d7f443164bc62716049cfc7474e5726f3a240"
+      "bytes": 37708,
+      "sha256": "c4726b00728f9f0575d8a5b8efce8734c36f26f82ab094031e33e819c99ef2c2"
     },
     "ttsky26a_tt_um_ds_missile_command_poster.png": {
-      "bytes": 7362,
-      "sha256": "78e87c515ce283d0adcfbe4c7602b0b384cc22b2cff7a0994a3194dea42565ed"
+      "bytes": 6621,
+      "sha256": "863d7b1a0bc812c610df976879aa90b0650d650c1ff0482b7cfa80815b420982"
     },
     "ttsky26a_tt_um_ds_missile_command_preview.gif": {
-      "bytes": 4373,
-      "sha256": "0d3ee13ec44b2fe2e0d7095382149746934c39141f4fe7aa61c5ffc3a53360b9"
+      "bytes": 40312,
+      "sha256": "0a93af9ac64cf6702dc0bf2a907144a2179b87b306b8419f23ce913a27943b12"
     }
   },
-  "build_log_tail": "mmand/repo/src/hsync_generator.v /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/repo/src/level_banner.v /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/repo/src/missile_starter.v /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/repo/src/missile.v /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/repo/src/random.v /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/repo/src/start_banner.v /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/repo/src/winner_banner.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.122 MB sources in 583 modules, into 0.305 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 12.164 s (elab=0.035, cvt=0.062, bld=12.020); cpu 0.144 s on 1 threads; allocated 29.941 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/build/Vtop --clock-hz 25000000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.524 fps\ntb: ok: 3571 frames (1 distinct, 0 uniform, 2 colours, 0.000% of pixels change per frame, 0.0% ever), 1501893611 clocks in 536.1s wall (2.80 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_ds_missile_command/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttsky26a/tt_um_ds_missile_command/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_ds_missile_command/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttsky26a/tt_um_ds_missile_command/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_ds_missile_command/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttsky26a/tt_um_ds_missile_command/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_ds_missile_command/60s.avi -vf select='not(mod(n\\,223))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttsky26a/tt_um_ds_missile_command/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T13:25:09+00:00",
-  "verdict": "static",
-  "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 2 colours)"
+  "build_log_tail": "command/repo/src/hsync_generator.v /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/repo/src/level_banner.v /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/repo/src/missile_starter.v /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/repo/src/missile.v /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/repo/src/random.v /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/repo/src/start_banner.v /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/repo/src/winner_banner.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.122 MB sources in 583 modules, into 0.305 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 9.554 s (elab=0.023, cvt=0.050, bld=9.441); cpu 0.113 s on 1 threads; allocated 29.785 MB\n[exit 0]\n",
+  "sim_log_tail": "t_um_ds_missile_command/build/Vtop --clock-hz 25000000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --gamepad /home/ttvga/ttvga/overrides/ttsky26a/tt_um_ds_missile_command.gamepad\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.524 fps\ntb: ok: 3571 frames (548 distinct, 0 uniform, 6 colours, 0.058% of pixels change per frame, 99.6% ever), 1501893611 clocks in 454.9s wall (3.30 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky26a/tt_um_ds_missile_command/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_60s.webm -t 30 -c copy /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_60s.webm -t 10 -c copy /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_60s.mp4 -vf select='not(mod(n\\,223))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttsky26a/tt_um_ds_missile_command/ttsky26a_tt_um_ds_missile_command_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-16T12:01:32+00:00",
+  "verdict": "ok",
+  "reason": "548 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.06% of pixels change per frame, 6 colours)"
 }

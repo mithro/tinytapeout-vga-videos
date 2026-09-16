@@ -168,3 +168,20 @@ def test_rewriting_webm_keeps_the_audio_already_in_the_mp4(tmp_path, monkeypatch
     encode.rewrite_webm(tmp_path, "tt08_tt_um_x", tmp_path / "log", "ffmpeg")
     webm = next(c for c in calls if c[-1].endswith("_60s.webm"))
     assert "0:a?" in webm and "libopus" in webm
+
+
+def test_audio_rate_comes_from_the_simulation_record(tmp_path):
+    """Raw samples carry no rate, so guessing wrong would not fail loudly --
+    it would play the sound at the wrong pitch."""
+    import encode
+    import json as _json
+
+    (tmp_path / encode.AUDIO_RAW).write_bytes(b"\0" * 64)
+    (tmp_path / "timing.json").write_text(_json.dumps({"audio_rate": 96000}))
+    args = encode.audio_input(tmp_path)
+    assert args[args.index("-ar") + 1] == "96000"
+
+    # With nothing recorded it falls back to the rate the harness defaults to.
+    (tmp_path / "timing.json").unlink()
+    args = encode.audio_input(tmp_path)
+    assert args[args.index("-ar") + 1] == str(encode.AUDIO_RATE)
