@@ -241,8 +241,41 @@ context rather than a file:
 - A 20 Hz high-pass is applied before encoding. The captured signal is a PWM
   bit averaged into 0..1, so it carries a large DC offset that would waste most
   of the headroom and click at each end. 20 Hz is below the Pmod's passband.
-- The track is written only when the design actually drove the pin, and it
+- The track is written only when the pin carried something audible, and it
   starts with the first captured frame so sound and picture begin together.
+
+"Audible" is a measurement, not a declaration, and the first rule tried was
+wrong. Writing a track whenever `uio_oe[7]` was high says the pin is an
+output, which a great many designs make it without ever putting a signal
+there. Two of the first eighteen projects of a full re-run showed both ways
+that fails:
+
+| project | pin held at | published track |
+| --- | --- | --- |
+| `tt05/tt_um_flappy_vga_cutout1` | 0 | silence, -91 dB mean and peak |
+| `tt05/tt_um_wokwi_380409393770716161` | 1 | one click, -0.1 dB peak, -36 dB mean |
+
+The second is the instructive one. A constant 1 is as silent as a constant 0,
+but the DC-removing high-pass turns the step at the start into a click, and on
+a volume meter that reads like a real signal -- which is how it was first
+read here. Loudness is the wrong observable: both pins measured **zero
+transitions**.
+
+So the test counts transitions of the driven bit and requires at least twenty
+a second, which is the Pmod filter's corner and the high-pass corner already
+chosen, and below which nothing is audible whatever a meter says. Real audio
+is nowhere near the boundary: `tt08/tt_um_nyan` switches its PWM at 387 kHz,
+four orders of magnitude above it, so the threshold never needs tuning. The
+count is recorded in `result.json` as `audio_transitions`, so the decision can
+be checked rather than taken on trust.
+
+Two checks in `tt-vga verify` guard the other end, both added after the faults
+they describe. A clip whose record claims captured audio must actually carry a
+track, because the encode that made the sound once wrote to a scratch
+directory while the published file stayed the older silent one. And that track
+must be at 48 kHz, because left alone ffmpeg followed the 192 kHz capture into
+96 kHz AAC -- a rate some decoders refuse, and one that played perfectly in
+every player tried here. Both are checked on all six published files.
 
 AAC in the MP4, Opus in the WebM. Re-encoding a WebM from a published MP4
 copies the existing track across instead of looking for the raw capture, which
