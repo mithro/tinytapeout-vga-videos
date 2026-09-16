@@ -6,7 +6,9 @@ so the host can serve them without anything being copied twice:
 ```
 /home/ttvga/public_html/index.html          the browsable index (tt-vga index --upload)
 /home/ttvga/public_html/index.json          the same data, machine readable
-/home/ttvga/public_html/<shuttle>/<macro>/  60s.avi, 30s.avi, 10s.avi, poster.png, contact.png
+/home/ttvga/public_html/<shuttle>/<macro>/  <shuttle>_<macro>_{60,30,10}s.{webm,mp4}
+                                            <shuttle>_<macro>_{poster,contact}.png
+                                            <shuttle>_<macro>_preview.gif
 ```
 
 With a web server configured for user directories that is
@@ -43,16 +45,27 @@ sudo nginx -t && sudo systemctl reload nginx
 ```
 
 It maps `/~user/path` to `/home/user/public_html/path`, turns on directory
-listings, and names the media types so browsers play the clips instead of
-downloading them. Check it with:
+listings, and leaves the media types to nginx's own `/etc/nginx/mime.types`.
+
+It deliberately has no `types` block. A `types` block in a location
+*replaces* nginx's table rather than adding to it, so every extension it
+did not list was served as `application/octet-stream` — and a browser will
+not play a video or animate a GIF handed to it under that type. An earlier
+version of this snippet made exactly that mistake with `.webm` and `.gif`.
+
+Check it with:
 
 ```
 curl -sI https://HOST/~ttvga/index.html
-curl -sI https://HOST/~ttvga/tt08/tt_um_johshoff_metaballs/10s.avi
+for f in 60s.mp4 60s.webm preview.gif poster.png; do
+  curl -sI "https://HOST/~ttvga/tt08/tt_um_johshoff_metaballs/tt08_tt_um_johshoff_metaballs_$f" \
+    | grep -i '^HTTP/\|^content-type'
+done
 ```
 
-Both should answer `200` and the second should say
-`Content-Type: video/x-msvideo`.
+Every one should answer `200`, and the types should read `video/mp4`,
+`video/webm`, `image/gif` and `image/png`. An `application/octet-stream`
+anywhere in that list means the `types` block is back.
 
 ## Apache, for another host
 

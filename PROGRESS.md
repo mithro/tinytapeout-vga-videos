@@ -5,6 +5,64 @@ whenever something non-obvious is learned. This file is the resume point
 if work stops for lack of credits or tokens: read it, then `docs/status.md`,
 then the newest `data/results/` entries.
 
+## 2026-09-16 (later): playground links, a clip table, whole-clip previews
+
+Four page and preview changes, plus two problems found by measuring rather
+than assuming.
+
+Done:
+- Each project links to the VGA playground beside its chip page and source.
+  The playground takes a repository, not a chip, and reads `info.yaml` from
+  it: `https://vga-playground.com/?repo=<repo>&ref=<commit>`. `ref` is
+  pinned to the commit that was simulated, so it shows the same source the
+  clip came from. Format confirmed from the playground's own README, not
+  guessed.
+- The clips are a small table now, a row per length and a column per codec.
+- The sticky heading and header row were painting *behind* the thumbnails.
+  `.play` is `position:relative` and comes later in the document, so with
+  both at `z-index:auto` the later positioned element wins. The sticky
+  elements now say where they sit (`z-index:3` and `2`).
+- The animation previews were the 60 s clip all along, but only a six second
+  window starting five seconds in, so a design that changes late looked
+  static. They now sample evenly across the whole clip and replay at 12 fps:
+  an eight second time-lapse of the entire video. Retimed with `setpts`, not
+  an output `-r`, which would pad the run back out by duplicating frames.
+
+Measured, not assumed:
+- Transcode quality. Comparing a frame of the MP4 against the capture at the
+  *design* resolution gave 22 dB, which looked alarming. It was the
+  measurement: downscaling the 2x clip with the default bicubic filter rings
+  on hard pixel edges. Compared at the published resolution, with the source
+  put through the same nearest-neighbour upscale, it is 42.5 dB for H.264
+  and 43.7 dB for VP9 — visually lossless. Always compare at the geometry
+  the codec actually saw.
+- VP9 is not the smaller format here. Ten seconds at 1280x960: x264 crf 18
+  is 6.0 MB in 5 s; VP9 crf 32 is 6.8 MB in 24 s. The two crf scales are not
+  comparable. VP9 moved to crf 36 (5.8 MB) so the WebM is not the larger
+  file. WebM still costs about four times the encode time for no gain, and
+  MP4 plays everywhere: dropping WebM would halve the pipeline, which is the
+  owner's call.
+- The server was mislabelling files. `.webm` and `.gif` came back as
+  `application/octet-stream`, which no browser will play or animate. A
+  `types` block inside an nginx location *replaces* nginx's own table rather
+  than extending it, so everything the block forgot fell through to
+  `default_type`. `/etc/nginx/mime.types` already names every type published
+  here, so `ttvga/nginx/userdir-web.conf` now has no `types` block at all.
+  Needs the owner to reinstall it: the snippet lives under `/etc/nginx/`.
+- 50 tests pass, including the naming, the clip table, the z-index and the
+  time-lapse arithmetic.
+
+In flight:
+- Migration of all 408 published projects to MP4 + WebM with the new names,
+  20 at a time on the big host. `rerender.py` does it; the old AVIs are kept
+  until the new clips are checked, because they are the only copy of about
+  69 hours of simulation. `--drop-legacy` removes them afterwards.
+
+Next:
+- Check the migrated clips, then `tt-vga collect`, `analyze`, `index
+  --upload`, and verify play over HTTPS.
+- Drop the legacy AVIs once the new clips are confirmed.
+
 ## 2026-09-16: clips a browser will actually play, named for their project
 
 The published `.avi` files did not play in a browser. Motion JPEG in an AVI
