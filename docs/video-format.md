@@ -219,6 +219,60 @@ Measured while the preview was still a time-lapse:
 | `fps=1.6,setpts=PTS/7.5`, `-r 12`           | 99     | 1.3 MB  |
 | `select` every 37th frame, `setpts=N/12/TB` | 98     | 3.9 MB  |
 
+## Sound
+
+Designs that drive the Audio Pmod get a soundtrack. The Pmod carries one bit
+on `uio[7]`, and the playground reads it as `(uio_out & uio_oe) >> 7`: the
+`uio_oe` term matters, because a design that leaves the pin an input should be
+silent rather than stuck at whatever the bus floats to.
+
+The sampling is the playground's `AudioEngine`. The bit is averaged over each
+sample period, which is the decimation, and then a moving average of
+`ceil(rate / 20 kHz)` samples stands in for the low-pass filter on the Pmod
+itself. 192 kHz is the playground's rate: high enough to leave room above that
+filter, and ffmpeg resamples it when muxing.
+
+Three deliberate differences from the playground, which feeds a live audio
+context rather than a file:
+
+- The sample clock is a fractional accumulator, not an integer comparison.
+  At 25.175 MHz and 192 kHz the period is 131.1 clocks; counting 132 each time
+  drifts about 50 ms over a minute, which is audible against the picture.
+- A 20 Hz high-pass is applied before encoding. The captured signal is a PWM
+  bit averaged into 0..1, so it carries a large DC offset that would waste most
+  of the headroom and click at each end. 20 Hz is below the Pmod's passband.
+- The track is written only when the design actually drove the pin, and it
+  starts with the first captured frame so sound and picture begin together.
+
+AAC in the MP4, Opus in the WebM. Re-encoding a WebM from a published MP4
+copies the existing track across instead of looking for the raw capture, which
+by then has been deleted with the rest of the working files.
+
+## Driving the inputs
+
+A design that waits for a button renders sixty seconds of its title screen.
+`tt-vga stimulus` reads each project's own pin names and writes an override
+that presses things, and two kinds of input are handled.
+
+Plain buttons are driven directly on `ui_in`, one at a time, on a schedule
+across the clip.
+
+The Gamepad Pmod is a serial protocol and is emulated as the playground does
+it: a 400 step cycle per scan line, 24 clock pulses shifting a 24 bit report
+whose upper 12 bits are the first controller's buttons, and a latch pulse at
+step 49. Its wiring is fixed, which matters because projects name those pins
+inconsistently -- some spell out `gamepad_latch`, some label all three simply
+`gamepad`, and some declare the Pmod and leave the names blank. From the
+playground's own example:
+
+```verilog
+.pmod_data(ui_in[6]), .pmod_clk(ui_in[5]), .pmod_latch(ui_in[4]),
+```
+
+so declaring the Pmod at all is enough to drive it, and the pin names are only
+a fallback. Requiring the names cost three projects that were rendering as a
+still picture.
+
 ## Serving them
 
 See [publishing.md](publishing.md). One thing belongs here too, because it
