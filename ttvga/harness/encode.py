@@ -115,9 +115,14 @@ def transcode(src: Path, videos: Path, stem: str, log: Path, ffmpeg: str) -> str
     # on flat pixel art; `good` with `cpu-used 2` and row threading is the
     # usual compromise. `-b:v 0` makes `-crf` a true quality target rather
     # than a cap on the bit rate.
+    #
+    # crf 36 rather than a lower number: measured on a 10 second clip, VP9 at
+    # crf 32 produced a *larger* file than x264 at crf 18 because the two
+    # scales are not comparable. 36 lands at about the same size and quality
+    # as the MP4, so the WebM is a real alternative rather than a bigger one.
     webm = videos / f"{stem}_{full}s.webm"
     if run([ffmpeg, *QUIET, "-i", str(src), "-vf", UPSCALE,
-            "-c:v", "libvpx-vp9", "-crf", "32", "-b:v", "0", "-pix_fmt", "yuv420p",
+            "-c:v", "libvpx-vp9", "-crf", "36", "-b:v", "0", "-pix_fmt", "yuv420p",
             "-deadline", "good", "-cpu-used", "2", "-row-mt", "1", "-threads", "4",
             "-force_key_frames", cuts, str(webm)], log, timeout=7200) != 0:
         return "ffmpeg vp9 failed"
