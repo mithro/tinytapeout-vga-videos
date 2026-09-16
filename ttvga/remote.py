@@ -253,6 +253,49 @@ def collect(args: argparse.Namespace) -> int:
     return 0
 
 
+# Files the published tree still holds from before the clips became
+# browser-playable. They are superseded, no browser will play motion JPEG in an
+# AVI, and a mirror that cannot unpublish must not carry them.
+SUPERSEDED = ("60s.avi", "30s.avi", "10s.avi", "poster.png", "contact.png", "preview.gif",
+              "rerender.log")
+
+
+def mirror(args: argparse.Namespace) -> int:
+    """Copy the published clips into a directory that is itself published onwards.
+
+    Both sides live on the simulation host, so the copy runs there and nothing
+    crosses the network twice. It usually needs a different account from the one
+    that runs the simulations, because the destination belongs to whoever owns
+    the onward publishing; `--as-user` says which.
+
+    Nothing about the destination is recorded in the repository: pass `--dest`.
+    """
+    host = resolve_host(args.host)
+    ssh_host = f"{args.as_user}@{host.ssh.split('@', 1)[1]}" if args.as_user else host.ssh
+    dest = args.dest.rstrip("/")
+    src = f"/home/{host.user}/{REMOTE_VIDEOS}/"
+    excludes = "".join(f" --exclude {shlex.quote(name)}" for name in SUPERSEDED)
+    # No --delete: a mirror of this kind is usually append-only downstream, and
+    # deleting here would not unpublish there anyway.
+    script = f"""
+set -e
+if [ ! -d {shlex.quote(src)} ]; then echo "no published tree at {src}"; exit 1; fi
+mkdir -p {shlex.quote(dest)}
+rsync -a --mkpath{excludes} {'--dry-run --stats' if args.dry_run else ''} \\
+    {shlex.quote(src)} {shlex.quote(dest)}/
+echo "---"
+echo "clips:    $(find {shlex.quote(dest)} -name '*.mp4' -o -name '*.webm' | wc -l)"
+echo "previews: $(find {shlex.quote(dest)} -name '*.png' -o -name '*.gif' | wc -l)"
+echo "index:    $(ls {shlex.quote(dest)}/index.html {shlex.quote(dest)}/index.json 2>&1 | tr '\\n' ' ')"
+du -sh {shlex.quote(dest)}
+"""
+    ssh_cmd = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20"]
+    if args.as_user is None and host.key:
+        ssh_cmd += ["-o", "IdentitiesOnly=yes", "-i", os.path.expanduser(host.key)]
+    print(f"mirroring {src} to {ssh_host}:{dest}/" + (" (dry run)" if args.dry_run else ""))
+    return subprocess.run(ssh_cmd + [ssh_host, "bash", "-s"], input=script, text=True).returncode
+
+
 def add_parsers(sub: argparse._SubParsersAction) -> None:
     def common(p: argparse.ArgumentParser) -> None:
         p.add_argument("--host", help="user@host, or a name from ~/.config/tinytapeout-vga-videos/config.toml")
@@ -287,3 +330,10 @@ def add_parsers(sub: argparse._SubParsersAction) -> None:
     common(p)
     p.add_argument("--images", help="also pull poster and contact images into this local directory")
     p.set_defaults(func=collect)
+    p = sub.add_parser("mirror", help="copy the published clips into a directory published onwards")
+    common(p)
+    p.add_argument("--dest", required=True,
+                   help="destination directory on the host (not recorded in this repository)")
+    p.add_argument("--as-user", help="account on the host to run the copy as, if not the simulation user")
+    p.add_argument("--dry-run", action="store_true", help="list what would be copied and stop")
+    p.set_defaults(func=mirror)

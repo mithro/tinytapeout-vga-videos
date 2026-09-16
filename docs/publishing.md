@@ -75,3 +75,33 @@ sudo a2enmod userdir && sudo systemctl reload apache2
 
 Apache's `userdir` module maps the same URLs to the same directory, so only
 the permissions above are needed.
+
+## Mirroring onwards
+
+The host may have a directory that is itself published somewhere else. On the
+machine used so far, anything under `/srv/data.wafer.space` is rsynced to a
+public server every five minutes.
+
+`tt-vga mirror` copies the published tree into such a directory. Both sides
+are on the host, so the copy runs there:
+
+```
+tt-vga mirror --host big --as-user tim --dest /srv/.../tinytapeout-vga-videos --dry-run
+tt-vga mirror --host big --as-user tim --dest /srv/.../tinytapeout-vga-videos
+```
+
+`--as-user` exists because the destination usually belongs to whoever owns the
+onward publishing rather than to the simulation user, which deliberately has no
+privileges. Nothing about the destination is recorded in this repository.
+
+Two things to know before running it.
+
+It excludes the superseded `60s.avi`, `30s.avi` and `10s.avi` and the
+unprefixed previews. Those are a capture format no browser will play, they are
+218 GB, and they are removed by `tt-vga rerender --drop-legacy` anyway.
+
+**Check what you are publishing first.** An onward sync of this kind is
+typically append-only: deleting a file from the source does not unpublish the
+copy already on the far server. Run `--dry-run`, and regenerate the index
+(`tt-vga index --upload`) before mirroring, so the page being published points
+at files that exist.
