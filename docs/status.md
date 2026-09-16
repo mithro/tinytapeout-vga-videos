@@ -1,20 +1,20 @@
 # Status
 
-Generated 2026-09-16 10:48 UTC by `tt-vga report`. Do not edit by hand.
+Generated 2026-09-16 15:11 UTC by `tt-vga report`. Do not edit by hand.
 
 - Targets: 440
 - Attempted: 440
 - Videos produced: 386
 - Pending: 0
-- Video, poster and contact sheet size on the simulation host: 26 GB
+- Video, poster and contact sheet size on the simulation host: 25 GB
 
 ## Verdicts
 
 | Verdict | Count |
 | --- | ---: |
-| ok | 326 |
-| static | 34 |
-| barely-moving | 26 |
+| ok | 328 |
+| static | 30 |
+| barely-moving | 28 |
 | blank | 18 |
 | no-sync | 12 |
 | bad-timing | 1 |
@@ -30,7 +30,7 @@ Generated 2026-09-16 10:48 UTC by `tt-vga report`. Do not edit by hand.
 | tt05 | 6 | 3 | 2 | 1 |  |  |  |  |  |  |  |
 | tt05of | 6 | 3 | 2 | 1 |  |  |  |  |  |  |  |
 | tt06 | 6 | 3 |  |  | 1 |  |  |  |  | 1 | 1 |
-| tt07 | 7 | 3 | 1 |  | 3 |  |  |  |  |  |  |
+| tt07 | 7 | 3 |  | 1 | 3 |  |  |  |  |  |  |
 | ttihp0p1 | 5 | 3 | 1 | 1 |  |  |  |  |  |  |  |
 | tt08 | 30 | 25 | 2 |  |  | 1 |  | 1 |  |  | 1 |
 | ttihp0p2 | 24 | 19 | 1 | 1 | 2 | 1 |  |  |  |  |  |
@@ -39,14 +39,14 @@ Generated 2026-09-16 10:48 UTC by `tt-vga report`. Do not edit by hand.
 | ttihp0p3 | 7 | 6 |  |  |  |  |  |  |  |  | 1 |
 | ttcad25a | 40 | 33 | 2 | 2 |  | 1 |  | 1 |  |  | 1 |
 | ttihp25b | 7 | 6 |  | 1 |  |  |  |  |  |  |  |
-| ttsky25a | 27 | 17 | 3 | 2 | 1 | 1 | 1 |  | 1 |  | 1 |
+| ttsky25a | 27 | 18 | 3 | 1 | 1 | 1 | 1 |  | 1 |  | 1 |
 | ttgf0p1 | 5 | 3 | 1 | 1 |  |  |  |  |  |  |  |
 | ttsky25b | 15 | 11 |  | 1 | 1 |  |  | 1 |  |  | 1 |
 | ttgf0p2 | 10 | 6 |  | 2 |  | 1 |  |  | 1 |  |  |
 | ttihp26a | 31 | 24 | 2 | 2 | 1 | 1 |  |  | 1 |  |  |
 | ttihp0p4 | 11 | 7 | 1 | 1 |  | 1 |  |  | 1 |  |  |
-| ttsky26a | 57 | 45 | 2 | 5 | 2 | 1 |  |  | 1 |  | 1 |
-| ttsky26b | 46 | 35 | 6 | 3 | 1 | 1 |  |  |  |  |  |
+| ttsky26a | 57 | 46 |  | 6 | 2 | 1 |  |  | 1 |  | 1 |
+| ttsky26b | 46 | 35 | 5 | 4 | 1 | 1 |  |  |  |  |  |
 | ttgf26a | 10 | 7 | 1 |  |  | 1 |  |  | 1 |  |  |
 | ttgf26b | 4 | 3 |  |  |  |  |  |  | 1 |  |  |
 | ttgf0p3 | 6 | 5 |  |  |  |  |  |  |  |  | 1 |
