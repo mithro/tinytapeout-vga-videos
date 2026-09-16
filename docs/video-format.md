@@ -92,6 +92,44 @@ times slower than H.264 at 18. VP9 is set to crf 36 so the WebM is not the
 larger file. Dropping WebM entirely would roughly halve the pipeline's
 running time.
 
+## Why the WebM is limited range
+
+VP9 must be written limited range (`tv`). A full range VP9 stream does not
+play in Chrome at all on a machine that decodes VP9 in hardware: the video
+element loads, reports its size and duration, and then never produces a
+picture.
+
+This is worth stating plainly because every check that does not involve a GPU
+passes it. ffmpeg decodes the full range file, VLC decodes it, and a Chromium
+running without GPU decode plays it start to finish with frames counted.
+Only real Chrome on real hardware refuses.
+
+Four variants of one clip, each tested in a browser that had failed on the
+published file:
+
+| range        | matrix     | plays |
+| ------------ | ---------- | ----- |
+| `pc` (full)  | `bt470bg`  | no    |
+| `pc` (full)  | `bt709`    | no    |
+| `tv` (limited) | `bt470bg` | yes   |
+| `tv` (limited) | `bt709`  | yes   |
+
+So the range decides it and the matrix does not. The encoder writes `tv` with
+a `bt709` matrix, which is the conventional pairing and self-consistent.
+
+The conversion costs almost nothing on this material. These designs drive two
+bits per channel, so every pixel is one of 0, 85, 170 or 255, and limited
+range has 219 levels to place four values in.
+
+The MP4 is deliberately left full range: H.264 hardware decoding does not have
+the same trouble, and re-encoding it would cost a generation for no gain.
+
+Where the bad tags came from: the capture is MJPEG, which is `yuvj420p`, full
+range, and ffmpeg labels it `bt470bg` with transfer and primaries
+unspecified. Those tags were carried into the VP9 encode unexamined. Anything
+derived from a JPEG-family source needs its colour metadata stated
+deliberately rather than inherited.
+
 ## How good the transcode is
 
 Measured on one frame of Nyan Cat, against the capture, at the published
@@ -103,6 +141,10 @@ resolution:
 | VP9 crf 32           | 43.7 dB |
 
 Above about 40 dB the difference is not visible. 
+
+**Test on hardware, not only in software.** The colour range fault above was
+invisible to ffmpeg, VLC and a software Chromium, and obvious in one click in
+a normal browser.
 
 **Measure at the geometry the codec saw.** Comparing the same frame against
 the capture at the *design* resolution instead gave 22 dB, which looks like
