@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import argparse
 import fcntl
-import hashlib
 import json
 import os
 import re
@@ -30,7 +29,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from encode import render_previews, run, stem_for, transcode
+from encode import published_files, render_previews, run, stem_for, transcode
 
 DEFAULT_CLOCK_HZ = 25_175_000
 STAGES = ("fetch", "build", "simulate", "encode")
@@ -38,14 +37,6 @@ STAGES = ("fetch", "build", "simulate", "encode")
 
 def now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
-
-
-def sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open("rb") as f:
-        for chunk in iter(lambda: f.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 def read_override(path: Path) -> dict:
@@ -379,9 +370,7 @@ def main() -> int:
         except json.JSONDecodeError:
             # The model was killed while writing (wall-clock limit): keep what we know.
             result["timing"] = {"status": "sim-timeout", "partial": True}
-    if videos.exists():
-        result["videos"] = {p.name: {"bytes": p.stat().st_size, "sha256": sha256(p)}
-                            for p in sorted(videos.iterdir())}
+    result["videos"] = published_files(videos)
     for name in ("build.log", "sim.log"):
         p = work / name
         if p.exists():

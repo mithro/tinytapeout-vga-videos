@@ -27,11 +27,30 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from encode import LENGTHS, clip_names, render_previews, stem_for, transcode  # noqa: E402
+from encode import (LENGTHS, clip_names, published_files, render_previews, stem_for,  # noqa: E402
+                    transcode)
 
 # What the published directory held before the clips became browser-playable.
 LEGACY = ("60s.avi", "30s.avi", "10s.avi", "poster.png", "contact.png", "preview.gif")
 LEGACY_CAPTURE = "60s.avi"
+
+
+def record_published(result_path: Path, videos: Path) -> None:
+    """Update one project's `result.json` to name the files that are there now.
+
+    Written through a temporary file, because `tt-vga collect` may be reading
+    these while a pass is running and a half-written one is not valid JSON.
+    """
+    if not result_path.exists():
+        return
+    try:
+        result = json.loads(result_path.read_text())
+    except json.JSONDecodeError:
+        return
+    result["videos"] = published_files(videos)
+    tmp = result_path.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(result, indent=2) + "\n")
+    tmp.rename(result_path)
 
 
 def clip_shape(ffmpeg: str, clip: Path, work: Path) -> tuple[int, float]:
@@ -114,6 +133,12 @@ def main() -> int:
         if args.drop_legacy:
             for old in LEGACY:
                 (videos / old).unlink(missing_ok=True)
+        # The record of what is published has to follow the files. It was
+        # written when the project was simulated and still names the clips
+        # that were published then; the index page reads it to decide what to
+        # link, so leaving it alone would publish a page whose every clip link
+        # points at a file that is no longer there.
+        record_published(work / "result.json", videos)
         return name, None, moved
 
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:

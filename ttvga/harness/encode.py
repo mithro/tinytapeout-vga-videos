@@ -22,6 +22,7 @@ Standard library only: the host has no packages installed.
 
 from __future__ import annotations
 
+import hashlib
 import subprocess
 from pathlib import Path
 
@@ -104,6 +105,28 @@ def clip_names(stem: str) -> list[str]:
 def preview_names(stem: str) -> list[str]:
     """The poster, contact sheet and animation published for a project."""
     return [f"{stem}_poster.png", f"{stem}_contact.png", f"{stem}_preview.gif"]
+
+
+def sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def published_files(videos: Path) -> dict:
+    """What a project has published, in the form `result.json` records it.
+
+    Both the job that simulates a project and the pass that re-transcodes one
+    have to write this, and the index page reads it to decide which clips to
+    link. Three copies of the same few lines would be three chances for the
+    page to disagree with the disk, so there is one.
+    """
+    if not videos.exists():
+        return {}
+    return {p.name: {"bytes": p.stat().st_size, "sha256": sha256(p)}
+            for p in sorted(videos.iterdir()) if p.is_file()}
 
 
 def transcode(src: Path, videos: Path, stem: str, log: Path, ffmpeg: str) -> str | None:
