@@ -20,7 +20,7 @@ For a project `<macro>` on shuttle `<shuttle>`, in
 <shuttle>_<macro>_10s.webm
 <shuttle>_<macro>_poster.png    one frame, about 5 s in, at native resolution
 <shuttle>_<macro>_contact.png   16 frames across the clip, with grid lines
-<shuttle>_<macro>_preview.gif   a time-lapse of the whole clip, 99 frames in 8 s
+<shuttle>_<macro>_preview.gif   8 s of the clip at its own speed, 96 frames
 ```
 
 Every name carries the shuttle and the project. A clip that has been
@@ -194,26 +194,30 @@ and its last second would decode as garbage.
 
 ## How the animated preview is made
 
-The preview covers the **whole** clip, not an excerpt of it. It samples
-frames evenly across all 60 seconds and replays them at 12 fps, so it is an
-eight second time-lapse of the entire video. An earlier version showed six
-seconds taken from five seconds in, which made any design that only changes
-after forty seconds look static.
+Eight seconds of the clip at the speed the design actually runs at, sampled
+to 12 fps, beginning five seconds in. The poster frame is taken from that
+same instant, which is the only arrangement where swapping the animation in
+for the poster does not make the picture jump.
 
-One trap, because it is silent and the result still looks like a valid GIF:
-`fps` does not only pick frames, it also fixes the stream's frame rate at the
-sampling rate. After `setpts` pulls sixty seconds into eight, the encoder
-drops frames to get back to that rate. Measured on one clip:
+It has been the other way round. An earlier version sampled evenly across all
+sixty seconds and replayed that at 12 fps, so the whole clip was covered in
+eight seconds. That reads as a broken frame rate rather than a fast one:
+consecutive frames are 625 ms apart, so anything moving teleports between
+them. Coverage is worth less than legible motion here, because the contact
+sheet already shows the whole clip and the animation is the only place the
+motion can be judged at all.
+
+One trap worth keeping, because it is silent and the result still looks like
+a valid GIF: `fps` does not only pick frames, it also fixes the stream's
+frame rate at the sampling rate, and the encoder will then drop frames to get
+back to it. The output `-r` has to state the rate the frames actually have.
+Measured while the preview was still a time-lapse:
 
 | filter chain                                | frames | size    |
 | ------------------------------------------- | ------ | ------- |
 | `fps=1.6,setpts=PTS/7.5`, no output rate    | 14     | 0.6 MB  |
 | `fps=1.6,setpts=PTS/7.5`, `-r 12`           | 99     | 1.3 MB  |
 | `select` every 37th frame, `setpts=N/12/TB` | 98     | 3.9 MB  |
-
-The output rate has to state what the retimed frames actually are. The
-`select` form gives the right count too but three times the size, so the
-output rate is the better fix.
 
 ## Serving them
 
