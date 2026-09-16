@@ -8,10 +8,11 @@ not the deliverable: browsers will not play motion JPEG in an AVI container.
 This module transcodes that capture into what a browser can actually play, and
 renders the still and moving previews the index page uses.
 
-Two codecs are written for every clip. VP9 in WebM is smaller and is what
-YouTube prefers; H.264 in MP4 plays on everything, including the older Safari
-and iOS versions whose VP9 support cannot be relied on. A `<video>` element
-listing both lets the browser take whichever it understands.
+Two codecs are written for every clip. H.264 in MP4 plays on everything and,
+measured on this material, is both smaller and about four times faster to
+encode than VP9; WebM is published beside it because it is what YouTube
+prefers and what a caller may ask for. A `<video>` element listing both lets
+the browser take whichever it understands.
 
 Every published file carries `<shuttle>_<macro>` in its name, so a clip that
 has been downloaded, attached or uploaded still says which project it is.
@@ -33,6 +34,16 @@ from pathlib import Path
 # the flat saturated colours these designs draw. It also makes the frame
 # dimensions even, which yuv420p requires and several designs are not.
 UPSCALE = "scale=iw*2:ih*2:flags=neighbor"
+
+# A ceiling on the bit rate, not a target. Quality-based encoding suits these
+# designs: most draw flat colour and land around 0.5 Mbit/s, nowhere near this.
+# A handful draw per-pixel noise, which is incompressible, and produced 850 MB
+# for one minute of video -- too big to stream, and slower to encode than
+# everything else put together. Measured on the worst of them, this cap takes
+# that minute from 850 MB to 96 MB. The noise is visibly coarser and nothing
+# else changes, which is the right trade for showing what a design puts out.
+MAX_BITRATE = "12M"
+BUFSIZE = "24M"
 
 # Lengths published for every project, longest first: the shorter clips are cut
 # from the longest one rather than encoded again.
@@ -108,21 +119,25 @@ def transcode(src: Path, videos: Path, stem: str, log: Path, ffmpeg: str) -> str
     mp4 = videos / f"{stem}_{full}s.mp4"
     if run([ffmpeg, *QUIET, "-i", str(src), "-vf", UPSCALE,
             "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p",
+            "-maxrate", MAX_BITRATE, "-bufsize", BUFSIZE,
             "-force_key_frames", cuts, "-movflags", "+faststart", str(mp4)], log, timeout=3600) != 0:
         return "ffmpeg h264 failed"
 
     # VP9 at its default deadline is far slower than x264 for no visible gain
     # on flat pixel art; `good` with `cpu-used 2` and row threading is the
-    # usual compromise. `-b:v 0` makes `-crf` a true quality target rather
-    # than a cap on the bit rate.
+    # usual compromise.
     #
     # crf 36 rather than a lower number: measured on a 10 second clip, VP9 at
     # crf 32 produced a *larger* file than x264 at crf 18 because the two
     # scales are not comparable. 36 lands at about the same size and quality
     # as the MP4, so the WebM is a real alternative rather than a bigger one.
+    #
+    # libvpx spells the cap differently from x264: once `-crf` is given,
+    # `-b:v` stops being a target and becomes the ceiling, so it carries
+    # MAX_BITRATE here where x264 takes `-maxrate`.
     webm = videos / f"{stem}_{full}s.webm"
     if run([ffmpeg, *QUIET, "-i", str(src), "-vf", UPSCALE,
-            "-c:v", "libvpx-vp9", "-crf", "36", "-b:v", "0", "-pix_fmt", "yuv420p",
+            "-c:v", "libvpx-vp9", "-crf", "36", "-b:v", MAX_BITRATE, "-pix_fmt", "yuv420p",
             "-deadline", "good", "-cpu-used", "2", "-row-mt", "1", "-threads", "4",
             "-force_key_frames", cuts, str(webm)], log, timeout=7200) != 0:
         return "ffmpeg vp9 failed"
