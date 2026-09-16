@@ -166,7 +166,10 @@ def main() -> int:
         silent = 0
         for name, stem, d in claimed:
             bad = []
-            for f in (d / f"{stem}_{LENGTHS[0]}s.mp4", d / f"{stem}_{LENGTHS[0]}s.webm"):
+            # Every length, not only the full one: the short clips are cut from
+            # it with `-c copy`, which carries the audio across, but that is
+            # the sort of thing a later change to the cut could quietly drop.
+            for f in (d / f"{stem}_{secs}s.{ext}" for secs in LENGTHS for ext in ("mp4", "webm")):
                 if not f.exists():
                     continue
                 rate = probe(ffprobe, f, "stream=sample_rate", stream="a:0")
