@@ -152,15 +152,21 @@ cd ~/{REMOTE_ROOT}/tools
     return ssh(host, script, check=False, timeout=3600).returncode
 
 
-def sync(args: argparse.Namespace) -> int:
-    """Copy the harness, targets and compiled overrides to the host."""
+def push_harness(host: Host) -> int:
+    """Copy the harness, targets and compiled overrides to the host. Returns overrides sent."""
     from ttvga.overrides import COMPILED_DIR, compile_all
 
-    host = resolve_host(args.host)
     n = compile_all()
     rsync(host, [str(HARNESS_DIR) + "/", str(TARGETS_JSON)], f"{REMOTE_ROOT}/harness/", delete=True,
           extra=["--exclude", "__pycache__"])
     rsync(host, [str(COMPILED_DIR) + "/"], f"{REMOTE_ROOT}/overrides/", delete=True)
+    return n
+
+
+def sync(args: argparse.Namespace) -> int:
+    """Copy the harness, targets and compiled overrides to the host."""
+    host = resolve_host(args.host)
+    n = push_harness(host)
     print(f"synced harness, targets and {n} overrides to {host.ssh}:{REMOTE_ROOT}/")
     return 0
 
@@ -169,6 +175,14 @@ def queue(args: argparse.Namespace) -> int:
     """Start, stop or inspect the job queue, which runs inside a tmux session on the host."""
     host = resolve_host(args.host)
     if args.action == "start":
+        # The host keeps whatever harness it was last given, and a run says
+        # nothing about which one it used. A fix committed here but never sent
+        # cost a clip its correct audio rate, and the file played perfectly, so
+        # nothing downstream noticed. Send it every time instead: the queue
+        # refuses to start while another is running, so this cannot disturb one.
+        if not args.no_sync:
+            n = push_harness(host)
+            print(f"synced harness, targets and {n} overrides before starting")
         jobs = args.jobs or host.jobs
         q = (f"python3 ~/{REMOTE_ROOT}/harness/runqueue.py --root ~/{REMOTE_ROOT} --jobs {jobs} "
              f"--seconds {args.seconds} --timeout {args.timeout}")
@@ -325,6 +339,8 @@ def add_parsers(sub: argparse._SubParsersAction) -> None:
     p.add_argument("--redo", action="store_true")
     p.add_argument("--seconds", type=float, default=60.0)
     p.add_argument("--timeout", type=float, default=1800.0)
+    p.add_argument("--no-sync", action="store_true",
+                   help="start without first sending this repository's harness to the host")
     p.add_argument("--lines", type=int, default=20, help="log lines to show for status")
     p.set_defaults(func=queue)
     p = sub.add_parser("rerender", help="rebuild the clips and previews on the host (also migrates old AVIs)")
