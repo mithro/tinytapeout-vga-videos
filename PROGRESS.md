@@ -5,6 +5,72 @@ whenever something non-obvious is learned. This file is the resume point
 if work stops for lack of credits or tokens: read it, then `docs/status.md`,
 then the newest `data/results/` entries.
 
+## 2026-09-16 (late): the WebM fault, real-time previews, per-shuttle stats
+
+Four faults reported from actually looking at the published page, three of
+them mine and one of them a wrong conclusion I had already stated.
+
+The WebM clips did not play in the owner's Chrome, nor in VLC. My first
+diagnosis was that Chrome lacked VP9, taken from one
+`mediaCapabilities.decodingInfo()` call. That was wrong, and the owner said
+so: VP9 is Google's own format. The call was made in an automated Chrome
+whose media pipeline could not load *any* video, including the H.264 it
+reported as supported, so its answer was worthless. Never trust a capability
+query from an environment that has already failed a basic check.
+
+The real cause, found by publishing four variants of one clip and asking the
+owner which played:
+
+| range          | matrix    | plays |
+| -------------- | --------- | ----- |
+| `pc` (full)    | `bt470bg` | no    |
+| `pc` (full)    | `bt709`   | no    |
+| `tv` (limited) | `bt470bg` | yes   |
+| `tv` (limited) | `bt709`   | yes   |
+
+A full range VP9 stream does not play in Chrome on a machine decoding VP9 in
+hardware. The range decides it; the matrix does not. Every software decoder
+plays the full range file happily -- ffmpeg, VLC, and a Chromium without GPU
+decode, which counted frames and reported `readyState 4` -- which is exactly
+why this got through every check. The bad tags came from the MJPEG capture
+(`yuvj420p`, full range, `bt470bg`, transfer and primaries unspecified) and
+were carried into the encode unexamined.
+
+Fixed by writing the WebM `tv`/`bt709`. The MP4 is left alone: H.264 hardware
+decode does not have the trouble, it works for the owner, and re-encoding it
+would cost a generation for nothing. The captures are gone, so the WebM is
+rebuilt from the published MP4 -- one extra generation in the secondary
+format only, which is the cheapest correct option available.
+
+The animated previews were a time-lapse of the whole clip, which put 625 ms
+between consecutive frames so anything moving teleported. That reads as a
+broken frame rate, which is what the owner called it. They now play a window
+at the design's own speed: 96 frames over exactly 8.000 s. The poster was
+taken five seconds in while the animation began at zero, so clicking a
+thumbnail jumped backwards; both now start at the same instant.
+
+The statistics request was for the *existing* charts to be split by shuttle
+without the page growing. I added a separate table of per-shuttle totals
+instead, which is a different thing, and the owner said so. Every bar is now
+segmented by shuttle in the space it already used, each segment naming its
+shuttle and count on hover, and the two leaderboards show the leader on each
+shuttle rather than one top ten that was three shuttles repeated.
+
+Rows also gained a scroll-margin: jumping to one put it underneath the two
+sticky bars, so the row a link named was the one row hidden.
+
+Also added: `also on <shuttle>` links on the 272 projects that appear on more
+than one shuttle (matched on the exact macro name; normalising re-harden
+suffixes grouped nothing extra and would only risk joining two designs that
+are not the same one), a scroll-spy that keeps the address bar naming the row
+at the top of the view via `replaceState`, and `docs/video-format.md`
+recording every encoding decision with the measurement behind it.
+
+Next:
+- Finish the rebuild of all 408, then index, upload, verify, re-mirror. The
+  mirror never passes --delete, so the corrected files overwrite the broken
+  ones in place under the same names.
+
 ## 2026-09-16 (night): migration finished, legacy dropped, mirrored onwards
 
 The whole published set is now browser-playable and named for its project,
