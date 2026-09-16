@@ -56,10 +56,11 @@ GRID_COLOUR = "0xd8d5e0"
 GRID_GAP = 6
 GIF_WIDTH = 320
 GIF_FPS = 12
-# How long the animation plays for. It covers the whole clip regardless: frames
-# are sampled evenly across the full length and replayed at GIF_FPS, so this is
-# the length of the preview, not the length of video it represents.
 GIF_SECONDS = 8.0
+# Where the poster frame and the animation both begin. By then most designs
+# have drawn something, and starting both at the same instant is what stops the
+# thumbnail jumping when the animation replaces it.
+PREVIEW_START = 5.0
 
 QUIET = ["-hide_banner", "-loglevel", "error", "-y"]
 
@@ -196,9 +197,12 @@ def render_previews(videos: Path, stem: str, log: Path, ffmpeg: str, frames: int
         return f"no {src.name}"
     duration = frames / fps if fps else 0.0
 
-    # A frame from about 5 s in: by then most designs have drawn something.
-    poster_at = min(5.0, duration / 2)
-    run([ffmpeg, *QUIET, "-ss", f"{poster_at:.3f}", "-i", str(src), "-frames:v", "1",
+    # The poster and the animation start at the same instant. They are two
+    # views of one moment: the page shows the poster and swaps the animation in
+    # on a click, so a poster taken from anywhere else makes the picture jump
+    # backwards the moment it starts playing.
+    start = min(PREVIEW_START, duration / 2) if duration else PREVIEW_START
+    run([ffmpeg, *QUIET, "-ss", f"{start:.3f}", "-i", str(src), "-frames:v", "1",
          "-vf", "scale=iw/2:-1", str(videos / f"{stem}_poster.png")], log, timeout=600)
 
     # 16 frames spread across the clip, half size, with grid lines between them
@@ -209,27 +213,20 @@ def render_previews(videos: Path, stem: str, log: Path, ffmpeg: str, frames: int
                 f"tile=4x4:padding={GRID_GAP}:margin={GRID_GAP}:color={GRID_COLOUR}",
          "-frames:v", "1", str(videos / f"{stem}_contact.png")], log, timeout=900)
 
-    # A short animation for the index page, covering the whole clip rather than
-    # a window of it: a design that only changes after forty seconds looked
-    # static in a six second excerpt taken from the start. Frames are sampled
-    # evenly across the full length and retimed to GIF_FPS, which makes the
-    # preview a time-lapse of the entire video.
+    # A short animation for the index page, played at the speed the design
+    # actually runs at. An earlier version sampled evenly across all sixty
+    # seconds and replayed that at GIF_FPS, so the whole clip was covered but
+    # consecutive frames were 625 ms apart: anything moving teleported, and the
+    # result read as a broken frame rate rather than a fast one. Real time is
+    # worth more than coverage here, because the contact sheet already shows
+    # the whole clip and this is the only place the motion can be judged.
     #
-    # `fps` picks the frames and `setpts` retimes them, but `fps` also fixes
-    # the stream's frame rate at the sampling rate. Once `setpts` has pulled
-    # the timeline in, the encoder drops frames to get back to that rate: a
-    # sixty second clip came out as fourteen frames. The output `-r` below
-    # sets the rate the retimed frames actually have, which stops the drop.
-    if duration > GIF_SECONDS:
-        sample_fps = (GIF_SECONDS * GIF_FPS) / duration
-        speed = GIF_FPS / sample_fps
-        timing = f"fps={sample_fps:.6f},setpts=PTS/{speed:.6f},"
-    else:
-        timing = f"fps={GIF_FPS},"
-    # The source draws at most 64 colours, so a generated palette is exact, and
-    # nearest-neighbour scaling keeps the pixel edges hard instead of smearing.
-    run([ffmpeg, *QUIET, "-i", str(src),
-         "-vf", f"{timing}scale={GIF_WIDTH}:-1:flags=neighbor,split[a][b];"
+    # `fps` resamples to GIF_FPS and `-r` states that the output really is that
+    # rate. Both are needed: the filter alone leaves the encoder free to drop
+    # frames back towards the source rate.
+    length = min(GIF_SECONDS, duration - start) if duration else GIF_SECONDS
+    run([ffmpeg, *QUIET, "-ss", f"{start:.3f}", "-t", f"{max(length, 1.0):.3f}", "-i", str(src),
+         "-vf", f"fps={GIF_FPS},scale={GIF_WIDTH}:-1:flags=neighbor,split[a][b];"
                 f"[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none",
          "-r", str(GIF_FPS), "-loop", "0", str(videos / f"{stem}_preview.gif")], log, timeout=900)
 

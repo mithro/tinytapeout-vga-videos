@@ -70,6 +70,36 @@ document.addEventListener('click', function (event) {
   img.src = playing ? button.dataset.gif + '?' + Date.now() : button.dataset.poster;
   badge.textContent = playing ? 'stop' : 'play';
 });
+
+// Keep the address bar naming whichever row is at the top of the view, so the
+// URL can be copied at any point to link back to it. replaceState rather than
+// location.hash: assigning the hash would scroll the page and fill the back
+// button with one entry per row scrolled past.
+(function () {
+  var rows = [].slice.call(document.querySelectorAll('tr[id]'));
+  if (!rows.length || !window.IntersectionObserver) return;
+  var visible = new Set();
+  var ticking = false;
+  function update() {
+    ticking = false;
+    var best = null, bestTop = Infinity;
+    visible.forEach(function (row) {
+      var top = row.getBoundingClientRect().top;
+      // The row crossing the top of the view, or the first one below it.
+      if (top < bestTop && top > -row.offsetHeight) { bestTop = top; best = row; }
+    });
+    if (best && best.id !== location.hash.slice(1)) {
+      history.replaceState(null, '', '#' + best.id);
+    }
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) visible.add(e.target); else visible.delete(e.target);
+    });
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, {rootMargin: '-80px 0px 0px 0px'});
+  rows.forEach(function (r) { io.observe(r); });
+})();
 </script>"""
 
 
@@ -139,6 +169,72 @@ def record(target: dict, result: dict | None) -> dict:
 def playground(entry: dict) -> str:
     """Where to run this project in the browser, at the commit that was simulated."""
     return PLAYGROUND_URL.format(repo=quote(entry["repo"], safe=":/"), commit=quote(entry["commit"], safe=""))
+
+
+def anchor(entry_id: str) -> str:
+    """The fragment that links to one project's row."""
+    return entry_id.replace("/", "-")
+
+
+def siblings(entries: list[dict]) -> dict[str, list[dict]]:
+    """Every other shuttle that carries the same design, by project id.
+
+    Matched on the macro name exactly. Re-hardens sometimes rename a macro
+    (`tt_um_x` becoming `tt_um_x_tt08`), but normalising those suffixes away
+    grouped nothing here that the exact name did not, so the looser rule would
+    only risk joining two designs that are not the same one.
+    """
+    by_macro: dict[str, list[dict]] = {}
+    for e in entries:
+        by_macro.setdefault(e["macro"], []).append(e)
+    return {e["id"]: sorted((o for o in by_macro[e["macro"]] if o["id"] != e["id"]),
+                            key=lambda o: o["shuttle"])
+            for e in entries}
+
+
+def shuttle_stats(entries: list[dict]) -> list[dict]:
+    """One row of figures per shuttle, for the summary table."""
+    by_shuttle: dict[str, list[dict]] = {}
+    for e in entries:
+        by_shuttle.setdefault(e["shuttle"], []).append(e)
+    rows = []
+    for shuttle, group in sorted(by_shuttle.items()):
+        videos = [e for e in group if e["has_video"]]
+        deltas = sorted(e["video"]["mean_frame_delta"] for e in videos
+                        if e["video"].get("mean_frame_delta") is not None)
+        rows.append({
+            "shuttle": shuttle,
+            "projects": len(group),
+            "with_video": len(videos),
+            "ok": sum(1 for e in group if e["verdict"] in SUCCESS),
+            "bytes": sum(f.get("bytes") or 0 for e in group
+                         for f in e["video"].get("files", {}).values()),
+            "seconds": sum(e["video"].get("seconds") or 0 for e in videos),
+            "motion_median": deltas[len(deltas) // 2] if deltas else None,
+            "wall_seconds": sum((e["simulation"] or {}).get("wall_seconds") or 0 for e in group),
+        })
+    return rows
+
+
+def write_shuttle_stats_html(rows: list[dict]) -> str:
+    """The same figures as the summary above, split by shuttle.
+
+    One compact table rather than a chart each: twenty-four shuttles times six
+    figures is a lot of page if every one gets its own block.
+    """
+    head = ("<tr><th>Shuttle</th><th>Projects</th><th>Video</th><th>Usable</th>"
+            "<th>Size</th><th>Footage</th><th>Motion</th><th>Machine time</th></tr>")
+    body = "".join(
+        f'<tr><th><a href="#shuttle-{html.escape(r["shuttle"])}">{html.escape(r["shuttle"])}</a></th>'
+        f'<td class="num">{r["projects"]}</td>'
+        f'<td class="num">{r["with_video"]}</td>'
+        f'<td class="num">{r["ok"]}</td>'
+        f'<td class="num">{size(r["bytes"])}</td>'
+        f'<td class="num">{r["seconds"] / 60:.0f} min</td>'
+        f'<td class="num">{100 * (r["motion_median"] or 0):.2g}%</td>'
+        f'<td class="num">{r["wall_seconds"] / 3600:.1f} h</td></tr>' for r in rows)
+    return ('<section class="stat wide"><h3>By shuttle</h3>'
+            f'<table class="chart byshuttle">{head}{body}</table></section>')
 
 
 def count(n: float | None) -> str:
@@ -269,7 +365,7 @@ def bars(title: str, counts: dict, limit: int = 8, unit: str = "") -> str:
     return f'<section class="stat"><h3>{html.escape(title)}</h3><table class="chart">{rows}</table></section>'
 
 
-def write_stats_html(s: dict) -> str:
+def write_stats_html(s: dict, per_shuttle: list[dict] | None = None) -> str:
     sim = s["simulation"]
     m = s["motion"]
     helped = s["helped_by"]
@@ -297,6 +393,8 @@ def write_stats_html(s: dict) -> str:
     out.append(bars("Tiles", s["tiles"], limit=6))
     out.append("</div>")
     out.append('<div class="charts">')
+    if per_shuttle:
+        out.append(write_shuttle_stats_html(per_shuttle))
     out.append("<section class=\"stat\"><h3>Liveliest clips</h3><table class=\"chart\">" + "".join(
         f'<tr><th><a href="#{html.escape(e["id"].replace("/", "-"))}">{html.escape(e["title"] or e["id"])}</a></th>'
         f'<td class="num">{100 * (e["motion"] or 0):.2g}%</td></tr>' for e in s["liveliest"]) + "</table></section>")
@@ -357,6 +455,14 @@ def write_html(entries: list[dict], generated: str) -> str:
         ".chart td,.chart th{border:0;padding:.15rem .4rem}",
         ".chart td.bar{width:60%}",
         ".chart td.bar span{display:block;height:.7rem;background:#8afbfd;border:1px solid #544ead}",
+        ".stat.wide{flex:1 1 100%}",
+        ".byshuttle{width:100%;font-variant-numeric:tabular-nums}",
+        ".byshuttle th{text-align:left}.byshuttle td{text-align:right}",
+        ".byshuttle tr:first-child th{color:#5c5870;font-weight:500}",
+        ".alsoon{font-size:.8rem;color:#5c5870}",
+        ".alsoon a{margin-right:.35rem;white-space:nowrap}",
+        "tr:target{outline:2px solid #544ead;outline-offset:-2px}",
+        "h2 a.self{color:inherit;text-decoration:none}",
         "</style></head><body>",
         "<h1>Tiny Tapeout VGA videos</h1>",
         f'<p class="lede">Simulated output of every Tiny Tapeout project whose pinout matches the Tiny VGA Pmod. '
@@ -364,10 +470,13 @@ def write_html(entries: list[dict], generated: str) -> str:
         f"WebM and MP4 at twice the design's own resolution, a poster frame and a contact sheet. "
 f"Every file is named for its shuttle and project. Generated {generated}.</p>",
         "<p>" + " ".join(f'<span class="v {cls(v)}">{html.escape(v)} {counts[v]}</span>' for v in order) + "</p>",
-        write_stats_html(stats(entries)),
+        write_stats_html(stats(entries), shuttle_stats(entries)),
     ]
+    also = siblings(entries)
     for shuttle, rows in by_shuttle.items():
-        out.append(f"<h2>{html.escape(shuttle)} <small>({len(rows)} projects)</small></h2>")
+        out.append(f'<h2 id="shuttle-{html.escape(shuttle)}">'
+                   f'<a class="self" href="#shuttle-{html.escape(shuttle)}">{html.escape(shuttle)}</a> '
+                   f"<small>({len(rows)} projects)</small></h2>")
         out.append("<table><tr><th>Preview</th><th>Project</th><th>Result</th><th>Video</th><th>Files</th></tr>")
         for e in rows:
             v, d = e["video"], e["video"].get("dir")
@@ -400,13 +509,18 @@ f"Every file is named for its shuttle and project. Generated {generated}.</p>",
                      f'{v.get("colours") or 0} colours'
                      if e["has_video"] else "")
             out.append(
-                f'<tr id="{html.escape(e["id"].replace("/", "-"))}">'
+                f'<tr id="{html.escape(anchor(e["id"]))}">'
                 f"<td>{preview}</td>"
                 f'<td><strong>{html.escape(e["title"] or e["macro"])}</strong><br>{html.escape(e["author"] or "")}<br>'
                 f'<code>{html.escape(e["macro"])}</code><br>'
                 f'<a href="{html.escape(e["page"])}">chip page</a> &middot; '
                 f'<a href="{html.escape(e["repo"])}">source</a> &middot; '
-                f'<a href="{html.escape(playground(e))}">playground</a></td>'
+                f'<a href="{html.escape(playground(e))}">playground</a>'
+                + (('<br><span class="alsoon">also on '
+                    + " ".join(f'<a href="#{html.escape(anchor(o["id"]))}">{html.escape(o["shuttle"])}</a>'
+                               for o in also[e["id"]])
+                    + "</span>") if also[e["id"]] else "")
+                + "</td>"
                 f'<td><span class="v {cls(e["verdict"])}">{html.escape(e["verdict"])}</span><br>'
                 f'<small>{html.escape(e["reason"])}</small></td>'
                 f"<td>{shape}</td>"

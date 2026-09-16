@@ -42,8 +42,8 @@ def test_clips_are_upscaled_so_chroma_lands_on_the_pixel_grid():
     assert "iw*2:ih*2" in UPSCALE and "neighbor" in UPSCALE
 
 
-def test_the_animation_covers_the_whole_clip(tmp_path, monkeypatch):
-    """The preview is a time-lapse of the entire video, not an excerpt of it."""
+def _preview_calls(tmp_path, monkeypatch, frames, fps):
+    """Run render_previews with ffmpeg stubbed, and hand back the commands."""
     import encode
 
     calls = []
@@ -51,30 +51,40 @@ def test_the_animation_covers_the_whole_clip(tmp_path, monkeypatch):
     (tmp_path / "tt08_tt_um_x_60s.mp4").write_bytes(b"")
     for name in encode.preview_names("tt08_tt_um_x"):
         (tmp_path / name).write_bytes(b"")
-    encode.render_previews(tmp_path, "tt08_tt_um_x", tmp_path / "log", "ffmpeg", frames=3600, fps=60.0)
-
+    encode.render_previews(tmp_path, "tt08_tt_um_x", tmp_path / "log", "ffmpeg", frames=frames, fps=fps)
     gif = next(c for c in calls if c[-1].endswith("_preview.gif"))
-    # 60 s of video shown in 8 s at 12 fps: sample 1.6 frames of each source
-    # second and replay them 7.5 times faster.
-    assert "fps=1.600000,setpts=PTS/7.500000," in " ".join(gif)
-    # Nothing is trimmed away: no seek, no duration limit.
-    assert "-ss" not in gif and "-t" not in gif
-    # The output rate has to match what the retimed frames actually are, or
-    # the encoder drops back to the sampling rate and the whole clip arrives
-    # as fourteen frames.
-    assert gif[gif.index("-r") + 1] == str(encode.GIF_FPS)
+    poster = next(c for c in calls if c[-1].endswith("_poster.png"))
+    return gif, poster
 
 
-def test_a_clip_shorter_than_the_preview_plays_at_its_own_speed(tmp_path, monkeypatch):
+def test_the_animation_plays_at_the_speed_the_design_runs_at(tmp_path, monkeypatch):
+    """Real time, not a time-lapse: sampling across the whole clip put 625 ms
+    between consecutive frames, which reads as a broken frame rate."""
     import encode
 
-    calls = []
-    monkeypatch.setattr(encode, "run", lambda cmd, *a, **k: calls.append(cmd) or 0)
-    (tmp_path / "tt08_tt_um_x_60s.mp4").write_bytes(b"")
-    for name in encode.preview_names("tt08_tt_um_x"):
-        (tmp_path / name).write_bytes(b"")
-    encode.render_previews(tmp_path, "tt08_tt_um_x", tmp_path / "log", "ffmpeg", frames=180, fps=60.0)
-
-    gif = next(c for c in calls if c[-1].endswith("_preview.gif"))
-    assert f"fps={encode.GIF_FPS}," in " ".join(gif) and "setpts" not in " ".join(gif)
+    gif, _ = _preview_calls(tmp_path, monkeypatch, frames=3600, fps=60.0)
+    joined = " ".join(gif)
+    assert f"fps={encode.GIF_FPS}," in joined
+    assert "setpts" not in joined
+    # The output rate has to agree with the filter, or the encoder drops frames
+    # back towards the source rate and the animation arrives a few frames long.
     assert gif[gif.index("-r") + 1] == str(encode.GIF_FPS)
+
+
+def test_the_poster_is_the_animation_first_frame(tmp_path, monkeypatch):
+    """Clicking the thumbnail must not make the picture jump backwards."""
+    import encode
+
+    gif, poster = _preview_calls(tmp_path, monkeypatch, frames=3600, fps=60.0)
+    assert gif[gif.index("-ss") + 1] == poster[poster.index("-ss") + 1]
+    assert float(poster[poster.index("-ss") + 1]) == encode.PREVIEW_START
+
+
+def test_a_short_clip_starts_the_preview_within_it(tmp_path, monkeypatch):
+    """A clip shorter than PREVIEW_START would otherwise start past its end."""
+    import encode
+
+    gif, poster = _preview_calls(tmp_path, monkeypatch, frames=180, fps=60.0)
+    start = float(poster[poster.index("-ss") + 1])
+    assert 0 < start <= 3.0 / 2          # half of a three second clip
+    assert gif[gif.index("-ss") + 1] == poster[poster.index("-ss") + 1]
