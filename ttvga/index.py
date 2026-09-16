@@ -192,51 +192,6 @@ def siblings(entries: list[dict]) -> dict[str, list[dict]]:
             for e in entries}
 
 
-def shuttle_stats(entries: list[dict]) -> list[dict]:
-    """One row of figures per shuttle, for the summary table."""
-    by_shuttle: dict[str, list[dict]] = {}
-    for e in entries:
-        by_shuttle.setdefault(e["shuttle"], []).append(e)
-    rows = []
-    for shuttle, group in sorted(by_shuttle.items()):
-        videos = [e for e in group if e["has_video"]]
-        deltas = sorted(e["video"]["mean_frame_delta"] for e in videos
-                        if e["video"].get("mean_frame_delta") is not None)
-        rows.append({
-            "shuttle": shuttle,
-            "projects": len(group),
-            "with_video": len(videos),
-            "ok": sum(1 for e in group if e["verdict"] in SUCCESS),
-            "bytes": sum(f.get("bytes") or 0 for e in group
-                         for f in e["video"].get("files", {}).values()),
-            "seconds": sum(e["video"].get("seconds") or 0 for e in videos),
-            "motion_median": deltas[len(deltas) // 2] if deltas else None,
-            "wall_seconds": sum((e["simulation"] or {}).get("wall_seconds") or 0 for e in group),
-        })
-    return rows
-
-
-def write_shuttle_stats_html(rows: list[dict]) -> str:
-    """The same figures as the summary above, split by shuttle.
-
-    One compact table rather than a chart each: twenty-four shuttles times six
-    figures is a lot of page if every one gets its own block.
-    """
-    head = ("<tr><th>Shuttle</th><th>Projects</th><th>Video</th><th>Usable</th>"
-            "<th>Size</th><th>Footage</th><th>Motion</th><th>Machine time</th></tr>")
-    body = "".join(
-        f'<tr><th><a href="#shuttle-{html.escape(r["shuttle"])}">{html.escape(r["shuttle"])}</a></th>'
-        f'<td class="num">{r["projects"]}</td>'
-        f'<td class="num">{r["with_video"]}</td>'
-        f'<td class="num">{r["ok"]}</td>'
-        f'<td class="num">{size(r["bytes"])}</td>'
-        f'<td class="num">{r["seconds"] / 60:.0f} min</td>'
-        f'<td class="num">{100 * (r["motion_median"] or 0):.2g}%</td>'
-        f'<td class="num">{r["wall_seconds"] / 3600:.1f} h</td></tr>' for r in rows)
-    return ('<section class="stat wide"><h3>By shuttle</h3>'
-            f'<table class="chart byshuttle">{head}{body}</table></section>')
-
-
 def count(n: float | None) -> str:
     """A big number in words a reader can hold: 660 billion, 1.2 trillion."""
     n = n or 0
@@ -255,6 +210,32 @@ def size(n: int | None) -> str:
     if n >= 1e9:
         return f"{n / 1e9:.1f} GB"
     return f"{n / 1e6:.0f} MB" if n >= 1e6 else f"{n / 1e3:.0f} kB"
+
+
+def tally_by_shuttle(entries, value_of) -> dict[str, dict[str, int]]:
+    """Count a property, keeping which shuttle each one came from.
+
+    Returns {value: {shuttle: count}}, commonest value first, so a bar chart
+    can show both how common a value is and how it is spread across shuttles
+    without needing a second chart for the split.
+    """
+    out: dict[str, dict[str, int]] = {}
+    for e in entries:
+        v = value_of(e)
+        if v in (None, "", 0):
+            continue
+        out.setdefault(str(v), {}).setdefault(e["shuttle"], 0)
+        out[str(v)][e["shuttle"]] += 1
+    return dict(sorted(out.items(), key=lambda kv: (-sum(kv[1].values()), kv[0])))
+
+
+def shuttle_colour(shuttle: str, shuttles: list[str]) -> str:
+    """A stable colour per shuttle, spread around the wheel so neighbours differ."""
+    i = shuttles.index(shuttle)
+    n = max(len(shuttles), 1)
+    # Walking the hue in large steps keeps consecutive shuttles far apart.
+    hue = (i * 360 / n * 2.6) % 360
+    return f"hsl({hue:.0f} 62% {48 + 14 * (i % 3)}%)"
 
 
 def tally(values) -> list[tuple[str, int]]:
@@ -282,18 +263,34 @@ def stats(entries: list[dict]) -> dict:
     def median(xs):
         return xs[len(xs) // 2] if xs else None
 
-    def liveliest(n=10):
-        ranked = sorted(videos, key=lambda e: -(e["video"].get("mean_frame_delta") or 0))
-        return [{"id": e["id"], "title": e["title"], "motion": e["video"]["mean_frame_delta"],
-                 "ever": e["video"].get("pixels_ever_changed"), "colours": e["video"].get("colours")}
-                for e in ranked[:n]]
+    def best_per_shuttle(candidates, key, fields):
+        """The leading project on each shuttle, shuttles ranked by their leader.
 
-    def slowest(n=10):
-        ranked = sorted((e for e in entries if (e["simulation"] or {}).get("wall_seconds")),
-                        key=lambda e: -e["simulation"]["wall_seconds"])
-        return [{"id": e["id"], "title": e["title"], "wall_seconds": e["simulation"]["wall_seconds"],
-                 "clocks_per_wall_second": e["simulation"].get("clocks_per_wall_second")}
-                for e in ranked[:n]]
+        One line per shuttle rather than one top ten: the plain list was three
+        shuttles repeated, which said less than a comparison across all of them.
+        """
+        best: dict[str, dict] = {}
+        for e in candidates:
+            cur = best.get(e["shuttle"])
+            if cur is None or key(e) > key(cur):
+                best[e["shuttle"]] = e
+        return [dict({"id": e["id"], "title": e["title"], "shuttle": e["shuttle"]},
+                     **{f: fields[f](e) for f in fields})
+                for e in sorted(best.values(), key=lambda e: -key(e))]
+
+    def liveliest():
+        return best_per_shuttle(
+            videos, lambda e: e["video"].get("mean_frame_delta") or 0,
+            {"motion": lambda e: e["video"].get("mean_frame_delta"),
+             "ever": lambda e: e["video"].get("pixels_ever_changed"),
+             "colours": lambda e: e["video"].get("colours")})
+
+    def slowest():
+        return best_per_shuttle(
+            [e for e in entries if (e["simulation"] or {}).get("wall_seconds")],
+            lambda e: e["simulation"]["wall_seconds"],
+            {"wall_seconds": lambda e: e["simulation"]["wall_seconds"],
+             "clocks_per_wall_second": lambda e: e["simulation"].get("clocks_per_wall_second")})
 
     return {
         "projects": len(entries),
@@ -352,20 +349,50 @@ def ever(v: dict) -> str:
     return f"{100 * e:.3g}%" if e is not None else ""
 
 
-def bars(title: str, counts: dict, limit: int = 8, unit: str = "") -> str:
-    """A small labelled bar chart, widest value first."""
-    items = list(counts.items())[:limit]
+def bars(title: str, split: dict[str, dict[str, int]], shuttles: list[str],
+         limit: int = 8, unit: str = "") -> str:
+    """A labelled bar chart whose bars are segmented by shuttle.
+
+    The segments carry the breakdown in the same space a plain bar took: the
+    length still reads as the total, and the colours say which shuttles make it
+    up. Each segment names itself on hover, because twenty-four colours is more
+    than a legend can usefully distinguish.
+    """
+    items = list(split.items())[:limit]
     if not items:
         return ""
-    top = max(n for _, n in items)
-    rows = "".join(
-        f'<tr><th>{html.escape(str(k))}{unit}</th><td class="num">{n}</td>'
-        f'<td class="bar"><span style="width:{100 * n / top:.1f}%"></span></td></tr>'
-        for k, n in items)
-    return f'<section class="stat"><h3>{html.escape(title)}</h3><table class="chart">{rows}</table></section>'
+    top = max(sum(by.values()) for _, by in items)
+    rows = []
+    for value, by in items:
+        total = sum(by.values())
+        segs = "".join(
+            f'<i style="width:{100 * n / total:.2f}%;background:{shuttle_colour(sh, shuttles)}" '
+            f'title="{html.escape(sh)}: {n}"></i>'
+            for sh, n in sorted(by.items(), key=lambda kv: (-kv[1], kv[0])))
+        rows.append(
+            f'<tr><th>{html.escape(str(value))}{unit}</th><td class="num">{total}</td>'
+            f'<td class="bar"><span style="width:{100 * total / top:.1f}%">{segs}</span></td></tr>')
+    return (f'<section class="stat"><h3>{html.escape(title)}</h3>'
+            f'<table class="chart">{"".join(rows)}</table></section>')
 
 
-def write_stats_html(s: dict, per_shuttle: list[dict] | None = None) -> str:
+def per_shuttle_list(title: str, rows: list[dict], value: str, fmt) -> str:
+    """A leaderboard with one entry per shuttle rather than one list overall.
+
+    The plain top ten was three shuttles repeated; one line each says as much
+    about the set and reads as a comparison between shuttles.
+    """
+    if not rows:
+        return ""
+    body = "".join(
+        f'<tr><th class="sh">{html.escape(r["shuttle"])}</th>'
+        f'<td><a href="#{html.escape(anchor(r["id"]))}">{html.escape(r["title"] or r["id"])}</a></td>'
+        f'<td class="num">{fmt(r[value])}</td></tr>' for r in rows)
+    return (f'<section class="stat"><h3>{html.escape(title)}</h3>'
+            f'<table class="chart lead">{body}</table></section>')
+
+
+def write_stats_html(s: dict, entries: list[dict]) -> str:
     sim = s["simulation"]
     m = s["motion"]
     helped = s["helped_by"]
@@ -385,22 +412,25 @@ def write_stats_html(s: dict, per_shuttle: list[dict] | None = None) -> str:
     out = ['<section id="stats"><h2>Statistics</h2><table class="facts">']
     out += [f"<tr><th>{html.escape(k)}</th><td>{v}</td></tr>" for k, v in facts]
     out.append("</table><div class=\"charts\">")
-    out.append(bars("Video mode", s["modes"]))
-    out.append(bars("Frame rate", s["frame_rates"], unit=" fps"))
-    out.append(bars("Colours used", s["colours"]))
-    out.append(bars("Design clock", {f"{int(k) / 1e6:g} MHz": v for k, v in s["design_clock_hz"].items()}))
-    out.append(bars("Sync polarity", s["sync_polarity"], limit=4))
-    out.append(bars("Tiles", s["tiles"], limit=6))
+    shuttles = sorted({e["shuttle"] for e in entries})
+    videos = [e for e in entries if e["has_video"]]
+    out.append(bars("Video mode", tally_by_shuttle(videos, lambda e: e["video"].get("mode")), shuttles))
+    out.append(bars("Frame rate", tally_by_shuttle(
+        videos, lambda e: round(e["video"]["fps"]) if e["video"].get("fps") else None), shuttles, unit=" fps"))
+    out.append(bars("Colours used", tally_by_shuttle(videos, lambda e: e["video"].get("colours")), shuttles))
+    out.append(bars("Design clock", tally_by_shuttle(
+        entries, lambda e: f'{int(e["clock_hz"]) / 1e6:g} MHz' if e.get("clock_hz") else None), shuttles))
+    out.append(bars("Sync polarity", tally_by_shuttle(
+        videos, lambda e: ("hsync low" if e["video"].get("hsync_active_low") else "hsync high") +
+                          (", vsync low" if e["video"].get("vsync_active_low") else ", vsync high")),
+        shuttles, limit=4))
+    out.append(bars("Tiles", tally_by_shuttle(entries, lambda e: e.get("tiles")), shuttles, limit=6))
     out.append("</div>")
     out.append('<div class="charts">')
-    if per_shuttle:
-        out.append(write_shuttle_stats_html(per_shuttle))
-    out.append("<section class=\"stat\"><h3>Liveliest clips</h3><table class=\"chart\">" + "".join(
-        f'<tr><th><a href="#{html.escape(e["id"].replace("/", "-"))}">{html.escape(e["title"] or e["id"])}</a></th>'
-        f'<td class="num">{100 * (e["motion"] or 0):.2g}%</td></tr>' for e in s["liveliest"]) + "</table></section>")
-    out.append("<section class=\"stat\"><h3>Slowest to simulate</h3><table class=\"chart\">" + "".join(
-        f'<tr><th><a href="#{html.escape(e["id"].replace("/", "-"))}">{html.escape(e["title"] or e["id"])}</a></th>'
-        f'<td class="num">{(e["wall_seconds"] or 0) / 60:.0f} min</td></tr>' for e in s["slowest"]) + "</table></section>")
+    out.append(per_shuttle_list("Liveliest clip on each shuttle", s["liveliest"], "motion",
+                                lambda v: f"{100 * (v or 0):.2g}%"))
+    out.append(per_shuttle_list("Slowest to simulate on each shuttle", s["slowest"], "wall_seconds",
+                                lambda v: f"{(v or 0) / 60:.0f} min"))
     out.append("</div></section>")
     return "\n".join(out)
 
@@ -449,20 +479,26 @@ def write_html(entries: list[dict], generated: str) -> str:
         "#stats{margin:1rem 0 2rem}",
         ".facts{max-width:60rem}.facts th{width:11rem;position:static}",
         ".charts{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem}",
-        ".stat{flex:1 1 20rem;background:#fff;border:1px solid #e7e5ee;padding:.5rem .75rem}",
+        ".stat{flex:1 1 20rem;background:#fff;border:1px solid #e7e5ee;padding:.5rem .75rem;overflow:hidden}",
         ".stat h3{font-size:.95rem;font-weight:500;margin:.25rem 0 .5rem}",
         ".chart th{background:none;font-weight:400;position:static;white-space:nowrap}",
         ".chart td,.chart th{border:0;padding:.15rem .4rem}",
         ".chart td.bar{width:60%}",
         ".chart td.bar span{display:block;height:.7rem;background:#8afbfd;border:1px solid #544ead}",
-        ".stat.wide{flex:1 1 100%}",
-        ".byshuttle{width:100%;font-variant-numeric:tabular-nums}",
-        ".byshuttle th{text-align:left}.byshuttle td{text-align:right}",
-        ".byshuttle tr:first-child th{color:#5c5870;font-weight:500}",
         ".alsoon{font-size:.8rem;color:#5c5870}",
         ".alsoon a{margin-right:.35rem;white-space:nowrap}",
+        # A row jumped to must clear the two sticky bars above it, or the row
+        # the link names is the one row hidden behind the heading.
+        "tr[id]{scroll-margin-top:5.5rem}",
+        "h2[id]{scroll-margin-top:.5rem}",
         "tr:target{outline:2px solid #544ead;outline-offset:-2px}",
         "h2 a.self{color:inherit;text-decoration:none}",
+        # Bars are segmented by shuttle: the length is still the total, the
+        # colours say which shuttles it is made of.
+        ".chart td.bar span{display:flex;overflow:hidden;border-radius:2px}",
+        ".chart td.bar i{display:block;height:100%;min-width:1px}",
+        ".lead th.sh{color:#5c5870;font-weight:500;white-space:nowrap;padding-right:.5rem}",
+        ".lead td{max-width:14rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
         "</style></head><body>",
         "<h1>Tiny Tapeout VGA videos</h1>",
         f'<p class="lede">Simulated output of every Tiny Tapeout project whose pinout matches the Tiny VGA Pmod. '
@@ -470,7 +506,7 @@ def write_html(entries: list[dict], generated: str) -> str:
         f"WebM and MP4 at twice the design's own resolution, a poster frame and a contact sheet. "
 f"Every file is named for its shuttle and project. Generated {generated}.</p>",
         "<p>" + " ".join(f'<span class="v {cls(v)}">{html.escape(v)} {counts[v]}</span>' for v in order) + "</p>",
-        write_stats_html(stats(entries), shuttle_stats(entries)),
+        write_stats_html(stats(entries), entries),
     ]
     also = siblings(entries)
     for shuttle, rows in by_shuttle.items():

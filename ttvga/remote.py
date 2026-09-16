@@ -219,6 +219,8 @@ def rerender(args: argparse.Namespace) -> int:
         cmd += " --drop-legacy"
     if args.previews_only:
         cmd += " --previews-only"
+    if args.rewrite_webm:
+        cmd += " --rewrite-webm"
     if args.background:
         script = f"""
 set -e
@@ -325,6 +327,8 @@ def add_parsers(sub: argparse._SubParsersAction) -> None:
     p.add_argument("--drop-legacy", action="store_true",
                    help="delete the superseded AVIs and unprefixed previews once the clips are written")
     p.add_argument("--previews-only", action="store_true", help="re-render previews without transcoding")
+    p.add_argument("--rewrite-webm", action="store_true",
+                   help="rebuild the WebM clips from the published MP4")
     p.set_defaults(func=rerender)
     p = sub.add_parser("collect", help="pull result.json files into data/results/")
     common(p)

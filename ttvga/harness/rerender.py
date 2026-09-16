@@ -27,8 +27,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from encode import (LENGTHS, clip_names, published_files, render_previews, stem_for,  # noqa: E402
-                    transcode)
+from encode import (LENGTHS, clip_names, published_files, render_previews,  # noqa: E402
+                    rewrite_webm, stem_for, transcode)
 
 # What the published directory held before the clips became browser-playable.
 LEGACY = ("60s.avi", "30s.avi", "10s.avi", "poster.png", "contact.png", "preview.gif")
@@ -88,6 +88,8 @@ def main() -> int:
                     help="delete the superseded AVIs and unprefixed previews once the clips are written")
     ap.add_argument("--previews-only", action="store_true",
                     help="re-render the previews but do not transcode anything")
+    ap.add_argument("--rewrite-webm", action="store_true",
+                    help="rebuild the WebM clips from the published MP4 (for clips whose capture is gone)")
     args = ap.parse_args()
 
     ffmpeg = str(args.root / "tools" / "ffmpeg" / "bin" / "ffmpeg")
@@ -125,6 +127,11 @@ def main() -> int:
             error = transcode(videos / LEGACY_CAPTURE, videos, stem, log, ffmpeg)
             if error:
                 return name, error, False
+            moved = True
+        if args.rewrite_webm and not moved:
+            error = rewrite_webm(videos, stem, log, ffmpeg)
+            if error:
+                return name, error, moved
             moved = True
         frames, fps = clip_shape(ffmpeg, mp4, work)
         error = render_previews(videos, stem, log, ffmpeg, frames, fps)

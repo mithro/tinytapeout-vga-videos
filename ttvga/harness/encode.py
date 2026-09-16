@@ -46,6 +46,24 @@ UPSCALE = "scale=iw*2:ih*2:flags=neighbor"
 MAX_BITRATE = "12M"
 BUFSIZE = "24M"
 
+# VP9 has to be written limited range, and this is not cosmetic: a full range
+# VP9 stream does not play in Chrome at all on a machine using its hardware
+# decoder, whatever the matrix says. Tested on one clip against a browser that
+# failed on the published file -- full range failed with both a bt470bg and a
+# bt709 matrix, limited range played with either, so the range alone decides
+# it. Software decoders (ffmpeg, VLC, a Chromium without GPU decode) play the
+# full range file happily, which is why this survived the earlier checks.
+#
+# The conversion costs almost nothing here. These designs drive two bits per
+# channel, so every pixel is one of 0, 85, 170 or 255, and limited range has
+# 219 levels to place four values in.
+#
+# The MP4 is left full range: H.264 hardware decoding does not have the same
+# trouble, and re-encoding it would cost a generation for no gain.
+WEBM_COLOUR = "scale=out_range=tv:out_color_matrix=bt709"
+WEBM_COLOUR_FLAGS = ["-color_range", "tv", "-colorspace", "bt709",
+                     "-color_trc", "bt709", "-color_primaries", "bt709"]
+
 # Lengths published for every project, longest first: the shorter clips are cut
 # from the longest one rather than encoded again.
 LENGTHS = (60, 30, 10)
@@ -147,32 +165,8 @@ def transcode(src: Path, videos: Path, stem: str, log: Path, ffmpeg: str) -> str
             "-force_key_frames", cuts, "-movflags", "+faststart", str(mp4)], log, timeout=3600) != 0:
         return "ffmpeg h264 failed"
 
-    # VP9 at its default deadline is far slower than x264 for no visible gain
-    # on flat pixel art; `good` with `cpu-used 2` and row threading is the
-    # usual compromise.
-    #
-    # crf 36 rather than a lower number: measured on a 10 second clip, VP9 at
-    # crf 32 produced a *larger* file than x264 at crf 18 because the two
-    # scales are not comparable. 36 lands at about the same size and quality
-    # as the MP4, so the WebM is a real alternative rather than a bigger one.
-    #
-    # libvpx spells the cap differently from x264: once `-crf` is given,
-    # `-b:v` stops being a target and becomes the ceiling, so it carries
-    # MAX_BITRATE here where x264 takes `-maxrate`.
-    webm = videos / f"{stem}_{full}s.webm"
-    if run([ffmpeg, *QUIET, "-i", str(src), "-vf", UPSCALE,
-            "-c:v", "libvpx-vp9", "-crf", "36", "-b:v", MAX_BITRATE, "-pix_fmt", "yuv420p",
-            # `cpu-used` is VP9's speed against compression knob, and it has to
-            # be turned up here. At 2, VP9 was taking twenty-one of every
-            # twenty-two encoder slots on the host and single clips were running
-            # twelve minutes, which put the whole set at about seven hours for a
-            # format that measures no smaller than the MP4 beside it. At 4 the
-            # files grow a few per cent and the run becomes tractable.
-            # `tile-columns` lets a 1280-wide frame be split across threads.
-            "-deadline", "good", "-cpu-used", "4", "-row-mt", "1", "-threads", "4",
-            "-tile-columns", "2",
-            "-force_key_frames", cuts, str(webm)], log, timeout=7200) != 0:
-        return "ffmpeg vp9 failed"
+    if (err := encode_webm(src, videos / f"{stem}_{full}s.webm", log, ffmpeg, cuts, upscale=True)):
+        return err
 
     for secs in LENGTHS[1:]:
         for ext, extra in (("mp4", ["-movflags", "+faststart"]), ("webm", [])):
@@ -183,6 +177,51 @@ def transcode(src: Path, videos: Path, stem: str, log: Path, ffmpeg: str) -> str
 
     missing = [n for n in clip_names(stem) if not (videos / n).exists()]
     return ("failed to write " + ", ".join(missing)) if missing else None
+
+
+def encode_webm(src: Path, dest: Path, log: Path, ffmpeg: str, cuts: str,
+                upscale: bool) -> str | None:
+    """Write one WebM. `upscale` is False when the source is already 2x.
+
+    VP9 at its default deadline is far slower than x264 for no visible gain on
+    flat pixel art; `good` with `cpu-used 4`, row threading and tile columns is
+    the compromise that keeps a four hundred clip run inside an hour.
+
+    crf 36 rather than a lower number: measured on a ten second clip, VP9 at
+    crf 32 produced a larger file than x264 at crf 18, because the two crf
+    scales are not comparable. libvpx also spells the bit rate ceiling
+    differently from x264: once `-crf` is given, `-b:v` stops being a target
+    and becomes the ceiling.
+    """
+    vf = f"{UPSCALE},{WEBM_COLOUR}" if upscale else WEBM_COLOUR
+    if run([ffmpeg, *QUIET, "-i", str(src), "-vf", vf,
+            "-c:v", "libvpx-vp9", "-crf", "36", "-b:v", MAX_BITRATE, "-pix_fmt", "yuv420p",
+            *WEBM_COLOUR_FLAGS,
+            "-deadline", "good", "-cpu-used", "4", "-row-mt", "1", "-threads", "4",
+            "-tile-columns", "2", "-force_key_frames", cuts, str(dest)], log, timeout=7200) != 0:
+        return "ffmpeg vp9 failed"
+    return None
+
+
+def rewrite_webm(videos: Path, stem: str, log: Path, ffmpeg: str) -> str | None:
+    """Rebuild a project's WebM clips from its published MP4.
+
+    Used to correct clips already published when the capture they came from is
+    gone. The MP4 is the best source left and is already at the published size,
+    so it is not upscaled again.
+    """
+    full = LENGTHS[0]
+    src = videos / f"{stem}_{full}s.mp4"
+    if not src.exists():
+        return f"no {src.name}"
+    cuts = ",".join(str(x) for x in LENGTHS[1:])
+    if (err := encode_webm(src, videos / f"{stem}_{full}s.webm", log, ffmpeg, cuts, upscale=False)):
+        return err
+    for secs in LENGTHS[1:]:
+        if run([ffmpeg, *QUIET, "-i", str(videos / f"{stem}_{full}s.webm"), "-t", str(secs),
+                "-c", "copy", str(videos / f"{stem}_{secs}s.webm")], log, timeout=600) != 0:
+            return f"ffmpeg cut {secs}s webm failed"
+    return None
 
 
 def render_previews(videos: Path, stem: str, log: Path, ffmpeg: str, frames: int, fps: float) -> str | None:

@@ -88,3 +88,31 @@ def test_a_short_clip_starts_the_preview_within_it(tmp_path, monkeypatch):
     start = float(poster[poster.index("-ss") + 1])
     assert 0 < start <= 3.0 / 2          # half of a three second clip
     assert gif[gif.index("-ss") + 1] == poster[poster.index("-ss") + 1]
+
+
+def test_webm_is_written_limited_range(tmp_path, monkeypatch):
+    """A full range VP9 stream does not play in Chrome on a machine using its
+    hardware decoder. Tested against a browser that failed on the published
+    file: full range failed with either matrix, limited range played with
+    either, so the range is what decides it."""
+    import encode
+
+    calls = []
+    monkeypatch.setattr(encode, "run", lambda cmd, *a, **k: calls.append(cmd) or 0)
+    encode.encode_webm(tmp_path / "in.mp4", tmp_path / "out.webm", tmp_path / "log",
+                       "ffmpeg", "30,10", upscale=False)
+    cmd = calls[0]
+    assert cmd[cmd.index("-color_range") + 1] == "tv"
+    assert "out_range=tv" in " ".join(cmd)
+    # And it must not silently double the size of an already-published clip.
+    assert "iw*2" not in " ".join(cmd)
+
+
+def test_webm_upscales_only_when_asked(tmp_path, monkeypatch):
+    import encode
+
+    calls = []
+    monkeypatch.setattr(encode, "run", lambda cmd, *a, **k: calls.append(cmd) or 0)
+    encode.encode_webm(tmp_path / "in.avi", tmp_path / "out.webm", tmp_path / "log",
+                       "ffmpeg", "30,10", upscale=True)
+    assert "iw*2:ih*2" in " ".join(calls[0])
