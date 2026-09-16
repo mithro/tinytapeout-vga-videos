@@ -94,11 +94,13 @@ def main() -> int:
         log = work / "rerender.log" if work.exists() else videos / "rerender.log"
         mp4 = videos / f"{stem}_{LENGTHS[0]}s.mp4"
         moved = False
-        # Every clip, not just the first one written. A run stopped part way
-        # through a project leaves the MP4 without its WebM or its cuts, and
-        # keying the resume on the MP4 alone would call that project finished
-        # and leave it short five files for good.
-        if [n for n in clip_names(stem) if not (videos / n).exists()]:
+        # Every clip, not just the first one written, and each one non-empty.
+        # A run stopped part way through a project leaves the MP4 without its
+        # WebM or its cuts, and the file being written at the time is left
+        # behind at zero bytes. Keying the resume on the MP4's existence alone
+        # would call such a project finished and leave it broken for good.
+        if [n for n in clip_names(stem)
+                if not (videos / n).exists() or (videos / n).stat().st_size == 0]:
             if args.previews_only:
                 return name, f"no {mp4.name}", False
             error = transcode(videos / LEGACY_CAPTURE, videos, stem, log, ffmpeg)
