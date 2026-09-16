@@ -85,15 +85,37 @@ struct AudioCapture {
     std::vector<float> queue;
     std::vector<float> samples;
     bool driven = false;          // did the design ever drive uio[7]?
+    double hz = 0;                // the design clock, to judge the rate below
+    uint64_t clocks = 0;          // clocks fed since capture began
+    uint64_t transitions = 0;     // times the driven bit changed level
+    int last_bit = -1;
 
     void begin(double clock_hz, double rate) {
+        hz = clock_hz;
         ticks_per_sample = clock_hz / rate;
         filter = std::max<size_t>(1, static_cast<size_t>(std::ceil(rate / 20000.0)));
         queue.assign(filter, 0.0f);
     }
 
+    // Driving the pin is not the same as putting sound on it. A great many
+    // designs enable every uio output and hold them at one level, which
+    // captures as a constant: a track of digital silence, and a page that
+    // claims the clip has sound. The Audio Pmod's own filter starts at 20 Hz,
+    // so a signal that does not cross that often has nothing audible in it
+    // either, and the same number serves as the test.
+    bool audible() const {
+        const double secs = hz > 0 ? clocks / hz : 0.0;
+        return secs > 0 && static_cast<double>(transitions) >= 20.0 * secs;
+    }
+
     void feed(uint8_t uio_out, uint8_t uio_oe) {
-        if (uio_oe & 0x80) driven = true;
+        clocks += 1;
+        if (uio_oe & 0x80) {
+            driven = true;
+            const int bit = (uio_out & 0x80) >> 7;
+            if (last_bit >= 0 && bit != last_bit) transitions += 1;
+            last_bit = bit;
+        }
         acc += static_cast<double>((uio_out & uio_oe) >> 7);
         ticks += 1.0;
         phase += 1.0;
@@ -530,10 +552,10 @@ int main(int argc, char** argv) {
     top.final();
 
     // The audio track, mono 32 bit float at opt.audio_rate. Written raw
-    // because the job runner muxes it, and only when the design actually drove
-    // the pin: a silent file would be noise in every sense.
+    // because the job runner muxes it, and only when the pin carried something
+    // audible: a silent file would be noise in every sense.
     size_t audio_written = 0;
-    if (audio.driven && !audio.samples.empty()) {
+    if (audio.driven && audio.audible() && !audio.samples.empty()) {
         const std::string apath = opt.out_dir + "/capture.f32";
         if (FILE* af = std::fopen(apath.c_str(), "wb")) {
             audio_written = std::fwrite(audio.samples.data(), sizeof(float), audio.samples.size(), af);
@@ -556,7 +578,8 @@ int main(int argc, char** argv) {
                      "  \"lines_seen\": %llu,\n  \"short_lines\": %llu,\n  \"long_lines\": %llu,\n"
                      "  \"clocks_simulated\": %llu,\n  \"sim_seconds\": %.3f,\n  \"wall_seconds\": %.1f,\n"
                      "  \"clocks_per_wall_second\": %.0f,\n  \"ffmpeg_status\": %d,\n"
-                     "  \"audio_driven\": %s,\n  \"audio_rate\": %.0f,\n  \"audio_samples\": %zu,\n"
+                     "  \"audio_driven\": %s,\n  \"audio_transitions\": %llu,\n"
+                     "  \"audio_rate\": %.0f,\n  \"audio_samples\": %zu,\n"
                      "  \"frame_hashes\": [",
                  status, opt.clock_hz, (unsigned long long)first_sync_clock,
                  hs.active_low ? "true" : "false", vs.active_low ? "true" : "false",
@@ -572,7 +595,8 @@ int main(int argc, char** argv) {
                      static_cast<double>(std::max<size_t>(1, ever.size())),
                  (unsigned long long)lines_seen, (unsigned long long)short_lines, (unsigned long long)long_lines,
                  (unsigned long long)clock, clock / opt.clock_hz, wall_s, clock / std::max(wall_s, 1e-3), rc,
-                 audio.driven ? "true" : "false", opt.audio_rate, audio_written);
+                 audio.driven ? "true" : "false", (unsigned long long)audio.transitions,
+                 opt.audio_rate, audio_written);
     for (size_t i = 0; i < hashes.size(); i++)
         std::fprintf(tj, "%s\"%016llx\"", i ? ", " : "", (unsigned long long)hashes[i]);
     std::fprintf(tj, "]\n}\n");
