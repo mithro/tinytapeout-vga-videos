@@ -59,6 +59,10 @@ def test_the_animation_covers_the_whole_clip(tmp_path, monkeypatch):
     assert "fps=1.600000,setpts=PTS/7.500000," in " ".join(gif)
     # Nothing is trimmed away: no seek, no duration limit.
     assert "-ss" not in gif and "-t" not in gif
+    # The output rate has to match what the retimed frames actually are, or
+    # the encoder drops back to the sampling rate and the whole clip arrives
+    # as fourteen frames.
+    assert gif[gif.index("-r") + 1] == str(encode.GIF_FPS)
 
 
 def test_a_clip_shorter_than_the_preview_plays_at_its_own_speed(tmp_path, monkeypatch):
@@ -73,3 +77,4 @@ def test_a_clip_shorter_than_the_preview_plays_at_its_own_speed(tmp_path, monkey
 
     gif = next(c for c in calls if c[-1].endswith("_preview.gif"))
     assert f"fps={encode.GIF_FPS}," in " ".join(gif) and "setpts" not in " ".join(gif)
+    assert gif[gif.index("-r") + 1] == str(encode.GIF_FPS)

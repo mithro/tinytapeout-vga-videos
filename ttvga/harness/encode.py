@@ -169,9 +169,11 @@ def render_previews(videos: Path, stem: str, log: Path, ffmpeg: str, frames: int
     # evenly across the full length and retimed to GIF_FPS, which makes the
     # preview a time-lapse of the entire video.
     #
-    # `fps` picks the frames and `setpts` retimes them. Retiming rather than
-    # setting an output rate matters: `-r` would pad the run back out by
-    # duplicating frames instead of playing the sampled ones faster.
+    # `fps` picks the frames and `setpts` retimes them, but `fps` also fixes
+    # the stream's frame rate at the sampling rate. Once `setpts` has pulled
+    # the timeline in, the encoder drops frames to get back to that rate: a
+    # sixty second clip came out as fourteen frames. The output `-r` below
+    # sets the rate the retimed frames actually have, which stops the drop.
     if duration > GIF_SECONDS:
         sample_fps = (GIF_SECONDS * GIF_FPS) / duration
         speed = GIF_FPS / sample_fps
@@ -183,7 +185,7 @@ def render_previews(videos: Path, stem: str, log: Path, ffmpeg: str, frames: int
     run([ffmpeg, *QUIET, "-i", str(src),
          "-vf", f"{timing}scale={GIF_WIDTH}:-1:flags=neighbor,split[a][b];"
                 f"[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none",
-         "-loop", "0", str(videos / f"{stem}_preview.gif")], log, timeout=900)
+         "-r", str(GIF_FPS), "-loop", "0", str(videos / f"{stem}_preview.gif")], log, timeout=900)
 
     missing = [n for n in preview_names(stem) if not (videos / n).exists()]
     return ("failed to render " + ", ".join(missing)) if missing else None
