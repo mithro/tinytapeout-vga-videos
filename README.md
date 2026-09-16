@@ -24,6 +24,12 @@ clip still says where it came from: `_60s`, `_30s` and `_10s` as both
 and its measured frame rate; `_poster.png` (a frame from 5 s in),
 `_contact.png` (16 frames across the clip) and `_preview.gif`.
 
+The clips are published at twice the design's own resolution because the
+`yuv420p` that browsers require keeps one colour sample per 2x2 pixels;
+doubling first puts that grid back on the design's own pixels so each
+keeps its colour. That and the rest of the encoding decisions, with the
+measurements behind them, are in [docs/video-format.md](docs/video-format.md).
+
 | Maze (ttsky26a), contact sheet | Achtung (ttsky26c), contact sheet |
 | --- | --- |
 | ![](docs/examples/ttsky26a_tt_um_maze_contact.png) | ![](docs/examples/ttsky26c_tt_um_ja_achtung_1x1_contact.png) |
