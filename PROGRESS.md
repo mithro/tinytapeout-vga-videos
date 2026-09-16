@@ -5,6 +5,60 @@ whenever something non-obvious is learned. This file is the resume point
 if work stops for lack of credits or tokens: read it, then `docs/status.md`,
 then the newest `data/results/` entries.
 
+## 2026-09-16 (evening): the migration, and two bugs found by checking
+
+The owner installed the nginx snippet. Verified over HTTPS: `.mp4` is
+`video/mp4`, `.webm` is `video/webm`, `.gif` is `image/gif`, `.png` is
+`image/png`. That was the last server-side reason a clip would not play.
+
+Two bugs, both found by measuring output rather than trusting the code:
+
+- Every animated preview had exactly fourteen frames, whatever the clip
+  held. `fps` does not only sample frames, it pins the stream's frame rate
+  at the sampling rate; once `setpts` pulled sixty seconds into eight, the
+  encoder threw frames away to get back to 1.6 fps. Measured: 14 frames
+  with no output rate, 99 with `-r 12`. A `select` filter with rebuilt
+  timestamps also gives 98, but three times the file size. Fixed with the
+  output rate. This corrects the previous entry, which claimed `-r` would
+  pad the run out by duplicating frames. It does not.
+- A handful of designs draw per-pixel noise and produced 850 MB for one
+  minute. Raising the quality number does not help (490 MB even at crf 24)
+  because noise is incompressible. A VBV cap does: 850 MB to 96 MB. It is a
+  ceiling, so the nine in ten projects sitting near 0.5 Mbit/s are
+  untouched. libvpx spells it `-b:v` once `-crf` is given, x264 `-maxrate`.
+
+Also measured, and worth not repeating: comparing a transcode against the
+capture at the *design* resolution gave 22 dB and looked like a disaster.
+It was the measurement -- downscaling the 2x clip with the default bicubic
+filter rings on hard pixel edges. Compared at the published geometry, with
+the source put through the same nearest-neighbour upscale, it is 42.5 dB
+for H.264 and 43.7 dB for VP9. Compare at the geometry the codec saw.
+
+And: VP9 is not the smaller codec here. Ten seconds at 1280x960, x264 crf 18
+is 6.0 MB in 5 s; VP9 crf 32 is 6.8 MB in 24 s. VP9 moved to crf 36. The
+owner chose to keep both formats anyway.
+
+Verified on the restarted run (39 projects in): clips are h264/vp9 at
+1280x960, cut durations exact at 60.0 and 10.0 s, median 60 s MP4 0.6 MB,
+largest 91 MB, none over 100 MB. Previews are 99 frames over 8.25 s and
+27-49 kB, smaller than the six second excerpts they replace because evenly
+spaced frames compress better against a diff palette.
+
+Done:
+- Each project links to the VGA playground at the commit simulated.
+- The clips are a table, a row per length and a column per codec.
+- Sticky headings given a z-index so they stop painting behind thumbnails.
+- 50 tests pass.
+
+In flight:
+- The full migration, restarted with the cap and the preview fix after
+  clearing 971 partially-migrated files (16.1 GB). All 408 source AVIs
+  confirmed present first: they are the only copy of the simulation output.
+
+Next:
+- Let it finish, then `tt-vga collect`, `analyze`, `index --upload`.
+- Check the page in a browser, then `--drop-legacy` to remove the AVIs.
+
 ## 2026-09-16 (later): playground links, a clip table, whole-clip previews
 
 Four page and preview changes, plus two problems found by measuring rather
