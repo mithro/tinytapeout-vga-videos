@@ -5,6 +5,77 @@ whenever something non-obvious is learned. This file is the resume point
 if work stops for lack of credits or tokens: read it, then `docs/status.md`,
 then the newest `data/results/` entries.
 
+## 2026-09-16 (night): sound, and driving the designs that were sitting still
+
+Two additions, both taken from the VGA Playground, which is now cloned at
+`~/github/TinyTapeout/vga-playground` rather than read a file at a time.
+
+**Audio.** Designs that drive the Audio Pmod were rendering silent. The
+playground takes their sound from `(uio_out & uio_oe) >> 7` -- one bit on
+uio[7], read only while the design drives the pin -- averages it over each
+sample period and runs a moving average of ceil(rate / 20 kHz) samples as the
+Pmod's low-pass. That is now what the harness does, at the playground's
+192 kHz, muxed as AAC in the MP4 and Opus in the WebM.
+
+Three deliberate differences, because the playground feeds a live audio
+context and this writes a file:
+- the sample clock is a fractional accumulator, not an integer compare. At
+  25.175 MHz and 192 kHz the period is 131.1 clocks; counting 132 drifts about
+  50 ms over a minute, which is visible against the picture;
+- a 20 Hz high-pass comes off before encoding, because the captured signal is
+  a PWM bit averaged into 0..1 and carries a DC offset that would waste the
+  headroom and click at both ends;
+- the track is written only when the design actually drove the pin.
+
+Verified on tt08/tt_um_a1k0n_nyancat: audio_driven true, 2,303,084 samples for
+twelve seconds at 192 kHz, both containers carrying a track, mean -17.1 dB and
+peak -2.1 dB on the encoded MP4. Two faults found and fixed by that test: the
+rate was a constant in encode.py while tb.cpp took it as an option, which
+would have pitch-shifted every soundtrack silently rather than failing; and
+ffmpeg followed the 192 kHz input into 96 kHz AAC, an unusual rate that some
+decoders refuse. Both are pinned to 48 kHz now.
+
+**Gamepad.** The owner asked whether the Gamepad Pmod could make the static
+videos move. Of 34 static projects only two are wired to one, and neither was
+being driven, because the detector wanted pin names containing latch, clk or
+data and those projects label all three pins simply `gamepad`. The wiring is
+fixed, from the playground's own example:
+
+    .pmod_data(ui_in[6]), .pmod_clk(ui_in[5]), .pmod_latch(ui_in[4])
+
+so declaring the Pmod is now enough on its own and the names are a fallback.
+That recovered three projects, one of them one whose names were correct and
+which had simply never had stimulus generated.
+
+Measured, re-simulating eight candidates:
+
+| project                  | before        | after         | distinct frames |
+| ------------------------ | ------------- | ------------- | --------------- |
+| ds_missile_command       | static        | ok            | 1 -> 548        |
+| limpix31_r0              | barely-moving | ok            | motion x5       |
+| spacewar_top             | barely-moving | barely-moving | 9 -> 163        |
+| vga_ocarina              | static        | barely-moving | 1 -> 10         |
+| raybox_zero              | static        | barely-moving | 1 -> 7          |
+| pong                     | barely-moving | barely-moving | 61 -> 61        |
+
+So the gamepad does work, decisively for one project. vga_ocarina barely moved
+but declares tt-audio and is an ocarina: its output is meant to be heard, and
+the button presses are playing notes. pong did not move at all and needs a
+hand-written script rather than a derived guess.
+
+The other 32 static projects do not use a gamepad. They want plain buttons --
+ShadyPong's Player1Up, kul_conway's button_up, colorbars' scroll_bars,
+raybox-zero's inc_px and inc_py -- which is a larger job than this one.
+
+Shuttle-wide this moved 326 ok to 328 and 34 static to 31.
+
+Next:
+- Two of the eight (array_mult_vga, toivoh_retro_console) were still running
+  when this was written; their rows above are from before.
+- Nothing has been re-rendered with sound beyond the one test. Giving all 408
+  their audio means a full re-simulation, about two and a half hours, and
+  needs the owner's go-ahead.
+
 ## 2026-09-16 (late): the WebM fault, real-time previews, per-shuttle stats
 
 Four faults reported from actually looking at the published page, three of
