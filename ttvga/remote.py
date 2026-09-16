@@ -209,12 +209,16 @@ tail -n {args.lines} ~/{REMOTE_ROOT}/queue.log 2>/dev/null || true
 
 
 def rerender(args: argparse.Namespace) -> int:
-    """Rebuild posters, contact sheets and animations from the clips already on the host."""
+    """Rebuild the published clips and previews on the host, migrating any old AVIs."""
     host = resolve_host(args.host)
     cmd = (f"python3 ~/{REMOTE_ROOT}/harness/rerender.py --videos ~/{REMOTE_VIDEOS} "
            f"--root ~/{REMOTE_ROOT} --jobs {args.jobs or host.jobs}")
     if args.only:
         cmd += f" --only {shlex.quote(args.only)}"
+    if args.drop_legacy:
+        cmd += " --drop-legacy"
+    if args.previews_only:
+        cmd += " --previews-only"
     if args.background:
         script = f"""
 set -e
@@ -270,11 +274,14 @@ def add_parsers(sub: argparse._SubParsersAction) -> None:
     p.add_argument("--timeout", type=float, default=1800.0)
     p.add_argument("--lines", type=int, default=20, help="log lines to show for status")
     p.set_defaults(func=queue)
-    p = sub.add_parser("rerender", help="rebuild posters, contact sheets and animations from the clips on the host")
+    p = sub.add_parser("rerender", help="rebuild the clips and previews on the host (also migrates old AVIs)")
     common(p)
     p.add_argument("--jobs", type=int, default=0)
     p.add_argument("--only", default="", help="comma separated shuttles or <shuttle>/<macro> ids")
     p.add_argument("--background", action="store_true", help="run in a tmux session instead of waiting")
+    p.add_argument("--drop-legacy", action="store_true",
+                   help="delete the superseded AVIs and unprefixed previews once the clips are written")
+    p.add_argument("--previews-only", action="store_true", help="re-render previews without transcoding")
     p.set_defaults(func=rerender)
     p = sub.add_parser("collect", help="pull result.json files into data/results/")
     common(p)

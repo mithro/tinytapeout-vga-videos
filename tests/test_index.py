@@ -11,8 +11,10 @@ TARGET = {
 RESULT = {
     "verdict": "ok", "reason": "lively", "host": "big", "finished": "2026-09-15T12:00:00+00:00",
     "auto_ui_in": 128, "qspi": None, "override": None, "tools": {"verilator": "5.053"},
-    "videos": {"60s.avi": {"bytes": 154798650, "sha256": "aa"}, "10s.avi": {"bytes": 25820716, "sha256": "bb"},
-               "poster.png": {"bytes": 25620, "sha256": "cc"}},
+    "videos": {"tt08_tt_um_x_60s.mp4": {"bytes": 154798650, "sha256": "aa"},
+               "tt08_tt_um_x_60s.webm": {"bytes": 98000000, "sha256": "dd"},
+               "tt08_tt_um_x_10s.mp4": {"bytes": 25820716, "sha256": "bb"},
+               "tt08_tt_um_x_poster.png": {"bytes": 25620, "sha256": "cc"}},
     "timing": {"mode": "640x480@60", "width": 640, "height": 480, "fps": 59.94, "frames": 3596,
                "distinct_frames": 1200, "colours": 12, "mean_frame_delta": 0.0123,
                "pixels_ever_changed": 0.8, "clock_hz": 25175000, "clocks_simulated": 1510000000,
@@ -26,7 +28,8 @@ def test_record_carries_identity_measurement_and_files():
     assert e["id"] == "tt08/tt_um_x" and e["author"] == "Someone"
     assert e["page"] == "https://tinytapeout.com/chips/tt08/tt_um_x"
     assert e["has_video"] and e["video"]["dir"] == "tt08/tt_um_x"
-    assert e["video"]["files"]["60s.avi"]["bytes"] == 154798650
+    assert e["video"]["files"]["tt08_tt_um_x_60s.mp4"]["bytes"] == 154798650
+    assert e["video"]["stem"] == "tt08_tt_um_x"
     assert e["video"]["seconds"] == 59.99      # frames / fps
     assert e["video"]["colours"] == 12
     assert e["simulation"]["auto_ui_in"] == 128
@@ -47,8 +50,9 @@ def test_size_is_human_readable():
 
 def test_html_links_are_relative_to_the_video_root():
     page = write_html([record(TARGET, RESULT)], "now")
-    assert 'src="tt08/tt_um_x/poster.png"' in page
-    assert 'href="tt08/tt_um_x/60s.avi"' in page
+    assert 'src="tt08/tt_um_x/tt08_tt_um_x_poster.png"' in page
+    assert 'href="tt08/tt_um_x/tt08_tt_um_x_60s.mp4"' in page
+    assert 'href="tt08/tt_um_x/tt08_tt_um_x_60s.webm"' in page
     assert "<title>Tiny Tapeout VGA videos</title>" in page
     assert "A demo" in page and "640&times;480" in page
 
@@ -84,7 +88,7 @@ def test_stats_summarise_the_whole_set():
     assert s["verdicts"] == {"ok": 1, "pending": 1}
     assert s["modes"] == {"640x480@60": 1} and s["resolutions"] == {"640x480": 1}
     assert s["frame_rates"] == {"60": 1}
-    assert s["video_bytes"] == 154798650 + 25820716 + 25620
+    assert s["video_bytes"] == 154798650 + 98000000 + 25820716 + 25620
     assert s["simulation"]["clocks_total"] == 1510000000
     assert s["helped_by"]["probed_input"] == 1 and s["helped_by"]["qspi_memory"] == 0
     assert s["liveliest"][0]["id"] == "tt08/tt_um_x"
@@ -93,8 +97,8 @@ def test_stats_summarise_the_whole_set():
 
 def test_thumbnail_offers_the_animation_and_the_contact_sheet():
     page = write_html([record(TARGET, RESULT)], "now")
-    assert 'data-gif="tt08/tt_um_x/preview.gif"' in page
-    assert 'data-poster="tt08/tt_um_x/poster.png"' in page
-    assert 'href="tt08/tt_um_x/contact.png"' in page
+    assert 'data-gif="tt08/tt_um_x/tt08_tt_um_x_preview.gif"' in page
+    assert 'data-poster="tt08/tt_um_x/tt08_tt_um_x_poster.png"' in page
+    assert 'href="tt08/tt_um_x/tt08_tt_um_x_contact.png"' in page
     assert "button.play" in page                      # the handler is on the page
     assert 'aria-label="Play a preview of A demo"' in page

@@ -20,18 +20,29 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import sys
 from datetime import datetime, timezone
 
-from ttvga import DATA_DIR, ROOT
+from ttvga import DATA_DIR, HARNESS_DIR, ROOT
 from ttvga.analyze import SUCCESS, analyze_all
 from ttvga.report import VERDICT_ORDER
 from ttvga.targets import load_targets
+
+# The harness is synced to the host on its own, so it cannot import from the
+# package; the naming of published files belongs to it, and this page has to
+# agree with it exactly. Take the definition rather than repeating it.
+sys.path.insert(0, str(HARNESS_DIR))
+from encode import LENGTHS, stem_for  # noqa: E402
 
 INDEX_JSON = DATA_DIR / "index.json"
 INDEX_HTML = DATA_DIR / "index.html"
 VIDEOS_MD = ROOT / "docs" / "videos.md"
 PROJECT_URL = "https://tinytapeout.com/chips/{shuttle}/{macro}"
-CLIPS = ("60s.avi", "30s.avi", "10s.avi")
+
+# Both codecs are published for every length. WebM is offered first because it
+# is the smaller of the two; a browser that cannot decode VP9 falls through to
+# the H.264 in the MP4, which every browser can play.
+FORMATS = (("webm", "video/webm"), ("mp4", "video/mp4"))
 
 # Clicking a poster swaps in the animation and starts it; clicking again puts
 # the still back, so a page of 400 posters never loads 400 animations at once.
@@ -79,6 +90,9 @@ def record(target: dict, result: dict | None) -> dict:
         "has_video": bool(videos),
         "video": {
             "dir": f"{target['shuttle']}/{target['macro']}",
+            # Every published file starts with this, so a downloaded clip still
+            # says which shuttle and project it came from.
+            "stem": stem_for(target["shuttle"], target["macro"]),
             "files": {name: {"bytes": v.get("bytes"), "sha256": v.get("sha256")}
                       for name, v in sorted(videos.items())},
             "mode": timing.get("mode"),
@@ -311,6 +325,8 @@ def write_html(entries: list[dict], generated: str) -> str:
         ".play:focus-visible{outline:2px solid #544ead;outline-offset:2px}",
         ".frames{font-size:.8rem}",
         "td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}",
+        ".num{color:#5c5870;font-variant-numeric:tabular-nums}",
+        ".len{display:inline-block;min-width:2.4em;color:#5c5870}",
         ".v{display:inline-block;padding:.05rem .4rem;border-radius:.6rem;font-size:.85em;white-space:nowrap}",
         ".ok{background:#dcf5e3;color:#14532d}.static{background:#e8e6f6;color:#312a6d}",
         ".barely-moving{background:#fdf3d7;color:#6b4e00}.partial{background:#fdf3d7;color:#6b4e00}",
@@ -328,8 +344,9 @@ def write_html(entries: list[dict], generated: str) -> str:
         "</style></head><body>",
         "<h1>Tiny Tapeout VGA videos</h1>",
         f'<p class="lede">Simulated output of every Tiny Tapeout project whose pinout matches the Tiny VGA Pmod. '
-        f"{ok} of {len(entries)} projects have a watchable clip. Each has a 60, 30 and 10 second MJPEG at the "
-        f"design's own resolution and frame rate, a poster frame and a contact sheet. Generated {generated}.</p>",
+        f"{ok} of {len(entries)} projects have a watchable clip. Each has a 60, 30 and 10 second video in "
+        f"WebM and MP4 at twice the design's own resolution, a poster frame and a contact sheet. "
+f"Every file is named for its shuttle and project. Generated {generated}.</p>",
         "<p>" + " ".join(f'<span class="v {cls(v)}">{html.escape(v)} {counts[v]}</span>' for v in order) + "</p>",
         write_stats_html(stats(entries)),
     ]
@@ -338,15 +355,25 @@ def write_html(entries: list[dict], generated: str) -> str:
         out.append("<table><tr><th>Preview</th><th>Project</th><th>Result</th><th>Video</th><th>Files</th></tr>")
         for e in rows:
             v, d = e["video"], e["video"].get("dir")
+            s = v.get("stem")
             # The poster is the still; clicking it swaps in the animation.
-            preview = (f'<button class="play" type="button" data-poster="{d}/poster.png" '
-                       f'data-gif="{d}/preview.gif" aria-label="Play a preview of '
+            preview = (f'<button class="play" type="button" data-poster="{d}/{s}_poster.png" '
+                       f'data-gif="{d}/{s}_preview.gif" aria-label="Play a preview of '
                        f'{html.escape(e["title"] or e["macro"], quote=True)}">'
-                       f'<img src="{d}/poster.png" alt="" loading="lazy">'
+                       f'<img src="{d}/{s}_poster.png" alt="" loading="lazy">'
                        f'<span class="badge">play</span></button>'
-                       f'<a class="frames" href="{d}/contact.png">all frames</a>') if e["has_video"] else ""
-            files = " ".join(f'<a href="{d}/{n}">{n[:-4]}</a> <span class="num">{size(v["files"][n]["bytes"])}</span>'
-                             for n in CLIPS if n in v["files"])
+                       f'<a class="frames" href="{d}/{s}_contact.png">all frames</a>') if e["has_video"] else ""
+            # One row per length, both codecs on it: the link plays in the
+            # browser, and the file it saves is named for the project.
+            rows = []
+            for secs in LENGTHS:
+                have = [(ext, f"{s}_{secs}s.{ext}") for ext, _ in FORMATS if f"{s}_{secs}s.{ext}" in v["files"]]
+                if have:
+                    links = " ".join(f'<a href="{d}/{n}">{ext}</a> '
+                                     f'<span class="num">{size(v["files"][n]["bytes"])}</span>'
+                                     for ext, n in have)
+                    rows.append(f'<span class="len">{secs}s</span> {links}')
+            files = "<br>".join(rows)
             shape = (f'{v.get("width")}&times;{v.get("height")} {v.get("mode") or ""}<br>'
                      f'{v.get("fps") or 0:.1f} fps, {v.get("seconds") or 0:.0f} s<br>'
                      f'{motion(v)} of pixels change per frame, {ever(v)} ever<br>'
@@ -402,16 +429,17 @@ def write_markdown(entries: list[dict], generated: str) -> str:
              "",
              "## Projects", "",
              "One row per project. The clips themselves are on the simulation host under",
-             "`videos/<shuttle>/<macro>/`; this table says what each one contains.", "",
+             "`<shuttle>/<macro>/<shuttle>_<macro>_{60,30,10}s.{webm,mp4}`; this table says what each",
+             "one contains.", "",
              "Motion is the share of pixels that change from one frame to the next;",
              "ever is the share that change at any point in the clip.", "",
-             "| Project | Title | Verdict | Size | fps | Motion | Ever | Colours | 60 s file |",
+             "| Project | Title | Verdict | Size | fps | Motion | Ever | Colours | 60 s MP4 |",
              "| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |"]
     for e in entries:
         v = e["video"]
         shape = f'{v.get("width")}x{v.get("height")}' if e["has_video"] else ""
         fps = f'{v.get("fps"):.1f}' if e["has_video"] and v.get("fps") else ""
-        clip = size((v.get("files", {}).get("60s.avi") or {}).get("bytes"))
+        clip = size((v.get("files", {}).get(f'{v.get("stem")}_{LENGTHS[0]}s.mp4') or {}).get("bytes"))
         title = (e["title"] or "").replace("|", "/")[:60]
         lines.append(f'| `{e["id"]}` | {title} | {e["verdict"]} | {shape} | {fps} | {motion(v)} | {ever(v)} | '
                      f'{v.get("colours") or ""} | {clip} |')

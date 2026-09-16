@@ -18,9 +18,11 @@ Simulations run on a remote host under a dedicated unprivileged user; see
 
 ## What comes out
 
-Per project: `60s.avi`, `30s.avi`, `10s.avi` (MJPEG, native resolution,
-the measured frame rate), `poster.png` (a frame from 5 s in) and
-`contact.png` (16 frames across the clip).
+Per project, every file named `<shuttle>_<macro>_...` so a downloaded
+clip still says where it came from: `_60s`, `_30s` and `_10s` as both
+`.webm` (VP9) and `.mp4` (H.264), at twice the design's own resolution
+and its measured frame rate; `_poster.png` (a frame from 5 s in),
+`_contact.png` (16 frames across the clip) and `_preview.gif`.
 
 | Maze (ttsky26a), contact sheet | Achtung (ttsky26c), contact sheet |
 | --- | --- |

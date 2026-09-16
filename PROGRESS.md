@@ -5,6 +5,57 @@ whenever something non-obvious is learned. This file is the resume point
 if work stops for lack of credits or tokens: read it, then `docs/status.md`,
 then the newest `data/results/` entries.
 
+## 2026-09-16: clips a browser will actually play, named for their project
+
+The published `.avi` files did not play in a browser. Motion JPEG in an AVI
+container is a capture format, not a delivery one: no browser ships an AVI
+demuxer, so every link was a download rather than a video. Replaced with two
+codecs per clip, and gave every published file a name that says what it is.
+
+Done:
+- New `ttvga/harness/encode.py` owns everything about published files: the
+  naming (`stem_for`, `clip_names`, `preview_names`), the transcode, and the
+  preview rendering. `job.py` and `rerender.py` both import it, and so does
+  `ttvga/index.py` (via `HARNESS_DIR` on `sys.path`, as `rerender.py`
+  already did) so the page cannot disagree with the host about a file name.
+  `run()` moved there too, which is why the dependency points that way:
+  `job.py` imports `encode`, never the reverse.
+- `tb.cpp` writes `capture.avi` in the work directory. It is no longer a
+  deliverable, just the cheap thing to write a frame at a time while
+  Verilator runs.
+- Every clip is published as both `.webm` (VP9, `-crf 32 -b:v 0`,
+  `good`/`cpu-used 2`) and `.mp4` (H.264, `-crf 18`, `+faststart`). WebM is
+  smaller and is what YouTube wants; MP4 covers the Safari and iOS versions
+  whose VP9 support cannot be relied on. The page lists both.
+- Clips are upscaled 2x with nearest-neighbour before encoding. This is not
+  for detail: `yuv420p` subsamples chroma by two in each axis, so at native
+  size two neighbouring pixels would share one colour, which is ruinous on
+  flat saturated pixel art. At 2x the chroma plane lands back exactly on the
+  design's own pixel grid. It also makes the dimensions even, which
+  `yuv420p` requires and several designs (703x504, 1342 wide) are not.
+- The 30 s and 10 s clips are copied out of the 60 s one rather than encoded
+  again, with `-force_key_frames 10,30` so the copy ends on a group boundary
+  instead of decoding the last second as garbage. That matters most for VP9,
+  which is much slower than x264.
+- Every published file now starts `<shuttle>_<macro>_`:
+  `tt09_tt_um_a1k0n_nyancat_60s.webm`, `..._poster.png`, `..._contact.png`,
+  `..._preview.gif`. A downloaded or uploaded clip says where it came from.
+- `rerender.py` is now the migration tool as well: it transcodes any project
+  still holding `60s.avi`, then re-renders previews. `--drop-legacy` deletes
+  the superseded AVIs, and is deliberately *not* the default: those captures
+  are the only copy of about 69 hours of simulation.
+- 45 tests pass, including `tests/test_encode.py` pinning the naming.
+
+Next:
+- Sync, transcode one project on the host and check the clip actually plays
+  and the cuts are the right length, then run the other 407.
+- Re-upload the index and verify over HTTPS.
+- Still outstanding from before: `ttvga/nginx/userdir-web.conf` has its own
+  `types` block that omits gif and mp4, so those are served as
+  `application/octet-stream`. nginx's own `/etc/nginx/mime.types` already
+  has every type needed, so the fix is to delete the block. Needs the owner
+  to reinstall the file.
+
 ## 2026-09-15 (later): first pipeline, first video
 
 Done:

@@ -381,11 +381,13 @@ int main(int argc, char** argv) {
                      hs.active_low ? "active-low" : "active-high", vs.active_low ? "active-low" : "active-high",
                      mode ? mode->name : "unknown", cpp, width, height, fps);
 
-    // ---- ffmpeg pipe: raw RGB frames in, MJPEG AVI out.
+    // ---- ffmpeg pipe: raw RGB frames in, MJPEG out. This is the capture, not
+    // the deliverable: it is cheap to write while the simulation runs, and the
+    // job runner turns it into the MP4 that browsers can play.
     char cmd[2048];
     std::snprintf(cmd, sizeof cmd,
                   "%s -hide_banner -loglevel error -y -f rawvideo -pix_fmt rgb24 -s %dx%d -framerate %.4f -i - "
-                  "-c:v mjpeg -q:v 2 -pix_fmt yuvj444p -huffman optimal \"%s/60s.avi\"",
+                  "-c:v mjpeg -q:v 2 -pix_fmt yuvj444p -huffman optimal \"%s/capture.avi\"",
                   opt.ffmpeg.c_str(), width, height, fps, opt.out_dir.c_str());
     FILE* ff = popen(cmd, "w");
     if (!ff) { std::fprintf(stderr, "tb: cannot start ffmpeg: %s\n", cmd); return 2; }

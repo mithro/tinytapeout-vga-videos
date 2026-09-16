@@ -9,7 +9,7 @@ Layout under --root:
     harness/tb.cpp (this directory)
     overrides/<shuttle>/<macro>.json (+ .inputs/.gamepad/.diff), compiled by ttvga/overrides.py
     work/<shuttle>/<macro>/{repo/, build/, build.log, sim.log, timing.json, result.json}
-    ~/public_html/<shuttle>/<macro>/{60s.avi, 30s.avi, 10s.avi, poster.png, contact.png}
+    ~/public_html/<shuttle>/<macro>/<shuttle>_<macro>_{60,30,10}s.{mp4,webm} + _poster/_contact/_preview
       (published at https://<host>/~<user>/, see docs/publishing.md)
 
 Standard library only: the host has no packages installed.
@@ -30,6 +30,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from encode import render_previews, run, stem_for, transcode
+
 DEFAULT_CLOCK_HZ = 25_175_000
 STAGES = ("fetch", "build", "simulate", "encode")
 
@@ -44,34 +46,6 @@ def sha256(path: Path) -> str:
         for chunk in iter(lambda: f.read(1 << 20), b""):
             h.update(chunk)
     return h.hexdigest()
-
-
-def run(cmd: list[str], log: Path, cwd: Path | None = None, timeout: float | None = None,
-        env: dict[str, str] | None = None, grace: float = 0.0) -> int:
-    """Run a command, appending its output to `log`. Returns the exit code (124 on timeout).
-
-    With `grace`, a timeout first sends SIGTERM and waits that long for the
-    command to finish on its own (the model then closes ffmpeg cleanly).
-    """
-    with log.open("a") as f:
-        f.write(f"\n$ {' '.join(cmd)}\n")
-        f.flush()
-        p = subprocess.Popen(cmd, cwd=cwd, stdout=f, stderr=subprocess.STDOUT, env=env)
-        try:
-            p.wait(timeout=timeout)
-        except subprocess.TimeoutExpired:
-            f.write(f"\n[timeout after {timeout}s]\n")
-            p.terminate()
-            try:
-                p.wait(timeout=grace or 5)
-                f.write(f"[finished after SIGTERM, exit {p.returncode}]\n")
-            except subprocess.TimeoutExpired:
-                p.kill()
-                p.wait()
-                f.write("[killed]\n")
-            return 124
-        f.write(f"[exit {p.returncode}]\n")
-        return p.returncode
 
 
 def read_override(path: Path) -> dict:
@@ -250,7 +224,7 @@ def model_cmd(target: dict, ov: dict, build_dir: Path, out: Path, tools: dict, a
 
 def simulate(target: dict, ov: dict, repo_dir: Path, build_dir: Path, work: Path, log: Path, tools: dict,
              args: argparse.Namespace, result: dict) -> str | None:
-    """Run the Verilated model. Writes timing.json and 60s.avi. Returns an error string or None."""
+    """Run the Verilated model. Writes timing.json and capture.avi. Returns an error string or None."""
     seconds = float(ov.get("seconds") or args.seconds)
     out = work / "out"
     if out.exists():
@@ -297,66 +271,20 @@ def simulate(target: dict, ov: dict, repo_dir: Path, build_dir: Path, work: Path
     return None
 
 
-# The contact sheet's grid lines. A pale neutral, because the frames
-# themselves often have coloured borders that a strong colour would echo.
-GRID_COLOUR = "0xd8d5e0"
-GRID_GAP = 6
-GIF_WIDTH = 320
-GIF_FPS = 12
-GIF_SECONDS = 6.0
-
-
-def render_previews(videos: Path, log: Path, tools: dict, frames: int, fps: float) -> str | None:
-    """Make the still and moving previews from 60s.avi: poster, contact sheet, animation."""
-    ff = tools["ffmpeg"]
-    src = videos / "60s.avi"
-    duration = frames / fps if fps else 0.0
-    quiet = ["-hide_banner", "-loglevel", "error", "-y"]
-
-    # A frame from about 5 s in: by then most designs have drawn something.
-    poster_at = min(5.0, duration / 2)
-    run([ff, *quiet, "-ss", f"{poster_at:.3f}", "-i", str(src), "-frames:v", "1",
-         str(videos / "poster.png")], log, timeout=600)
-
-    # 16 frames spread across the clip, half size, with grid lines between them
-    # so one frame's black background cannot be mistaken for its neighbour's.
-    step = max(1, frames // 16)
-    run([ff, *quiet, "-i", str(src),
-         "-vf", f"select='not(mod(n\\,{step}))',scale=iw/2:-1,"
-                f"tile=4x4:padding={GRID_GAP}:margin={GRID_GAP}:color={GRID_COLOUR}",
-         "-frames:v", "1", str(videos / "contact.png")], log, timeout=900)
-
-    # A short animation for the index page. The source has at most 64 colours,
-    # so a generated palette is exact, and nearest-neighbour scaling keeps the
-    # pixel edges hard instead of smearing them.
-    length = min(GIF_SECONDS, duration) if duration else GIF_SECONDS
-    start = min(5.0, max(0.0, duration - length))
-    run([ff, *quiet, "-ss", f"{start:.3f}", "-t", f"{length:.3f}", "-i", str(src),
-         "-vf", f"fps={GIF_FPS},scale={GIF_WIDTH}:-1:flags=neighbor,split[a][b];"
-                f"[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none",
-         "-loop", "0", str(videos / "preview.gif")], log, timeout=900)
-
-    missing = [n for n in ("poster.png", "contact.png", "preview.gif") if not (videos / n).exists()]
-    return ("failed to render " + ", ".join(missing)) if missing else None
-
-
-def encode(work: Path, videos: Path, log: Path, tools: dict) -> str | None:
-    """Cut 30 s and 10 s clips and the previews from 60s.avi."""
-    src = work / "out" / "60s.avi"
+def encode(work: Path, videos: Path, log: Path, tools: dict, stem: str) -> str | None:
+    """Publish the capture as browser-playable clips, then render the previews."""
+    src = work / "out" / "capture.avi"
     if not src.exists() or src.stat().st_size == 0:
-        return "no 60s.avi"
+        return "no capture.avi"
     timing = json.loads((work / "out" / "timing.json").read_text())
     frames, fps = timing.get("frames", 0), timing.get("fps", 60.0)
     if videos.exists():
         shutil.rmtree(videos)
     videos.mkdir(parents=True)
-    shutil.move(str(src), videos / "60s.avi")
-    ff = tools["ffmpeg"]
-    for secs in (30, 10):
-        if run([ff, "-hide_banner", "-loglevel", "error", "-y", "-i", str(videos / "60s.avi"), "-t", str(secs),
-                "-c", "copy", str(videos / f"{secs}s.avi")], log, timeout=600) != 0:
-            return f"ffmpeg cut {secs}s failed"
-    return render_previews(videos, log, tools, frames, fps)
+    error = transcode(src, videos, stem, log, tools["ffmpeg"])
+    if error:
+        return error
+    return render_previews(videos, stem, log, tools["ffmpeg"], frames, fps)
 
 
 def tool_versions(tools: dict) -> dict:
@@ -435,7 +363,7 @@ def main() -> int:
             elif stage == "simulate":
                 error = simulate(target, ov, repo_dir, build_dir, work, work / "sim.log", tools, args, result)
             elif stage == "encode":
-                error = encode(work, videos, work / "sim.log", tools)
+                error = encode(work, videos, work / "sim.log", tools, stem_for(shuttle, macro))
             result["timings"][stage] = round(time.monotonic() - t0, 1)
             if error:
                 break

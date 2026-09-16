@@ -16,7 +16,7 @@ sudo install -m 600 -o ttvga -g ttvga /path/to/orchestrator_key.pub /home/ttvga/
 The user needs no sudo, no docker group and no extra packages. It needs
 roughly 20 GB of disk per 100 projects (sources, build directories, frames
 are deleted after encoding; the videos are about 50 to 150 MB per project
-for all three clips in MJPEG).
+for all three clips in both codecs).
 
 `tmux` must be available on the host (it is in Debian by default) so the
 queue survives SSH disconnects. If it is not, the runner falls back to
