@@ -129,3 +129,51 @@ def test_sticky_headings_sit_above_the_thumbnails():
     header = next(l for l in page.splitlines() if l.startswith("th{"))
     assert "position:sticky" in heading and "z-index:3" in heading
     assert "position:sticky" in header and "z-index:2" in header
+
+
+def test_marks_separate_what_a_project_is_wired_to_from_what_the_run_used():
+    """An outline badge says wired for it; a filled one says the run used it."""
+    target = dict(TARGET, pmods=["tiny-vga", "gamepad", "tt-audio"])
+    e = record(target, RESULT)
+    assert e["uses"] == {"gamepad": True, "gamepad_driven": False,
+                         "audio": True, "audio_captured": False}
+    page = write_html([e], "now")
+    assert '<span class="pmod" title="reads a Gamepad Pmod; nothing pressed it' in page
+    assert ">gamepad</span>" in page and ">audio</span>" in page
+
+    driven = record(target, dict(RESULT, override={"gamepad": [{"at": 3.0, "press": "a"}]},
+                                 timing=dict(RESULT["timing"], audio_driven=True, audio_samples=2303084)))
+    assert driven["uses"] == {"gamepad": True, "gamepad_driven": True,
+                              "audio": True, "audio_captured": True}
+    assert driven["video"]["has_audio"]
+    page = write_html([driven], "now")
+    assert '<span class="pmod on"' in page
+    assert ">gamepad driven</span>" in page and ">audio captured</span>" in page
+
+
+def test_a_gamepad_found_from_pin_names_is_marked_even_though_undeclared():
+    """Two projects drive a gamepad without saying so; the run is the evidence."""
+    e = record(TARGET, dict(RESULT, override={"gamepad": [{"at": 3.0, "press": "a"}]}))
+    assert e["uses"]["gamepad"] and e["uses"]["gamepad_driven"]
+    assert ">gamepad driven</span>" in write_html([e], "now")
+
+
+def test_a_project_using_neither_pmod_gets_no_badge():
+    page = write_html([record(TARGET, RESULT)], "now")
+    assert 'class="pmod' not in page
+
+
+def test_markdown_says_which_pmods_were_used():
+    e = record(dict(TARGET, pmods=["tiny-vga", "gamepad", "tt-audio"]),
+               dict(RESULT, override={"gamepad": [{"at": 3.0}]}))
+    row = [ln for ln in write_markdown([e], "now").splitlines() if "`tt08/tt_um_x`" in ln][0]
+    assert "| gamepad+, audio |" in row
+
+
+def test_audio_is_found_from_the_pin_name_as_well_as_the_declaration():
+    """Fourteen projects drive the Audio Pmod pin without listing the Pmod."""
+    e = record(dict(TARGET, pinout={"uio[7]": "AudioPWM"}), RESULT)
+    assert e["uses"]["audio"] and not e["uses"]["audio_captured"]
+    assert ">audio</span>" in write_html([e], "now")
+    quiet = record(dict(TARGET, pinout={"uio[7]": "addr_out[3]"}), RESULT)
+    assert not quiet["uses"]["audio"]

@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from urllib.parse import quote
@@ -27,6 +28,10 @@ from urllib.parse import quote
 from ttvga import DATA_DIR, HARNESS_DIR, ROOT
 from ttvga.analyze import SUCCESS, analyze_all
 from ttvga.report import VERDICT_ORDER
+# The same test the input deriver uses to decide a project reads a controller,
+# so the badge on the page and the script that drives the buttons can never
+# disagree about which projects those are.
+from ttvga.stimulus import wants_gamepad
 from ttvga.targets import load_targets
 
 # The harness is synced to the host on its own, so it cannot import from the
@@ -39,6 +44,10 @@ INDEX_JSON = DATA_DIR / "index.json"
 INDEX_HTML = DATA_DIR / "index.html"
 VIDEOS_MD = ROOT / "docs" / "videos.md"
 PROJECT_URL = "https://tinytapeout.com/chips/{shuttle}/{macro}"
+
+# The Audio Pmod listens to the top bidirectional pin; the harness captures
+# `(uio_out & uio_oe) >> 7`, so this is the pin whose name says "sound".
+AUDIO_PIN = "uio[7]"
 
 # The VGA playground runs a project in the browser. It reads `info.yaml` from
 # the repository to find the sources, so it takes the repository rather than
@@ -147,6 +156,12 @@ def record(target: dict, result: dict | None) -> dict:
             "line_clocks": timing.get("line_clocks"),
             "lines": timing.get("lines"),
             "clocks_per_pixel": timing.get("clocks_per_pixel"),
+            # Present only for clips simulated since audio capture was added.
+            # False and absent mean different things -- "this design drives no
+            # audio" against "nobody has listened yet" -- so the sample count
+            # is kept rather than collapsing both to a bool.
+            "has_audio": bool(timing.get("audio_driven")) and bool(timing.get("audio_samples")),
+            "audio_samples": timing.get("audio_samples"),
         },
         "simulation": {
             "clock_hz": timing.get("clock_hz"),
@@ -161,9 +176,66 @@ def record(target: dict, result: dict | None) -> dict:
             "tools": (result or {}).get("tools"),
         },
     }
+    entry["uses"] = uses(target, entry)
     if not entry["has_video"]:
         entry["video"] = {"dir": entry["video"]["dir"], "files": {}}
     return entry
+
+
+# A project's Pmods say what it is wired to; the run says what was made of
+# them, and the two disagree often enough to be worth showing apart. Sixty-four
+# projects declare a gamepad and nineteen were actually driven by one; the
+# Audio Pmod is declared by seventy-five and only clips simulated since audio
+# capture was added carry a soundtrack. Two projects drive a gamepad without
+# declaring it, found from their pin names, so the declaration alone is not
+# enough either way.
+def drives_audio(target: dict) -> bool:
+    """Whether this project puts sound on the Audio Pmod pin.
+
+    The Pmod takes the top bidirectional pin, which is what the harness
+    records. Fourteen projects drive it without listing the Pmod -- every
+    a1k0n demo and nyancat among them -- so the pin's own name counts as
+    much as the declaration.
+    """
+    if any("audio" in str(m).lower() for m in (target.get("pmods") or [])):
+        return True
+    name = str((target.get("pinout") or {}).get(AUDIO_PIN, "") or "")
+    return bool(re.search(r"audio|pwm|pdm|sound|speaker", name, re.I))
+
+
+def uses(target: dict, entry: dict) -> dict:
+    """Which of the two Pmods worth marking this project has, and whether used."""
+    override = (entry.get("simulation") or {}).get("override") or {}
+    return {
+        "gamepad": bool(wants_gamepad(target)) or bool(override.get("gamepad")),
+        "gamepad_driven": bool(override.get("gamepad")),
+        "audio": drives_audio(target) or bool(entry["video"].get("has_audio")),
+        "audio_captured": bool(entry["video"].get("has_audio")),
+    }
+
+
+def marks(entry: dict) -> str:
+    """Badges for the gamepad and audio Pmods, filled in when the run used them."""
+    u = entry.get("uses") or {}
+    out = []
+    if u.get("gamepad"):
+        out.append(("gamepad driven", True,
+                    "reads a Gamepad Pmod; buttons were pressed in this run")
+                   if u.get("gamepad_driven") else
+                   ("gamepad", False,
+                    "reads a Gamepad Pmod; nothing pressed it in this run"))
+    if u.get("audio"):
+        out.append(("audio captured", True,
+                    "drives the Audio Pmod; this clip has sound")
+                   if u.get("audio_captured") else
+                   ("audio", False,
+                    "drives the Audio Pmod; this clip was made before sound was captured"))
+    if not out:
+        return ""
+    return ('<br><span class="pmods">'
+            + "".join(f'<span class="pmod{" on" if on else ""}" title="{html.escape(why, quote=True)}">'
+                      f"{html.escape(label)}</span>" for label, on, why in out)
+            + "</span>")
 
 
 def playground(entry: dict) -> str:
@@ -486,6 +558,12 @@ def write_html(entries: list[dict], generated: str) -> str:
         ".chart td.bar{width:60%}",
         ".chart td.bar span{display:block;height:.7rem;background:#8afbfd;border:1px solid #544ead}",
         ".alsoon{font-size:.8rem;color:#5c5870}",
+        # An outline says the project is wired for it, filled says the run made
+        # use of it. The label carries the difference too: colour alone would
+        # leave the distinction invisible to anyone who cannot see it.
+        ".pmod{display:inline-block;border:1px solid #c9c4e0;border-radius:.6rem;padding:0 .4rem;",
+        "  margin:.15rem .25rem 0 0;font-size:.75rem;line-height:1.5;color:#5c5870;white-space:nowrap}",
+        ".pmod.on{background:#8afbfd;border-color:#544ead;color:#1c1b2e}",
         ".alsoon a{margin-right:.35rem;white-space:nowrap}",
         # A row jumped to must clear the two sticky bars above it, or the row
         # the link names is the one row hidden behind the heading.
@@ -548,7 +626,7 @@ f"Every file is named for its shuttle and project. Generated {generated}.</p>",
                 f'<tr id="{html.escape(anchor(e["id"]))}">'
                 f"<td>{preview}</td>"
                 f'<td><strong>{html.escape(e["title"] or e["macro"])}</strong><br>{html.escape(e["author"] or "")}<br>'
-                f'<code>{html.escape(e["macro"])}</code><br>'
+                f'<code>{html.escape(e["macro"])}</code>' + marks(e) + '<br>'
                 f'<a href="{html.escape(e["page"])}">chip page</a> &middot; '
                 f'<a href="{html.escape(e["repo"])}">source</a> &middot; '
                 f'<a href="{html.escape(playground(e))}">playground</a>'
@@ -604,16 +682,23 @@ def write_markdown(entries: list[dict], generated: str) -> str:
              "one contains.", "",
              "Motion is the share of pixels that change from one frame to the next;",
              "ever is the share that change at any point in the clip.", "",
-             "| Project | Title | Verdict | Size | fps | Motion | Ever | Colours | 60 s MP4 |",
-             "| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |"]
+             "Uses says which of the two Pmods worth marking the project is wired to;",
+             "a + means the run made use of it -- buttons were pressed, or sound was captured.",
+             "",
+             "| Project | Title | Verdict | Uses | Size | fps | Motion | Ever | Colours | 60 s MP4 |",
+             "| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |"]
     for e in entries:
         v = e["video"]
         shape = f'{v.get("width")}x{v.get("height")}' if e["has_video"] else ""
         fps = f'{v.get("fps"):.1f}' if e["has_video"] and v.get("fps") else ""
         clip = size((v.get("files", {}).get(f'{v.get("stem")}_{LENGTHS[0]}s.mp4') or {}).get("bytes"))
         title = (e["title"] or "").replace("|", "/")[:60]
-        lines.append(f'| `{e["id"]}` | {title} | {e["verdict"]} | {shape} | {fps} | {motion(v)} | {ever(v)} | '
-                     f'{v.get("colours") or ""} | {clip} |')
+        u = e.get("uses") or {}
+        used = ", ".join(n + ("+" if u.get(f) else "")
+                         for n, f in (("gamepad", "gamepad_driven"), ("audio", "audio_captured"))
+                         if u.get(n))
+        lines.append(f'| `{e["id"]}` | {title} | {e["verdict"]} | {used} | {shape} | {fps} | '
+                     f'{motion(v)} | {ever(v)} | {v.get("colours") or ""} | {clip} |')
     return "\n".join(lines) + "\n"
 
 
