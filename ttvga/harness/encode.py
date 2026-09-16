@@ -90,8 +90,14 @@ AUDIO_RATE = 192000
 # own passband -- and without it the track wastes most of its headroom and can
 # click at the start and end.
 AUDIO_FILTER = "highpass=f=20"
-AUDIO_MP4 = ["-c:a", "aac", "-b:a", "128k"]
-AUDIO_WEBM = ["-c:a", "libopus", "-b:a", "128k"]
+# 48 kHz out, whatever was captured. Left to itself ffmpeg followed the
+# 192 kHz input and wrote 96 kHz AAC, which is an unusual rate some decoders
+# will not take, and pointless either way: the Pmod's own filter puts nothing
+# above 20 kHz. Opus only ever runs at 48 kHz, so this also makes the two
+# containers agree.
+AUDIO_OUT_RATE = "48000"
+AUDIO_MP4 = ["-c:a", "aac", "-b:a", "128k", "-ar", AUDIO_OUT_RATE]
+AUDIO_WEBM = ["-c:a", "libopus", "-b:a", "128k", "-ar", AUDIO_OUT_RATE]
 
 QUIET = ["-hide_banner", "-loglevel", "error", "-y"]
 

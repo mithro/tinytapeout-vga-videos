@@ -185,3 +185,12 @@ def test_audio_rate_comes_from_the_simulation_record(tmp_path):
     (tmp_path / "timing.json").unlink()
     args = encode.audio_input(tmp_path)
     assert args[args.index("-ar") + 1] == str(encode.AUDIO_RATE)
+
+
+def test_audio_is_encoded_at_an_ordinary_rate():
+    """Left alone ffmpeg followed the 192 kHz capture and wrote 96 kHz AAC,
+    which is unusual, less portable, and pointless above a 20 kHz filter."""
+    import encode
+
+    for opts in (encode.AUDIO_MP4, encode.AUDIO_WEBM):
+        assert opts[opts.index("-ar") + 1] == "48000"
