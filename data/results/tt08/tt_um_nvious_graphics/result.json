@@ -61,25 +61,41 @@
     "frame_hashes_count": 3596
   },
   "videos": {
-    "10s.avi": {
-      "bytes": 87989118,
-      "sha256": "07720e89b6eeba824710ed34a9765e5af8708575a18aeb5a5b5770e9cc861fd2"
+    "tt08_tt_um_nvious_graphics_10s.mp4": {
+      "bytes": 1178017,
+      "sha256": "c2a344acb1f239b6bd154acc5fb2569daab76c21c1202f6637471d5ff7ca094b"
     },
-    "30s.avi": {
-      "bytes": 268917438,
-      "sha256": "c8d9ba9267be2776a8ae77df1ede4d714a5df9ebbd74d4c336db32e3374e32c5"
+    "tt08_tt_um_nvious_graphics_10s.webm": {
+      "bytes": 1221794,
+      "sha256": "26ad428299f65c7c388a4e563182cf1cc2d31ef8e572d578d122764339a195e7"
     },
-    "60s.avi": {
-      "bytes": 538261696,
-      "sha256": "1b2769204896c86d99fd48c08362054d3ecd1ff2eff3cd7096cf3d9690d0ddcd"
+    "tt08_tt_um_nvious_graphics_30s.mp4": {
+      "bytes": 2930674,
+      "sha256": "6341fad3dc2d7940f234f37f88170b2723ec60b96af317a2c220f80edcaf06d3"
     },
-    "contact.png": {
-      "bytes": 174111,
-      "sha256": "72670551678bca04e95d6ef8fc9085ab0495887802dfb1bdc195992dbd616afa"
+    "tt08_tt_um_nvious_graphics_30s.webm": {
+      "bytes": 3707354,
+      "sha256": "62635658f8f7a49dac29fafcaf9515c1c207fa1c8d3698b6935ca9a09b5cb7bb"
     },
-    "poster.png": {
-      "bytes": 56958,
-      "sha256": "8bc0304abc179951d01a37bf9c1cf3d798043a3969a154e44b6520419e807913"
+    "tt08_tt_um_nvious_graphics_60s.mp4": {
+      "bytes": 5436716,
+      "sha256": "6b4d068bf786e85239985fdd0c4726aef2e67451b50c10e30f394e32e5365e95"
+    },
+    "tt08_tt_um_nvious_graphics_60s.webm": {
+      "bytes": 7482122,
+      "sha256": "8d0b010f569b4a35c1f31f3bae3f00d05d0081f4a72b6324e29348bc7e9d32a6"
+    },
+    "tt08_tt_um_nvious_graphics_contact.png": {
+      "bytes": 396483,
+      "sha256": "2a8805e4ff5278c4cbbaa8efd5abcecc5ebe2818e620078d142e8ca3587961f6"
+    },
+    "tt08_tt_um_nvious_graphics_poster.png": {
+      "bytes": 107585,
+      "sha256": "7f95fcd4f17cd54144e8fa7c2a565370aba0e1c411a47fdea22f5fece4aaf22e"
+    },
+    "tt08_tt_um_nvious_graphics_preview.gif": {
+      "bytes": 234355,
+      "sha256": "13843c30fac8c226c34dfb3b0ef2c5a4b30a0de0dc3771d852a31f22421e6edd"
     }
   },
   "build_log_tail": "VEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/tt08/tt_um_nvious_graphics/repo/src -y /home/ttvga/ttvga/work/tt08/tt_um_nvious_graphics/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/tt08/tt_um_nvious_graphics/repo/src/tt_um_nvious_graphics.v /home/ttvga/ttvga/work/tt08/tt_um_nvious_graphics/repo/src/gradient_rom.v /home/ttvga/ttvga/work/tt08/tt_um_nvious_graphics/repo/src/hvsync_generator.v\nmake: Entering directory '/home/ttvga/ttvga/work/tt08/tt_um_nvious_graphics/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/tt08/tt_um_nvious_graphics/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.200 MB sources in 571 modules, into 0.166 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.991 s (elab=0.029, cvt=0.030, bld=11.700); cpu 0.109 s on 1 threads; allocated 28.043 MB\n[exit 0]\n",

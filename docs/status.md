@@ -1,12 +1,12 @@
 # Status
 
-Generated 2026-09-15 15:06 UTC by `tt-vga report`. Do not edit by hand.
+Generated 2026-09-16 03:04 UTC by `tt-vga report`. Do not edit by hand.
 
 - Targets: 440
 - Attempted: 440
 - Videos produced: 386
 - Pending: 0
-- Video, poster and contact sheet size on the simulation host: 218 GB
+- Video, poster and contact sheet size on the simulation host: 26 GB
 
 ## Verdicts
 

@@ -63,25 +63,41 @@
     "frame_hashes_count": 3596
   },
   "videos": {
-    "10s.avi": {
-      "bytes": 4144718,
-      "sha256": "3f5aa484cff7d202da2a03b9a189081e57d8fa7e507a85e8c8246c0204ceb2df"
+    "ttihp25a_tt_um_gamepad_pmod_demo_10s.mp4": {
+      "bytes": 46404,
+      "sha256": "e87d5f7a4a6a1242c09bd5e4485c494182fefe770ca497ae99ad3f6ea35338eb"
     },
-    "30s.avi": {
-      "bytes": 12415332,
-      "sha256": "3aa0c2295860d62b5a4ff321230c5b55182d927e8301e19c9202ab61f41f8270"
+    "ttihp25a_tt_um_gamepad_pmod_demo_10s.webm": {
+      "bytes": 55968,
+      "sha256": "da96ca64bc03ced400f411f389908c6184047b70e554312e55711ca456dc7f4a"
     },
-    "60s.avi": {
-      "bytes": 24791414,
-      "sha256": "218d326fd96d991121eeb47f9a9bc1241b41a86c1c517b85c7fb3bdd53d26540"
+    "ttihp25a_tt_um_gamepad_pmod_demo_30s.mp4": {
+      "bytes": 131153,
+      "sha256": "1ba0fd01f17af1347007a51fd251bcee2dfb0c03e3235428b6668e799d53431b"
     },
-    "contact.png": {
-      "bytes": 18775,
-      "sha256": "932ebf87c5d054dc440c253c022cc350cd9f5c67491135c99f6beaf6f7d742f1"
+    "ttihp25a_tt_um_gamepad_pmod_demo_30s.webm": {
+      "bytes": 160462,
+      "sha256": "9194aa439d5439e32994eee74747d7bda24efabef7404e4d93f532fefaaea184"
     },
-    "poster.png": {
-      "bytes": 6771,
-      "sha256": "844ab800ad0e2d58013bc03bab37dca5b1c8d464284cbe8402092df69426e9ea"
+    "ttihp25a_tt_um_gamepad_pmod_demo_60s.mp4": {
+      "bytes": 255251,
+      "sha256": "b33d6d437092faad83a0909f4fb1c562097bdfcc6c81f8a36bd8635e6df8def1"
+    },
+    "ttihp25a_tt_um_gamepad_pmod_demo_60s.webm": {
+      "bytes": 299686,
+      "sha256": "7c682acc0b57b8fdf7072647ac1d306ca9110a20c27ede6405d5acd0bf6888fc"
+    },
+    "ttihp25a_tt_um_gamepad_pmod_demo_contact.png": {
+      "bytes": 21642,
+      "sha256": "86a74ba3d90850441ab70fdbfc477ea455d51c1dcfb7639b06245630930ac7cd"
+    },
+    "ttihp25a_tt_um_gamepad_pmod_demo_poster.png": {
+      "bytes": 7434,
+      "sha256": "72b4f74dfddeff0eb7867e305b8326b9cdfec80c987c165acf12e7a636d574bc"
+    },
+    "ttihp25a_tt_um_gamepad_pmod_demo_preview.gif": {
+      "bytes": 7231,
+      "sha256": "a3e5934cba71e758630d676f6a1f89455c1ce445ada76da498040636f49f0601"
     }
   },
   "build_log_tail": "std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttihp25a/tt_um_gamepad_pmod_demo/repo/src -y /home/ttvga/ttvga/work/ttihp25a/tt_um_gamepad_pmod_demo/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttihp25a/tt_um_gamepad_pmod_demo/repo/src/gamepad_pmod.v /home/ttvga/ttvga/work/ttihp25a/tt_um_gamepad_pmod_demo/repo/src/hvsync_generator.v /home/ttvga/ttvga/work/ttihp25a/tt_um_gamepad_pmod_demo/repo/src/project.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_gamepad_pmod_demo/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_gamepad_pmod_demo/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.225 MB sources in 574 modules, into 0.118 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 10.960 s (elab=0.019, cvt=0.017, bld=10.888); cpu 0.072 s on 1 threads; allocated 27.617 MB\n[exit 0]\n",

@@ -61,25 +61,41 @@
     "frame_hashes_count": 3596
   },
   "videos": {
-    "10s.avi": {
-      "bytes": 7784602,
-      "sha256": "5e9c7793f61485783af50fbba5c7e79f5c7089d137c0a2fae0fa3e891c294e54"
+    "tt08_tt_um_2048_vga_game_10s.mp4": {
+      "bytes": 99575,
+      "sha256": "321bf470057ed99c95e9c2ff79585a77cb85ad62bf089574bc9396c58f3d50e6"
     },
-    "30s.avi": {
-      "bytes": 23331638,
-      "sha256": "e39535a91617005d74065e034118fef09bfcaf09572c2385afe3bd57f4052a82"
+    "tt08_tt_um_2048_vga_game_10s.webm": {
+      "bytes": 112933,
+      "sha256": "b5a5d50a98792a0529edd326fe985d2b6aed0b312289dca0e5336e1c5e5eb57e"
     },
-    "60s.avi": {
-      "bytes": 46628294,
-      "sha256": "5a522c31104ea1c7e014325d49f7b2ce881f65a0dd9260edf634caac236fbe4a"
+    "tt08_tt_um_2048_vga_game_30s.mp4": {
+      "bytes": 287327,
+      "sha256": "86f61a2846a916fe9ea6ac772c6be6c201b6b4b6a8158f0a652be012baf5057c"
     },
-    "contact.png": {
-      "bytes": 28148,
-      "sha256": "30cf0d4cedaa3cc92d19583bf8ed2cf579c939c8bd7aad29d094667343268bfc"
+    "tt08_tt_um_2048_vga_game_30s.webm": {
+      "bytes": 400441,
+      "sha256": "3e1249b41b7b07f1689d73cbcb17cd253dfb7a81e7681af37f73f8ac78dd4815"
     },
-    "poster.png": {
-      "bytes": 7858,
-      "sha256": "e1688673e1bad3152d3860ff805e99462044c0ba099a3f369a74e5df0ef9a604"
+    "tt08_tt_um_2048_vga_game_60s.mp4": {
+      "bytes": 565372,
+      "sha256": "03029bc9b77e3596d5fa8af5fe99411f487a3c8fb88ee1575a5cb7cbd2e4c702"
+    },
+    "tt08_tt_um_2048_vga_game_60s.webm": {
+      "bytes": 772580,
+      "sha256": "d9ae33ddab6277b78fb07b091a265da01faea9fe168fd35bdba649a700b386d9"
+    },
+    "tt08_tt_um_2048_vga_game_contact.png": {
+      "bytes": 37870,
+      "sha256": "73237ae09ba1520bdb2f1f9d683bcc2af59162086ee9abe3b5ecbffe4f54caff"
+    },
+    "tt08_tt_um_2048_vga_game_poster.png": {
+      "bytes": 8934,
+      "sha256": "de8165b4768cdf7b87ddc8d5553fc33dc340701f790512281947320fcc9a4429"
+    },
+    "tt08_tt_um_2048_vga_game_preview.gif": {
+      "bytes": 40316,
+      "sha256": "c6dfd2f94ba4a9a7ad8d30ff84e9d934e40d11b19710b9d4fcfe3f9891e8acce"
     }
   },
   "build_log_tail": "po/src/draw_numbers.v /home/ttvga/ttvga/work/tt08/tt_um_2048_vga_game/repo/src/galois_lfsr.v /home/ttvga/ttvga/work/tt08/tt_um_2048_vga_game/repo/src/game_logic.v /home/ttvga/ttvga/work/tt08/tt_um_2048_vga_game/repo/src/game_row_push_merge.v /home/ttvga/ttvga/work/tt08/tt_um_2048_vga_game/repo/src/glyph_rom.v /home/ttvga/ttvga/work/tt08/tt_um_2048_vga_game/repo/src/project.v /home/ttvga/ttvga/work/tt08/tt_um_2048_vga_game/repo/src/vga_sync_generator.v /home/ttvga/ttvga/work/tt08/tt_um_2048_vga_game/repo/src/welcome_screen.v\nmake: Entering directory '/home/ttvga/ttvga/work/tt08/tt_um_2048_vga_game/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/tt08/tt_um_2048_vga_game/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.069 MB sources in 589 modules, into 0.505 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 12.396 s (elab=0.072, cvt=0.121, bld=11.559); cpu 0.281 s on 1 threads; allocated 39.246 MB\n[exit 0]\n",

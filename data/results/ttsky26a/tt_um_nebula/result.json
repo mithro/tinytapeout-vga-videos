@@ -61,25 +61,41 @@
     "frame_hashes_count": 3596
   },
   "videos": {
-    "10s.avi": {
-      "bytes": 72409652,
-      "sha256": "96d01bccd08c4b3909861154a6cfd40b2d56cdf10bbfd971362a84877d08e1a4"
+    "ttsky26a_tt_um_nebula_10s.mp4": {
+      "bytes": 2283154,
+      "sha256": "d0062c5c2ef5bb242be1cd544e4fce7fa4f15c6c65d7f341b236879c7fa92fb1"
     },
-    "30s.avi": {
-      "bytes": 221561822,
-      "sha256": "7ac2b82897627a21a92d023d4360d68f1c756222ba7295b8f93f82d618d457ea"
+    "ttsky26a_tt_um_nebula_10s.webm": {
+      "bytes": 1506238,
+      "sha256": "c1cf9de8acc51c15ee9557a6793bebd1b674c4949732655dba4d12875d49db83"
     },
-    "60s.avi": {
-      "bytes": 444243114,
-      "sha256": "b6aa99b2f7f9e414c6aa330b4c51b59056da815bab465719eaf1093259a3eaa3"
+    "ttsky26a_tt_um_nebula_30s.mp4": {
+      "bytes": 6453092,
+      "sha256": "4f12260cc5d59348029e385fdafac104fd5071b077ccf707916a9150a4c5ae33"
     },
-    "contact.png": {
-      "bytes": 294125,
-      "sha256": "27f53da2e5f98e3af34fecbb6bf8eeb384f654950ad97c9f4353f6ce004cbf7b"
+    "ttsky26a_tt_um_nebula_30s.webm": {
+      "bytes": 4558419,
+      "sha256": "eda47e32bbae282b5a8492ac17d2e9b98acca3228ebbec9d1f954bad1b6fee27"
     },
-    "poster.png": {
-      "bytes": 52977,
-      "sha256": "4624c25253059483998e77659dbbba13cb0691eb437c03538d42c6ab10190da3"
+    "ttsky26a_tt_um_nebula_60s.mp4": {
+      "bytes": 12616149,
+      "sha256": "00447615b897acfbab3cc85f574d986ca387d7a21ca6d97e07a6d7a6d02855ac"
+    },
+    "ttsky26a_tt_um_nebula_60s.webm": {
+      "bytes": 8645885,
+      "sha256": "699dd1711b9a043fd3325d23515ef3bb742eb11ffc417eba027f2452bd1e3bd4"
+    },
+    "ttsky26a_tt_um_nebula_contact.png": {
+      "bytes": 810020,
+      "sha256": "99ef906116c485192fa1453f6076c6f34762c34f8aae8f15fcc2a5df8ab6d7db"
+    },
+    "ttsky26a_tt_um_nebula_poster.png": {
+      "bytes": 136949,
+      "sha256": "33597ec34aacdb9ba8f9376d7f2bce60400a818e09b704b2bd6155354ad4dd9f"
+    },
+    "ttsky26a_tt_um_nebula_preview.gif": {
+      "bytes": 649397,
+      "sha256": "6d662ab8d84b68f89a5341503a3ebb465e0188f676012454280eafc44129dc01"
     }
   },
   "build_log_tail": "-build -j 1 --prefix Vtop --top-module tt_um_nebula -Mdir /home/ttvga/ttvga/work/ttsky26a/tt_um_nebula/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttsky26a/tt_um_nebula/repo/src -y /home/ttvga/ttvga/work/ttsky26a/tt_um_nebula/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttsky26a/tt_um_nebula/repo/src/project.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_nebula/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_nebula/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.128 MB sources in 569 modules, into 0.055 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 10.686 s (elab=0.017, cvt=0.012, bld=10.630); cpu 0.056 s on 1 threads; allocated 27.141 MB\n[exit 0]\n",

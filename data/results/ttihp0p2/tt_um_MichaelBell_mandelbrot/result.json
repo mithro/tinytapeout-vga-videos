@@ -61,25 +61,41 @@
     "frame_hashes_count": 3355
   },
   "videos": {
-    "10s.avi": {
-      "bytes": 48475766,
-      "sha256": "ec1a8c0dacb6ab9c205564db23f1c86f24a5928f9945f6e4e46b2c4138a74f09"
+    "ttihp0p2_tt_um_MichaelBell_mandelbrot_10s.mp4": {
+      "bytes": 8304811,
+      "sha256": "789eb46d17bad0bede974578a84e200bf60f4a3fac5cc05be1423382087a7f71"
     },
-    "30s.avi": {
-      "bytes": 145254728,
-      "sha256": "75c582836452e16586c1fd55a4af68cc10b3ffbd871b045f380d016fd93302b2"
+    "ttihp0p2_tt_um_MichaelBell_mandelbrot_10s.webm": {
+      "bytes": 6734787,
+      "sha256": "cfbe9bf92df64197f1328ac75babd2020512d42521523427259844584decd03a"
     },
-    "60s.avi": {
-      "bytes": 290455542,
-      "sha256": "18eb4eadcd0993e2c28339314735f20ab17cfc5e6faf5164ac942c8e4a7f66d3"
+    "ttihp0p2_tt_um_MichaelBell_mandelbrot_30s.mp4": {
+      "bytes": 24737106,
+      "sha256": "3ec6e75562700213417ac0fcc76f09cabe5adb1e2d2df269780651f431eaa254"
     },
-    "contact.png": {
-      "bytes": 669071,
-      "sha256": "f1326720ea14a5d5cd9bf8c7b5acdb43f8c4a8f0f9ab621891c41434ea06c713"
+    "ttihp0p2_tt_um_MichaelBell_mandelbrot_30s.webm": {
+      "bytes": 19921848,
+      "sha256": "d14aa846de3190d50904e693845e49e50c4866cdbde72a529a88315881348f8e"
     },
-    "poster.png": {
-      "bytes": 156463,
-      "sha256": "153477fb4a5c52067fcf62f38cedc25a4cbd30041911b291b404cd12d576f0da"
+    "ttihp0p2_tt_um_MichaelBell_mandelbrot_60s.mp4": {
+      "bytes": 49349508,
+      "sha256": "229a0803dfd9b4e5f6c10b6eb1010dc9c6f96fc9316e93ded592081f37c98178"
+    },
+    "ttihp0p2_tt_um_MichaelBell_mandelbrot_60s.webm": {
+      "bytes": 40002657,
+      "sha256": "a068dc6d04d57089865ea51219bef96c2c84fda6b8ee931dc165b7b9337f5a9a"
+    },
+    "ttihp0p2_tt_um_MichaelBell_mandelbrot_contact.png": {
+      "bytes": 644792,
+      "sha256": "9f6aa5b77351d32ca91a7f6a46d1096bc4c4938ae8f9867b976d0736e77e8dff"
+    },
+    "ttihp0p2_tt_um_MichaelBell_mandelbrot_poster.png": {
+      "bytes": 114970,
+      "sha256": "f3ddba6793f3cf170bb6e4d36c83b73be95c9eb39e77fed3616f76d61a82bf55"
+    },
+    "ttihp0p2_tt_um_MichaelBell_mandelbrot_preview.gif": {
+      "bytes": 375090,
+      "sha256": "bc446359d3fce425aa638e6f8e76b26ef091b783890864c936353b329889747f"
     }
   },
   "build_log_tail": "ndelbrot/repo/src/mandel.v /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/square.v /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/multiply.v /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/latch_reg.v /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/vga.sv /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/timing.sv /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/coord.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.344 MB sources in 576 modules, into 0.089 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.312 s (elab=0.026, cvt=0.014, bld=11.243); cpu 0.070 s on 1 threads; allocated 27.789 MB\n[exit 0]\n",

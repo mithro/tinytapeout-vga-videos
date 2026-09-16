@@ -61,25 +61,41 @@
     "frame_hashes_count": 3596
   },
   "videos": {
-    "10s.avi": {
-      "bytes": 189076146,
-      "sha256": "e77bfe8c6baa9d3699bd019892a01da687ac639df1b7537cfe17eab5ca63fd08"
+    "ttihp25b_tt_um_rejunity_atari2600_10s.mp4": {
+      "bytes": 10027974,
+      "sha256": "1a892b54dab0e2b7a86c63afa10856353e89cdeac706da7cd47fa604bf5458c2"
     },
-    "30s.avi": {
-      "bytes": 566812450,
-      "sha256": "53db0cf94e3a99f94e6d8db5cea68ab31c5140b2b13eef01d2d17ae0a2834340"
+    "ttihp25b_tt_um_rejunity_atari2600_10s.webm": {
+      "bytes": 13062775,
+      "sha256": "cc04615138bed9c29601236725bf9976762465ffd774c7579c1ee7d946a2bfb0"
     },
-    "60s.avi": {
-      "bytes": 1133033170,
-      "sha256": "be825304f035da1fc2f60a1aac509b76ba254131600dd9135198c49355846bf5"
+    "ttihp25b_tt_um_rejunity_atari2600_30s.mp4": {
+      "bytes": 29570776,
+      "sha256": "cb3b6695d49c1d860601036adff5206321783ac2db13589f0672465f498759c0"
     },
-    "contact.png": {
-      "bytes": 840277,
-      "sha256": "3bcf27ae913b44a4384f16bdd3d10647b6ebd9659c2da69783f9bd65f2175fb8"
+    "ttihp25b_tt_um_rejunity_atari2600_30s.webm": {
+      "bytes": 38909437,
+      "sha256": "a81d3ae87d6d7c9b1fb9f15f00e7467350c9de41f256364d301640c471a7e0db"
     },
-    "poster.png": {
-      "bytes": 147069,
-      "sha256": "ce31b7184625e90f0742adef975034b4a53fe6dd2222e935d10575fd5c9f6a14"
+    "ttihp25b_tt_um_rejunity_atari2600_60s.mp4": {
+      "bytes": 58720813,
+      "sha256": "4ac551999da1f65e48b96324b592161812f3a9804d3994d94c0fbcd0971b280c"
+    },
+    "ttihp25b_tt_um_rejunity_atari2600_60s.webm": {
+      "bytes": 77601359,
+      "sha256": "738adb703da4bd69478e2d2ae6ef447ce0d0cc20d72f87adfd97e9060e772550"
+    },
+    "ttihp25b_tt_um_rejunity_atari2600_contact.png": {
+      "bytes": 1786545,
+      "sha256": "faf0dafc257b763bdd6df8d72ec06aec0c9e187eb187c9acfa24448c534e7619"
+    },
+    "ttihp25b_tt_um_rejunity_atari2600_poster.png": {
+      "bytes": 478747,
+      "sha256": "c9f4d1d9ff5f1bc6ad4c7c2a9b831a8f576a96005769d7aec9f0a83f127142ea"
+    },
+    "ttihp25b_tt_um_rejunity_atari2600_preview.gif": {
+      "bytes": 1313574,
+      "sha256": "d22aadd7e5a896c74e348f12f796af76db6bd09049e69990c502b935b14bcf80"
     }
   },
   "build_log_tail": "ga/work/ttihp25b/tt_um_rejunity_atari2600/repo/src/qspi_flash.v /home/ttvga/ttvga/work/ttihp25b/tt_um_rejunity_atari2600/repo/src/gamepad_pmod.v /home/ttvga/ttvga/work/ttihp25b/tt_um_rejunity_atari2600/repo/src/atari2600.v /home/ttvga/ttvga/work/ttihp25b/tt_um_rejunity_atari2600/repo/src/6502.v /home/ttvga/ttvga/work/ttihp25b/tt_um_rejunity_atari2600/repo/src/ALU.v /home/ttvga/ttvga/work/ttihp25b/tt_um_rejunity_atari2600/repo/src/TIA.v /home/ttvga/ttvga/work/ttihp25b/tt_um_rejunity_atari2600/repo/src/PIA.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp25b/tt_um_rejunity_atari2600/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp25b/tt_um_rejunity_atari2600/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.042 MB sources in 587 modules, into 0.642 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 13.371 s (elab=0.033, cvt=0.317, bld=12.967); cpu 0.405 s on 1 threads; allocated 37.855 MB\n[exit 0]\n",

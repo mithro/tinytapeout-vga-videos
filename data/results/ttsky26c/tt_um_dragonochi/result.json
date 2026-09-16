@@ -61,25 +61,41 @@
     "frame_hashes_count": 3571
   },
   "videos": {
-    "10s.avi": {
-      "bytes": 33837516,
-      "sha256": "c5ca0fd2e78f5498670d11b1a8ceff8f08d580d2b6e2353730e9eea5685906af"
+    "ttsky26c_tt_um_dragonochi_10s.mp4": {
+      "bytes": 291360,
+      "sha256": "69142073611f7ceb7d3281a3b5d1d0639471253860dfd0fc58a7d29ab992773c"
     },
-    "30s.avi": {
-      "bytes": 101314832,
-      "sha256": "ba5ca79691c4970cc12fd3809c08de8142b056f4460b41ac05d4ff8d59c3ca92"
+    "ttsky26c_tt_um_dragonochi_10s.webm": {
+      "bytes": 604802,
+      "sha256": "c499a9f43fdc2d41ca984819999b9b59a552732090ca7f6e25dae3d1b6f46e30"
     },
-    "60s.avi": {
-      "bytes": 202717350,
-      "sha256": "846b51fdb06c53c8d5e0fe28c317d01abab17623517d33d27e4d125be1f5c37f"
+    "ttsky26c_tt_um_dragonochi_30s.mp4": {
+      "bytes": 776168,
+      "sha256": "8c51a128eda9809879decc06c3667284d8dbd59f79097a2468e913d7f528e107"
     },
-    "contact.png": {
-      "bytes": 126499,
-      "sha256": "e7a4825b9eba82511d584eb7c766597ab0b484e79cdf6d0539138e652fae7caf"
+    "ttsky26c_tt_um_dragonochi_30s.webm": {
+      "bytes": 1789043,
+      "sha256": "93d72c8a2951b8238e08602feb85c8258f32e9243659358a2f336ed71b379e30"
     },
-    "poster.png": {
-      "bytes": 50498,
-      "sha256": "28e6186e625074637caa9490452a15c5d3b4b6ac5abb240d06fa54c59191933f"
+    "ttsky26c_tt_um_dragonochi_60s.mp4": {
+      "bytes": 1502823,
+      "sha256": "913c230563e7fa4929e49aa1b667602257bd9d6123b5bb3e53e40e0dc42c1e47"
+    },
+    "ttsky26c_tt_um_dragonochi_60s.webm": {
+      "bytes": 3408308,
+      "sha256": "35a34b7c0103531dd6c6fe17ccff1625b27e90cde9b755b6da78e2869855daf4"
+    },
+    "ttsky26c_tt_um_dragonochi_contact.png": {
+      "bytes": 225895,
+      "sha256": "154716c41d719dfbcd6d653b828447cc3764f7000114e979750bac37d54bfb21"
+    },
+    "ttsky26c_tt_um_dragonochi_poster.png": {
+      "bytes": 58667,
+      "sha256": "7d2d319618c51dc354a3b689a9a29fa7eef992ad10cbc5db419d4b43659b2911"
+    },
+    "ttsky26c_tt_um_dragonochi_preview.gif": {
+      "bytes": 155418,
+      "sha256": "b2cc4102fc764dd27991d452be50a3f082cb9ae7720c58390bff0738c17e7b7f"
     }
   },
   "build_log_tail": "t_um_dragonochi/repo/src/icon_draw.v /home/ttvga/ttvga/work/ttsky26c/tt_um_dragonochi/repo/src/project.v /home/ttvga/ttvga/work/ttsky26c/tt_um_dragonochi/repo/src/renderer.v /home/ttvga/ttvga/work/ttsky26c/tt_um_dragonochi/repo/src/satisfactionbar.v /home/ttvga/ttvga/work/ttsky26c/tt_um_dragonochi/repo/src/sprites.v /home/ttvga/ttvga/work/ttsky26c/tt_um_dragonochi/repo/src/title_card.v /home/ttvga/ttvga/work/ttsky26c/tt_um_dragonochi/repo/src/title_egg.v /home/ttvga/ttvga/work/ttsky26c/tt_um_dragonochi/repo/src/water_fx.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26c/tt_um_dragonochi/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26c/tt_um_dragonochi/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 2.394 MB sources in 608 modules, into 0.805 MB in 6 C++ files needing 0.001 MB\n- Verilator: Walltime 13.893 s (elab=0.079, cvt=0.170, bld=13.529); cpu 0.364 s on 1 threads; allocated 35.711 MB\n[exit 0]\n",

@@ -61,25 +61,41 @@
     "frame_hashes_count": 3596
   },
   "videos": {
-    "10s.avi": {
-      "bytes": 20941698,
-      "sha256": "cab720d9cdd7ffc1240a0b66c3dd454812fa66769fa119c4c4f914844f4233a4"
+    "ttsky26b_tt_um_RaphRaphyRofl_VerilogIEEEBounce_10s.mp4": {
+      "bytes": 472885,
+      "sha256": "ac989a579cdda7130b735de345fa5b7c70ccc63bb0b5d592410353d7af037cb0"
     },
-    "30s.avi": {
-      "bytes": 62687868,
-      "sha256": "bbbab0ddca0fadfee5864d1f4fa3afc4e25560235fc8635273be9831370be5ed"
+    "ttsky26b_tt_um_RaphRaphyRofl_VerilogIEEEBounce_10s.webm": {
+      "bytes": 797547,
+      "sha256": "1a5f237fad030eda32aeaede4511a7258243f40c00cd0a5d397aed393d2b50fc"
     },
-    "60s.avi": {
-      "bytes": 125199942,
-      "sha256": "5321c97ee84ebf610440a0b0738db5ad15e7701f141dd622a46b1ffda760a7ec"
+    "ttsky26b_tt_um_RaphRaphyRofl_VerilogIEEEBounce_30s.mp4": {
+      "bytes": 1368746,
+      "sha256": "3e9cc1ae3eaf3b4aad909248fc9fad44bad450774598a48a77fb7db4adc6916b"
     },
-    "contact.png": {
-      "bytes": 101851,
-      "sha256": "3b491f5154cceb00cf6ff811f87c568142f2f4865431070121a53d62a770c75a"
+    "ttsky26b_tt_um_RaphRaphyRofl_VerilogIEEEBounce_30s.webm": {
+      "bytes": 2448574,
+      "sha256": "d24e22e2e11c2a57feac874c62a61f5f0ba8bc7ae95a236657f0f3bb5e45ac31"
     },
-    "poster.png": {
-      "bytes": 19641,
-      "sha256": "9266e746cfe4cc13231474dcfd2b5ed84aad25a65063632f497f78d3aef96e84"
+    "ttsky26b_tt_um_RaphRaphyRofl_VerilogIEEEBounce_60s.mp4": {
+      "bytes": 2707421,
+      "sha256": "d756854acd8d40e894f790d4d99595cb3b12a5b721d985fc0f3e891575d54e33"
+    },
+    "ttsky26b_tt_um_RaphRaphyRofl_VerilogIEEEBounce_60s.webm": {
+      "bytes": 4846553,
+      "sha256": "533f61c79e73b2d8ba5af137c8001827fa43e7e5ffed1af645a161fccea3682b"
+    },
+    "ttsky26b_tt_um_RaphRaphyRofl_VerilogIEEEBounce_contact.png": {
+      "bytes": 129555,
+      "sha256": "58822e0ef23e9e892187d721f1e10f47ea460936dd06931062d11bca88158d4a"
+    },
+    "ttsky26b_tt_um_RaphRaphyRofl_VerilogIEEEBounce_poster.png": {
+      "bytes": 18785,
+      "sha256": "d97e1d811f4d8e7ec27ac245aa091b46e6061e776b16888f0e54371f0ae89aa6"
+    },
+    "ttsky26b_tt_um_RaphRaphyRofl_VerilogIEEEBounce_preview.gif": {
+      "bytes": 169275,
+      "sha256": "c54d5b30f46a1b33e8c710b9f9bc2efc3d463062451ea25ff80a98fbbcf34f09"
     }
   },
   "build_log_tail": "c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttsky26b/tt_um_RaphRaphyRofl_VerilogIEEEBounce/repo/src -y /home/ttvga/ttvga/work/ttsky26b/tt_um_RaphRaphyRofl_VerilogIEEEBounce/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttsky26b/tt_um_RaphRaphyRofl_VerilogIEEEBounce/repo/src/project.v /home/ttvga/ttvga/work/ttsky26b/tt_um_RaphRaphyRofl_VerilogIEEEBounce/repo/src/hvsync_generator.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26b/tt_um_RaphRaphyRofl_VerilogIEEEBounce/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26b/tt_um_RaphRaphyRofl_VerilogIEEEBounce/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.153 MB sources in 570 modules, into 0.077 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.178 s (elab=0.018, cvt=0.015, bld=11.118); cpu 0.060 s on 1 threads; allocated 27.270 MB\n[exit 0]\n",

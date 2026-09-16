@@ -63,25 +63,41 @@
     "frame_hashes_count": 3587
   },
   "videos": {
-    "10s.avi": {
-      "bytes": 2296026,
-      "sha256": "afabd36d7cc6cf28c3adaa09aaf086f148f3d7c9fde720f65c4dde897f46291f"
+    "ttsky26b_tt_um_sandsim_Alden_G878_10s.mp4": {
+      "bytes": 38951,
+      "sha256": "a055a92611ba6a50e7d24f6a5cb75915c84ef97a0bbb2edcce175cfd4a8c548c"
     },
-    "30s.avi": {
-      "bytes": 6876706,
-      "sha256": "dfadacf3e1ddc321072539db47dff1b72ba03827434f3feb72261139e24362dd"
+    "ttsky26b_tt_um_sandsim_Alden_G878_10s.webm": {
+      "bytes": 27669,
+      "sha256": "ccb3251ad511315da663f8d912e4813e10f1b7f5ce23ac08f2556ad45840e025"
     },
-    "60s.avi": {
-      "bytes": 13743896,
-      "sha256": "3e96b93792157fff5128b3a3eb41587a85ca93251b644afc39893a5456918789"
+    "ttsky26b_tt_um_sandsim_Alden_G878_30s.mp4": {
+      "bytes": 112712,
+      "sha256": "6deaa0ab953134470460c336d08ea8da90d53cd1e0131b737c55b83ce2f4e101"
     },
-    "contact.png": {
-      "bytes": 5760,
-      "sha256": "add58a4f541423ac5d467903426e0ccbecc316432690524a22222cb6768bd760"
+    "ttsky26b_tt_um_sandsim_Alden_G878_30s.webm": {
+      "bytes": 81957,
+      "sha256": "a45f3eaf4eb483f6e6e6679ae8f1c3d09fc5d2b16e41d3cd93c79d893688b116"
     },
-    "poster.png": {
-      "bytes": 1968,
-      "sha256": "9ccb04119f5988d0190a060d13ff808cf93f0abdf0c36dc7b3ae2d4b343a0925"
+    "ttsky26b_tt_um_sandsim_Alden_G878_60s.mp4": {
+      "bytes": 223056,
+      "sha256": "b51996532963c84530daafe3b9b1f603f24ae8bbf8ada062bc880852e98c832f"
+    },
+    "ttsky26b_tt_um_sandsim_Alden_G878_60s.webm": {
+      "bytes": 163320,
+      "sha256": "6c27d0fe8433d459a0be874445c33ec51e7d45e0b037b04408bd7e694337ca9d"
+    },
+    "ttsky26b_tt_um_sandsim_Alden_G878_contact.png": {
+      "bytes": 6095,
+      "sha256": "264c969274be10e5db7ace30852f1bf8d3d712f9a063cae1810638950b52891d"
+    },
+    "ttsky26b_tt_um_sandsim_Alden_G878_poster.png": {
+      "bytes": 1969,
+      "sha256": "a7423066f332c4b12da497754209009ebb4ed48b79dda7df4cb956cfcce7d6b2"
+    },
+    "ttsky26b_tt_um_sandsim_Alden_G878_preview.gif": {
+      "bytes": 3777,
+      "sha256": "85e342a9478b0d762e9146cb2a03f09c0ee9ab6e085c04e8e822759670ce276e"
     }
   },
   "build_log_tail": "_sandsim.sv:139:90: Selection index out of range: 24:24 outside 23:0\n                                                                                                            : ... note: In instance 'tt_um_sandsim_Alden_G878.spi_cont'\n  139 |     assign data_out = {sio3_out_inp[24], sio2_out_inp[24], sio1_out_inp[24], sio0_out_inp[24], sio3_out_inp[23], sio2_out_inp[23], sio1_out_inp[23], sio0_out_inp[23]};\n      |                                                                                          ^\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26b/tt_um_sandsim_Alden_G878/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26b/tt_um_sandsim_Alden_G878/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.167 MB sources in 572 modules, into 0.445 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.513 s (elab=0.021, cvt=0.061, bld=11.394); cpu 0.119 s on 1 threads; allocated 30.078 MB\n[exit 0]\n",

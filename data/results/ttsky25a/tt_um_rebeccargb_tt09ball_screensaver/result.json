@@ -61,25 +61,41 @@
     "frame_hashes_count": 3596
   },
   "videos": {
-    "10s.avi": {
-      "bytes": 16007574,
-      "sha256": "461285a8e3487ff77e47727275971e2e6cc116f00516341766f9bb12e23f7e71"
+    "ttsky25a_tt_um_rebeccargb_tt09ball_screensaver_10s.mp4": {
+      "bytes": 1296623,
+      "sha256": "7d324c7e0125421511dacc956f4f4654640dd1ce9c22fb2e84d5ae43655e1e3c"
     },
-    "30s.avi": {
-      "bytes": 47979010,
-      "sha256": "fe64405a535161c0d327d4c489c594d18d42f4911e31b9d61305128bb7682a77"
+    "ttsky25a_tt_um_rebeccargb_tt09ball_screensaver_10s.webm": {
+      "bytes": 1496075,
+      "sha256": "9b2be0fcd82665dd8c12196a331f0060f84986fe43584df57bf664ac60a8657d"
     },
-    "60s.avi": {
-      "bytes": 95905392,
-      "sha256": "cef9bfc5c1ad3f799d7d3c34596dfe74d63a4868c0a4c97f50f6548dae942391"
+    "ttsky25a_tt_um_rebeccargb_tt09ball_screensaver_30s.mp4": {
+      "bytes": 3872857,
+      "sha256": "9f9bb91096582f912297932e0bff381a90803569cbd5799c6ab174e9bae46861"
     },
-    "contact.png": {
-      "bytes": 161905,
-      "sha256": "68f2dc08e9042c4c36f1ee259c5d7e8da07a6f9b90454562d34be14c319332e1"
+    "ttsky25a_tt_um_rebeccargb_tt09ball_screensaver_30s.webm": {
+      "bytes": 4563890,
+      "sha256": "14276265397abec3c6f5eefaa923d8fb6f3e9d489e91e3d30d8501227cb05bbf"
     },
-    "poster.png": {
-      "bytes": 31551,
-      "sha256": "c22ad7dee03d73fe1a13be5902229d4be72788b9d74ef77799f2c04760e64cd6"
+    "ttsky25a_tt_um_rebeccargb_tt09ball_screensaver_60s.mp4": {
+      "bytes": 7715951,
+      "sha256": "eda5fa5f2f3412b601bfaedfc38f45860b74164722993ab46ec46ace44d57d74"
+    },
+    "ttsky25a_tt_um_rebeccargb_tt09ball_screensaver_60s.webm": {
+      "bytes": 9174363,
+      "sha256": "259cd7523f66a6e7e085883feedd8233cc61139a6406d1e795acb4593d184cef"
+    },
+    "ttsky25a_tt_um_rebeccargb_tt09ball_screensaver_contact.png": {
+      "bytes": 165310,
+      "sha256": "09ad773e781e77e91ddd117afe91dff991e317d4b5b0ef9c97001ae70b71d528"
+    },
+    "ttsky25a_tt_um_rebeccargb_tt09ball_screensaver_poster.png": {
+      "bytes": 31939,
+      "sha256": "b40c4232c10c17b8aecd436c9cf61dffbe7c4027f7c6479dd748bc283c8d829a"
+    },
+    "ttsky25a_tt_um_rebeccargb_tt09ball_screensaver_preview.gif": {
+      "bytes": 110216,
+      "sha256": "492ce8a96a5f36900e6c3203caf247dc26d315ec58aae5ad195c48739cf33b88"
     }
   },
   "build_log_tail": "ga/harness/tb.cpp /home/ttvga/ttvga/work/ttsky25a/tt_um_rebeccargb_tt09ball_screensaver/repo/src/screensaver.v /home/ttvga/ttvga/work/ttsky25a/tt_um_rebeccargb_tt09ball_screensaver/repo/src/bitmap_rom.v /home/ttvga/ttvga/work/ttsky25a/tt_um_rebeccargb_tt09ball_screensaver/repo/src/gamepad_pmod.v /home/ttvga/ttvga/work/ttsky25a/tt_um_rebeccargb_tt09ball_screensaver/repo/src/vga_sync_generator.v /home/ttvga/ttvga/work/ttsky25a/tt_um_rebeccargb_tt09ball_screensaver/repo/src/palette.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky25a/tt_um_rebeccargb_tt09ball_screensaver/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky25a/tt_um_rebeccargb_tt09ball_screensaver/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.348 MB sources in 576 modules, into 0.111 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.644 s (elab=0.031, cvt=0.028, bld=11.544); cpu 0.101 s on 1 threads; allocated 28.520 MB\n[exit 0]\n",
