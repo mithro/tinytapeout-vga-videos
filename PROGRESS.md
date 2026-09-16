@@ -5,6 +5,61 @@ whenever something non-obvious is learned. This file is the resume point
 if work stops for lack of credits or tokens: read it, then `docs/status.md`,
 then the newest `data/results/` entries.
 
+## 2026-09-16 (night): migration finished, legacy dropped, mirrored onwards
+
+The whole published set is now browser-playable and named for its project,
+the motion JPEG captures are gone, and a copy is staged for data.wafer.space.
+
+Done:
+- Transcode of all 408: `408 done, 349 transcoded, 0 failed`. Every project
+  has six clips (60/30/10 s as MP4 and WebM) and three previews, each named
+  `<shuttle>_<macro>_...`.
+- The legacy AVIs are deleted. 228 GB of published tree became 25 GB.
+- Published and checked against the running server, not assumed: eighty
+  links sampled from the live page all answer 200 or 206 with the content
+  type their extension implies. The page carries 3672 media links, which is
+  408 times nine.
+- Mirrored to `/srv/data.wafer.space/tinytapeout-vga-videos` with the new
+  `tt-vga mirror`, which runs the copy on the host because both sides are
+  there. 2448 clips, 1224 previews, index.html and index.json.
+
+Two gates before deleting anything, because the captures were the only copy
+of about 69 hours of simulation and cannot be remade without re-running it:
+- completeness: every project has all nine files, none of them empty;
+- a full decode of a forty project sample: every clip decoded end to end and
+  every cut was the length it claims. Existence is not enough on its own --
+  a truncated MP4 exists and has a size.
+
+Caught before it did damage: every `result.json` still named `10s.avi`,
+`30s.avi` and `60s.avi`. Those records are written when a project is
+simulated and re-transcoding never touched them, but the index page reads
+them to decide what to link. Publishing then would have put four hundred
+entries online with every clip link pointing at a deleted file -- and the
+onward sync never passes `--delete`, so removing it locally would not
+unpublish it. The few lines describing a published project now live once, in
+`encode.py` as `published_files()`, shared by the simulate job, the
+re-transcode pass and the page.
+
+Also fixed during the run: the resume check treated a zero byte clip as
+finished (three projects held one, from a run stopped mid-encode), and VP9
+at `cpu-used 2` was taking twenty-one of every twenty-two encoder slots with
+single clips running twelve minutes. At `cpu-used 4` with tile columns the
+longest ran forty-five seconds.
+
+Worth knowing: WebM is consistently the larger file on this material (6.8 MB
+against the MP4's 3.8 MB on one project) and costs about four times the
+encode time even after the speed-up. The owner chose to keep both formats.
+Dropping WebM is a one line change and would roughly halve the pipeline.
+
+Next:
+- Confirm the public copy at
+  https://data.wafer.space/big-storage/tinytapeout-vga-videos/ once the five
+  minute timer has run.
+- Still open from before: 18 blank and 12 no-sync projects mostly need flash
+  content, a serial host or a VGA input; 9 build failures need per-project
+  work. AI diagnosis of those in bulk needs the owner's go-ahead.
+- Phase 2 gate-level simulation; title card and outro for YouTube.
+
 ## 2026-09-16 (evening): the migration, and two bugs found by checking
 
 The owner installed the nginx snippet. Verified over HTTPS: `.mp4` is
