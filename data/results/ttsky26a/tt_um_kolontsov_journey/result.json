@@ -2,16 +2,16 @@
   "id": "ttsky26a/tt_um_kolontsov_journey",
   "shuttle": "ttsky26a",
   "macro": "tt_um_kolontsov_journey",
-  "started": "2026-09-15T13:15:18+00:00",
+  "started": "2026-09-17T01:30:57+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.7,
-    "build": 14.3,
-    "simulate": 611.3,
-    "encode": 20.5
+    "fetch": 2.5,
+    "build": 17.5,
+    "simulate": 994.2,
+    "encode": 727.6
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -55,52 +55,56 @@
     "long_lines": 0,
     "clocks_simulated": 1501893613,
     "sim_seconds": 60.076,
-    "wall_seconds": 611.2,
-    "clocks_per_wall_second": 2457086,
+    "wall_seconds": 994.2,
+    "clocks_per_wall_second": 1510638,
     "ffmpeg_status": 0,
+    "audio_driven": true,
+    "audio_transitions": 1353085061,
+    "audio_rate": 192000,
+    "audio_samples": 11518617,
     "frame_hashes_count": 3571
   },
   "videos": {
     "ttsky26a_tt_um_kolontsov_journey_10s.mp4": {
-      "bytes": 16265114,
-      "sha256": "0355367b1feab455b3489cbf88d8c6d5fe1c75b8cb87162d06e5ea4c8987785f"
+      "bytes": 16430136,
+      "sha256": "47de1697b372bb15d5f9240c2c48c14d7c4440f2e2ebcb55be6e61011b5303a0"
     },
     "ttsky26a_tt_um_kolontsov_journey_10s.webm": {
-      "bytes": 16498153,
-      "sha256": "bc8b153f8ec391486d6591f41d6cbfd0183c19cdf4f111cf51cfa825fcf89523"
+      "bytes": 16696222,
+      "sha256": "d5ca18ccb4645d4d4df7a5aaf6807b4f9df9384f79f8ae3b9f9fa271b196ea0b"
     },
     "ttsky26a_tt_um_kolontsov_journey_30s.mp4": {
-      "bytes": 45896218,
-      "sha256": "7caa14c548e447b37c838abd93d408b24fc2794c39f73472e5cf4eee3663c58a"
+      "bytes": 46391102,
+      "sha256": "9049ff918eb0c1cf848c3ee0c4cc36c16b546a6ed906ca48bb1c7942046e48a8"
     },
     "ttsky26a_tt_um_kolontsov_journey_30s.webm": {
-      "bytes": 48162668,
-      "sha256": "20861aae0cc0a7ac95793ecf94de544fec9590df960af1aadad85d6f217c7652"
+      "bytes": 48940782,
+      "sha256": "96823b70f8b26789f6980498f8f78cf4052ab69ed08b07980c2b078a6e169deb"
     },
     "ttsky26a_tt_um_kolontsov_journey_60s.mp4": {
-      "bytes": 90941986,
-      "sha256": "b4a7b494bd7e412d5324d753b2d42a0587c9200668f34540a0f11330baac3127"
+      "bytes": 91882936,
+      "sha256": "27745984c8b11a947fe5c89fd53b41c111d8138d2154b7b769858930752e8405"
     },
     "ttsky26a_tt_um_kolontsov_journey_60s.webm": {
-      "bytes": 95614056,
-      "sha256": "9b5eac3e847a35aafe3962d1b1cb035d730fec33b6641013d27aa3b6395f9763"
+      "bytes": 97052422,
+      "sha256": "6908997516a7c376afd492981c5f8ad6850acfe17eaa29d029b73bff1413c09a"
     },
     "ttsky26a_tt_um_kolontsov_journey_contact.png": {
-      "bytes": 1914310,
-      "sha256": "a224c3e26c74b593085403f123142a57443636f9ccae7d658a6e0558301a9834"
+      "bytes": 1918026,
+      "sha256": "c92ee23e664f6ba2520c24b4f3dfb08bfd690e99b2166d2cb2dffb0805fafce4"
     },
     "ttsky26a_tt_um_kolontsov_journey_poster.png": {
-      "bytes": 407193,
-      "sha256": "4f8303801966a8f8f4d5cfa08d26eed36dbc6f4980bf9e27c9c4f5fe7dfd822a"
+      "bytes": 406050,
+      "sha256": "ecf8ac84fa2285491a9e068d9389a37ffb9bf4a5f8de6841aab4a70447358fdd"
     },
     "ttsky26a_tt_um_kolontsov_journey_preview.gif": {
-      "bytes": 4207624,
-      "sha256": "33b0a724ba1c6080b324eda7249c58d90bb4e274ec6009bd3ae11e29a3afb242"
+      "bytes": 4204168,
+      "sha256": "7f6d89e05a82c3c8ffe25b64998943065383e94c060f53b843cf5149960e965a"
     }
   },
-  "build_log_tail": "verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_dpi.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_dpi.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop_vm_classes_0.cpp Vtop_pixel_shader__0.cpp Vtop_synth_engine__0.cpp Vtop__Dpi.cpp Vtop__ConstPool__0__Slow.cpp Vtop_vm_classes_Slow_0.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_dpi.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_kolontsov_journey/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.948 MB sources in 589 modules, into 0.472 MB in 19 C++ files needing 0.000 MB\n- Verilator: Walltime 14.182 s (elab=0.035, cvt=0.104, bld=13.987); cpu 0.195 s on 1 threads; allocated 32.203 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky26a/tt_um_kolontsov_journey/build/Vtop --clock-hz 25000000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky26a/tt_um_kolontsov_journey/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.524 fps\ntb: ok: 3571 frames (2146 distinct, 0 uniform, 31 colours, 38.680% of pixels change per frame, 99.8% ever), 1501893613 clocks in 611.2s wall (2.46 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_kolontsov_journey/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttsky26a/tt_um_kolontsov_journey/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_kolontsov_journey/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttsky26a/tt_um_kolontsov_journey/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_kolontsov_journey/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttsky26a/tt_um_kolontsov_journey/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_kolontsov_journey/60s.avi -vf select='not(mod(n\\,223))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttsky26a/tt_um_kolontsov_journey/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T13:26:12+00:00",
+  "build_log_tail": "verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_dpi.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_dpi.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop_vm_classes_0.cpp Vtop_pixel_shader__0.cpp Vtop_synth_engine__0.cpp Vtop__Dpi.cpp Vtop__ConstPool__0__Slow.cpp Vtop_vm_classes_Slow_0.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_dpi.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_kolontsov_journey/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.948 MB sources in 589 modules, into 0.472 MB in 19 C++ files needing 0.000 MB\n- Verilator: Walltime 17.338 s (elab=0.051, cvt=0.155, bld=17.058); cpu 0.281 s on 1 threads; allocated 31.992 MB\n[exit 0]\n",
+  "sim_log_tail": "b: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.524 fps\ntb: ok: 3571 frames (2146 distinct, 0 uniform, 31 colours, 38.680% of pixels change per frame, 99.8% ever), 1501893613 clocks in 994.2s wall (1.51 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky26a/tt_um_kolontsov_journey/out/capture.avi -f f32le -ar 192000 -ac 1 -i /home/ttvga/ttvga/work/ttsky26a/tt_um_kolontsov_journey/out/capture.f32 -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -c:a aac -b:a 128k -ar 48000 -af highpass=f=20 -shortest -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky26a/tt_um_kolontsov_journey/out/capture.avi -f f32le -ar 192000 -ac 1 -i /home/ttvga/ttvga/work/ttsky26a/tt_um_kolontsov_journey/out/capture.f32 -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -c:a libopus -b:a 128k -ar 48000 -af highpass=f=20 -shortest -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_60s.webm -t 30 -c copy /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_60s.webm -t 10 -c copy /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_60s.mp4 -vf select='not(mod(n\\,223))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttsky26a/tt_um_kolontsov_journey/ttsky26a_tt_um_kolontsov_journey_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-17T02:00:01+00:00",
   "verdict": "ok",
   "reason": "2146 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 38.68% of pixels change per frame, 31 colours)"
 }

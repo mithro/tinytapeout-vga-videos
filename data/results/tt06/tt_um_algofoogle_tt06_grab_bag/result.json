@@ -2,7 +2,7 @@
   "id": "tt06/tt_um_algofoogle_tt06_grab_bag",
   "shuttle": "tt06",
   "macro": "tt_um_algofoogle_tt06_grab_bag",
-  "started": "2026-09-15T12:04:58+00:00",
+  "started": "2026-09-16T23:24:13+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "skipped",
@@ -14,7 +14,8 @@
   },
   "auto_ui_in": null,
   "qspi": null,
-  "finished": "2026-09-15T12:04:58+00:00",
+  "videos": {},
+  "finished": "2026-09-16T23:24:14+00:00",
   "verdict": "skipped",
   "reason": "analog project"
 }

@@ -2,13 +2,13 @@
   "id": "tt09/tt_um_rejunity_atari2600",
   "shuttle": "tt09",
   "macro": "tt_um_rejunity_atari2600",
-  "started": "2026-09-15T12:19:35+00:00",
+  "started": "2026-09-16T23:52:39+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "build",
   "error": "verilator failed",
   "timings": {
-    "fetch": 6.6,
+    "fetch": 6.8,
     "build": 0.2
   },
   "tools": {
@@ -17,8 +17,9 @@
   },
   "auto_ui_in": null,
   "qspi": "cs0=0,sck=3,sd0=1,sd1=2,sd2=4,sd3=5",
+  "videos": {},
   "build_log_tail": "\n$ git init -q\n[exit 0]\n\n$ git remote add origin https://github.com/rejunity/tt09-atari-2600\n[exit 0]\n\n$ git fetch -q --depth 1 origin 1610bbd3f68f3e161766ebc366c28961870bf867\n[exit 0]\n\n$ git checkout -q FETCH_HEAD\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/oss-cad-suite/bin/verilator --cc --exe --build -j 1 --prefix Vtop --top-module tt_um_rejunity_atari2600 -Mdir /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src -y /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/tt_um_rejunity_atari2600.v /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/vga_hvsync_generator.v /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/palette_24bpp.v /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/qspi_flash.v /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/atari2600.v /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/6502.v /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/ALU.v /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/TIA.v /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/PIA.v\n%Error-MODMISSING: /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/tt_um_rejunity_atari2600.v:321:3: Cannot find file containing module: 'rom_2600_0'\n  321 |   rom_2600_0 rom0_I (\n      |   ^~~~~~~~~~\n                   ... For error description see https://verilator.org/warn/MODMISSING?v=5.053\n                   ... Looked in:\n                        /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/rom_2600_0\n                        /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/rom_2600_0.v\n                        /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/rom_2600_0.sv\n                        rom_2600_0\n                        rom_2600_0.v\n                        rom_2600_0.sv\n                        /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/build/rom_2600_0\n                        /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/build/rom_2600_0.v\n                        /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/build/rom_2600_0.sv\n                   ... With current working directory '/home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src'\n%Error-MODMISSING: /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/tt_um_rejunity_atari2600.v:326:3: Cannot find file containing module: 'rom_2600_1'\n  326 |   rom_2600_1 rom1_I (\n      |   ^~~~~~~~~~\n%Error-MODMISSING: /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/tt_um_rejunity_atari2600.v:331:3: Cannot find file containing module: 'rom_2600_2'\n  331 |   rom_2600_2 rom2_I (\n      |   ^~~~~~~~~~\n%Error-MODMISSING: /home/ttvga/ttvga/work/tt09/tt_um_rejunity_atari2600/repo/src/tt_um_rejunity_atari2600.v:336:3: Cannot find file containing module: 'rom_2600_3'\n  336 |   rom_2600_3 rom3_I (\n      |   ^~~~~~~~~~\n%Error: Exiting due to 4 error(s)\n[exit 1]\n",
-  "finished": "2026-09-15T12:19:42+00:00",
+  "finished": "2026-09-16T23:52:46+00:00",
   "verdict": "build-failed",
   "reason": "verilator failed"
 }

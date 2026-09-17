@@ -2,7 +2,7 @@
   "id": "ttsky25b/tt_um_pongsagon_tinygpu_v2",
   "shuttle": "ttsky25b",
   "macro": "tt_um_pongsagon_tinygpu_v2",
-  "started": "2026-09-15T12:59:01+00:00",
+  "started": "2026-09-17T01:01:53+00:00",
   "host": "big-storage",
   "override": {
     "gamepad": "tt_um_pongsagon_tinygpu_v2.gamepad"
@@ -10,10 +10,10 @@
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.3,
-    "build": 17.5,
-    "simulate": 647.8,
-    "encode": 3.6
+    "fetch": 1.5,
+    "build": 28.6,
+    "simulate": 971.1,
+    "encode": 85.0
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -57,9 +57,13 @@
     "long_lines": 0,
     "clocks_simulated": 1512393610,
     "sim_seconds": 60.075,
-    "wall_seconds": 647.8,
-    "clocks_per_wall_second": 2334693,
+    "wall_seconds": 971.0,
+    "clocks_per_wall_second": 1557558,
     "ffmpeg_status": 0,
+    "audio_driven": true,
+    "audio_transitions": 0,
+    "audio_rate": 192000,
+    "audio_samples": 0,
     "frame_hashes_count": 3596
   },
   "videos": {
@@ -68,24 +72,24 @@
       "sha256": "2c99cbb856c441cce5da2aad2d0eacc1371f4abddf3a325aea9e4a48a2c58549"
     },
     "ttsky25b_tt_um_pongsagon_tinygpu_v2_10s.webm": {
-      "bytes": 27732,
-      "sha256": "d224dba21f8b7e5c89d7b350375f04c341d3b4ccbe1772b1307f4bce5162090a"
+      "bytes": 27641,
+      "sha256": "826b16262b1c032af7413308abd745ce6ca9996fe3cdbf9f88fd27d9648e6f1b"
     },
     "ttsky25b_tt_um_pongsagon_tinygpu_v2_30s.mp4": {
       "bytes": 112961,
       "sha256": "4896e11c1e80d5f29db94e4a185c65e05caead21a08d2a3d45efd3698356cf2a"
     },
     "ttsky25b_tt_um_pongsagon_tinygpu_v2_30s.webm": {
-      "bytes": 81951,
-      "sha256": "1ad4b322b752a9d12ad50c671dd46542fa357e4bc9ae1f4c6d7c7b0438993585"
+      "bytes": 81860,
+      "sha256": "72732e81ae5c7031190297d9f538e0321977d7a7825cb364932a453f3ed614b3"
     },
     "ttsky25b_tt_um_pongsagon_tinygpu_v2_60s.mp4": {
       "bytes": 223499,
       "sha256": "799969e5b650e40227d92e10335dbfc65c1998233a21d683ae53f4f0104240f5"
     },
     "ttsky25b_tt_um_pongsagon_tinygpu_v2_60s.webm": {
-      "bytes": 163241,
-      "sha256": "844bbe7cc3fd4bc3a5126b457078053d34803225c2f2cad62d2ad1b75ca30b71"
+      "bytes": 163150,
+      "sha256": "656cd53f8ec6db92596f1ff7fdaae5c8e83574424a0814a934e3f2e4d250f4c1"
     },
     "ttsky25b_tt_um_pongsagon_tinygpu_v2_contact.png": {
       "bytes": 6090,
@@ -100,9 +104,9 @@
       "sha256": "0988a6295af454f1f426ebff4643afe389950c66b6b4f8fa26ef5be29ac4e176"
     }
   },
-  "build_log_tail": "v2/repo/src/slowmpy.v /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/repo/src/vga.v /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/repo/src/vsfs.v /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/repo/src/spi_flash_controller.v /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/repo/src/sine_rom.v /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/repo/src/color_palette.v /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/repo/src/gamepad_pmod.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.124 MB sources in 580 modules, into 0.604 MB in 6 C++ files needing 0.001 MB\n- Verilator: Walltime 17.318 s (elab=0.039, cvt=0.140, bld=17.077); cpu 0.241 s on 1 threads; allocated 42.625 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --gamepad /home/ttvga/ttvga/overrides/ttsky25b/tt_um_pongsagon_tinygpu_v2.gamepad --qspi cs0=0,cs1=6,cs2=7,sck=3,sd0=1,sd1=2,sd2=4,sd3=5\ntb: QSPI model on uio: cs0=0 sd0=1 sd1=2 sck=3 sd2=4 sd3=5 cs1=6 cs2=7 (flash: test pattern)\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (1 distinct, 3596 uniform, 1 colours, 0.000% of pixels change per frame, 0.0% ever), 1512393610 clocks in 647.8s wall (2.33 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky25b/tt_um_pongsagon_tinygpu_v2/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttsky25b/tt_um_pongsagon_tinygpu_v2/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky25b/tt_um_pongsagon_tinygpu_v2/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttsky25b/tt_um_pongsagon_tinygpu_v2/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttsky25b/tt_um_pongsagon_tinygpu_v2/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttsky25b/tt_um_pongsagon_tinygpu_v2/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky25b/tt_um_pongsagon_tinygpu_v2/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttsky25b/tt_um_pongsagon_tinygpu_v2/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T13:10:11+00:00",
+  "build_log_tail": "v2/repo/src/slowmpy.v /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/repo/src/vga.v /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/repo/src/vsfs.v /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/repo/src/spi_flash_controller.v /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/repo/src/sine_rom.v /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/repo/src/color_palette.v /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/repo/src/gamepad_pmod.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.124 MB sources in 580 modules, into 0.604 MB in 6 C++ files needing 0.001 MB\n- Verilator: Walltime 28.410 s (elab=0.106, cvt=0.296, bld=27.883); cpu 0.527 s on 1 threads; allocated 42.465 MB\n[exit 0]\n",
+  "sim_log_tail": "vga/ttvga/overrides/ttsky25b/tt_um_pongsagon_tinygpu_v2.gamepad --qspi cs0=0,cs1=6,cs2=7,sck=3,sd0=1,sd1=2,sd2=4,sd3=5\ntb: QSPI model on uio: cs0=0 sd0=1 sd1=2 sck=3 sd2=4 sd3=5 cs1=6 cs2=7 (flash: test pattern)\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (1 distinct, 3596 uniform, 1 colours, 0.000% of pixels change per frame, 0.0% ever), 1512393610 clocks in 971.0s wall (1.56 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky25b/tt_um_pongsagon_tinygpu_v2/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_60s.webm -t 30 -c copy /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_60s.webm -t 10 -c copy /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_60s.mp4 -vf select='not(mod(n\\,224))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttsky25b/tt_um_pongsagon_tinygpu_v2/ttsky25b_tt_um_pongsagon_tinygpu_v2_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-17T01:19:59+00:00",
   "verdict": "blank",
   "reason": "3596/3596 frames are black (640x480@60)"
 }

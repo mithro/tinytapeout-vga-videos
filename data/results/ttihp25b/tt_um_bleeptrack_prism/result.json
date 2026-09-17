@@ -2,16 +2,16 @@
   "id": "ttihp25b/tt_um_bleeptrack_prism",
   "shuttle": "ttihp25b",
   "macro": "tt_um_bleeptrack_prism",
-  "started": "2026-09-15T12:49:29+00:00",
+  "started": "2026-09-17T00:43:45+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.1,
-    "build": 10.9,
-    "simulate": 343.5,
-    "encode": 7.0
+    "fetch": 1.2,
+    "build": 13.4,
+    "simulate": 510.9,
+    "encode": 347.4
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -55,9 +55,13 @@
     "long_lines": 0,
     "clocks_simulated": 1512393611,
     "sim_seconds": 60.075,
-    "wall_seconds": 343.4,
-    "clocks_per_wall_second": 4403831,
+    "wall_seconds": 510.9,
+    "clocks_per_wall_second": 2960534,
     "ffmpeg_status": 0,
+    "audio_driven": false,
+    "audio_transitions": 0,
+    "audio_rate": 192000,
+    "audio_samples": 0,
     "frame_hashes_count": 3596
   },
   "videos": {
@@ -66,24 +70,24 @@
       "sha256": "3d3b735928cf5e79e750a694fb632eb57f75f708776ca225b2b9dab9f8d8aedd"
     },
     "ttihp25b_tt_um_bleeptrack_prism_10s.webm": {
-      "bytes": 9525642,
-      "sha256": "f554a803068100079981c89aa648dfc71967430f7cb53417270d7cde1003a2d8"
+      "bytes": 9759230,
+      "sha256": "11d682eb867cc59163d4bf33b8ee5c95e22440b8263d1c2b820ce853e0f2427c"
     },
     "ttihp25b_tt_um_bleeptrack_prism_30s.mp4": {
       "bytes": 14583926,
       "sha256": "dfa14bfec1b72929f68cb64edd1839716bc63b74478c0e3e07b97b2ea8b91050"
     },
     "ttihp25b_tt_um_bleeptrack_prism_30s.webm": {
-      "bytes": 26933732,
-      "sha256": "c26dd59efeb48a7fa4002b847ab965de02b698784ced8f05c73c6afe06c6c7f7"
+      "bytes": 27851640,
+      "sha256": "e985daefb7c44967cbfeed35962634b35a1777a114c921c01ffdccc017156f7d"
     },
     "ttihp25b_tt_um_bleeptrack_prism_60s.mp4": {
       "bytes": 29003375,
       "sha256": "da4eddcc81d7c8679cc998db5e9c080bd342677300b7b548d8b767f8498de55f"
     },
     "ttihp25b_tt_um_bleeptrack_prism_60s.webm": {
-      "bytes": 53552299,
-      "sha256": "0fdee26a4c27d4ff334b808cda529b99c26f4a60b8798234ec7c45c485949e2c"
+      "bytes": 55006585,
+      "sha256": "ade80b9a4a874f93934d78e1ce917fd320d9ce18527c643ac2f395ec43547385"
     },
     "ttihp25b_tt_um_bleeptrack_prism_contact.png": {
       "bytes": 337533,
@@ -98,9 +102,9 @@
       "sha256": "9fed890a679c02749deb9067265048fcae39dd8150cce0bb427d215a508db436"
     }
   },
-  "build_log_tail": "initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/repo/src -y /home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/repo/src/project.v /home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/repo/src/hvsync_generator.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.144 MB sources in 570 modules, into 0.058 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 10.787 s (elab=0.017, cvt=0.012, bld=10.730); cpu 0.057 s on 1 threads; allocated 27.109 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (256 distinct, 0 uniform, 4 colours, 1.049% of pixels change per frame, 67.1% ever), 1512393611 clocks in 343.4s wall (4.40 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp25b/tt_um_bleeptrack_prism/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttihp25b/tt_um_bleeptrack_prism/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp25b/tt_um_bleeptrack_prism/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttihp25b/tt_um_bleeptrack_prism/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttihp25b/tt_um_bleeptrack_prism/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttihp25b/tt_um_bleeptrack_prism/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp25b/tt_um_bleeptrack_prism/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttihp25b/tt_um_bleeptrack_prism/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T12:55:32+00:00",
+  "build_log_tail": "initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/repo/src -y /home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/repo/src/project.v /home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/repo/src/hvsync_generator.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.144 MB sources in 570 modules, into 0.058 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 13.289 s (elab=0.029, cvt=0.016, bld=13.205); cpu 0.085 s on 1 threads; allocated 26.922 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (256 distinct, 0 uniform, 4 colours, 1.049% of pixels change per frame, 67.1% ever), 1512393611 clocks in 510.9s wall (2.96 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttihp25b/tt_um_bleeptrack_prism/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_60s.webm -t 30 -c copy /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_60s.webm -t 10 -c copy /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_60s.mp4 -vf select='not(mod(n\\,224))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttihp25b/tt_um_bleeptrack_prism/ttihp25b_tt_um_bleeptrack_prism_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-17T00:58:19+00:00",
   "verdict": "ok",
   "reason": "256 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 1.05% of pixels change per frame, 4 colours)"
 }

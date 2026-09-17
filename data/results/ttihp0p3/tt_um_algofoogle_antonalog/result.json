@@ -2,7 +2,7 @@
   "id": "ttihp0p3/tt_um_algofoogle_antonalog",
   "shuttle": "ttihp0p3",
   "macro": "tt_um_algofoogle_antonalog",
-  "started": "2026-09-15T12:33:57+00:00",
+  "started": "2026-09-17T00:17:20+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "skipped",
@@ -14,7 +14,8 @@
   },
   "auto_ui_in": null,
   "qspi": null,
-  "finished": "2026-09-15T12:33:57+00:00",
+  "videos": {},
+  "finished": "2026-09-17T00:17:20+00:00",
   "verdict": "skipped",
   "reason": "analog project"
 }

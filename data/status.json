@@ -1,6 +1,6 @@
 {
   "attempted": 440,
-  "generated": "2026-09-16 15:11 UTC",
+  "generated": "2026-09-17 03:55 UTC",
   "projects": {
     "tt05/tt_um_algofoogle_vga_spi_rom": {
       "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 5 colours)",
@@ -418,7 +418,7 @@
       ]
     },
     "tt08/tt_um_a1k0n_nyancat": {
-      "reason": "719 distinct frames of 719 (640x480@60, 640x480, 59.9 fps, 47.70% of pixels change per frame, 26 colours)",
+      "reason": "3530 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 47.63% of pixels change per frame, 26 colours)",
       "verdict": "ok",
       "videos": [
         "tt08_tt_um_a1k0n_nyancat_10s.mp4",
@@ -1553,8 +1553,8 @@
       ]
     },
     "ttgf0p1/tt_um_algofoogle_raybox_zero": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 3 colours)",
-      "verdict": "static",
+      "reason": "0.000% of pixels change per frame, 0.07% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "ttgf0p1_tt_um_algofoogle_raybox_zero_10s.mp4",
         "ttgf0p1_tt_um_algofoogle_raybox_zero_10s.webm",
@@ -2018,8 +2018,8 @@
       ]
     },
     "ttihp0p1/tt_um_algofoogle_raybox_zero": {
-      "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 3 colours)",
-      "verdict": "static",
+      "reason": "0.000% of pixels change per frame, 0.07% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "ttihp0p1_tt_um_algofoogle_raybox_zero_10s.mp4",
         "ttihp0p1_tt_um_algofoogle_raybox_zero_10s.webm",
@@ -2558,8 +2558,8 @@
       "videos": []
     },
     "ttihp0p4/tt_um_algofoogle_raybox_zero": {
-      "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 3 colours)",
-      "verdict": "static",
+      "reason": "0.000% of pixels change per frame, 0.07% ever (640x480@60, 640x480, 3 colours)",
+      "verdict": "barely-moving",
       "videos": [
         "ttihp0p4_tt_um_algofoogle_raybox_zero_10s.mp4",
         "ttihp0p4_tt_um_algofoogle_raybox_zero_10s.webm",
@@ -6287,14 +6287,14 @@
   "targets": 440,
   "verdicts": {
     "bad-timing": 1,
-    "barely-moving": 28,
+    "barely-moving": 31,
     "blank": 18,
     "build-failed": 9,
     "fetch-failed": 1,
     "no-sync": 12,
     "ok": 328,
     "skipped": 9,
-    "static": 30,
+    "static": 27,
     "unstable-sync": 4
   }
 }

@@ -2,16 +2,16 @@
   "id": "ttihp0p2/tt_um_MichaelBell_mandelbrot",
   "shuttle": "ttihp0p2",
   "macro": "tt_um_MichaelBell_mandelbrot",
-  "started": "2026-09-15T12:14:26+00:00",
+  "started": "2026-09-16T23:41:08+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.3,
-    "build": 11.4,
-    "simulate": 1531.9,
-    "encode": 7.9
+    "fetch": 1.2,
+    "build": 17.1,
+    "simulate": 2430.4,
+    "encode": 237.3
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -55,52 +55,56 @@
     "long_lines": 0,
     "clocks_simulated": 6007335947,
     "sim_seconds": 60.073,
-    "wall_seconds": 1531.9,
-    "clocks_per_wall_second": 3921555,
+    "wall_seconds": 2430.3,
+    "clocks_per_wall_second": 2471814,
     "ffmpeg_status": 0,
+    "audio_driven": false,
+    "audio_transitions": 0,
+    "audio_rate": 192000,
+    "audio_samples": 0,
     "frame_hashes_count": 3355
   },
   "videos": {
     "ttihp0p2_tt_um_MichaelBell_mandelbrot_10s.mp4": {
-      "bytes": 8304811,
-      "sha256": "789eb46d17bad0bede974578a84e200bf60f4a3fac5cc05be1423382087a7f71"
+      "bytes": 8303819,
+      "sha256": "ddb05b8de73e7505cc5cd9bf792fcc247bfc2c0ab73f55d3907748c787765727"
     },
     "ttihp0p2_tt_um_MichaelBell_mandelbrot_10s.webm": {
-      "bytes": 5959684,
-      "sha256": "550a46dceba8ccd2ef760ef223e4bc09e74677cc7e7f0bf603ccc46421ce2b5d"
+      "bytes": 5953811,
+      "sha256": "04af6bd68b9c79b4b5e2ff63825b362cb768bdf431b145ed0f9ab9890c565e3d"
     },
     "ttihp0p2_tt_um_MichaelBell_mandelbrot_30s.mp4": {
-      "bytes": 24737106,
-      "sha256": "3ec6e75562700213417ac0fcc76f09cabe5adb1e2d2df269780651f431eaa254"
+      "bytes": 24741789,
+      "sha256": "6ba8e9c1220f82df7f77850b740b56ff409ba6520962928f31db72e0040c8b7e"
     },
     "ttihp0p2_tt_um_MichaelBell_mandelbrot_30s.webm": {
-      "bytes": 17633690,
-      "sha256": "34522e400143b5e92f6dbd5b3cbc03e91ad3bd3e40f95741523f77d72b2b6bf7"
+      "bytes": 17726813,
+      "sha256": "9667efae6b9590f6b38360a61d4f664269674d71b3433978dc84233618557f84"
     },
     "ttihp0p2_tt_um_MichaelBell_mandelbrot_60s.mp4": {
-      "bytes": 49349508,
-      "sha256": "229a0803dfd9b4e5f6c10b6eb1010dc9c6f96fc9316e93ded592081f37c98178"
+      "bytes": 49356728,
+      "sha256": "540b5fa1a8977dacd02298281bba9290b1c6ef1240c545927cf912b9d301803f"
     },
     "ttihp0p2_tt_um_MichaelBell_mandelbrot_60s.webm": {
-      "bytes": 35150604,
-      "sha256": "3d36f6d219294b940b860493758fe0c30ffe717d1f3af36e6352ec24d8f977a1"
+      "bytes": 35503910,
+      "sha256": "9594685c3e23dad98df76d6888ebf9ef90857e733b4b62b508e936f7c82a32fa"
     },
     "ttihp0p2_tt_um_MichaelBell_mandelbrot_contact.png": {
-      "bytes": 644792,
-      "sha256": "9f6aa5b77351d32ca91a7f6a46d1096bc4c4938ae8f9867b976d0736e77e8dff"
+      "bytes": 644633,
+      "sha256": "c9af189c5381e2bbfd54e5b01ca460c9acafbdf56cb53d46e3b4c5a45b5a258c"
     },
     "ttihp0p2_tt_um_MichaelBell_mandelbrot_poster.png": {
-      "bytes": 114970,
-      "sha256": "f3ddba6793f3cf170bb6e4d36c83b73be95c9eb39e77fed3616f76d61a82bf55"
+      "bytes": 114961,
+      "sha256": "bd24fd425d0a9cf7e11424bddd1db2935b9d8aa1cf0924fcf3b9a596c7e56f82"
     },
     "ttihp0p2_tt_um_MichaelBell_mandelbrot_preview.gif": {
-      "bytes": 1004529,
-      "sha256": "90c0b30f9d479ec8c64f9e0de2dfd19538b22e13f96d443f673ae19bbc2e848b"
+      "bytes": 1002317,
+      "sha256": "aa04c3a82a4ad7bf4bd7124fd6b16156891c5491bdd05117e34d3be7f884e383"
     }
   },
-  "build_log_tail": "ndelbrot/repo/src/mandel.v /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/square.v /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/multiply.v /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/latch_reg.v /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/vga.sv /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/timing.sv /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/coord.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.344 MB sources in 576 modules, into 0.089 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.312 s (elab=0.026, cvt=0.014, bld=11.243); cpu 0.070 s on 1 threads; allocated 27.789 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/build/Vtop --clock-hz 100000000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 5439488: line 3584 clocks, 499 lines, hsync active-low, vsync active-high, mode 640x480@75, 4.267 clk/px, 640x480 @ 55.915 fps\ntb: ok: 3355 frames (278 distinct, 12 uniform, 17 colours, 28.127% of pixels change per frame, 97.6% ever), 6007335947 clocks in 1531.9s wall (3.92 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp0p2/tt_um_MichaelBell_mandelbrot/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttihp0p2/tt_um_MichaelBell_mandelbrot/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp0p2/tt_um_MichaelBell_mandelbrot/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttihp0p2/tt_um_MichaelBell_mandelbrot/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttihp0p2/tt_um_MichaelBell_mandelbrot/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttihp0p2/tt_um_MichaelBell_mandelbrot/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp0p2/tt_um_MichaelBell_mandelbrot/60s.avi -vf select='not(mod(n\\,209))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttihp0p2/tt_um_MichaelBell_mandelbrot/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T12:40:20+00:00",
+  "build_log_tail": "ndelbrot/repo/src/mandel.v /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/square.v /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/multiply.v /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/latch_reg.v /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/vga.sv /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/timing.sv /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/repo/src/coord.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.344 MB sources in 576 modules, into 0.089 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 16.892 s (elab=0.034, cvt=0.024, bld=16.787); cpu 0.105 s on 1 threads; allocated 27.605 MB\n[exit 0]\n",
+  "sim_log_tail": "lib-seconds 1.0 --out /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 5439488: line 3584 clocks, 499 lines, hsync active-low, vsync active-high, mode 640x480@75, 4.267 clk/px, 640x480 @ 55.915 fps\ntb: ok: 3355 frames (278 distinct, 12 uniform, 17 colours, 28.127% of pixels change per frame, 97.6% ever), 6007335947 clocks in 2430.3s wall (2.47 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttihp0p2/tt_um_MichaelBell_mandelbrot/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_60s.webm -t 30 -c copy /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_60s.webm -t 10 -c copy /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_60s.mp4 -vf select='not(mod(n\\,209))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttihp0p2/tt_um_MichaelBell_mandelbrot/ttihp0p2_tt_um_MichaelBell_mandelbrot_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-17T00:25:55+00:00",
   "verdict": "ok",
   "reason": "278 distinct frames of 3355 (640x480@75, 640x480, 55.9 fps, 28.13% of pixels change per frame, 17 colours)"
 }

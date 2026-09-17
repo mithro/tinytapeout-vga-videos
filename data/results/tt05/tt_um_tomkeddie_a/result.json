@@ -2,7 +2,7 @@
   "id": "tt05/tt_um_tomkeddie_a",
   "shuttle": "tt05",
   "macro": "tt_um_tomkeddie_a",
-  "started": "2026-09-15T12:04:58+00:00",
+  "started": "2026-09-16T23:24:13+00:00",
   "host": "big-storage",
   "override": {
     "ui_in": 128
@@ -10,10 +10,10 @@
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 8.3,
-    "build": 11.6,
-    "simulate": 386.8,
-    "encode": 4.6
+    "fetch": 4.9,
+    "build": 11.8,
+    "simulate": 456.8,
+    "encode": 107.6
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -57,9 +57,13 @@
     "long_lines": 0,
     "clocks_simulated": 1512463066,
     "sim_seconds": 60.078,
-    "wall_seconds": 386.7,
-    "clocks_per_wall_second": 3911164,
+    "wall_seconds": 456.7,
+    "clocks_per_wall_second": 3311831,
     "ffmpeg_status": 0,
+    "audio_driven": false,
+    "audio_transitions": 0,
+    "audio_rate": 192000,
+    "audio_samples": 0,
     "frame_hashes_count": 3736
   },
   "videos": {
@@ -68,24 +72,24 @@
       "sha256": "e86d850d2fac0e5b7656211be16984d6d03ca58c1495f13ba77da48610cceeb5"
     },
     "tt05_tt_um_tomkeddie_a_10s.webm": {
-      "bytes": 96388,
-      "sha256": "0f665017d99794aeac2870d7407c47101a7824e7c6d2597da1a8433681f141a3"
+      "bytes": 160746,
+      "sha256": "6c0959b46f49f29ed5c78c5a343cb441ccbe4607d5f9baf6e430431f31d4417e"
     },
     "tt05_tt_um_tomkeddie_a_30s.mp4": {
       "bytes": 176884,
       "sha256": "4e61cc7d7f03f51104ccbefa887540b46e6dce86ea294193cc9f9df2b8ae91e9"
     },
     "tt05_tt_um_tomkeddie_a_30s.webm": {
-      "bytes": 278114,
-      "sha256": "7c8bf6b9befc995a69517d4d168778ed188a9747f74d993004c1c716a669eff8"
+      "bytes": 477119,
+      "sha256": "b057ef7682d1c0161b18702e2883d9e118b6a46f93145891351209e7388411e0"
     },
     "tt05_tt_um_tomkeddie_a_60s.mp4": {
       "bytes": 343265,
       "sha256": "a4d81b7d1fd911c44177d0119780bb3f91ee8138b5b1105a5fa6b6c0035968d7"
     },
     "tt05_tt_um_tomkeddie_a_60s.webm": {
-      "bytes": 550092,
-      "sha256": "99de50fbe0c1f5523b871aa6c1a56edb37455b92e9c34456c7581caa8d09cffa"
+      "bytes": 944616,
+      "sha256": "cb3ec27e7289e6815af6a46a27ab7a340d236f3efc96648217e8cdb3f1d4c545"
     },
     "tt05_tt_um_tomkeddie_a_contact.png": {
       "bytes": 36430,
@@ -100,9 +104,9 @@
       "sha256": "3a6ebb0d24d204f7c4c6d7f857ffb4dc9c4709946e550c3c9f918b2318b7e3f9"
     }
   },
-  "build_log_tail": "m_tomkeddie_a -Mdir /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/repo/src -y /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/repo/src/top_tto.v /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/repo/src/vga.v\nmake: Entering directory '/home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.155 MB sources in 570 modules, into 0.061 MB in 5 C++ files needing 0.000 MB\n- Verilator: Walltime 11.493 s (elab=0.034, cvt=0.012, bld=11.406); cpu 0.087 s on 1 threads; allocated 27.234 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --ui-in 128\ntb: sync at clock 1638400: line 799 clocks, 506 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x504 @ 62.269 fps\ntb: ok: 3736 frames (636 distinct, 0 uniform, 3 colours, 0.003% of pixels change per frame, 0.6% ever), 1512463066 clocks in 386.7s wall (3.91 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt05/tt_um_tomkeddie_a/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/tt05/tt_um_tomkeddie_a/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt05/tt_um_tomkeddie_a/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/tt05/tt_um_tomkeddie_a/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/tt05/tt_um_tomkeddie_a/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/tt05/tt_um_tomkeddie_a/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/tt05/tt_um_tomkeddie_a/60s.avi -vf select='not(mod(n\\,233))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/tt05/tt_um_tomkeddie_a/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T12:11:50+00:00",
+  "build_log_tail": "m_tomkeddie_a -Mdir /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/build -O3 --x-assign fast --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/repo/src -y /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/repo/src/top_tto.v /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/repo/src/vga.v\nmake: Entering directory '/home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.155 MB sources in 570 modules, into 0.061 MB in 5 C++ files needing 0.000 MB\n- Verilator: Walltime 11.712 s (elab=0.022, cvt=0.011, bld=11.653); cpu 0.059 s on 1 threads; allocated 27.113 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --ui-in 128\ntb: sync at clock 1638400: line 799 clocks, 506 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x504 @ 62.269 fps\ntb: ok: 3736 frames (636 distinct, 0 uniform, 3 colours, 0.003% of pixels change per frame, 0.6% ever), 1512463066 clocks in 456.7s wall (3.31 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/tt05/tt_um_tomkeddie_a/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_60s.webm -t 30 -c copy /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_60s.webm -t 10 -c copy /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_60s.mp4 -vf select='not(mod(n\\,233))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/tt05/tt_um_tomkeddie_a/tt05_tt_um_tomkeddie_a_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-16T23:33:55+00:00",
   "verdict": "barely-moving",
   "reason": "0.003% of pixels change per frame, 0.57% ever (640x480@60, 640x504, 3 colours)"
 }

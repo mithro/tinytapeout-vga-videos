@@ -2,16 +2,16 @@
   "id": "ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game",
   "shuttle": "ttcad25a",
   "macro": "tt_um_yuri_panchul_sea_battle_vga_game",
-  "started": "2026-09-15T12:35:11+00:00",
+  "started": "2026-09-17T00:20:19+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.3,
-    "build": 10.6,
-    "simulate": 375.1,
-    "encode": 5.2
+    "fetch": 1.2,
+    "build": 18.3,
+    "simulate": 591.5,
+    "encode": 95.1
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -55,52 +55,56 @@
     "long_lines": 0,
     "clocks_simulated": 1382193611,
     "sim_seconds": 60.095,
-    "wall_seconds": 375.1,
-    "clocks_per_wall_second": 3685167,
+    "wall_seconds": 591.5,
+    "clocks_per_wall_second": 2336943,
     "ffmpeg_status": 0,
+    "audio_driven": false,
+    "audio_transitions": 0,
+    "audio_rate": 192000,
+    "audio_samples": 0,
     "frame_hashes_count": 3286
   },
   "videos": {
     "ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_10s.mp4": {
-      "bytes": 2993621,
-      "sha256": "63d3b0c8c67dd37bea4ff865fc25352cce9dd8b7ccde8e6841b8be1ffb6f5af4"
+      "bytes": 2771559,
+      "sha256": "c6bd5dd33f8ad8ac1e3656876d66b4949b0b03b67e9c8ef6a308512185ce1450"
     },
     "ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_10s.webm": {
-      "bytes": 1381899,
-      "sha256": "73e0bda6f8722ae701f8619f27f8ab85e78a267128993df375607518917f8ee9"
+      "bytes": 1730914,
+      "sha256": "97f18a153641b27408d0f30fadef01eeb0366e89ff91304d92abdcb0ea5174d5"
     },
     "ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_30s.mp4": {
-      "bytes": 9396841,
-      "sha256": "2a925f6864baad8a9d2564d2f0b4fdfee9175cfcf242c02076d678a65b670318"
+      "bytes": 9182024,
+      "sha256": "50275e852596a0c765ff9dbac8535f84df87bfa30c401c5bea72e47092e0aa5a"
     },
     "ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_30s.webm": {
-      "bytes": 4723354,
-      "sha256": "bd47bc9c61ea759921c1efc251a11032ac554949b6e23280b453379259e6ac73"
+      "bytes": 5723262,
+      "sha256": "24165a2460e2a12664ed9e53dd9701cfa75a32f8537b2c13ee2da43cafcf7f16"
     },
     "ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_60s.mp4": {
-      "bytes": 16099061,
-      "sha256": "2c8aefe311e12766a27d6f077b902723a82ee188f8c6483c79f87cd9f7031bd8"
+      "bytes": 15847258,
+      "sha256": "c6af985c60ad161590d03e670aa24276b8e7509c0fd345915f7630cf224d2867"
     },
     "ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_60s.webm": {
-      "bytes": 7896546,
-      "sha256": "978d3352a9c413f4961a9309ee34573ca6e4798349390458e38837cc94bb828e"
+      "bytes": 9295594,
+      "sha256": "253cc03b37f7bcf409c1d239d3894df64c3a1d554ee291410ca6bb3e28c019d1"
     },
     "ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_contact.png": {
-      "bytes": 401193,
-      "sha256": "194b965eebbe60effe5b5f912ff0fe2f1c6a75b8b6b69e3eb86968da0a46fc40"
+      "bytes": 401767,
+      "sha256": "b5d5f5cc543566ee5fea4146cb5448a92eff10c7d60588bb7181bdade6555fc6"
     },
     "ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_poster.png": {
-      "bytes": 3018,
-      "sha256": "5c677f4c0a707361308537fece2503850ce4eeba4ebd51969086046cbc9a5bb8"
+      "bytes": 3007,
+      "sha256": "f0f61b483ababe7489aa716da5886bfde7e562bc6aa4fde95080d0f423eda381"
     },
     "ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_preview.gif": {
-      "bytes": 7950,
-      "sha256": "f2c7019b323e06676f142dab75032de387e6ac9a9d756dd1338f626dc34a4681"
+      "bytes": 7997,
+      "sha256": "c71168b6993832edaa7d4582f25973b7f02045aa0c47790b579ac161707d1cf7"
     }
   },
-  "build_log_tail": "g-WIDTHCONCAT: /home/ttvga/ttvga/work/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/repo/src/game_timer.sv:26:34: Unsized numbers/parameters not allowed in replications.\n                                                                                                                         : ... note: In instance 'tt_um_yuri_panchul_sea_battle_vga_game.i_game_and_vga.i_game_top.timer'\n   26 |            if (counter == { width, 1'b0 })\n      |                                  ^\nmake: Entering directory '/home/ttvga/ttvga/work/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.621 MB sources in 584 modules, into 0.231 MB in 6 C++ files needing 0.001 MB\n- Verilator: Walltime 10.504 s (elab=0.025, cvt=0.028, bld=10.408); cpu 0.096 s on 1 threads; allocated 29.188 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/build/Vtop --clock-hz 23000000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 54.762 fps\ntb: ok: 3286 frames (2702 distinct, 0 uniform, 6 colours, 3.158% of pixels change per frame, 99.6% ever), 1382193611 clocks in 375.1s wall (3.69 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/60s.avi -vf select='not(mod(n\\,205))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T12:41:44+00:00",
+  "build_log_tail": "g-WIDTHCONCAT: /home/ttvga/ttvga/work/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/repo/src/game_timer.sv:26:34: Unsized numbers/parameters not allowed in replications.\n                                                                                                                         : ... note: In instance 'tt_um_yuri_panchul_sea_battle_vga_game.i_game_and_vga.i_game_top.timer'\n   26 |            if (counter == { width, 1'b0 })\n      |                                  ^\nmake: Entering directory '/home/ttvga/ttvga/work/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.621 MB sources in 584 modules, into 0.231 MB in 6 C++ files needing 0.001 MB\n- Verilator: Walltime 18.106 s (elab=0.056, cvt=0.057, bld=17.921); cpu 0.186 s on 1 threads; allocated 29.020 MB\n[exit 0]\n",
+  "sim_log_tail": "rs, 3.158% of pixels change per frame, 99.6% ever), 1382193611 clocks in 591.5s wall (2.34 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_60s.webm -t 30 -c copy /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_60s.webm -t 10 -c copy /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_60s.mp4 -vf select='not(mod(n\\,205))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttcad25a/tt_um_yuri_panchul_sea_battle_vga_game/ttcad25a_tt_um_yuri_panchul_sea_battle_vga_game_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-17T00:32:05+00:00",
   "verdict": "ok",
   "reason": "2702 distinct frames of 3286 (640x480@60, 640x480, 54.8 fps, 3.16% of pixels change per frame, 6 colours)"
 }

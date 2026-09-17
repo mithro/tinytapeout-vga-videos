@@ -2,16 +2,16 @@
   "id": "ttsky25a/tt_um_SummerTT_HDL",
   "shuttle": "ttsky25a",
   "macro": "tt_um_SummerTT_HDL",
-  "started": "2026-09-15T12:51:41+00:00",
+  "started": "2026-09-17T00:47:14+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "encode",
   "error": null,
   "timings": {
     "fetch": 1.2,
-    "build": 12.1,
-    "simulate": 346.5,
-    "encode": 4.1
+    "build": 13.5,
+    "simulate": 561.4,
+    "encode": 62.0
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -55,9 +55,13 @@
     "long_lines": 0,
     "clocks_simulated": 1512393612,
     "sim_seconds": 60.075,
-    "wall_seconds": 346.5,
-    "clocks_per_wall_second": 4364613,
+    "wall_seconds": 561.3,
+    "clocks_per_wall_second": 2694354,
     "ffmpeg_status": 0,
+    "audio_driven": false,
+    "audio_transitions": 0,
+    "audio_rate": 192000,
+    "audio_samples": 0,
     "frame_hashes_count": 3596
   },
   "videos": {
@@ -66,24 +70,24 @@
       "sha256": "21fd914cc432ace27653dbaf5bde5e72126728065d96cda5d05aecb5033067a8"
     },
     "ttsky25a_tt_um_SummerTT_HDL_10s.webm": {
-      "bytes": 575207,
-      "sha256": "a004e24722b162cc7101487f1f8329b1cb995d876954482b7da97e09ca66cb7e"
+      "bytes": 415570,
+      "sha256": "d4dd7e341dff1b17d61600fbcf60987583a63aa44ae1eb04c32b740b703c142d"
     },
     "ttsky25a_tt_um_SummerTT_HDL_30s.mp4": {
       "bytes": 730815,
       "sha256": "d44eddc605ee0935f1743e274f8d1ee636e9c0ad56c5f61841f0f3a497b440da"
     },
     "ttsky25a_tt_um_SummerTT_HDL_30s.webm": {
-      "bytes": 642392,
-      "sha256": "fb64a81b76dbc923e86f23b1deee6707d879b4d38012aa07a09625eefe9d783d"
+      "bytes": 481828,
+      "sha256": "6e71fa70c25899e0b086fc27a314217c0a74a8df9cd5e40323a895a67ca152d5"
     },
     "ttsky25a_tt_um_SummerTT_HDL_60s.mp4": {
       "bytes": 846271,
       "sha256": "4eeff19e6e5843eccaf26f3885c55ec60115a595c2831b11350bf0fc6f743c20"
     },
     "ttsky25a_tt_um_SummerTT_HDL_60s.webm": {
-      "bytes": 745395,
-      "sha256": "83c7856554df28c14454f2a75ec45bf721c8d1620c9ed8fa711e900901485504"
+      "bytes": 581256,
+      "sha256": "51f4e07f1c9b3aa83abca700c48fe5885f4e4434b38fe6a888a412a1fa0baed8"
     },
     "ttsky25a_tt_um_SummerTT_HDL_contact.png": {
       "bytes": 59584,
@@ -98,9 +102,9 @@
       "sha256": "d11cec273cd410f7f7ad9d04f4e612c06394876c3ebae0238fd884df0d5aaf45"
     }
   },
-  "build_log_tail": "t -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -fcoroutines -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -fcoroutines -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -fcoroutines -c -o verilated_timing.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_timing.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -fcoroutines -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop_std__03a__03asemaphore__Vclpkg__0.cpp Vtop_std__03a__03aprocess__Vclpkg__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop_std__Slow.cpp Vtop_std__03a__03asemaphore__Vclpkg__Slow.cpp Vtop_std__03a__03aprocess__Vclpkg__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -fcoroutines -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_timing.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky25a/tt_um_SummerTT_HDL/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.174 MB sources in 574 modules, into 0.073 MB in 11 C++ files needing 0.000 MB\n- Verilator: Walltime 11.949 s (elab=0.018, cvt=0.012, bld=11.885); cpu 0.064 s on 1 threads; allocated 27.531 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky25a/tt_um_SummerTT_HDL/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky25a/tt_um_SummerTT_HDL/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (87 distinct, 0 uniform, 3 colours, 0.095% of pixels change per frame, 31.5% ever), 1512393612 clocks in 346.5s wall (4.36 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky25a/tt_um_SummerTT_HDL/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttsky25a/tt_um_SummerTT_HDL/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky25a/tt_um_SummerTT_HDL/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttsky25a/tt_um_SummerTT_HDL/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttsky25a/tt_um_SummerTT_HDL/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttsky25a/tt_um_SummerTT_HDL/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky25a/tt_um_SummerTT_HDL/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttsky25a/tt_um_SummerTT_HDL/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T12:57:45+00:00",
+  "build_log_tail": "t -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -fcoroutines -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -fcoroutines -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -fcoroutines -c -o verilated_timing.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_timing.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -fcoroutines -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop_std__03a__03asemaphore__Vclpkg__0.cpp Vtop_std__03a__03aprocess__Vclpkg__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop_std__Slow.cpp Vtop_std__03a__03asemaphore__Vclpkg__Slow.cpp Vtop_std__03a__03aprocess__Vclpkg__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -fcoroutines -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_timing.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky25a/tt_um_SummerTT_HDL/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.174 MB sources in 574 modules, into 0.073 MB in 11 C++ files needing 0.000 MB\n- Verilator: Walltime 13.362 s (elab=0.021, cvt=0.012, bld=13.300); cpu 0.061 s on 1 threads; allocated 27.348 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky25a/tt_um_SummerTT_HDL/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky25a/tt_um_SummerTT_HDL/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (87 distinct, 0 uniform, 3 colours, 0.095% of pixels change per frame, 31.5% ever), 1512393612 clocks in 561.3s wall (2.69 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky25a/tt_um_SummerTT_HDL/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky25a/tt_um_SummerTT_HDL/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_60s.webm -t 30 -c copy /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_60s.webm -t 10 -c copy /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_60s.mp4 -vf select='not(mod(n\\,224))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttsky25a/tt_um_SummerTT_HDL/ttsky25a_tt_um_SummerTT_HDL_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-17T00:57:53+00:00",
   "verdict": "ok",
   "reason": "87 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.10% of pixels change per frame, 3 colours)"
 }

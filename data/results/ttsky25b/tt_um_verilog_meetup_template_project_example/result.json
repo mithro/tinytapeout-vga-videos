@@ -2,16 +2,16 @@
   "id": "ttsky25b/tt_um_verilog_meetup_template_project_example",
   "shuttle": "ttsky25b",
   "macro": "tt_um_verilog_meetup_template_project_example",
-  "started": "2026-09-15T13:00:49+00:00",
+  "started": "2026-09-17T01:05:09+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.4,
-    "build": 11.3,
-    "simulate": 457.1,
-    "encode": 4.4
+    "fetch": 1.5,
+    "build": 18.3,
+    "simulate": 663.2,
+    "encode": 160.7
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -55,35 +55,39 @@
     "long_lines": 0,
     "clocks_simulated": 1501893612,
     "sim_seconds": 60.076,
-    "wall_seconds": 457.0,
-    "clocks_per_wall_second": 3286304,
+    "wall_seconds": 663.1,
+    "clocks_per_wall_second": 2264975,
     "ffmpeg_status": 0,
+    "audio_driven": true,
+    "audio_transitions": 1787096,
+    "audio_rate": 192000,
+    "audio_samples": 11518617,
     "frame_hashes_count": 3571
   },
   "videos": {
     "ttsky25b_tt_um_verilog_meetup_template_project_example_10s.mp4": {
-      "bytes": 63682,
-      "sha256": "871f70011295351d635cd95eadfb71f0036d75af58c65e7c78697a65dfe5db61"
+      "bytes": 232392,
+      "sha256": "f1bfb4f4b636853eaa20b5ba1db5bb34ae229d453a83c36f23149818b7f5840b"
     },
     "ttsky25b_tt_um_verilog_meetup_template_project_example_10s.webm": {
-      "bytes": 62643,
-      "sha256": "7c2358b2ba182e0059d5e4cc649a3c2dd24a33f3d7b40cabfdbf446d0bfafa0d"
+      "bytes": 369397,
+      "sha256": "470cf377ad2b71e7487b267700c874d29fbdd4f5a2b13fbf4de40362d10c0d13"
     },
     "ttsky25b_tt_um_verilog_meetup_template_project_example_30s.mp4": {
-      "bytes": 196095,
-      "sha256": "5096cfc0639f32985c99a0c74ae3fbb69ec1b0e328ed4cf32da1926a281d2cdb"
+      "bytes": 703549,
+      "sha256": "00c052fcd341d83af09fb7f8c2f59ccfe315aa3622a4cbb7da6d35830babb596"
     },
     "ttsky25b_tt_um_verilog_meetup_template_project_example_30s.webm": {
-      "bytes": 222976,
-      "sha256": "0e243bd9cd04937a8e539931dcf00a3e10016cf32142a2964a884ca4a92bb52b"
+      "bytes": 1101676,
+      "sha256": "4c10405d207cc279ec10283550c1c0697c47290f89b7fb8b023c852f233abacf"
     },
     "ttsky25b_tt_um_verilog_meetup_template_project_example_60s.mp4": {
-      "bytes": 384300,
-      "sha256": "c861ab9ef82bfddb395d7f6d78949d627e6cafa0ee2360102f4f404c4c6828b2"
+      "bytes": 1399092,
+      "sha256": "e1bac028ffca8fae9e1902d6c0dfa4b0c0ff99deccf79a99fc69fde849f90b49"
     },
     "ttsky25b_tt_um_verilog_meetup_template_project_example_60s.webm": {
-      "bytes": 426588,
-      "sha256": "6c13a5f329c33a5072e9adfdaba2d4dbe88d543077873e83d25cd83fb48e8071"
+      "bytes": 2193931,
+      "sha256": "6ae1b1a641b3b3c0908183637e0b488fae1774c47b486eff814a99f7d0b8c2b4"
     },
     "ttsky25b_tt_um_verilog_meetup_template_project_example_contact.png": {
       "bytes": 10752,
@@ -98,9 +102,9 @@
       "sha256": "6f14de70e6301bf588eb9d5cbc5694599dd17c0b2e1d082cdb8984529564debb"
     }
   },
-  "build_log_tail": "eetup_template_project_example/repo/src/seven_segment_display.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/repo/src/strobe_gen.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/repo/src/tm1638_board.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/repo/src/tm1638_registers.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/repo/src/vga.sv\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.907 MB sources in 579 modules, into 0.188 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.196 s (elab=0.026, cvt=0.034, bld=11.098); cpu 0.099 s on 1 threads; allocated 29.285 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/build/Vtop --clock-hz 25000000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.524 fps\ntb: ok: 3571 frames (1939 distinct, 0 uniform, 5 colours, 0.118% of pixels change per frame, 99.6% ever), 1501893612 clocks in 457.0s wall (3.29 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky25b/tt_um_verilog_meetup_template_project_example/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttsky25b/tt_um_verilog_meetup_template_project_example/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky25b/tt_um_verilog_meetup_template_project_example/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttsky25b/tt_um_verilog_meetup_template_project_example/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttsky25b/tt_um_verilog_meetup_template_project_example/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttsky25b/tt_um_verilog_meetup_template_project_example/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky25b/tt_um_verilog_meetup_template_project_example/60s.avi -vf select='not(mod(n\\,223))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttsky25b/tt_um_verilog_meetup_template_project_example/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T13:08:44+00:00",
+  "build_log_tail": "eetup_template_project_example/repo/src/seven_segment_display.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/repo/src/strobe_gen.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/repo/src/tm1638_board.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/repo/src/tm1638_registers.sv /home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/repo/src/vga.sv\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.907 MB sources in 579 modules, into 0.188 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 18.095 s (elab=0.038, cvt=0.036, bld=17.978); cpu 0.118 s on 1 threads; allocated 29.129 MB\n[exit 0]\n",
+  "sim_log_tail": "30,10 -movflags +faststart /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/out/capture.avi -f f32le -ar 192000 -ac 1 -i /home/ttvga/ttvga/work/ttsky25b/tt_um_verilog_meetup_template_project_example/out/capture.f32 -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -c:a libopus -b:a 128k -ar 48000 -af highpass=f=20 -shortest -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_60s.webm -t 30 -c copy /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_60s.webm -t 10 -c copy /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_60s.mp4 -vf select='not(mod(n\\,223))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttsky25b/tt_um_verilog_meetup_template_project_example/ttsky25b_tt_um_verilog_meetup_template_project_example_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-17T01:19:13+00:00",
   "verdict": "ok",
   "reason": "1939 distinct frames of 3571 (640x480@60, 640x480, 59.5 fps, 0.12% of pixels change per frame, 5 colours)"
 }

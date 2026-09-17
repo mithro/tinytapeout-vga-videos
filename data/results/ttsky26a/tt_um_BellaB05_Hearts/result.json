@@ -2,16 +2,16 @@
   "id": "ttsky26a/tt_um_BellaB05_Hearts",
   "shuttle": "ttsky26a",
   "macro": "tt_um_BellaB05_Hearts",
-  "started": "2026-09-15T13:26:07+00:00",
+  "started": "2026-09-17T01:49:49+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.2,
-    "build": 10.9,
-    "simulate": 325.4,
-    "encode": 13.3
+    "fetch": 1.4,
+    "build": 15.8,
+    "simulate": 564.2,
+    "encode": 268.9
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -55,9 +55,13 @@
     "long_lines": 0,
     "clocks_simulated": 1512393611,
     "sim_seconds": 60.075,
-    "wall_seconds": 325.4,
-    "clocks_per_wall_second": 4647950,
+    "wall_seconds": 564.2,
+    "clocks_per_wall_second": 2680538,
     "ffmpeg_status": 0,
+    "audio_driven": false,
+    "audio_transitions": 0,
+    "audio_rate": 192000,
+    "audio_samples": 0,
     "frame_hashes_count": 3596
   },
   "videos": {
@@ -66,24 +70,24 @@
       "sha256": "494053dfd86fc3057dcff5d607473fbfd625565eb99248894a9638f662e1ed34"
     },
     "ttsky26a_tt_um_BellaB05_Hearts_10s.webm": {
-      "bytes": 1334566,
-      "sha256": "f57e72e5a7741733890f2ab33ffc05feeb32f3c54b8f0fa6fa4e6b5a47e2c32f"
+      "bytes": 1545647,
+      "sha256": "f1a76528fca7635b792af2547e4d14b4aee97468411f5f1399decb116fb30d6a"
     },
     "ttsky26a_tt_um_BellaB05_Hearts_30s.mp4": {
       "bytes": 3379702,
       "sha256": "83ca66b93cd5c744adefae804218da1756c536992f8cd7abeba68ee4d09b52c7"
     },
     "ttsky26a_tt_um_BellaB05_Hearts_30s.webm": {
-      "bytes": 4080758,
-      "sha256": "a3693443715d7e8edc3222ce68b8eea3b2bb00d3ae52dc917e74ad30899d4dbc"
+      "bytes": 5238894,
+      "sha256": "44b9ed397a18fdb08c9e5c57de04d6672e53863d2f5e43822a4952f1f1e0e8f5"
     },
     "ttsky26a_tt_um_BellaB05_Hearts_60s.mp4": {
       "bytes": 6642258,
       "sha256": "fcf2d999c0de0cd41a1960cc1b9a0df10fed904df73b5cdac98af191494d9fe4"
     },
     "ttsky26a_tt_um_BellaB05_Hearts_60s.webm": {
-      "bytes": 8123302,
-      "sha256": "152310672a7d5cc7a14dd71121cec40dfa58dc9bb12c74d97d686c1571849482"
+      "bytes": 11928711,
+      "sha256": "c67204bab3152893d2f2ccbef358967b7c215e08f69c5fb33df091dd0995437c"
     },
     "ttsky26a_tt_um_BellaB05_Hearts_contact.png": {
       "bytes": 380798,
@@ -98,9 +102,9 @@
       "sha256": "f86fbd35eb6a00ae508337384e46da602afab0c407d19fb154a49f0ea08da0eb"
     }
   },
-  "build_log_tail": "t --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/repo/src -y /home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/repo/src/project.v /home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/repo/src/hvsync_generator.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.144 MB sources in 570 modules, into 0.046 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 10.779 s (elab=0.020, cvt=0.011, bld=10.716); cpu 0.063 s on 1 threads; allocated 27.039 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (32 distinct, 0 uniform, 2 colours, 6.214% of pixels change per frame, 87.2% ever), 1512393611 clocks in 325.4s wall (4.65 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_BellaB05_Hearts/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttsky26a/tt_um_BellaB05_Hearts/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_BellaB05_Hearts/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttsky26a/tt_um_BellaB05_Hearts/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_BellaB05_Hearts/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttsky26a/tt_um_BellaB05_Hearts/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26a/tt_um_BellaB05_Hearts/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttsky26a/tt_um_BellaB05_Hearts/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T13:32:01+00:00",
+  "build_log_tail": "t --x-initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/repo/src -y /home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/repo/src/project.v /home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/repo/src/hvsync_generator.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.144 MB sources in 570 modules, into 0.046 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 15.636 s (elab=0.024, cvt=0.017, bld=15.550); cpu 0.086 s on 1 threads; allocated 26.883 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (32 distinct, 0 uniform, 2 colours, 6.214% of pixels change per frame, 87.2% ever), 1512393611 clocks in 564.2s wall (2.68 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky26a/tt_um_BellaB05_Hearts/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_60s.webm -t 30 -c copy /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_60s.webm -t 10 -c copy /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_60s.mp4 -vf select='not(mod(n\\,224))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttsky26a/tt_um_BellaB05_Hearts/ttsky26a_tt_um_BellaB05_Hearts_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-17T02:04:00+00:00",
   "verdict": "ok",
   "reason": "32 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 6.21% of pixels change per frame, 2 colours)"
 }

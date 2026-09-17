@@ -2,16 +2,16 @@
   "id": "ttihp25a/tt_um_rejunity_atari2600",
   "shuttle": "ttihp25a",
   "macro": "tt_um_rejunity_atari2600",
-  "started": "2026-09-15T12:21:10+00:00",
+  "started": "2026-09-16T23:55:01+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 7.4,
-    "build": 12.9,
-    "simulate": 720.2,
-    "encode": 20.6
+    "fetch": 6.6,
+    "build": 15.2,
+    "simulate": 1067.5,
+    "encode": 426.3
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -55,52 +55,56 @@
     "long_lines": 0,
     "clocks_simulated": 1512001611,
     "sim_seconds": 60.06,
-    "wall_seconds": 720.2,
-    "clocks_per_wall_second": 2099499,
+    "wall_seconds": 1067.5,
+    "clocks_per_wall_second": 1416423,
     "ffmpeg_status": 0,
+    "audio_driven": true,
+    "audio_transitions": 855831438,
+    "audio_rate": 192000,
+    "audio_samples": 11518627,
     "frame_hashes_count": 3596
   },
   "videos": {
     "ttihp25a_tt_um_rejunity_atari2600_10s.mp4": {
-      "bytes": 10023006,
-      "sha256": "71967bdca2671214030dd3133729d1c9e27a68567dd5116835a00126f915fe47"
+      "bytes": 10196415,
+      "sha256": "9c1eb64f62eb30c9144645b80ebb63ecb719d45553dc951573336e579e98b74d"
     },
     "ttihp25a_tt_um_rejunity_atari2600_10s.webm": {
-      "bytes": 14221040,
-      "sha256": "59561db17c8823e47f1ce0932cfad065357a0bb8ef1bdc1b983cb13f6d4fef9f"
+      "bytes": 11894616,
+      "sha256": "31cbb65313d4c4f1696df871d47979f732b1bd401e6f5d8bda2cd013cbc75d15"
     },
     "ttihp25a_tt_um_rejunity_atari2600_30s.mp4": {
-      "bytes": 29572111,
-      "sha256": "2b4a883f88e8361ffa3ce3c390e221d0118c028401e30833b73982c3dc557eef"
+      "bytes": 30107601,
+      "sha256": "a2d0e3285368041015e6fbf75b0b8ec96b8913a4d96c2f367bfdf9499c090536"
     },
     "ttihp25a_tt_um_rejunity_atari2600_30s.webm": {
-      "bytes": 42295591,
-      "sha256": "03a7eeb8b334253467e7d927227c6a7cab2bd23add874e8e354dd9110d20a740"
+      "bytes": 35613498,
+      "sha256": "5d169fce7142fe6f1168390ca0552f5d0501255df18bb743be33f84f798c7ade"
     },
     "ttihp25a_tt_um_rejunity_atari2600_60s.mp4": {
-      "bytes": 58739063,
-      "sha256": "384b177a141868d03216c77873c106dae1bc7af7802f10f33ace1746b96c43d0"
+      "bytes": 59765445,
+      "sha256": "945125c50e7d8c65159f5b475f30c3b91e36380187a2f49ffae7b29be0ffa5cb"
     },
     "ttihp25a_tt_um_rejunity_atari2600_60s.webm": {
-      "bytes": 85196640,
-      "sha256": "774720df9aa3034bb1338f7b35594e51ec875e3e7e5df401a7470212c945d309"
+      "bytes": 71233832,
+      "sha256": "4179bb03527fab62d8abbd3612b7cbbd57ba6f648c21130f7a08f8758d684476"
     },
     "ttihp25a_tt_um_rejunity_atari2600_contact.png": {
-      "bytes": 1785241,
-      "sha256": "3b4412f73da84311cb474142cb886cfd5910025869d84f5d33d9d2bb2067a5f2"
+      "bytes": 1784698,
+      "sha256": "3bf158eb3f1b09998d8e7554b90a7e66ee29f7679695074a17b5912c96b4adf4"
     },
     "ttihp25a_tt_um_rejunity_atari2600_poster.png": {
-      "bytes": 479400,
-      "sha256": "3f40bfef6c5033d13c544b7832678044535360a109b7e6f16c492cb4408f6576"
+      "bytes": 477853,
+      "sha256": "4924d77a6dcad3e8a2953b192d57d6f7e29919ecbece51003c2473c260782916"
     },
     "ttihp25a_tt_um_rejunity_atari2600_preview.gif": {
-      "bytes": 3273040,
-      "sha256": "2577dfd8c8b465d74ee3852d06121a73cfcd571ee21d02d28caaa8ab3f2eb8a0"
+      "bytes": 3268977,
+      "sha256": "7209884aead8a0971b55253d85927c0ed5411a47a18589e6a5905ab27b19b6dc"
     }
   },
-  "build_log_tail": "ga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/qspi_flash.v /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/gamepad_pmod.v /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/atari2600.v /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/6502.v /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/ALU.v /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/TIA.v /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/PIA.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.042 MB sources in 587 modules, into 0.642 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 12.777 s (elab=0.035, cvt=0.208, bld=12.476); cpu 0.301 s on 1 threads; allocated 37.852 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --qspi cs0=0,sck=3,sd0=1,sd1=2,sd2=4,sd3=5\ntb: QSPI model on uio: cs0=0 sd0=1 sd1=2 sck=3 sd2=4 sd3=5 cs1=6 cs2=7 (flash: test pattern)\ntb: sync at clock 1310720: line 800 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (1609 distinct, 0 uniform, 13 colours, 60.628% of pixels change per frame, 92.2% ever), 1512001611 clocks in 720.2s wall (2.10 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp25a/tt_um_rejunity_atari2600/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttihp25a/tt_um_rejunity_atari2600/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp25a/tt_um_rejunity_atari2600/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttihp25a/tt_um_rejunity_atari2600/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttihp25a/tt_um_rejunity_atari2600/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttihp25a/tt_um_rejunity_atari2600/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp25a/tt_um_rejunity_atari2600/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttihp25a/tt_um_rejunity_atari2600/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T12:33:57+00:00",
+  "build_log_tail": "ga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/qspi_flash.v /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/gamepad_pmod.v /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/atari2600.v /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/6502.v /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/ALU.v /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/TIA.v /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/repo/src/PIA.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.042 MB sources in 587 modules, into 0.642 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 15.029 s (elab=0.059, cvt=0.297, bld=14.597); cpu 0.432 s on 1 threads; allocated 37.191 MB\n[exit 0]\n",
+  "sim_log_tail": "ks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (1609 distinct, 0 uniform, 13 colours, 60.628% of pixels change per frame, 92.2% ever), 1512001611 clocks in 1067.5s wall (1.42 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/out/capture.avi -f f32le -ar 192000 -ac 1 -i /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/out/capture.f32 -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -c:a aac -b:a 128k -ar 48000 -af highpass=f=20 -shortest -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/out/capture.avi -f f32le -ar 192000 -ac 1 -i /home/ttvga/ttvga/work/ttihp25a/tt_um_rejunity_atari2600/out/capture.f32 -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -c:a libopus -b:a 128k -ar 48000 -af highpass=f=20 -shortest -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_60s.webm -t 30 -c copy /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_60s.webm -t 10 -c copy /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_60s.mp4 -vf select='not(mod(n\\,224))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttihp25a/tt_um_rejunity_atari2600/ttihp25a_tt_um_rejunity_atari2600_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-17T00:20:18+00:00",
   "verdict": "ok",
   "reason": "1609 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 60.63% of pixels change per frame, 13 colours)"
 }

@@ -2,7 +2,7 @@
   "id": "ttsky25a/tt_um_algofoogle_vga_matrix_dac",
   "shuttle": "ttsky25a",
   "macro": "tt_um_algofoogle_vga_matrix_dac",
-  "started": "2026-09-15T12:53:53+00:00",
+  "started": "2026-09-17T00:53:10+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "skipped",
@@ -14,7 +14,8 @@
   },
   "auto_ui_in": null,
   "qspi": null,
-  "finished": "2026-09-15T12:53:53+00:00",
+  "videos": {},
+  "finished": "2026-09-17T00:53:10+00:00",
   "verdict": "skipped",
   "reason": "analog project"
 }

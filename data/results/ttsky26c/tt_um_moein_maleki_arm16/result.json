@@ -2,7 +2,7 @@
   "id": "ttsky26c/tt_um_moein_maleki_arm16",
   "shuttle": "ttsky26c",
   "macro": "tt_um_moein_maleki_arm16",
-  "started": "2026-09-15T13:41:07+00:00",
+  "started": "2026-09-17T02:19:53+00:00",
   "host": "big-storage",
   "override": {
     "inputs": "tt_um_moein_maleki_arm16.inputs"
@@ -10,10 +10,10 @@
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.5,
-    "build": 11.7,
-    "simulate": 582.7,
-    "encode": 3.1
+    "fetch": 1.7,
+    "build": 19.7,
+    "simulate": 895.4,
+    "encode": 59.1
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -57,9 +57,13 @@
     "long_lines": 0,
     "clocks_simulated": 1501893614,
     "sim_seconds": 60.076,
-    "wall_seconds": 582.7,
-    "clocks_per_wall_second": 2577665,
+    "wall_seconds": 895.3,
+    "clocks_per_wall_second": 1677442,
     "ffmpeg_status": 0,
+    "audio_driven": true,
+    "audio_transitions": 0,
+    "audio_rate": 192000,
+    "audio_samples": 0,
     "frame_hashes_count": 3571
   },
   "videos": {
@@ -68,24 +72,24 @@
       "sha256": "3667999d75ddc748a26db4522a773a283033cb3f4e96576635ecb6723d3a3656"
     },
     "ttsky26c_tt_um_moein_maleki_arm16_10s.webm": {
-      "bytes": 35474,
-      "sha256": "693d03c55888e6afbdd366d0bbf6eb53cbdf04bb46508394fd81e0363a1abf9f"
+      "bytes": 34726,
+      "sha256": "81cf366865ff7c9ef299a0a99b98234ce603ad2ee96dc11a1004512deb670aab"
     },
     "ttsky26c_tt_um_moein_maleki_arm16_30s.mp4": {
       "bytes": 118050,
       "sha256": "e1d5e90c6644bd6f4e14de4f1ee759c2b418bc302c79458b4af5a1e9b5c9e5f9"
     },
     "ttsky26c_tt_um_moein_maleki_arm16_30s.webm": {
-      "bytes": 96927,
-      "sha256": "236f50bbb5fc416b9555a40b03bdf1128801b8a844650aece7c7143208cbcdbb"
+      "bytes": 97160,
+      "sha256": "39bc71b2b3b1b2a26f6e8baa91f372e38c026cec5022356212b55f0952e11bf3"
     },
     "ttsky26c_tt_um_moein_maleki_arm16_60s.mp4": {
       "bytes": 232451,
       "sha256": "2abf2fd86d84ca75692dd92c7421b0400867578368b688f1f1063ebe4a9419d5"
     },
     "ttsky26c_tt_um_moein_maleki_arm16_60s.webm": {
-      "bytes": 187175,
-      "sha256": "2e97f41350878fadb79084185c8383d3ac3c27db34873fb5948b48c6e9789f72"
+      "bytes": 189102,
+      "sha256": "f0c1a6c436f7d00c89dd78fe46f403c188e8268d6e76a9bc2ce3dcbe4f39558f"
     },
     "ttsky26c_tt_um_moein_maleki_arm16_contact.png": {
       "bytes": 10522,
@@ -100,9 +104,9 @@
       "sha256": "054e7e8cb32dea94ee018a0c963a6ebcdefd28d6e1aa93009d9eb854658530ed"
     }
   },
-  "build_log_tail": "m16/repo/src/barrel_shifter.v /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/repo/src/alu.v /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/repo/src/hazard_detector.v /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/repo/src/forwarding_selector.v /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/repo/src/demo_rom.v /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/repo/src/qspi_master.v /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/repo/src/vga_renderer.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.898 MB sources in 582 modules, into 0.274 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.552 s (elab=0.036, cvt=0.084, bld=11.376); cpu 0.176 s on 1 threads; allocated 29.695 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/build/Vtop --clock-hz 25000000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --inputs /home/ttvga/ttvga/overrides/ttsky26c/tt_um_moein_maleki_arm16.inputs --qspi cs0=0,cs1=6,cs2=7,sck=3,sd0=1,sd1=2,sd2=4,sd3=5\ntb: QSPI model on uio: cs0=0 sd0=1 sd1=2 sck=3 sd2=4 sd3=5 cs1=6 cs2=7 (flash: test pattern)\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.524 fps\ntb: ok: 3571 frames (1 distinct, 0 uniform, 2 colours, 0.000% of pixels change per frame, 0.0% ever), 1501893614 clocks in 582.7s wall (2.58 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26c/tt_um_moein_maleki_arm16/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttsky26c/tt_um_moein_maleki_arm16/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26c/tt_um_moein_maleki_arm16/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttsky26c/tt_um_moein_maleki_arm16/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttsky26c/tt_um_moein_maleki_arm16/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttsky26c/tt_um_moein_maleki_arm16/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttsky26c/tt_um_moein_maleki_arm16/60s.avi -vf select='not(mod(n\\,223))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttsky26c/tt_um_moein_maleki_arm16/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T13:51:07+00:00",
+  "build_log_tail": "m16/repo/src/barrel_shifter.v /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/repo/src/alu.v /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/repo/src/hazard_detector.v /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/repo/src/forwarding_selector.v /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/repo/src/demo_rom.v /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/repo/src/qspi_master.v /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/repo/src/vga_renderer.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.898 MB sources in 582 modules, into 0.274 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 19.482 s (elab=0.063, cvt=0.142, bld=19.197); cpu 0.286 s on 1 threads; allocated 29.562 MB\n[exit 0]\n",
+  "sim_log_tail": "6/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --inputs /home/ttvga/ttvga/overrides/ttsky26c/tt_um_moein_maleki_arm16.inputs --qspi cs0=0,cs1=6,cs2=7,sck=3,sd0=1,sd1=2,sd2=4,sd3=5\ntb: QSPI model on uio: cs0=0 sd0=1 sd1=2 sck=3 sd2=4 sd3=5 cs1=6 cs2=7 (flash: test pattern)\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.524 fps\ntb: ok: 3571 frames (1 distinct, 0 uniform, 2 colours, 0.000% of pixels change per frame, 0.0% ever), 1501893614 clocks in 895.3s wall (1.68 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky26c/tt_um_moein_maleki_arm16/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_60s.webm -t 30 -c copy /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_60s.webm -t 10 -c copy /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_60s.mp4 -vf select='not(mod(n\\,223))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttsky26c/tt_um_moein_maleki_arm16/ttsky26c_tt_um_moein_maleki_arm16_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-17T02:36:09+00:00",
   "verdict": "static",
   "reason": "1 distinct frame(s) in 3571 (640x480@60, 640x480, 2 colours)"
 }

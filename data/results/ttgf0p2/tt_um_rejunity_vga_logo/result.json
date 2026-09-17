@@ -2,16 +2,16 @@
   "id": "ttgf0p2/tt_um_rejunity_vga_logo",
   "shuttle": "ttgf0p2",
   "macro": "tt_um_rejunity_vga_logo",
-  "started": "2026-09-15T13:02:57+00:00",
+  "started": "2026-09-17T01:07:57+00:00",
   "host": "big-storage",
   "override": null,
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 1.3,
-    "build": 11.3,
-    "simulate": 369.3,
-    "encode": 29.4
+    "fetch": 1.4,
+    "build": 13.9,
+    "simulate": 505.2,
+    "encode": 581.6
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -55,52 +55,56 @@
     "long_lines": 0,
     "clocks_simulated": 1512393611,
     "sim_seconds": 60.075,
-    "wall_seconds": 369.2,
-    "clocks_per_wall_second": 4096315,
+    "wall_seconds": 505.1,
+    "clocks_per_wall_second": 2994180,
     "ffmpeg_status": 0,
+    "audio_driven": false,
+    "audio_transitions": 0,
+    "audio_rate": 192000,
+    "audio_samples": 0,
     "frame_hashes_count": 3596
   },
   "videos": {
     "ttgf0p2_tt_um_rejunity_vga_logo_10s.mp4": {
-      "bytes": 16220215,
-      "sha256": "2ffba9e357e4a0be5fb9665a22ae7d96814339e210b90106f124a2a42aa2ae39"
+      "bytes": 16104786,
+      "sha256": "dd8a9080932c94d236eaa769ee6ba38389fc5a61cb112d2271b197bc91afaa72"
     },
     "ttgf0p2_tt_um_rejunity_vga_logo_10s.webm": {
-      "bytes": 17419699,
-      "sha256": "ad6b56bb288888dd04965c9db6b1e8487a2b6005d9c2c50390b0e6c0f6546926"
+      "bytes": 20031931,
+      "sha256": "12b39879ef3243a9def093a55c51a6a6b8508933f8dccb62d85823c6d9da8eab"
     },
     "ttgf0p2_tt_um_rejunity_vga_logo_30s.mp4": {
-      "bytes": 46222053,
-      "sha256": "0092a8d7ab8b8dea12047a97549fc5d5d2178cc98f4068536c4fa60102f821b8"
+      "bytes": 46261421,
+      "sha256": "a669b2d1681414975a814e31ecd05bbe1a725db431c6b7999177ca0e71fe1fc4"
     },
     "ttgf0p2_tt_um_rejunity_vga_logo_30s.webm": {
-      "bytes": 50562010,
-      "sha256": "705da6b4a00d2cd53b33ca3c59f2a5f327eef0666b97895ea5d5179596d9156b"
+      "bytes": 58285124,
+      "sha256": "fd7acbf3d9c4cff47267ae5f0d66feacfcb034d94c12c12240f57ce127846d89"
     },
     "ttgf0p2_tt_um_rejunity_vga_logo_60s.mp4": {
-      "bytes": 91130217,
-      "sha256": "33835ee7ea8476919c36123c06e34935f843598a9591d1143a917b1007720884"
+      "bytes": 91104637,
+      "sha256": "3a0ac5eb265869123a70435e9c99953f764c820652c28b698d95b729b1613d64"
     },
     "ttgf0p2_tt_um_rejunity_vga_logo_60s.webm": {
-      "bytes": 99608568,
-      "sha256": "a535611bfcb00ac8be9f1fe1c78b41ab88421796729702f532cdd5c3db64736b"
+      "bytes": 112626804,
+      "sha256": "1770e78ebfec660def7169b7b45d9d8b1f6d18a57e6239818654029e105f48b6"
     },
     "ttgf0p2_tt_um_rejunity_vga_logo_contact.png": {
-      "bytes": 2594909,
-      "sha256": "9f1cfd55d186914abbf612da4fe4282171348cca8f30f33674cc56cc20215337"
+      "bytes": 2611512,
+      "sha256": "e89f261c3991cdc655b3fcb8f78d78be93211c2a027f51ca6cfc0e64db381f65"
     },
     "ttgf0p2_tt_um_rejunity_vga_logo_poster.png": {
-      "bytes": 707468,
-      "sha256": "8228f8ecc006549a39a0492bdbfbcfe39f7417aff5eca838215e0ad439b8eb7d"
+      "bytes": 687815,
+      "sha256": "c94027f0c3a5d8b121adab62c63ae140fc967e655b15c46ca65d91b66080ee09"
     },
     "ttgf0p2_tt_um_rejunity_vga_logo_preview.gif": {
-      "bytes": 4082921,
-      "sha256": "d8a0dde23f529235441e25afb331599eb6e88129b75399b3f02e139c283ca6cb"
+      "bytes": 4152023,
+      "sha256": "3a7a01004f3b3346be6db1fda603f774fab140afe2939037d914016f4ece8a49"
     }
   },
-  "build_log_tail": "initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/repo/src -y /home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/repo/src/hvsync_generator.v /home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/repo/src/project.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.154 MB sources in 572 modules, into 0.080 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 11.154 s (elab=0.018, cvt=0.015, bld=11.094); cpu 0.060 s on 1 threads; allocated 27.426 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (64 distinct, 0 uniform, 64 colours, 68.225% of pixels change per frame, 83.0% ever), 1512393611 clocks in 369.2s wall (4.10 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttgf0p2/tt_um_rejunity_vga_logo/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttgf0p2/tt_um_rejunity_vga_logo/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttgf0p2/tt_um_rejunity_vga_logo/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttgf0p2/tt_um_rejunity_vga_logo/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttgf0p2/tt_um_rejunity_vga_logo/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttgf0p2/tt_um_rejunity_vga_logo/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttgf0p2/tt_um_rejunity_vga_logo/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttgf0p2/tt_um_rejunity_vga_logo/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T13:09:56+00:00",
+  "build_log_tail": "initial fast -Wno-fatal -Wno-lint -Wno-style -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -CFLAGS -std=c++17 -MAKEFLAGS OPT_FAST=-O2 -I/home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/repo/src -y /home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/repo/src --relative-includes -v /home/ttvga/ttvga/harness/cells/sky130_polyfill.v /home/ttvga/ttvga/harness/tb.cpp /home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/repo/src/hvsync_generator.v /home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/repo/src/project.v\nmake: Entering directory '/home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/build'\ng++  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.154 MB sources in 572 modules, into 0.080 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 13.737 s (elab=0.035, cvt=0.020, bld=13.643); cpu 0.094 s on 1 threads; allocated 27.273 MB\n[exit 0]\n",
+  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (64 distinct, 0 uniform, 64 colours, 68.225% of pixels change per frame, 83.0% ever), 1512393611 clocks in 505.1s wall (2.99 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttgf0p2/tt_um_rejunity_vga_logo/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_60s.webm -t 30 -c copy /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_60s.webm -t 10 -c copy /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_60s.mp4 -vf select='not(mod(n\\,224))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttgf0p2/tt_um_rejunity_vga_logo/ttgf0p2_tt_um_rejunity_vga_logo_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-17T01:26:21+00:00",
   "verdict": "ok",
   "reason": "64 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 68.22% of pixels change per frame, 64 colours)"
 }

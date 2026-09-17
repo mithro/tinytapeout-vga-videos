@@ -2,7 +2,7 @@
   "id": "ttihp0p2/tt_um_algofoogle_raybox_zero",
   "shuttle": "ttihp0p2",
   "macro": "tt_um_algofoogle_raybox_zero",
-  "started": "2026-09-15T12:16:59+00:00",
+  "started": "2026-09-16T23:43:49+00:00",
   "host": "big-storage",
   "override": {
     "inputs": "tt_um_algofoogle_raybox_zero.inputs"
@@ -10,10 +10,10 @@
   "stage": "encode",
   "error": null,
   "timings": {
-    "fetch": 7.6,
-    "build": 14.1,
-    "simulate": 680.1,
-    "encode": 4.1
+    "fetch": 6.4,
+    "build": 24.8,
+    "simulate": 1190.9,
+    "encode": 60.8
   },
   "tools": {
     "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
@@ -57,9 +57,13 @@
     "long_lines": 0,
     "clocks_simulated": 1512393611,
     "sim_seconds": 60.075,
-    "wall_seconds": 680.1,
-    "clocks_per_wall_second": 2223714,
+    "wall_seconds": 1190.9,
+    "clocks_per_wall_second": 1269975,
     "ffmpeg_status": 0,
+    "audio_driven": false,
+    "audio_transitions": 0,
+    "audio_rate": 192000,
+    "audio_samples": 0,
     "frame_hashes_count": 3596
   },
   "videos": {
@@ -68,24 +72,24 @@
       "sha256": "256925c9dbc5502310814644c8b091acbd274baa1848d7d910ef82fab92ca17d"
     },
     "ttihp0p2_tt_um_algofoogle_raybox_zero_10s.webm": {
-      "bytes": 101103,
-      "sha256": "9f0c6ff746654f54955244b9012b811b836f39c81f0e26202df398b4f92a6e6d"
+      "bytes": 79562,
+      "sha256": "cb1e22fe1d8ec283fa0c8f2389ed0d04508de730c20e97ed2b02b92eb89a0ea4"
     },
     "ttihp0p2_tt_um_algofoogle_raybox_zero_30s.mp4": {
       "bytes": 154321,
       "sha256": "4033df210cb77a0aa98a107f4ab1b1b9c3db3bc5632f2e03cb7eeb83eb3f715b"
     },
     "ttihp0p2_tt_um_algofoogle_raybox_zero_30s.webm": {
-      "bytes": 251418,
-      "sha256": "b1be8eb170a6d4923afd936588de51df46b896d762d08d1fd4f7f409a856fa0f"
+      "bytes": 201212,
+      "sha256": "c782df11a2c2001fe360e53b03e945a8365e9bd66a396fc00c26074589d24277"
     },
     "ttihp0p2_tt_um_algofoogle_raybox_zero_60s.mp4": {
       "bytes": 291797,
       "sha256": "2c1f81a6673bcc53bf8a869c28fea44489e8dab2fb6e3bfc24706071b3c103a1"
     },
     "ttihp0p2_tt_um_algofoogle_raybox_zero_60s.webm": {
-      "bytes": 472380,
-      "sha256": "fd9d42a7ac998e28f0d07ab331ba6cc16a93bda2321c63306b5a302a683ea3b7"
+      "bytes": 372631,
+      "sha256": "f886416aedf55e1a59b2c2170775f9c05a26bb52eed2c8c83b0f3c94ee333de5"
     },
     "ttihp0p2_tt_um_algofoogle_raybox_zero_contact.png": {
       "bytes": 37385,
@@ -100,9 +104,9 @@
       "sha256": "8622c7857804aa1a28be1d5bc89459ddec4e5c194de9f787c538e2711dbf1d25"
     }
   },
-  "build_log_tail": "hare/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_dpi.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_dpi.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop_tt_um_algofoogle_raybox_zero__0.cpp Vtop_rbzero__0.cpp Vtop__Dpi.cpp Vtop_vm_classes_Slow_0.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_dpi.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp0p2/tt_um_algofoogle_raybox_zero/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.149 MB sources in 585 modules, into 0.366 MB in 13 C++ files needing 0.000 MB\n- Verilator: Walltime 13.954 s (elab=0.039, cvt=0.060, bld=13.808); cpu 0.146 s on 1 threads; allocated 30.246 MB\n[exit 0]\n",
-  "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttihp0p2/tt_um_algofoogle_raybox_zero/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttihp0p2/tt_um_algofoogle_raybox_zero/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg --inputs /home/ttvga/ttvga/overrides/ttihp0p2/tt_um_algofoogle_raybox_zero.inputs --qspi cs0=0,sck=1,sd0=3,sd1=6,sd2=7\ntb: QSPI model on uio: cs0=0 sd0=3 sd1=6 sck=1 sd2=7 sd3=5 cs1=6 cs2=7 (flash: test pattern)\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (7 distinct, 0 uniform, 3 colours, 0.000% of pixels change per frame, 0.1% ever), 1512393611 clocks in 680.1s wall (2.22 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp0p2/tt_um_algofoogle_raybox_zero/60s.avi -t 30 -c copy /home/ttvga/ttvga/videos/ttihp0p2/tt_um_algofoogle_raybox_zero/30s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp0p2/tt_um_algofoogle_raybox_zero/60s.avi -t 10 -c copy /home/ttvga/ttvga/videos/ttihp0p2/tt_um_algofoogle_raybox_zero/10s.avi\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/ttvga/videos/ttihp0p2/tt_um_algofoogle_raybox_zero/60s.avi -frames:v 1 /home/ttvga/ttvga/videos/ttihp0p2/tt_um_algofoogle_raybox_zero/poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/videos/ttihp0p2/tt_um_algofoogle_raybox_zero/60s.avi -vf select='not(mod(n\\,224))',scale=iw/2:-1,tile=4x4 -frames:v 1 /home/ttvga/ttvga/videos/ttihp0p2/tt_um_algofoogle_raybox_zero/contact.png\n[exit 0]\n",
-  "finished": "2026-09-15T12:28:45+00:00",
+  "build_log_tail": "hare/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -O2  -c -o tb.o /home/ttvga/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_dpi.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_dpi.cpp\ng++ -Os  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o verilated_threads.o /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 /home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop_tt_um_algofoogle_raybox_zero__0.cpp Vtop_rbzero__0.cpp Vtop__Dpi.cpp Vtop_vm_classes_Slow_0.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include -I/home/ttvga/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_dpi.o verilated_threads.o Vtop__ALL.a    -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '/home/ttvga/ttvga/work/ttihp0p2/tt_um_algofoogle_raybox_zero/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 1.149 MB sources in 585 modules, into 0.366 MB in 13 C++ files needing 0.000 MB\n- Verilator: Walltime 24.633 s (elab=0.062, cvt=0.121, bld=24.364); cpu 0.269 s on 1 threads; allocated 30.035 MB\n[exit 0]\n",
+  "sim_log_tail": "box_zero.inputs --qspi cs0=0,sck=1,sd0=3,sd1=6,sd2=7\ntb: QSPI model on uio: cs0=0 sd0=3 sd1=6 sck=1 sd2=7 sd3=5 cs1=6 cs2=7 (flash: test pattern)\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (7 distinct, 0 uniform, 3 colours, 0.000% of pixels change per frame, 0.1% ever), 1512393611 clocks in 1190.9s wall (1.27 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttihp0p2/tt_um_algofoogle_raybox_zero/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttihp0p2/tt_um_algofoogle_raybox_zero/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_60s.webm -t 30 -c copy /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_60s.webm -t 10 -c copy /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_60s.mp4 -vf select='not(mod(n\\,224))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttihp0p2/tt_um_algofoogle_raybox_zero/ttihp0p2_tt_um_algofoogle_raybox_zero_preview.gif\n[exit 0]\n",
+  "finished": "2026-09-17T00:05:12+00:00",
   "verdict": "barely-moving",
   "reason": "0.000% of pixels change per frame, 0.07% ever (640x480@60, 640x480, 3 colours)"
 }
