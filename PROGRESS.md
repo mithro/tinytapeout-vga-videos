@@ -5,6 +5,74 @@ whenever something non-obvious is learned. This file is the resume point
 if work stops for lack of credits or tokens: read it, then `docs/status.md`,
 then the newest `data/results/` entries.
 
+## 2026-09-17: marking the rows, and three faults in the audio path
+
+The owner asked for the projects with gamepad controls and audio output to be
+marked in their table row. The marking itself is small; finding out what was
+true enough to mark took the rest of the session.
+
+**The marks.** A row carries a badge for each of the two Pmods worth naming,
+outlined when the design is wired for it and filled when the run made use of
+it -- `gamepad` against `gamepad driven`, `audio` against `audio captured`.
+The label changes with the state as well as the colour, because the colour
+alone says nothing to a reader who cannot see it. 66 rows carry a gamepad
+badge and 89 an audio badge; 146 rows carry at least one. `docs/videos.md`
+gets the same as a `Uses` column and `index.json` a `uses` object.
+
+Both halves of the evidence are needed. The `pmods` list in a project's own
+`info.yaml` declares 64 gamepads and 75 Audio Pmods, but `ds_missile_command`
+and `vga_ocarina` drive a gamepad without declaring one, and every a1k0n demo
+and nyancat drives uio[7] without declaring that -- fourteen projects. So pin
+names count as evidence too. The gamepad test is `stimulus.wants_gamepad`
+rather than a second copy of the rule, so the badge on the page and the script
+that presses the buttons cannot disagree about which projects those are.
+
+**Three faults, each invisible in play.** Adding the measured half of the
+audio badge meant asking what the published files actually contain, and the
+answer was wrong three times over.
+
+1. The clip that claimed sound had none. The audio test back on the 16th wrote
+   into a scratch directory, so nyancat's result.json recorded 2.3 million
+   captured samples while the file published under that name was the older
+   silent encode. Nothing compared the record with the artefact, and the index
+   believes the record.
+2. Re-run properly, it carried 96 kHz AAC. The 48 kHz pinning had been
+   committed here and never sent: the host keeps whatever harness it was last
+   given, and a result says nothing about which one produced it. The file
+   plays correctly in ffmpeg, VLC and Chrome, so nothing downstream noticed.
+3. The capture kept a track whenever uio_oe[7] was high, which says the pin is
+   an output, not that anything is on it. Fourteen of the first seventy-four
+   projects of the re-run drove the pin at a constant level.
+
+The third is the one worth remembering, because the obvious measurement lied.
+`flappy_vga_cutout1` held the pin at 0 and published silence at -91 dB, which
+looks broken. `wokwi_380409393770716161` held it at 1, and the DC-removing
+high-pass turned that single step into a click: -0.1 dB peak, -36 dB mean, and
+I first read it as a real signal. Two identical faults, opposite readings on a
+volume meter. Counting transitions of the source bit distinguishes them at
+once -- both measured zero -- and the threshold falls out of the physics
+rather than taste: twenty a second, which is the Pmod filter's corner and the
+high-pass corner already chosen. Real audio is five or six orders of magnitude
+clear of it, and it is PWM or delta-sigma, not an audio-rate waveform:
+a1k0n_demo toggles 40.2 MHz on a 48 MHz clock, 83.7% of all cycles.
+
+**What is guarded now.** `tt-vga verify` fails a clip whose record claims
+audio but carries no track, or carries one at anything but 48 kHz, checked on
+all six published files. `tt-vga queue start` sends this repository's harness
+before running anything, which makes the second fault impossible rather than
+merely detectable. `audio_transitions` is recorded in every result so the
+third decision can be checked rather than trusted.
+
+**Publishing discipline, restated.** `~ttvga` on big-storage is staging and
+goes torn during a re-run -- each job empties its directory before re-encoding,
+so files 404 for a few minutes. `/srv/data.wafer.space` is the mirror people
+actually read, and it only changes when `tt-vga mirror` is run by hand. During
+this re-run staging held 3608 media files against the mirror's complete 3672,
+and a poster that 404s on big-storage served fine from data.wafer.space. The
+order is collect, analyse, index, verify, upload to staging, and only then
+mirror: verify gates the staging tree, so a torn or broken result cannot reach
+the mirror without failing a check first.
+
 ## 2026-09-16 (night): sound, and driving the designs that were sitting still
 
 Two additions, both taken from the VGA Playground, which is now cloned at
