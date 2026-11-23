@@ -79,6 +79,14 @@ When the default all-low inputs give no raster, the job runner probes each
 single `ui_in` bit with a short calibration run and uses the first one that
 syncs (recorded as `auto_ui_in` in the result).
 
+Beside each `result.json`, `frame_hashes.txt` lists a hash of every captured
+frame, frame 0 first. The clips are lossy, so this is what to compare against
+when checking another implementation (an FPGA build, say) pixel for pixel.
+The file's header gives the hash definition (FNV-1a 64 over the frame as
+native-resolution RGB888, `fnv1a()` in `ttvga/harness/tb.cpp`), the mode, and
+`capture_after_clock`: the reset sequence starts at clock 0, and frame 0 is
+the frame that begins at the first end of a vsync pulse after that clock.
+
 ### Asking an agent why a video is wrong
 
 ```

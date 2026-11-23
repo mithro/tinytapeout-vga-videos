@@ -5,6 +5,31 @@ whenever something non-obvious is learned. This file is the resume point
 if work stops for lack of credits or tokens: read it, then `docs/status.md`,
 then the newest `data/results/` entries.
 
+## 2026-11-23: per-frame hashes kept in the repository
+
+Two sessions building FPGA harnesses (iCE40 boards; Game Bub and Arty) want to
+compare their output with the simulation frame for frame, and the clips are
+lossy. The testbench has always hashed every frame, but `collect` threw the
+list away. It now writes `data/results/<shuttle>/<macro>/frame_hashes.txt`
+instead (`ttvga/framehashes.py`): one hash per line with a header giving the
+hash definition, the mode and `capture_after_clock`. That covers all 408
+projects with frames, about 25 MB of text and about 6 MB once git compresses it.
+
+The capture clock was the catch. Frame 0 is not at reset: the testbench
+calibrates on the sync signals first and captures from the next vsync end. The
+clock was only ever printed (`tb: sync at clock N`), and `result.json` keeps
+the last 4000 characters of the log, which lost that line for 70 projects.
+These files were filled from the full `sim.log` on the host. `tb.cpp` now
+writes `capture_after_clock` into `timing.json` so future runs carry it. The
+change was built and run as ttvga in a scratch directory against tt08 nyancat:
+it gave clock 1703936, the same as the September log, and the first three
+frame hashes matched the published list exactly.
+
+This session ran on the host itself, which has no orchestrator key. So the
+export was run once by hand on result files copied with sudo, using the same
+function `collect` now calls. Those copies lack `verdict`/`reason` (added by
+`analyze`), so the committed `result.json` files were left unchanged.
+
 ## 2026-09-17: marking the rows, and three faults in the audio path
 
 The owner asked for the projects with gamepad controls and audio output to be
