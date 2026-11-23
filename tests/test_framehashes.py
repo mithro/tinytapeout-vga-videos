@@ -28,6 +28,14 @@ def test_capture_clock_takes_the_last_sync_line():
     assert framehashes.capture_clock(r) == 1703936
 
 
+def test_capture_clock_prefers_timing_then_full_log():
+    assert framehashes.capture_clock(result(capture_after_clock=42)) == 42
+    r = result()
+    r["sim_log_tail"] = "tb: ok: 3 frames"          # the tail lost the sync line
+    assert framehashes.capture_clock(r) is None
+    assert framehashes.capture_clock(r, sim_log=LOG) == 1703936
+
+
 def test_capture_clock_unknown_without_a_sync_line():
     r = result()
     r["sim_log_tail"] = "tb: no-sync after 100 clocks"

@@ -442,6 +442,8 @@ int main(int argc, char** argv) {
     const double fps = opt.clock_hz / static_cast<double>(vs.period);
     const uint64_t target_frames = static_cast<uint64_t>(opt.seconds * fps + 0.5);
     const uint64_t clock_limit = clock + static_cast<uint64_t>((opt.seconds + 2.5 / fps) * opt.clock_hz);
+    // Calibration ends here; frame 0 starts at the next end of a vsync pulse.
+    const uint64_t capture_after_clock = clock;
 
     if (!opt.quiet)
         std::fprintf(stderr, "tb: sync at clock %llu: line %llu clocks, %d lines, hsync %s, vsync %s, mode %s, %.3f clk/px, %dx%d @ %.3f fps\n",
@@ -568,7 +570,7 @@ int main(int argc, char** argv) {
     else if (frame_max > frame_min + frame_min / 100 || long_lines + short_lines > lines_seen / 100) status = "unstable-sync";
     const double wall_s = wall();
     std::fprintf(tj, "{\n  \"status\": \"%s\",\n  \"clock_hz\": %.0f,\n  \"first_sync_clock\": %llu,\n"
-                     "  \"hsync_active_low\": %s,\n  \"vsync_active_low\": %s,\n"
+                     "  \"capture_after_clock\": %llu,\n  \"hsync_active_low\": %s,\n  \"vsync_active_low\": %s,\n"
                      "  \"line_clocks\": %llu,\n  \"lines\": %d,\n  \"hsync_pulse_clocks\": %llu,\n  \"vsync_pulse_clocks\": %llu,\n"
                      "  \"line_clocks_range\": [%llu, %llu],\n  \"frame_clocks_range\": [%llu, %llu],\n"
                      "  \"mode\": \"%s\",\n  \"clocks_per_pixel\": %.4f,\n  \"width\": %d,\n  \"height\": %d,\n  \"fps\": %.4f,\n"
@@ -582,7 +584,7 @@ int main(int argc, char** argv) {
                      "  \"audio_rate\": %.0f,\n  \"audio_samples\": %zu,\n"
                      "  \"frame_hashes\": [",
                  status, opt.clock_hz, (unsigned long long)first_sync_clock,
-                 hs.active_low ? "true" : "false", vs.active_low ? "true" : "false",
+                 (unsigned long long)capture_after_clock, hs.active_low ? "true" : "false", vs.active_low ? "true" : "false",
                  (unsigned long long)line_clocks, lines, (unsigned long long)hs.pulse, (unsigned long long)vs.pulse,
                  (unsigned long long)(lines_seen ? line_min : 0), (unsigned long long)line_max,
                  (unsigned long long)(frame_max ? frame_min : 0), (unsigned long long)frame_max,

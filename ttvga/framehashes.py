@@ -19,20 +19,27 @@ FILE_NAME = "frame_hashes.txt"
 _SYNC = re.compile(r"tb: sync at clock (\d+)")
 
 
-def capture_clock(result: dict) -> int | None:
-    """The clock after which capture began, from the testbench's own log line.
+def capture_clock(result: dict, sim_log: str | None = None) -> int | None:
+    """The clock after which capture began.
 
-    Probe runs are quiet and print no sync line, so the last match is the real run.
+    Runs since 2026-11 record it in timing.json. Older ones only printed it
+    ("tb: sync at clock N"), and result.json keeps just the last 4000
+    characters of the log, which can miss that line, so the full sim.log can
+    be passed in. Probe runs are quiet and print no sync line, so the last
+    match is the real run.
     """
-    found = _SYNC.findall(result.get("sim_log_tail") or "")
+    t = result.get("timing") or {}
+    if t.get("capture_after_clock") is not None:
+        return int(t["capture_after_clock"])
+    found = _SYNC.findall(sim_log if sim_log is not None else (result.get("sim_log_tail") or ""))
     return int(found[-1]) if found else None
 
 
-def render(result: dict) -> str:
+def render(result: dict, sim_log: str | None = None) -> str:
     """The text of frame_hashes.txt for one result that still carries its hashes."""
     t = result["timing"]
     hashes = t["frame_hashes"]
-    after = capture_clock(result)
+    after = capture_clock(result, sim_log)
     lines = [
         "# Per-frame hashes from the simulation, frame 0 first, one per line.",
         "# Hash: FNV-1a 64 over the frame as RGB888, row-major, active area only, at native",
@@ -52,7 +59,7 @@ def render(result: dict) -> str:
     return "\n".join(lines) + "".join(h + "\n" for h in hashes)
 
 
-def export(result_path: Path) -> str:
+def export(result_path: Path, sim_log: str | None = None) -> str:
     """Write the hash file beside one result.json and strip the list from it.
 
     Returns "written", "removed" (a stale file for a run that now has no
@@ -62,7 +69,7 @@ def export(result_path: Path) -> str:
     timing = result.get("timing") or {}
     out = result_path.parent / FILE_NAME
     if "frame_hashes" in timing:
-        out.write_text(render(result))
+        out.write_text(render(result, sim_log))
         timing["frame_hashes_count"] = len(timing.pop("frame_hashes"))
         result_path.write_text(json.dumps(result, indent=2) + "\n")
         return "written"
