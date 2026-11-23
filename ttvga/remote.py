@@ -25,7 +25,7 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
-from ttvga import HARNESS_DIR, RESULTS_DIR, TARGETS_JSON
+from ttvga import HARNESS_DIR, RESULTS_DIR, TARGETS_JSON, framehashes
 
 CONFIG_PATH = Path.home() / ".config" / "tinytapeout-vga-videos" / "config.toml"
 FORBIDDEN_USERS = {"root", "tim", "ansible"}
@@ -260,13 +260,9 @@ def collect(args: argparse.Namespace) -> int:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     rsync_from(host, f"{REMOTE_ROOT}/work/", RESULTS_DIR,
                extra=["--include", "*/", "--include", "result.json", "--exclude", "*", "--prune-empty-dirs"])
-    # The per-frame hash list is only useful on the host; keep the committed results small.
+    # The per-frame hashes move out of result.json into frame_hashes.txt beside it.
     for path in RESULTS_DIR.glob("*/*/result.json"):
-        result = json.loads(path.read_text())
-        timing = result.get("timing") or {}
-        if "frame_hashes" in timing:
-            timing["frame_hashes_count"] = len(timing.pop("frame_hashes"))
-            path.write_text(json.dumps(result, indent=2) + "\n")
+        framehashes.export(path)
     if args.images:
         dest = Path(args.images)
         rsync_from(host, f"{REMOTE_VIDEOS}/", dest,
