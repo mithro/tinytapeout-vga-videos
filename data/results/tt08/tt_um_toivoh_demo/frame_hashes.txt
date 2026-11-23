@@ -1,9 +1,12 @@
 # Per-frame hashes from the simulation, frame 0 first, one per line.
-# Hash: FNV-1a 64 over the frame as RGB888, row-major, active area only, at native
-# resolution, each 2-bit channel stored as value * 85, pixels sampled mid-period.
+# Hash: FNV-1a 64 loop (prime 0x100000001b3) but with a NON-STANDARD offset basis,
+# hash_offset_basis below, not 0xcbf29ce484222325: tb.cpp's constant lost a digit.
+# Over the frame as RGB888, row-major, active area only, at native resolution,
+# each 2-bit channel stored as value * 85, pixels sampled mid-period.
 # Stimulus: ena=1, rst_n=0 for 10 clocks, then 1. Clock 0 is the first reset clock.
 # Frame 0 starts at the first end of a vsync pulse after capture_after_clock.
 id: tt08/tt_um_toivoh_demo
+hash_offset_basis: 0x14650fb0739d0383
 mode: 640x480@60
 width: 640
 height: 480

@@ -1,8 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 """Export each run's per-frame hashes as `data/results/<shuttle>/<macro>/frame_hashes.txt`.
 
-The testbench hashes every captured frame (FNV-1a 64, see `fnv1a()` in
-harness/tb.cpp) and puts the list in result.json. That list is most of the
+The testbench hashes every captured frame (the FNV-1a 64 loop with a
+non-standard offset basis, see `fnv1a()` in harness/tb.cpp and OFFSET_BASIS
+below) and puts the list in result.json. That list is most of the
 file's size, so `tt-vga collect` takes it out of the committed result.json
 and writes it here instead, one hash per line, frame 0 first. Other tools,
 such as an FPGA harness checking its output against the simulation, can then
@@ -16,6 +17,10 @@ import re
 from pathlib import Path
 
 FILE_NAME = "frame_hashes.txt"
+# The offset tb.cpp's fnv1a() starts from: the standard FNV-1a 64 basis,
+# 14695981039346656037, with its last decimal digit lost. Every hash recorded
+# so far used it, so it is stated in each file rather than silently assumed.
+OFFSET_BASIS = 1469598103934665603
 _SYNC = re.compile(r"tb: sync at clock (\d+)")
 
 
@@ -42,11 +47,14 @@ def render(result: dict, sim_log: str | None = None) -> str:
     after = capture_clock(result, sim_log)
     lines = [
         "# Per-frame hashes from the simulation, frame 0 first, one per line.",
-        "# Hash: FNV-1a 64 over the frame as RGB888, row-major, active area only, at native",
-        "# resolution, each 2-bit channel stored as value * 85, pixels sampled mid-period.",
+        "# Hash: FNV-1a 64 loop (prime 0x100000001b3) but with a NON-STANDARD offset basis,",
+        "# hash_offset_basis below, not 0xcbf29ce484222325: tb.cpp's constant lost a digit.",
+        "# Over the frame as RGB888, row-major, active area only, at native resolution,",
+        "# each 2-bit channel stored as value * 85, pixels sampled mid-period.",
         "# Stimulus: ena=1, rst_n=0 for 10 clocks, then 1. Clock 0 is the first reset clock.",
         "# Frame 0 starts at the first end of a vsync pulse after capture_after_clock.",
         f"id: {result['id']}",
+        f"hash_offset_basis: {OFFSET_BASIS:#018x}",
         f"mode: {t.get('mode')}",
         f"width: {t.get('width')}",
         f"height: {t.get('height')}",

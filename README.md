@@ -82,10 +82,14 @@ syncs (recorded as `auto_ui_in` in the result).
 Beside each `result.json`, `frame_hashes.txt` lists a hash of every captured
 frame, frame 0 first. The clips are lossy, so this is what to compare against
 when checking another implementation (an FPGA build, say) pixel for pixel.
-The file's header gives the hash definition (FNV-1a 64 over the frame as
-native-resolution RGB888, `fnv1a()` in `ttvga/harness/tb.cpp`), the mode, and
-`capture_after_clock`: the reset sequence starts at clock 0, and frame 0 is
-the frame that begins at the first end of a vsync pulse after that clock.
+The file's header gives the hash definition, the mode, and
+`capture_after_clock`. The hash is computed over the frame as native-resolution
+RGB888 by `fnv1a()` in `ttvga/harness/tb.cpp`. That is the FNV-1a 64 loop, but its
+offset basis is `0x14650fb0739d0383` rather than the standard
+`0xcbf29ce484222325` (a digit was lost from the constant), so a standard FNV
+library will not match. The header states the offset as `hash_offset_basis`.
+For `capture_after_clock`, the reset sequence starts at clock 0, and frame 0
+is the frame that begins at the first end of a vsync pulse after that clock.
 
 ### Asking an agent why a video is wrong
 

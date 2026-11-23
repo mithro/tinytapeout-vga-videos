@@ -25,6 +25,17 @@ change was built and run as ttvga in a scratch directory against tt08 nyancat:
 it gave clock 1703936, the same as the September log, and the first three
 frame hashes matched the published list exactly.
 
+**The hash is not standard FNV-1a.** The iCE40 harness session found it by
+comparing against a standard FNV implementation. The prime in `tb.cpp` is
+correct, but the offset basis is 1469598103934665603 (0x14650fb0739d0383):
+the standard 14695981039346656037 with its last digit lost. Its own
+port of the capture loop reproduced our published hashes exactly with that
+offset, so the pixels agree and only the label was wrong. The hashes can't be
+converted without the frames, which are not kept, so they stay as they are.
+Each file now states `hash_offset_basis`, and a comment at the constant warns
+that changing it breaks comparability unless everything is re-simulated.
+Whether to switch to the standard offset and re-run is the owner's decision.
+
 This session ran on the host itself, which has no orchestrator key. So the
 export was run once by hand on result files copied with sudo, using the same
 function `collect` now calls. Those copies lack `verdict`/`reason` (added by

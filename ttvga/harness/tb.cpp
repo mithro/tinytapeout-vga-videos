@@ -234,6 +234,11 @@ SyncInfo analyse(const SyncTracker& t) {
 volatile std::sig_atomic_t g_stop = 0;
 void on_signal(int) { g_stop = 1; }
 
+// NOT standard FNV-1a 64: the offset basis should be 14695981039346656037
+// (0xcbf29ce484222325) and this one lost its last digit. Every published
+// frame hash used this value, and ttvga/framehashes.py states it in each
+// frame_hashes.txt. Changing it means re-simulating everything, or the
+// published hashes and new ones stop being comparable.
 uint64_t fnv1a(const uint8_t* p, size_t n) {
     uint64_t h = 1469598103934665603ULL;
     for (size_t i = 0; i < n; i++) { h ^= p[i]; h *= 1099511628211ULL; }

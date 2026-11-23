@@ -22,6 +22,16 @@ def write(tmp_path, r):
     return p
 
 
+def test_offset_basis_matches_the_testbench():
+    import re
+    from ttvga import HARNESS_DIR
+    src = (HARNESS_DIR / "tb.cpp").read_text()
+    m = re.search(r"uint64_t fnv1a\(.*?\{\s*uint64_t h = (\d+)ULL;", src, re.S)
+    assert int(m[1]) == framehashes.OFFSET_BASIS
+    text = framehashes.render(result(frame_hashes=["00"]))
+    assert "hash_offset_basis: 0x14650fb0739d0383" in text
+
+
 def test_capture_clock_takes_the_last_sync_line():
     r = result()
     r["sim_log_tail"] = "tb: sync at clock 5\n" + LOG
