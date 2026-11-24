@@ -1,6 +1,6 @@
 # Raw signal traces, pluggable samplers and pluggable frame hashes
 
-Status: design, seventh revision (after six independent reviews, the owner's
+Status: design, eighth revision (after seven independent reviews, the owner's
 answers and the vgacap session's answers), awaiting the owner's review
 (2026-11-24).
 
@@ -123,10 +123,11 @@ The stored trace is a sequence of independently compressed blocks (each a
 separate zstd frame holding whole VGCH chunks for a stretch of samples,
 closed at 16 MiB of chunks, within VGCH's `VGACAP_MAX_CHUNK_LEN`, or after
 2^24 clocks, whichever comes first, so even a static design's trace has a
-block about every second of simulated time),
-followed by an index of `(first sample, byte offset)` per block, in a chunk
-type a plain VGCH reader skips, so a reader without seeking can still stream
-the decompressed blocks. A block always begins at a chunk boundary and a run
+block every 0.17-0.67 s of simulated time at the clock rates in use),
+followed by an index of `(first sample, byte offset)` per block. The index
+is a zstd *skippable frame* at the end of the file, so plain `zstd -d`
+decompresses the whole file to the VGCH stream, ignoring it, and a VGCH
+reader without seeking can still stream the blocks. A block always begins at a chunk boundary and a run
 never spans two blocks (a run that would cross a boundary is split, so
 every block starts fresh), so seeking never splits a run. Each block is a
 complete zstd frame, so a trace cut short (the job killed after its grace
@@ -247,7 +248,13 @@ without a trace:
     change events. vgacap's EVNT chunk has a 64-bit clock but a 32-bit value,
     and those pins are 35 bits, so this alternative also needs a 64-bit
     event value in format v2; the format note covers both.
-  - Post-simulation work. The hardest case is a short
+  - Reading the trace back: every sampler decompresses and walks the whole
+    trace once. For busy designs at the fastest simulation that is up to
+    about two runs a clock, some 1e10 runs for the longest run, likely the
+    largest post-simulation cost for busy, fast designs; nyancat and
+    metaballs are in the pilot to measure it. Both samplers walk the trace in
+    one pass, sharing the decompression.
+  - Post-simulation work per distinct frame. The hardest case is a short
   simulation with almost every frame distinct: tt07's `dvd_screensaver`,
   379 s of simulation and 3,568 distinct frames of 3,596, so a budget of
   about 19 s. Estimates for it, per sampler: the sampler itself, about 1.1e9
@@ -305,7 +312,8 @@ as in which clock they read a pixel at:
     `tb.cpp`'s `clock` is a multiple of 65,536, until both sync periods are
     stable (at most `calib_seconds`), which also fixes the polarities
     (`tb.cpp:361-378`);
-  - mode: from `tb.cpp`'s own 11-mode table (`tb.cpp:39-51`), the mode with
+  - mode: from `tb.cpp`'s own 11-mode table (`tb.cpp:39-51`), copied with
+    the port and kept in that order, never the shared 12-mode table; the mode with
     the smallest summed error (line-count error plus hsync-share error, below
     0.03) among those with `cpp` = clocks per line / mode line pixels between
     0.9 and 4.5, with a fallback for non-standard line counts
@@ -334,9 +342,11 @@ as in which clock they read a pixel at:
   cropping to the bounding box of non-black pixels, wrong for designs with
   black borders) is never used.
   - Mode and `cpp`: the measured clocks per line and lines per frame are
-    matched, with `tb-v1`'s rule (smallest summed error), against one shared
-    pixel-mode table: `tb.cpp`'s 11 modes plus vgacap's 720x400@70, 12 in
-    all, kept in vgacap as the single table both samplers use. `cpp` = clocks
+    matched, with `tb-v1`'s rule (smallest summed error), against vgacap's
+    shared 12-mode pixel table: `tb.cpp`'s 11 modes plus vgacap's own
+    720x400@70. (`tb-v1` does not use this table: it keeps `tb.cpp`'s 11
+    modes in `tb.cpp`'s order, including the order its fallback searches,
+    `tb.cpp:427-435`, because adding a mode could change which one it picks.) `cpp` = clocks
     per line / the mode's line pixels, a real number. Non-standard line
     counts use `tb-v1`'s fallback (the mode's horizontal timing, every line
     after the vsync pulse). With no mode at all, `tb-v1`'s "unknown" rule
@@ -384,11 +394,23 @@ comparisons is a decision (below).
 
 ## Layer 3: frames, and hash methods over them
 
-Which frames: every sampler numbers frames from the first one that starts
-at or after clock `capture_after_clock` (the clock at which `tb.cpp`'s
-calibration ended, recorded in the trace's metadata), so frame numbers mean
-the same in both samplers; it emits every frame that starts and ends before
-the trace ends, and drops a frame cut off by the end of the trace. `tb-v1`
+Which frames: frame numbers are anchored to one vsync pulse, the same for
+every sampler, so frame `k` is the same picture in all of them. The anchor
+is the first vsync pulse that `tb.cpp`'s capture loop sees end: a pulse seen
+in clock `e - 1` and not in clock `e`, with `e - 1 >= capture_after_clock`
+(`tb.cpp` starts capture with `prev_v` false, `tb.cpp:480`, so a pulse that
+ends on capture's very first clock is not seen). Frame 0 is the picture that
+follows that pulse: for `tb-v1` it starts at clock `e`; for `centre-v1` it is
+the libvgaframe frame whose vsync pulse is that pulse, starting at the
+pulse's leading edge. Frame `k` is the picture after the `k`-th following
+pulse. Each sampler emits every frame that ends before the trace ends, and
+drops a frame cut off by the end of the trace.
+
+`capture_after_clock` is derived from the trace, never only stored: `tb-v1`
+contains `tb.cpp`'s calibration, so running it over the trace reproduces the
+value. The trace's closing metadata chunk also records it with the run's
+`status`, as a cross-check; a trace cut short has no closing chunk, so its
+status is `truncated` and the derived value is used. `tb-v1`
 additionally stops at `tb.cpp`'s frame target, as `tb.cpp` does, so it
 reproduces the published frame counts. Frames before `capture_after_clock`
 (reset and calibration) are in the trace but are not frames of the run.
@@ -470,7 +492,7 @@ branch in vgacap; that session reviews before anything merges.
 | need | in vgacap today | work | by |
 | --- | --- | --- | --- |
 | a sample of every pin (43 bits), two per clock, with the clock bit not breaking runs | VGCH stream, `sample_bits` 8/12/16/32 (`stream.h:58`); `RLE ` chunk (32-bit value + 32-bit run); `EVNT` (64-bit clock + value); C99 callback writer and reader, no allocation | format v2: samples up to 64 bits; one new run-length chunk (TASKS.md calls it RLE64; its value width follows `sample_bits`, 1 to 8 bytes) with a LEB128 run length, so runs are unbounded; a header field naming the sample-clock bit (see The clock in a run-encoded trace). In the C writer and reader and the Python mirror, with round-trip tests. A design note in tt-vga-capture/docs/design/ first, for the owner's decision. The same chunk answers vgacap's pending compact-RLE decision (tt-vga-capture `docs/research/2026-11-24-board-rle-throughput.md`: on the RP2350, raw 700 k samples/s, today's 8-byte pairs 784 k, a u8 value + LEB128 run 1.46 M) | here |
-| the trace container | VGCH chunks streamed into one file; the header has a `uint32` `clock_hz` and a free-text description of at most 255 bytes (`stream.h:56-66`) | independently compressed blocks and the `(first sample, offset)` index chunk, as under Size and format, with the index rebuilt by scanning when it is missing; a metadata chunk of `key=value` lines for the run's parameters (project id, override, `clock_hz`, `calib_seconds`, `seconds`, simulator and harness versions), which a plain reader skips; the double-buffered compressor thread, in the host-side optional target | here |
+| the trace container | VGCH chunks streamed into one file; the header has a `uint32` `clock_hz` and a free-text description of at most 255 bytes (`stream.h:56-66`) | independently compressed blocks and the `(first sample, offset)` index chunk, as under Size and format, with the index rebuilt by scanning when it is missing; a metadata chunk of `key=value` lines, which a plain reader skips, written twice: an opening one with the run's parameters (project id, override, `clock_hz`, `calib_seconds`, `seconds`, simulator and harness versions) and a closing one with what is only known later (`capture_after_clock`, `status`, `frames`); the double-buffered compressor thread, in the host-side optional target | here |
 | 64-bit values and long runs through the API | reader run events and `vgaframe_push` take a 32-bit value and 32-bit run (`stream.h:122`, `frame.h:180`) | the new chunk and the reader's run event carry a 64-bit value and a 64-bit run. libvgaframe keeps its 32-bit sample: the sampler extracts `uo_out` (which carries hsync and vsync) from the 64-bit sample, so the board path is unchanged. Runs over 2^32 - 1 are split into several `vgaframe_push` and `vgaframe_timing_push` calls, with a test that a split run gives the same result as an unsplit one (the learner counts clocks inside runs). Agreed with vgacap | here |
 | decoding runs, not clocks | `vgaframe_push(f, sample, run)`, `vgaframe_timing_push(l, hs, vs, run)`: an unchanged run is one call | a benchmark first (a synthetic 1.5e9-clock run stream, against the budget), then the C entry point the native sampler tool links. No CPython binding | here |
 | `tb-v1` | none (it is `tb.cpp`'s logic) | a port of `tb.cpp:191-230` and `361-557` as its own sampler, tested against `tb.cpp` itself | here |
@@ -529,7 +551,9 @@ moves to the bulk volume (owner's decision 2026-11-24). A job:
    staging area, then the new one into place, then the old one deleted. An
    upload between the two renames sees the project missing, which does
    nothing (the upload never deletes); files the new output no longer has
-   stay on the server until `tt-vga verify` lists them for removal;
+   stay on the server until `tt-vga verify` lists them for removal (it reads
+   the server's public directory listings over HTTPS, the only way to see
+   it, since the upload account can only write);
 4. deletes its scratch copy (a failed job deletes it too).
 
 Root-volume use is temporary but large while jobs run (a compressed trace
@@ -544,9 +568,9 @@ next to it; `docs/host-setup.md` gains the two `install -d` lines. The paths
 are host configuration (`~/ttvga/host.toml` on the host: `frames_root`,
 `staging_dir`, `min_free_root_gb`), never named in the repository.
 
-In git, beside each `result.json`: `<sampler>/frames.txt` for each sampler
+In git, beside each `result.json`, under `frames/`: `frames/<sampler>/frames.txt` for each sampler
 (about 35 MB per sampler across 408 projects; git compresses hex to about
-half) and `tb-v1/frame_hashes.fnv1a64-tb2026-rgb888.txt` (the existing files,
+half) and `frames/tb-v1/frame_hashes.fnv1a64-tb2026-rgb888.txt` (the existing files,
 moved and given the new header with their values unchanged, which the
 conversion asserts). Other hash files are published, not committed.
 Re-running a project that finished normally gives identical files, so adds
@@ -618,9 +642,15 @@ also worked and is the fallback. Pinning:
 
 - `tb.cpp`: writes the trace through the vgacap writer and its compressor
   thread; `--trace PATH` (job runs always pass it) and no trace when it is
-  absent, which is what probe runs and ad hoc runs get; no longer writes the `frame_hashes` list into timing.json
-  (`tb.cpp:590-608`). Its own decoding for the clips is untouched.
-- `job.py`: the Verilator build (`job.py:120-125`) gains vgacap's include
+  absent, which is what probe runs and ad hoc runs get; its own decoding for the clips is untouched, and it still hashes every
+  frame it decodes, but writes the list to its own file in the run's output
+  directory instead of into timing.json (`tb.cpp:590-608`). The job compares
+  that list with `tb-v1`'s `fnv1a64-tb2026-rgb888` output on every run and
+  fails the job if they differ, so `tb-v1` is checked against the decoding
+  that makes the clips continuously, not just once.
+- `job.py`: writes everything for the published tree with umask 022 (files
+  0644, directories 0755), so the upload account can read it; the Verilator
+  build (`job.py:120-125`) gains vgacap's include
   directory in `-CFLAGS` and its static library and `-pthread` (for the
   compressor thread) in `-LDFLAGS`; the job runs
   the native sampler tool after the simulation, writes PNGs and pages, and
@@ -632,9 +662,12 @@ also worked and is the fallback. Pinning:
   committed hash file (replacing `remote.py:263-265`): the job also writes
   them under its work directory (`work/<shuttle>/<macro>/frames/<sampler>/`),
   and `collect`'s rsync of the work tree, whose filter today includes only
-  `result.json` (`remote.py:259-260`), also includes `frames.txt` and
-  `frame_hashes.fnv1a64-tb2026-rgb888.txt`, so `collect` needs no knowledge
-  of the frames root; bootstrap builds vgacap and installs uv's
+  `result.json` (`remote.py:261-262`), also includes `frames.txt` and
+  `frame_hashes.fnv1a64-tb2026-rgb888.txt`, which lands them at
+  `data/results/<shuttle>/<macro>/frames/<sampler>/`, so `collect` needs no
+  knowledge of the frames root. That rsync never deletes, so `collect` then
+  removes any `frames/` file under `data/results/` that the host no longer
+  has; bootstrap builds vgacap and installs uv's
   Python.
 - `ttvga/tools.toml`: `[uv]` and `python`.
 - `ttvga/framehashes.py` and `tests/test_framehashes.py` are removed; a
@@ -685,7 +718,14 @@ also worked and is the fallback. Pinning:
 1. Now: vgacap's new run-length chunk (value width from `sample_bits`,
    LEB128 run, a sample-clock bit), presented with its design note. It is
    needed whatever the stored format.
-2. After step 3: the stored trace format (sigrok, FST, or VGCH with runs).
+2. After step 3: the stored trace format. VGCH with runs is what the
+   samplers read and what the block index seeks in, so storing it keeps
+   everything re-derivable directly, and FST, VCD or sigrok files are made
+   from it on demand by `vgacap-export`. Storing FST or sigrok instead would
+   need an importer back to runs (not in the work list), FST would hold `clk`
+   as a change every half clock, and seeking would depend on those formats'
+   own indexes. Recommended: VGCH with runs, unless step 3 shows another is
+   much smaller.
 3. Which sampler is the reference the other harnesses should match: `tb-v1`
    (matches everything published so far, wrong for 47 projects) or
    `centre-v1`. Both are computed and published either way. Recommended:
