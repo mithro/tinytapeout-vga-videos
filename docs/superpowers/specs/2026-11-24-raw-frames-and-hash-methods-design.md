@@ -269,7 +269,7 @@ before anything merges.
 
 | need | in vgacap today | work | by |
 | --- | --- | --- | --- |
-| a sample of every pin (43 bits), two per clock | VGCH stream, `sample_bits` 8/12/16/32 (`include/vgacap/stream.h:58`); `RLE ` chunk (32-bit value + run); `EVNT` (64-bit clock + value); C99 callback writer and reader, no allocation | format v2: `sample_bits = 64` and an RLE64 chunk (value, run), in the C writer and reader and the Python mirror, with round-trip tests. A short design note in tt-vga-capture/docs/design/ is reviewed first, and goes to the owner with vgacap's pending compact-RLE question | here |
+| a sample of every pin (43 bits), two per clock | VGCH stream, `sample_bits` 8/12/16/32 (`include/vgacap/stream.h:58`); `RLE ` chunk (32-bit value + run); `EVNT` (64-bit clock + value); C99 callback writer and reader, no allocation | format v2: samples up to 64 bits, and one new run-length chunk whose value width follows the header's `sample_bits` (1 to 8 bytes) with a LEB128 run length. That single chunk also answers vgacap's pending compact-RLE decision (tt-vga-capture `docs/research/2026-11-24-board-rle-throughput.md`: on the RP2350, raw 700 k samples/s, today's 8-byte RLE pairs 784 k, a u8 value + LEB128 run 1.46 M), so 8-bit board captures and 43-bit simulation traces share one encoder, reader and sampler path. In the C writer and reader and the Python mirror, with round-trip tests; a design note in tt-vga-capture/docs/design/ first, for the owner's decision | here |
 | decoding runs, not clocks | `vgaframe_push(f, sample, run)` and `vgaframe_timing_push(l, hs, vs, run)`: an unchanged run is one call | a benchmark first (`vgacap-frames` on a synthetic 1.5e9-clock run stream, against the budget), then a C entry point that the native sampler and hash tool link. No CPython binding: Python stays out of the per-clock path | here |
 | samplers (`tb-v1`, `centre-v1`, `cpp < 1`) | libvgaframe works at clock resolution: one byte per clock (6-bit colour + a written bit) per line; no pixel-clock rule | the samplers as a column pick from the clock-resolution line, run once per distinct clock-level frame | here |
 | modes outside the table | 7 modes (640x480 at 60/72/75, 720x400@70, 800x600 at 56/60, 1024x768@60), matched by clocks per line; line buffer `max_clocks_per_line` | 640x504, and lines up to about 3,400 clocks (`cpp` 4.27); a learner path for timings not in the table | here (offered to vgacap; this side takes it) |
@@ -450,7 +450,10 @@ PyPI's `zstandard` on 3.13 also worked and is the fallback. Pinning:
 
 ## Decisions for the owner
 
-1. The trace format, after step 3: sigrok, FST or planar zstd.
+1. The trace format, after step 3: sigrok, FST or planar zstd. Before
+   that, and independent of it: vgacap's new run-length chunk (variable
+   value width, LEB128 run), presented with its design note, since the
+   encoder writes it whichever stored format is chosen.
 2. Which sampler is the reference the other harnesses should match: `tb-v1`
    (matches everything published so far, wrong for 47 projects) or
    `centre-v1`. Both are computed and published either way. Recommended:
