@@ -275,7 +275,7 @@ before anything merges.
 | modes outside the table | 7 modes (640x480 at 60/72/75, 720x400@70, 800x600 at 56/60, 1024x768@60), matched by clocks per line; line buffer `max_clocks_per_line` | 640x504, and lines up to about 3,400 clocks (`cpp` 4.27); a learner path for timings not in the table | here (offered to vgacap; this side takes it) |
 | rgb6 output | the raw buffer already holds the 6 bits; rgb24 is derived on emit | an rgb6 pointer beside rgb24 in `vgaframe_output_t`, checked against `R<<4 | G<<2 | B` with test vectors (libvgaframe's bit order follows TinyVGA's signal map) | here |
 | compression, SHA-256 | none | vendored zstd (BSD) and SHA-256 (public domain) under `third_party/` with licence files, as an optional CMake target so the board and RP1 builds stay dependency-free | here |
-| FST/VCD export | none | vendored fstapi (MIT), same optional target | here (asked; awaiting vgacap's view) |
+| FST/VCD export | none (`vgacap-dump` prints chunks as text) | `vgacap-export --format fst\|vcd [--from/--to]`, a C tool beside `vgacap-dump` and `vgacap-frames`, with fstapi (MIT) vendored in the same optional target; driven from the reader's run callbacks (one run, one value change); decoded hsync/vsync/r/g/b/rgb6 from libvgaframe's signal map and frame markers from its frame callback, so waveform and frames cannot disagree; timescale from the TIME chunk; `.gtkw` written as text. It exports board captures too | here |
 
 Also reused, not rewritten: `vgacap-dump` (stream inspector), PNG/PPM output
 from `vgacap-frames`, and from tt-vga-testpatterns the calibration designs
@@ -294,8 +294,8 @@ Process (vgacap's): a milestone "M7: simulation traces" in tt-vga-capture's
 reviewed there; vgacap branches off `main` once PRs #1-#3 are merged (until
 then off `rtl`), one worktree per branch, small commits pushed as they go,
 review before merge. Order: (1) the 64-bit sample and RLE64 design note, to
-the owner; (2) the libvgaframe benchmark; (3) samplers and rgb6; (4) vendored
-zstd, SHA-256 and fstapi.
+the owner; (2) the libvgaframe benchmark; (3) samplers, rgb6 and
+`vgacap-export`; (4) vendored zstd and SHA-256.
 
 If the owner chooses sigrok or FST as the stored trace format (Decisions),
 VGCH is still the internal form between the encoder and the samplers, and
@@ -425,8 +425,8 @@ PyPI's `zstandard` on 3.13 also worked and is the fallback. Pinning:
 
 1. Implement on a branch with tests: the trace writer and reader for each
    candidate format and conversion between them; FST and VCD export checked
-   by `fst2vcd` (every signal, every change, the timescale) against the
-   trace it came from; both samplers on synthetic
+   from a synthetic stream against a committed expected VCD, and `fst2vcd`
+   of the FST output equal to the VCD output (no viewer needed); both samplers on synthetic
    traces with known pixels, at `cpp` of 0.95, 1, 1.9 and 2; rgb6 and PNG
    round trip; hash methods against committed vectors; `compare` on
    constructed shifted and differing runs; the stale-file cases.
