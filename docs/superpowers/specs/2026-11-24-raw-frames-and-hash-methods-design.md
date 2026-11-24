@@ -78,15 +78,17 @@ Per project, under `frames/<shuttle>/<macro>/` in the published tree:
   choice and the numbers are recorded in docs/.
 - `frames.txt` -- the index, described below.
 - `frame_hashes.<method>.txt` -- one per hash method computed for the run.
+- `png/<n>.png` and `index.html` -- every distinct frame as a PNG and a page
+  to browse them, see PNG below.
 
 ### Where on the host: one copy, on the bulk volume
 
 The frames directory is owned by the pipeline user and sits inside the
 published tree, which is on the bulk data volume. It is the only copy of the
-store; there is no staging copy. A job writes the store to a temporary file
-in a second pipeline-owned directory on the *same* filesystem but outside the
-published tree, and renames it into place when complete, so the 5-minute
-upload never sees a half-written file. Both paths are host configuration
+store; there is no staging copy. A job builds the project's whole frames
+directory in a second pipeline-owned directory on the *same* filesystem but
+outside the published tree, and renames it into place when complete, so the
+5-minute upload never sees a half-written one. Both paths are host configuration
 (`~/ttvga/host.toml` on the host: `frames_dir`, `frames_tmp_dir`), never
 named in the repository; `docs/host-setup.md` gains the two `install -d`
 lines an administrator runs once. Nothing frame-related is written to the
@@ -134,11 +136,37 @@ name. The 64-bit FNV is not safe for that across half a million frames.
 ### PNG
 
 PNG is the viewing and exchange format: 8-bit indexed, a 64-entry palette in
-which index i is rgb6 value i (colour = channel * 85). Converting a PNG back
-gives the identical rgb6 bytes, so either format can be the input to every
-tool. Decided: PNGs are made on demand by the tools and are not published in
-bulk (that would be about 543,730 small files); each project already has its
-poster and contact sheet.
+which index i is rgb6 value i (colour = channel * 85), at the design's native
+resolution. Converting a PNG back gives the identical rgb6 bytes, so either
+format can be the input to every tool.
+
+The owner decided (2026-11-24) that every distinct frame is also published as
+a PNG, so it can be looked at in a browser on data.wafer.space:
+
+- `frames/<shuttle>/<macro>/png/<n>.png`, `n` the distinct frame number,
+  zero-padded to 6 digits, so the directory lists in frame order. The PNGs
+  are written by `job.py` after the run, reading the store through the
+  `zstd -dc` CLI and encoding PNG with the standard library's `zlib`. The
+  whole project directory (store, index, hash files, PNGs, page) is built in
+  the temporary directory and renamed into place in one step, replacing the
+  previous one, so the upload never sees a half-built project.
+- `frames/<shuttle>/<macro>/index.html`: a static page listing every captured
+  frame (number, start clock, distinct number) with links to its PNG, the
+  distinct frames as a grid of thumbnails, and the frame shown at 1x/2x/4x
+  with `image-rendering: pixelated` so pixels stay sharp. No scripts are
+  needed to read it.
+- The PNGs are derived copies: the `.zst` store stays the canonical record,
+  and `tt-vga verify` checks every published PNG decodes to the store's
+  bytes.
+
+Cost, to be measured in rollout step 2: about 543,730 extra files. Their
+size is unknown until measured (flat VGA art should compress to a few KB a
+frame). The file count matters more for the 5-minute upload, which checks
+every file on every run: today's 62,641 entries take about 25 s to list, so
+roughly ten times as many could take several minutes, every 5 minutes. Step
+3 reports the measured listing time; if it is too slow, the options (for the
+owner) are a longer upload interval, or the upload skipping the frames tree
+except when the pipeline marks it changed.
 
 ## Hash methods
 
@@ -194,8 +222,9 @@ on its own.
   `frames`, `distinct_frames` and the other statistics stay there. RGB888 is
   still produced for ffmpeg, as now.
 - `job.py` (standard library only, unchanged in that respect): passes the
-  store paths from `host.toml`, renames the finished store into the frames
-  directory, writes the store's size and SHA-256 into `frames.txt`, keeps
+  store paths from `host.toml`, writes the store's size and SHA-256 into
+  `frames.txt`, writes the PNGs and `index.html` from the store, renames
+  the finished project directory into the frames directory, keeps
   `frames.txt` and the hash files in the work directory, and handles the
   stale-file cases above.
 - `ttvga/remote.py`: `collect` brings back `frames.txt` and the
@@ -255,11 +284,13 @@ published hashes would no longer match. Options:
 2. Run 5 projects of different kinds (nyancat, metaballs at 800x600, a static
    one, a QSPI one, the 640x504 tennis game). Measure the store size and
    packing time for: one stream at zstd levels 3, 9 and 19 with `--long`,
-   and one zstd frame per image. Check the `fnv1a64-tb2026-rgb888` values
-   are identical to the published ones, and compare SHA-256 and FNV distinct
-   counts.
-3. Report the measured sizes and times projected to all 408 projects, and
-   the chosen store layout, before the full run.
+   and one zstd frame per image; and the PNGs' total size and writing time.
+   Check the `fnv1a64-tb2026-rgb888` values are identical to the published
+   ones, and compare SHA-256 and FNV distinct counts.
+3. Report the measured sizes and times projected to all 408 projects, the
+   chosen store layout, and the upload's file-listing time with the PNGs
+   (measured with a dry run over a tree of that many files), before the full
+   run.
 4. Re-run all projects (several hours, progress reported on the usual
    cadence). Check the regenerated FNV hashes equal all 408 committed files
    (any project that differs is investigated, not accepted). Publish. Tell the
