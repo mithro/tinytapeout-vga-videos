@@ -631,8 +631,10 @@ also worked and is the fallback. Pinning:
   Python); `collect` brings back each sampler's `frames.txt` and the
   committed hash file (replacing `remote.py:263-265`): the job also writes
   them under its work directory (`work/<shuttle>/<macro>/frames/<sampler>/`),
-  which `collect` already copies (`remote.py:259-260`), so `collect` needs no
-  knowledge of the frames root; bootstrap builds vgacap and installs uv's
+  and `collect`'s rsync of the work tree, whose filter today includes only
+  `result.json` (`remote.py:259-260`), also includes `frames.txt` and
+  `frame_hashes.fnv1a64-tb2026-rgb888.txt`, so `collect` needs no knowledge
+  of the frames root; bootstrap builds vgacap and installs uv's
   Python.
 - `ttvga/tools.toml`: `[uv]` and `python`.
 - `ttvga/framehashes.py` and `tests/test_framehashes.py` are removed; a
