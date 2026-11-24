@@ -24,8 +24,9 @@ The owner's decisions (2026-11-24):
   samplers and hash methods are separate, pluggable, named stages.
 - Hashes are only an optimisation for deciding quickly whether frames match.
 - Everything is published on data.wafer.space, including a PNG of every
-  frame for viewing in a browser. It lives on the host's bulk data volume,
-  never its root volume.
+  frame for viewing in a browser. The large final outputs live on the
+  host's bulk data volume; temporary files may use the faster root NVMe
+  volume while a job runs.
 - Python on the host may be upgraded and may use packages from PyPI.
 
 ## Three layers
@@ -91,10 +92,10 @@ are documented precisely enough to read without our code, and
 `tb.cpp` writes samples to a pipe, in the same way it already feeds ffmpeg,
 to a writer process running under the host's uv-managed Python (which
 compresses with the standard library's `compression.zstd`, or writes the
-chosen format), straight onto the bulk volume. Nothing trace-related touches
-the root volume or needs a system package. (If the FST format is chosen,
-Verilator's own FST writer is used instead and the file is written straight
-to the scratch directory.) The existing in-testbench decoding (mode
+chosen format), into the job's scratch directory on the fast root volume
+(see Where things live). No system package is needed. (If the FST format is
+chosen, Verilator's own FST writer is used instead, writing to the same
+place.) Raw, uncompressed samples never reach any disk. The existing in-testbench decoding (mode
 detection, frames for the clips, statistics in timing.json) stays as it is
 for now: the clips are out of scope.
 
@@ -182,26 +183,40 @@ then one hash per frame, frame 0 first.
 
 ## Where things live
 
-On the host, everything this design produces is written to the bulk data
-volume inside the published tree (so it appears on data.wafer.space), one
+On the host, the final outputs of this design live on the bulk data volume
+inside the published tree (so they appear on data.wafer.space), one
 pipeline-owned directory per project:
 
     <frames root>/<shuttle>/<macro>/
         <shuttle>_<macro>_trace.<ext>
         <sampler>/{store, frames.txt, frame_hashes.*.txt, png/, index.html}
 
-The published tree belongs to another account (`tt-vga mirror` copies into
-it as that account, `remote.py:286-289`). So an administrator creates, once,
-two directories owned by the pipeline user on the same filesystem: the
-frames root inside the published tree, and a scratch directory outside it.
-These are the only changes outside the pipeline user's home;
-`docs/host-setup.md` gains the two `install -d` lines. A job builds a
-project's whole directory in the scratch directory and renames it into place
-in one step, so the 5-minute upload never sees a half-built project. The two
-paths are host configuration (`~/ttvga/host.toml` on the host:
-`frames_root`, `scratch_dir`), never named in the repository. The work
-directory on the root volume keeps only the clone, build, logs, result.json
-and timing.json, as now.
+Working files are on the fast root NVMe volume; only the finished output
+moves to the bulk volume (owner's decision 2026-11-24). A job:
+
+1. writes the trace, runs the samplers and hash methods, and builds the
+   project's whole output directory (PNGs, pages and all) in a scratch
+   directory under its work directory on the root volume, where the many
+   small reads and writes are fast;
+2. copies the finished directory to a staging directory on the bulk volume
+   (outside the published tree, on the same filesystem as it);
+3. renames it into place inside the published tree in one step, so the
+   5-minute upload never sees a half-copied project;
+4. deletes its scratch copy.
+
+Root-volume use is temporary but large while jobs run (a compressed trace
+plus one sampler's PNGs per running job, measured in rollout step 2). The
+queue checks free space before starting each job and waits while the root
+volume is below a threshold (`min_free_root_gb` in host configuration, with
+a default from the step 2 measurements), and a job that fails deletes its
+scratch directory. The published tree belongs to another account
+(`tt-vga mirror` copies into it as that account, `remote.py:286-289`), so an
+administrator creates, once, two pipeline-owned directories on the bulk
+volume: the frames root inside the published tree and the staging directory
+next to it. These are the only changes outside the pipeline user's home;
+`docs/host-setup.md` gains the two `install -d` lines. The paths are host
+configuration (`~/ttvga/host.toml` on the host: `frames_root`,
+`staging_dir`, `min_free_root_gb`), never named in the repository.
 
 In git, beside each `result.json`: `<sampler>/frames.txt` for each sampler
 (about 35 MB per sampler across 408 projects; git compresses hex to about
