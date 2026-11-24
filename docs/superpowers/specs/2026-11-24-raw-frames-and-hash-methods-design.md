@@ -289,8 +289,8 @@ Dependency: vgacap pinned to a commit, built with its own CMake (C99, no
 dependencies) by `tt-vga bootstrap`; the native tools here link
 `libvgacap`.
 
-Process (vgacap's): a milestone "M7: simulation traces" in tt-vga-capture's
-`TASKS.md` and a plan in tt-vga-capture's `docs/plans/`, written here and
+Process (vgacap's): Milestone 10, "simulation traces", in tt-vga-capture's
+`TASKS.md` (added on its main, c2b5efe) and a plan at tt-vga-capture `docs/superpowers/plans/2026-11-24-m10-simulation-traces.md`, written here and
 reviewed there; vgacap branches off `main` once PRs #1-#3 are merged (until
 then off `rtl`), one worktree per branch, small commits pushed as they go,
 review before merge. Order: (1) the 64-bit sample and RLE64 design note, to
