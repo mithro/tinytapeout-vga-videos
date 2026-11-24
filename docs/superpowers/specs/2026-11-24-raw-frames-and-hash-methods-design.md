@@ -48,6 +48,13 @@ as now.
 
 ## What is stored per project
 
+Where it lives on the host: the frame store goes in the published tree (the
+directory mirrored to data.wafer.space), which sits on a bulk data volume.
+It must never be on the host's root volume, and there is one copy, not a
+staging copy plus a published one; the simulation's work directories stay on
+the fast root volume and only hold frames until they are packed. The actual
+paths are local configuration, like the host name.
+
 On the host and on data.wafer.space, under `<shuttle>/<macro>/`:
 
 - `<shuttle>_<macro>_frames.rgb6.zst` -- the canonical store. Each distinct
