@@ -1,6 +1,6 @@
 # Raw signal traces, pluggable samplers and pluggable frame hashes
 
-Status: design, fifth revision (after four independent reviews, the owner's
+Status: design, sixth revision (after five independent reviews, the owner's
 answers and the vgacap session's answers), awaiting the owner's review
 (2026-11-24).
 
@@ -12,7 +12,7 @@ implementations of the same designs (the iCE40 VGA Playground harness, the
 handheld harness) compare against those hashes. A hash only says *whether*
 two frames differ. Finding out *why* needs the data, and the pipeline has
 never kept it: `tb.cpp` decodes the pins into frames as it simulates and
-pipes them to ffmpeg as lossy MJPEG (`tb.cpp:464`), which is deleted after
+pipes them to ffmpeg as lossy MJPEG (`tb.cpp:463-465`), which is deleted after
 the clips are encoded (`job.py:383`). Worse, how the pins become pixels is
 baked into the testbench, and that decoding is wrong for some designs (see
 Layer 2): fixing it today means simulating again.
@@ -84,8 +84,8 @@ incremented at the end of each tick (`tb.cpp:352`), so an event it observes
 when `clock == C` happened in clock `C - 1`. `capture_after_clock` keeps its
 published meaning: the value of `tb.cpp`'s `clock` when calibration ended,
 which is the number of clocks before capture, so capture's first clock is
-clock `capture_after_clock`. A frame's start clock is the clock in whose
-clk-high sample the sampler sees the frame begin. `--from/--to` take clock
+clock `capture_after_clock`. A frame's start clock is defined by each sampler
+(see Layer 2) and is always a clock number in this sense. `--from/--to` take clock
 numbers, from inclusive, to exclusive.
 
 Time: the header records `clock_hz`; sample `n` is at
@@ -123,7 +123,11 @@ most 16 MiB of chunks per block, within VGCH's `VGACAP_MAX_CHUNK_LEN`),
 followed by an index of `(first sample, byte offset)` per block, in a chunk
 type a plain VGCH reader skips, so a reader without seeking can still stream
 the decompressed blocks. A block always begins at a chunk boundary and a run
-never spans two blocks, so seeking never splits a run. Reading a
+never spans two blocks (a run that would cross a boundary is split, so
+every block starts fresh), so seeking never splits a run. Each block is a
+complete zstd frame, so a trace cut short (the job killed after its grace
+period) loses at most the unfinished block: the reader rebuilds the missing
+index by scanning the blocks. Reading a
 clock range (`--from/--to`, `frames compare`) seeks to the right block
 instead of decompressing from the start. Within a block, a stretch where runs
 do not pay (busy content such as noise, which run encoding makes larger) is
@@ -159,8 +163,11 @@ handed to a second thread (double-buffered) that compresses them with
 vendored zstd and writes them with buffered I/O into the job's scratch
 directory on the fast root volume, so compression does not run on the
 simulation's thread. Busy designs produce up to about one run per clock,
-some 35 MB/s of encoded data at the fastest simulation, which that thread
-compresses at a low zstd level.
+and designs with logic on both clock edges (the QSPI model's responses, for
+example) up to two; at about 7.5 bytes a run that is 35-70 MB/s of encoded
+data at the fastest simulation, compressed with zstd's fast levels. The
+compressor thread lives in vgacap's host-side (optional) target, so other
+host tools can use it; the board builds are unaffected.
 No per-sample pipe, no Python in the hot path, and raw samples never reach
 any disk. The existing in-testbench decoding (mode detection, frames for
 the clips, statistics in timing.json) stays as it is for now: the clips are
@@ -185,8 +192,9 @@ rollout check, not an assumption.
   (`clk`, `rst_n`, `ena`, `ui_in[7:0]`, `uio_in[7:0]`, `uo_out[7:0]`,
   `uio_out[7:0]`, `uio_oe[7:0]`). A second scope adds decoded signals:
   `hsync`, `vsync`, `r[1:0]`, `g[1:0]`, `b[1:0]` and `rgb6`, from the same
-  signal map libvgaframe uses, and `frame` (frame number) from a sampler's
-  frame boundaries, so waveform and frames cannot disagree.
+  signal map libvgaframe uses, and, with `--sampler ID`, `frame` (frame
+  number) from that sampler's frame boundaries, so waveform and frames
+  cannot disagree; without `--sampler` there is no `frame` signal.
 - A GTKWave save file (`.gtkw`) is written as text beside the export with
   those signals grouped and radixes set; if Surfer has a documented
   equivalent (a state or command file), one is written for it too.
@@ -220,9 +228,19 @@ without a trace:
   next target.
 - Everything after the simulation, plus the compressor thread (samplers,
   hash methods, PNGs, pages, copying to the bulk volume): at most 5% of the
-  simulation's CPU time for the same project. The hardest case is a short
+  simulation's CPU time for the same project.
+  - Compression: zstd's fast levels run at roughly 0.5-1 GB/s a core on
+    this host (an estimate; step 2 measures it), so the 35-70 MB/s of the
+    busiest designs at the fastest simulation cost about 4-14% of a core,
+    while most designs, with long blank intervals and slower simulations,
+    cost far less. The busiest designs can therefore exceed the target on
+    their own. If step 2 shows that, the format note's alternative applies
+    to them: a planar chunk with `uo_out` alone as plain bytes per clock (one
+    byte a clock, no run overhead) and the other, rarely changing pins as
+    change events, which vgacap's EVNT chunk already provides.
+  - Post-simulation work. The hardest case is a short
   simulation with almost every frame distinct: tt07's `dvd_screensaver`,
-  379 s of simulation and 3,568 distinct frames of 3,600, so a budget of
+  379 s of simulation and 3,568 distinct frames of 3,596, so a budget of
   about 19 s. Estimates for it, per sampler: the sampler itself, about 1.1e9
   pixel picks, around a second in C; SHA-256 of every captured frame (1.1 GB;
   this host's CPUs have no SHA extensions, so a portable implementation at
@@ -237,8 +255,11 @@ without a trace:
   give identical frames, running the second sampler only on request. A
   typical project (603 s median, far fewer
   distinct frames) is well inside.
-- Memory: fixed per job (the encoder's block, one clock-resolution frame and
-  one rgb6 frame per sampler), independent of run length.
+- Memory: fixed buffers per job (the encoder's two blocks, one
+  clock-resolution frame and one rgb6 frame per sampler), plus two small
+  tables that grow with the run: the SHA-256 of each distinct frame (32 bytes
+  each, about 115 KB for the largest project) and the block index (16 bytes a
+  block).
 
 If a target is missed, the step 3 report gives the profile and the fix, not
 just the number.
@@ -298,7 +319,7 @@ as in which clock they read a pixel at:
   on some clocks, so about 5% of pixels are never read and stay 0.
 - **`centre-v1`**: libvgaframe's timing learner (VESA-correct, glitch
   pulses rejected, locked once two consecutive frames agree, the first frame
-  claimed retroactively; `frame.h:33-112`) supplies the lines and frames, at
+  claimed retroactively; `frame.h:47-112`) supplies the lines and frames, at
   clock resolution; the sampler picks the pixels itself, from the raw
   clock-resolution frame, so libvgaframe's own crop (and its fallback of
   cropping to the bounding box of non-black pixels, wrong for designs with
@@ -309,7 +330,14 @@ as in which clock they read a pixel at:
     all, kept in vgacap as the single table both samplers use. `cpp` = clocks
     per line / the mode's line pixels, a real number. Non-standard line
     counts use `tb-v1`'s fallback (the mode's horizontal timing, every line
-    after the vsync pulse).
+    after the vsync pulse). With no mode at all, `tb-v1`'s "unknown" rule
+    applies (`tb.cpp:441-444`): one clock per pixel, every clock after the
+    hsync pulse and every line after the vsync pulse. None of the current 408
+    projects needs it.
+  - Input: libvgaframe counts clocks, so the sampler turns the trace's
+    half-clock runs into runs of clk-high samples (one per clock) before
+    calling `vgaframe_push` and `vgaframe_timing_push`, splitting runs longer
+    than 2^32 - 1.
   - Coordinates: libvgaframe's column 0 is the hsync *leading* edge (the
     learner reports a line at the trailing edge but rebases x to the leading
     edge, `report_x`), and row 0 is the first line of the vsync pulse
@@ -320,6 +348,11 @@ as in which clock they read a pixel at:
     order of sample and run handling; a test with that generator's exact
     timing asserts row 0, and if it is off by one the fix goes into
     libvgaframe's learner, not into the sampler.
+  - Frame start clock: the clock of the hsync leading edge that begins row 0
+    (the first line of the vsync pulse), computed from the runs. That is
+    earlier than the moment libvgaframe reports the frame (it reports at the
+    hsync trailing edge, and the first frame retroactively), and the same
+    for the retroactive first frame as for every other.
   - The raw frame is only valid inside libvgaframe's frame callback (it is
     cleared after the frame is emitted), so the sampler picks its pixels
     inside the callback.
@@ -348,7 +381,9 @@ the legacy FNV, PNG encoding and the page all work once per distinct frame.
 For each sampler, per project, under `<project>/<sampler>/`:
 
 - `<shuttle>_<macro>_<sampler>_frames.rgb6.zst`: the distinct frames in
-  order of first appearance, one zstd stream with long-distance matching;
+  order of first appearance, one zstd stream with long-distance matching
+  and a window of at most 2^27 bytes, the limit standard decoders (zstd's
+  CLI and library, Python's `compression.zstd`) accept without options;
   distinct frame `n` is at uncompressed offset `n * width * height`. Reading
   one frame means decompressing from the start (at most about 2.1 GB for the
   largest project), a second or two; step 2 also measures one zstd frame per
@@ -360,9 +395,10 @@ For each sampler, per project, under `<project>/<sampler>/`:
   contents, which does not depend on the zstd version); one SHA-256 per distinct frame, in
   store order; then the sequence as runs, `<first frame> <count> <distinct
   number> <start clock> <missing>` (`missing`, the frame's missing pixels,
-  is 0 except for `centre-v1` frames that were not fully received). A frame's start clock is the clock at which the
-  sampler began it (for `tb-v1` the end of a vsync pulse, for `centre-v1`
-  libvgaframe's frame start). `frame_clocks` is the median measured distance
+  is 0 except for `centre-v1` frames that were not fully received). A frame's start clock is as defined for its sampler
+  (for `tb-v1` the clock in whose clk-high sample the vsync pulse is seen to
+  end; for `centre-v1` the hsync leading edge beginning the first line of the
+  vsync pulse). `frame_clocks` is the median measured distance
   between consecutive frame starts, in whole clocks; a run ends when the
   content changes or a frame starts other than `frame_clocks` after the
   previous one.
@@ -392,7 +428,7 @@ test vectors. Initial methods:
 Every hash file starts with `hash_method: <id>` and the method's definition
 as comments, then its parameters as keys (for the FNV method,
 `hash_offset_basis: 0x14650fb0739d0383`, the key consumers are told to read
-today, README.md:91), then `id`, `status`, `sampler`, `mode`, `width`,
+today, README.md:90), then `id`, `status`, `sampler`, `mode`, `width`,
 `height`, `clock_hz`, `clocks_per_pixel`, `capture_after_clock`, `frames`,
 then one hash per frame, frame 0 first.
 
@@ -412,12 +448,13 @@ branch in vgacap; that session reviews before anything merges.
 
 | need | in vgacap today | work | by |
 | --- | --- | --- | --- |
-| a sample of every pin (43 bits), two per clock, with the clock bit not breaking runs | VGCH stream, `sample_bits` 8/12/16/32 (`stream.h:58`); `RLE ` chunk (32-bit value + 32-bit run); `EVNT` (64-bit clock + value); C99 callback writer and reader, no allocation | format v2: samples up to 64 bits; one new run-length chunk whose value width follows `sample_bits` (1 to 8 bytes) with a LEB128 run length, so runs are unbounded; a header field naming the sample-clock bit (see The clock in a run-encoded trace). In the C writer and reader and the Python mirror, with round-trip tests. A design note in tt-vga-capture/docs/design/ first, for the owner's decision. The same chunk answers vgacap's pending compact-RLE decision (tt-vga-capture `docs/research/2026-11-24-board-rle-throughput.md`: on the RP2350, raw 700 k samples/s, today's 8-byte pairs 784 k, a u8 value + LEB128 run 1.46 M) | here |
+| a sample of every pin (43 bits), two per clock, with the clock bit not breaking runs | VGCH stream, `sample_bits` 8/12/16/32 (`stream.h:58`); `RLE ` chunk (32-bit value + 32-bit run); `EVNT` (64-bit clock + value); C99 callback writer and reader, no allocation | format v2: samples up to 64 bits; one new run-length chunk (TASKS.md calls it RLE64; its value width follows `sample_bits`, 1 to 8 bytes) with a LEB128 run length, so runs are unbounded; a header field naming the sample-clock bit (see The clock in a run-encoded trace). In the C writer and reader and the Python mirror, with round-trip tests. A design note in tt-vga-capture/docs/design/ first, for the owner's decision. The same chunk answers vgacap's pending compact-RLE decision (tt-vga-capture `docs/research/2026-11-24-board-rle-throughput.md`: on the RP2350, raw 700 k samples/s, today's 8-byte pairs 784 k, a u8 value + LEB128 run 1.46 M) | here |
+| the trace container | VGCH chunks streamed into one file; the header has a `uint32` `clock_hz` and a free-text description of at most 255 bytes (`stream.h:56-66`) | independently compressed blocks and the `(first sample, offset)` index chunk, as under Size and format, with the index rebuilt by scanning when it is missing; a metadata chunk of `key=value` lines for the run's parameters (project id, override, `clock_hz`, `calib_seconds`, `seconds`, simulator and harness versions), which a plain reader skips; the double-buffered compressor thread, in the host-side optional target | here |
 | 64-bit values and long runs through the API | reader run events and `vgaframe_push` take a 32-bit value and 32-bit run (`stream.h:122`, `frame.h:180`) | the new chunk and the reader's run event carry a 64-bit value and a 64-bit run. libvgaframe keeps its 32-bit sample: the sampler extracts `uo_out` (which carries hsync and vsync) from the 64-bit sample, so the board path is unchanged. Runs over 2^32 - 1 are split into several `vgaframe_push` and `vgaframe_timing_push` calls, with a test that a split run gives the same result as an unsplit one (the learner counts clocks inside runs). Agreed with vgacap | here |
 | decoding runs, not clocks | `vgaframe_push(f, sample, run)`, `vgaframe_timing_push(l, hs, vs, run)`: an unchanged run is one call | a benchmark first (a synthetic 1.5e9-clock run stream, against the budget), then the C entry point the native sampler tool links. No CPython binding | here |
 | `tb-v1` | none (it is `tb.cpp`'s logic) | a port of `tb.cpp:191-230` and `361-557` as its own sampler, tested against `tb.cpp` itself | here |
 | `centre-v1` | libvgaframe timing at clock resolution (one byte per clock: 6-bit colour + a written bit, in the `raw` buffer); no pixel rule; the frame callback gives only the cropped rgb24 | the raw clock-resolution frame (pointer, clocks per line, lines) added to `vgaframe_output_t` and emitted whether or not a mode matched; valid only inside the frame callback, as `frame.h` will say. The shared 12-mode table: vgacap's 7 plus tb.cpp's other 5 (800x600@72 and @75, 1024x768@70, 1280x720@60, 1280x1024@60), keeping the existing clock-domain fields with a pixel-domain view beside them (the struct's meaning is unchanged), mirrored in the Python `vgacap.modes` with a new test that the C and Python tables agree field by field (there is none today: `tests/test_modes.c` only checks the C table's size and first entry), and a test that the 12 are pairwise distinct in clocks per line and lines per frame at one clock per pixel, so the board path never mis-names a mode. Then the centre pick; tests for row 0 with `hvsync_generator` timing and for missing pixels | here |
-| modes outside the table | 7 modes (640x480 at 60/72/75, 720x400@70, 800x600 at 56/60, 1024x768@60) matched by clocks and lines; a timing learner (`frame.h:18-83`); buffers sized by the caller (`max_clocks_per_line`, `max_lines`) | nothing in the learner: clocks per pixel is not a libvgaframe concept, and its acceptance rules are relative (within 25% of the learned hsync width, at least half a line apart), so they scale. The sampler sizes the buffers (3,584 x 525 bytes for the longest lines, 640x480@75 at 4.2667 clk/px) and picks pixels itself (as under `centre-v1`). Tests: the learner at 762- and 3,584-clock lines. Agreed with vgacap | here |
+| modes outside the table | 7 modes (640x480 at 60/72/75, 720x400@70, 800x600 at 56/60, 1024x768@60) matched by clocks and lines; a timing learner (`frame.h:47-112`); buffers sized by the caller (`max_clocks_per_line`, `max_lines`) | nothing in the learner: clocks per pixel is not a libvgaframe concept, and its acceptance rules are relative (within 25% of the learned hsync width, at least half a line apart), so they scale. The sampler sizes the buffers per project from the measured clocks per line and lines per frame (the largest today, in different projects: 3,584-clock lines, 640x480@75 at 4.2667 clk/px, and 666-line frames, 800x600@72) and picks pixels itself (as under `centre-v1`). Tests: the learner at 762- and 3,584-clock lines. Agreed with vgacap | here |
 | rgb6 output | the raw buffer holds the 6 bits; rgb24 is derived on emit | an rgb6 pointer beside rgb24 in `vgaframe_output_t`, checked against `R<<4 \| G<<2 \| B` with test vectors | here |
 | compression, SHA-256, FST | none | vendored zstd (BSD), SHA-256 (public domain) and fstapi (MIT) under `third_party/` with licence files, as an optional CMake target so the board and RP1 builds stay dependency-free. vgacap compiles with `-Werror -Wconversion` (`CMakeLists.txt:8`); the vendored sources get their own, relaxed flags in that target and are not edited | here |
 | FST/VCD export | none (`vgacap-dump` prints chunks as text) | `vgacap-export`, as described under Viewing; tested against a committed expected VCD from a synthetic stream, and `fst2vcd` of the FST output equal to the VCD output | here |
@@ -438,7 +475,7 @@ system dependencies) by `tt-vga bootstrap`; the Verilator model build links
 it (see Code that changes).
 
 Process (vgacap's): Milestone 10, "simulation traces", in tt-vga-capture's
-`TASKS.md` (on its main, c2b5efe), and a plan at tt-vga-capture
+`TASKS.md` (added in c2b5efe; its main is now at 658d543), and a plan at tt-vga-capture
 `docs/superpowers/plans/2026-11-24-m10-simulation-traces.md`, written here
 and reviewed there. vgacap work branches off `main` once PRs #1-#4 are
 merged (until then off `rtl`), one worktree per branch, small commits pushed
@@ -563,7 +600,8 @@ also worked and is the fallback. Pinning:
   absent, which is what probe runs and ad hoc runs get; no longer writes the `frame_hashes` list into timing.json
   (`tb.cpp:590-608`). Its own decoding for the clips is untouched.
 - `job.py`: the Verilator build (`job.py:120-125`) gains vgacap's include
-  directory in `-CFLAGS` and its static library in `-LDFLAGS`; the job runs
+  directory in `-CFLAGS` and its static library and `-pthread` (for the
+  compressor thread) in `-LDFLAGS`; the job runs
   the native sampler tool after the simulation, writes PNGs and pages, and
   does the scratch, staging and rename steps.
 - `ttvga/harness/`: the glue above; `runqueue.py` the free-space wait.
