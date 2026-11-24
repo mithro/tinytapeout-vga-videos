@@ -87,6 +87,41 @@ Whatever is chosen, the format, the sample-to-time rule and the bit layout
 are documented precisely enough to read without our code, and
 `tt-vga trace export` converts to the other two.
 
+### Viewing in GTKWave and Surfer
+
+Whatever the stored format, a trace must open in GTKWave and in Surfer
+(owner's requirement, 2026-11-24). Both read VCD and FST: GTKWave natively,
+Surfer through the `wellen` library, whose README says it "provides a common
+interface to read both FST and VCD waveform files"
+(github.com/ekiwi/wellen; Surfer's own pages did not render when checked, so
+opening the files in Surfer is an explicit rollout check rather than an
+assumption). So:
+
+- `tt-vga trace export --format fst|vcd [--from CLOCK --to CLOCK]` writes
+  the trace, or a clock range of it, as FST (the default: compressed, and
+  fast to load) or VCD (plain text, read by everything). The writer is GTKWave's
+  `fstapi` C library (MIT licence), vendored in vgacap, driven from the
+  run-encoded trace so only changes are written.
+- The signals are the module's ports under one scope named after the
+  project (`clk`, `rst_n`, `ena`, `ui_in[7:0]`, `uio_in[7:0]`, `uo_out[7:0]`,
+  `uio_out[7:0]`, `uio_oe[7:0]`), with the timescale set from `clock_hz` so
+  times read in real nanoseconds. A second scope adds decoded convenience
+  signals: `hsync`, `vsync`, `r[1:0]`, `g[1:0]`, `b[1:0]` and the 6-bit
+  `rgb6`, plus `frame` (the frame number) once a sampler has run.
+- A GTKWave save file (`.gtkw`) is written beside the export with those
+  signals grouped and the radixes set; if Surfer has a documented equivalent
+  (a state or command file), one is written for it too.
+- A whole 60 s run is about 1.5e9 clocks with `uo_out` changing up to once a
+  clock in the active area, which is large in any viewer, so `trace slice`
+  and `--from/--to` (for example one frame, or the first second after reset)
+  are the normal way to look at a trace; `frames compare` prints the clock
+  range of a mismatching frame ready to pass to them.
+
+The tools are already in the pinned oss-cad-suite (`gtkwave`, `surfer`,
+`fst2vcd`, `vcd2fst`). Its `surfer` binary needs glibc 2.43 and does not run
+on the simulation host (Debian 13, glibc 2.41), which does not matter: the
+viewers run on a desktop, and the tests check files with `fst2vcd`.
+
 ### How it is written
 
 Inside `tb.cpp`, in C, through vgacap's C99 stream writer (extended as
@@ -318,9 +353,9 @@ PyPI's `zstandard` on 3.13 also worked and is the fallback. Pinning:
 
 ## Tools (`tt-vga ...`)
 
-- `trace info|export|slice`: header and signal statistics; convert between
-  the trace formats; cut a clock range (one frame, say) into a small file for
-  PulseView or GTKWave.
+- `trace info|export|slice`: header and signal statistics; export to FST or
+  VCD for GTKWave and Surfer (with a `.gtkw` save file), or to the other
+  stored formats; cut a clock range (one frame, say) into a small file.
 - `sample --sampler ID`: run a sampler over a trace, to add one or check one.
 - `frames to-png|from-png`: byte-identical round trip.
 - `frames hash --method ID`: compute any hash method over a sampler's frames.
@@ -356,7 +391,9 @@ PyPI's `zstandard` on 3.13 also worked and is the fallback. Pinning:
 ## Rollout
 
 1. Implement on a branch with tests: the trace writer and reader for each
-   candidate format and conversion between them; both samplers on synthetic
+   candidate format and conversion between them; FST and VCD export checked
+   by `fst2vcd` (every signal, every change, the timescale) against the
+   trace it came from; both samplers on synthetic
    traces with known pixels, at `cpp` of 0.95, 1, 1.9 and 2; rgb6 and PNG
    round trip; hash methods against committed vectors; `compare` on
    constructed shifted and differing runs; the stale-file cases.
@@ -367,7 +404,9 @@ PyPI's `zstandard` on 3.13 also worked and is the fallback. Pinning:
    sizes, and sampler, hashing and PNG CPU time. Check tb-v1 frames reproduce the published FNV
    hashes exactly. Compare SHA-256 and FNV distinct counts (543,730 today is
    a count of distinct FNV values, `tb.cpp:477,488`). Show tb-v1 against
-   centre-v1 for the `cpp != 1` ones.
+   centre-v1 for the `cpp != 1` ones. Export one frame of each project as
+   FST and VCD, check them with `fst2vcd`, and open them in GTKWave and in
+   Surfer on a desktop, with screenshots in the step 3 report.
 3. Report to the owner, projected to all 408: total trace size per format,
    store and PNG sizes, run time, and the upload's file-listing time with the
    extra files (today 62,641 entries take about 25 s each 5-minute run; the
