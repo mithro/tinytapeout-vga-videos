@@ -145,8 +145,8 @@ a PNG, so it can be looked at in a browser on data.wafer.space:
 
 - `frames/<shuttle>/<macro>/png/<n>.png`, `n` the distinct frame number,
   zero-padded to 6 digits, so the directory lists in frame order. The PNGs
-  are written by `job.py` after the run, reading the store through the
-  `zstd -dc` CLI and encoding PNG with the standard library's `zlib`. The
+  are written by `job.py` after the run, reading the store with the
+  standard library's `compression.zstd` and encoding PNG with `zlib`. The
   whole project directory (store, index, hash files, PNGs, page) is built in
   the temporary directory and renamed into place in one step, replacing the
   previous one, so the upload never sees a half-built project.
@@ -221,7 +221,7 @@ on its own.
   longer writes the `frame_hashes` list into timing.json (`tb.cpp:590-608`);
   `frames`, `distinct_frames` and the other statistics stay there. RGB888 is
   still produced for ffmpeg, as now.
-- `job.py` (standard library only, unchanged in that respect): passes the
+- `job.py` (standard library only, now Python 3.14, see below): passes the
   store paths from `host.toml`, writes the store's size and SHA-256 into
   `frames.txt`, writes the PNGs and `index.html` from the store, renames
   the finished project directory into the frames directory, keeps
@@ -235,9 +235,16 @@ on its own.
   one-off script renames and re-heads the 408 existing hash files.
 - README.md (the frame hashes paragraph, lines 82-92) and docs/host-setup.md
   are rewritten for the new files.
-- New Python dependency for the local tools only: `zstandard`. PNG is written
-  and read with the standard library (`zlib`). The host side stays without
-  packages.
+- Python 3.14 everywhere, for the standard library's `compression.zstd`
+  (checked on the host 2026-11-24: uv fetched CPython 3.14.7 into the
+  pipeline user's home and `compression.zstd` round-tripped a test buffer).
+  The host's queue and jobs stop using the system `python3` (Debian 3.13)
+  and run under a uv-managed CPython pinned in `ttvga/tools.toml`, which
+  `tt-vga bootstrap` installs into the pipeline user's home like the other
+  tools (uv is already there). The harness stays free of third-party
+  packages. Locally, `requires-python` becomes `>=3.14`; uv provides it.
+  PyPI's `zstandard` works too (also checked) and is the fallback if 3.14
+  causes trouble. PNG is written and read with `zlib`.
 
 ## Tools (`tt-vga frames ...`)
 
