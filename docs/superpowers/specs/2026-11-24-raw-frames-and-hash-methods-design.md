@@ -629,10 +629,16 @@ in one write, `src/stream/writer.c`; the branch itself is still moving), and
 run-length data from the board's PIO in the existing `RLE ` chunk (32-bit
 value and run) and does not change the stream format, so the format note
 does not depend on it; if decision 1 adopts the new chunk, the board path
-can emit it later. `fw-picosdk` is still being written, so its writer change
-may still move: the format note is written against `rtl` plus that change
-once the vgacap session says it has settled (it may split the change into
-its own pull request to rebase onto). *Here* means this project's session writing it on a
+can emit it later. `fw-picosdk` has settled as vgacap PR #7 (stacked on #4,
+hardware-checked). Its writer change is small and additive: a new
+`vgacap_writer_attach(w, write, user, h)` sets up a writer for a stream
+whose VGCH header was already written elsewhere (it emits nothing; `h` only
+says how samples pack), and the chunk writers are refactored around it; no
+chunk format or byte layout changed and nothing was removed or renamed. The
+format note is written against `rtl` plus `vgacap_writer_attach`, the code
+rebases onto `fw-picosdk` when it starts, and the format v2 writer
+extensions (the new run-length chunk, 64-bit runs, samples per clock in the
+header) work through both `vgacap_writer_init` and `vgacap_writer_attach`. *Here* means this project's session writing it on a
 branch in vgacap; that session reviews before anything merges.
 
 | need | in vgacap today | work | by |
