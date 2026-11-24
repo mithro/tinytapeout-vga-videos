@@ -681,7 +681,7 @@ hardware decode the same way. They reach the pipeline as extra targets:
   pseudo-shuttle `testpatterns`: repository github.com/mithro/tt-vga-testpatterns
   at a pinned commit, each design's top module, and a new optional target
   field `src_dir` (`designs/<name>/src`), because `job.py` hard-codes the
-  sources at `<repo>/src` (`job.py:90`), which becomes the default.
+  sources at `<repo>/src` (`job.py:90`, and the model runs from there, `job.py:225`), which becomes the default.
 - `ui_in` comes only from overrides (`job.py:196-199`), so each variant has
   a committed `overrides/testpatterns/<macro>.yaml` setting it. For
   `tt_um_vgacal_modes` there is one variant per mode (`ui_in` 0, 1, 2) and
