@@ -261,12 +261,45 @@ it and through its review, not copied here (owner's decision 2026-11-24).
 That also means a hardware capture and a simulation trace are read by the
 same code.
 
-What vgacap has, and what it needs, is being agreed with that session; this
-section is rewritten with the answer before the plan is written. The needs
-known so far: a sample covering every user-module pin with clk at both
-edges, not only `uo_out`; the `tb-v1` and `centre-v1` pixel rules, including
-`cpp < 1`; rgb6 output beside RGB24; per-distinct-frame hashing; and the
-performance budget above.
+Agreed with the vgacap session on 2026-11-24 (its answer was checked against
+vgacap's `rtl` branch, d5f2654, which stacks on its PRs #1-#3, not yet
+merged). Who does what: *vgacap* means that session, *here* means this
+project's session writing it on a branch in vgacap, reviewed by that session
+before anything merges.
+
+| need | in vgacap today | work | by |
+| --- | --- | --- | --- |
+| a sample of every pin (43 bits), two per clock | VGCH stream, `sample_bits` 8/12/16/32 (`include/vgacap/stream.h:58`); `RLE ` chunk (32-bit value + run); `EVNT` (64-bit clock + value); C99 callback writer and reader, no allocation | format v2: `sample_bits = 64` and an RLE64 chunk (value, run), in the C writer and reader and the Python mirror, with round-trip tests. A short design note in tt-vga-capture/docs/design/ is reviewed first, and goes to the owner with vgacap's pending compact-RLE question | here |
+| decoding runs, not clocks | `vgaframe_push(f, sample, run)` and `vgaframe_timing_push(l, hs, vs, run)`: an unchanged run is one call | a benchmark first (`vgacap-frames` on a synthetic 1.5e9-clock run stream, against the budget), then a C entry point that the native sampler and hash tool link. No CPython binding: Python stays out of the per-clock path | here |
+| samplers (`tb-v1`, `centre-v1`, `cpp < 1`) | libvgaframe works at clock resolution: one byte per clock (6-bit colour + a written bit) per line; no pixel-clock rule | the samplers as a column pick from the clock-resolution line, run once per distinct clock-level frame | here |
+| modes outside the table | 7 modes (640x480 at 60/72/75, 720x400@70, 800x600 at 56/60, 1024x768@60), matched by clocks per line; line buffer `max_clocks_per_line` | 640x504, and lines up to about 3,400 clocks (`cpp` 4.27); a learner path for timings not in the table | here (offered to vgacap; this side takes it) |
+| rgb6 output | the raw buffer already holds the 6 bits; rgb24 is derived on emit | an rgb6 pointer beside rgb24 in `vgaframe_output_t`, checked against `R<<4 | G<<2 | B` with test vectors (libvgaframe's bit order follows TinyVGA's signal map) | here |
+| compression, SHA-256 | none | vendored zstd (BSD) and SHA-256 (public domain) under `third_party/` with licence files, as an optional CMake target so the board and RP1 builds stay dependency-free | here |
+| FST/VCD export | none | vendored fstapi (MIT), same optional target | here (asked; awaiting vgacap's view) |
+
+Also reused, not rewritten: `vgacap-dump` (stream inspector), PNG/PPM output
+from `vgacap-frames`, and from tt-vga-testpatterns the calibration designs
+(bars, grid, modes, prbs, counter) with exact Python references
+(`tools/render.py`) and frame comparison (`tools/check_frame.py`). The
+calibration designs, simulated through this pipeline, must come out
+pixel-exact: that is the end-to-end test that simulation and hardware decode
+the same way.
+
+Dependency: vgacap pinned to a commit, built with its own CMake (C99, no
+dependencies) by `tt-vga bootstrap`; the native tools here link
+`libvgacap`.
+
+Process (vgacap's): a milestone "M7: simulation traces" in tt-vga-capture's
+`TASKS.md` and a plan in tt-vga-capture's `docs/plans/`, written here and
+reviewed there; vgacap branches off `main` once PRs #1-#3 are merged (until
+then off `rtl`), one worktree per branch, small commits pushed as they go,
+review before merge. Order: (1) the 64-bit sample and RLE64 design note, to
+the owner; (2) the libvgaframe benchmark; (3) samplers and rgb6; (4) vendored
+zstd, SHA-256 and fstapi.
+
+If the owner chooses sigrok or FST as the stored trace format (Decisions),
+VGCH is still the internal form between the encoder and the samplers, and
+the stored file is an export of it.
 
 ## Where things live
 
