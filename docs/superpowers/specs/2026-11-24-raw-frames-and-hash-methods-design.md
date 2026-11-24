@@ -1,8 +1,8 @@
 # Raw signal traces, pluggable samplers and pluggable frame hashes
 
-Status: design, sixteenth revision (after fifteen independent reviews, the owner's
-answers and the vgacap session's answers), awaiting the owner's review
-(2026-11-24).
+Status: design, seventeenth revision (2026-11-24). The sixteenth independent
+review found no blocking and no medium problems; its minor points are folded
+in. Awaiting the owner's review.
 
 ## Why
 
@@ -138,7 +138,8 @@ table and the block headers. A block always begins at a chunk boundary and a run
 never spans two blocks (a run that would cross a boundary is split, so
 every block starts fresh), so seeking never splits a run. Each block is a
 complete zstd frame, so a trace cut short (the job killed after its grace
-period) loses at most the unfinished block: the reader rebuilds the missing
+period) loses at most the last two blocks (the unfinished one and one
+already handed to the compressor thread but not yet written): the reader rebuilds the missing
 seek table by walking the zstd frames and decompressing only the start of
 each block, to read its block header. Reading a
 clock range (`--from/--to`, `frames compare`) seeks to the right block
@@ -210,8 +211,10 @@ rollout check, not an assumption.
   `uio_out[7:0]`, `uio_oe[7:0]`). A second scope adds decoded signals:
   `hsync`, `vsync`, `r[1:0]`, `g[1:0]`, `b[1:0]` and `rgb6`, from the same
   signal map libvgaframe uses, and, with `--sampler ID`, `frame` (frame
-  number) from that sampler's frame boundaries, so waveform and frames
-  cannot disagree; without `--sampler` there is no `frame` signal.
+  number) from that sampler's frame boundaries, read from its `frames.txt`
+  (whose runs give each frame's start clock), so waveform and frames cannot
+  disagree and a clock range still needs no re-sampling; without
+  `--sampler` there is no `frame` signal.
 - A GTKWave save file (`.gtkw`) is written as text beside the export with
   those signals grouped and radixes set; if Surfer has a documented
   equivalent (a state or command file), one is written for it too.
@@ -437,8 +440,9 @@ as in which clock they read a pixel at:
     trace's opening metadata chunk records only the simulation-time settings; the window
     offset actually used is recorded in each `centre-v1` `frames.txt`. The window never extends past
     the line or the frame, and never starts inside the hsync or vsync pulse
-    (libvgaframe never writes the hsync pulse's clocks into the raw buffer,
-    so they would read as missing; the vsync pulse's rows are written, except
+    (libvgaframe writes the hsync pulse's clocks at the end of the previous
+    row, `x >= clocks per line`, `frame.c:255-263`, never into columns 0 to
+    hsync - 1 of their own row, so those columns read as missing; the vsync pulse's rows are written, except
     in the retroactive first frame, but are blanking by definition).
   - Checks recorded in `frames.txt`: the spacing of `uo_out` colour changes
     within the active area (all multiples of a whole `cpp`, or averaging
@@ -667,7 +671,9 @@ branch in vgacap; that session reviews before anything merges.
 | calibration and the frame clock | none (they are `tb.cpp`'s logic) | `tb.cpp`'s calibration (`tb.cpp:191-230`, `361-378`) ported once as a shared component, and the frame clock on top of it, used by `tb-v1`, `centre-v1` and any later sampler; tested against `tb.cpp` itself | here |
 | the native sampler and hash tool | `vgacap-frames` decodes a stream to PPM files (`src/tools/vgacap_frames.c`) | `vgacap-sample`, a C tool beside it: reads a trace once (both samplers in one pass, sharing the decompression), runs the requested samplers and hash methods, and writes each sampler's store, `frames.txt` (with gaps) and hash files; the job and `tt-vga sample` call it | here |
 | rgb6 output | the raw buffer holds the 6 bits; rgb24 is derived on emit | an rgb6 pointer beside rgb24 in `vgaframe_output_t`, checked against `R<<4 \| G<<2 \| B` with test vectors | here |
-| compression, SHA-256, FST | none | vendored zstd (BSD), SHA-256 (public domain) and fstapi (MIT) under `third_party/` with licence files, as an optional CMake target so the board and RP1 builds stay dependency-free. vgacap compiles with `-Werror -Wconversion` (`CMakeLists.txt:8`); `add_compile_options` there applies to the whole directory, so the vendored sources live in their own subdirectory (`third_party/`, with its own `CMakeLists.txt`) whose relaxed flags replace those; they are not edited | here |
+| compression, SHA-256, FST | none | vendored zstd (BSD), SHA-256 (public domain) and fstapi (MIT) under `third_party/` with licence files, as an optional CMake target so the board and RP1 builds stay dependency-free. vgacap compiles with `-Werror -Wconversion` (`CMakeLists.txt:8`); `add_compile_options` there applies to the whole directory, so the vendored sources live in their own subdirectory (`third_party/`, with its own `CMakeLists.txt`) which explicitly resets the inherited `COMPILE_OPTIONS` directory property
+before setting its own relaxed flags (a subdirectory otherwise inherits the
+parent's); they are not edited | here |
 | FST/VCD export | none (`vgacap-dump` prints chunks as text) | `vgacap-export`, as described under Viewing; tested against a committed expected VCD from a synthetic stream, and `fst2vcd` of the FST output equal to the VCD output | here |
 
 PNG output is not in vgacap (`vgacap-frames` writes PPM only,
@@ -770,8 +776,10 @@ are host configuration (`~/ttvga/host.toml` on the host: `frames_root`,
 `staging_dir`, `min_free_root_gb`), never named in the repository.
 
 In git, beside each `result.json`, under `frames/`: `frames/<sampler>/frames.txt` for each sampler
-(about 35 MB per sampler across 408 projects; git compresses hex to about
-half) and `frames/tb-v1/frame_hashes.fnv1a64-tb2026-rgb888.txt` (the existing files,
+(about 60 MB per sampler across 408 projects before compression: about
+35 MB of distinct-frame SHA-256 lines and about 25 MB of run lines, the
+current hash files having 839,992 content changes; git compresses hex to
+about half) and `frames/tb-v1/frame_hashes.fnv1a64-tb2026-rgb888.txt` (the existing files,
 moved and given the new header; the conversion asserts that each moved
 file's hash lines are byte-identical to the `frame_hashes.txt` it came from
 and that their number equals the project's `frame_hashes_count` in
@@ -851,7 +859,8 @@ one project from the command line.
 
 - `trace info|export|slice`: header and signal statistics; FST or VCD for
   GTKWave and Surfer (with a `.gtkw` file), or another stored format; cut a
-  clock range (one frame, say) into a small trace.
+  clock range (one frame, say) into a small trace. A slice is for viewing
+  only: it has no calibration period, so samplers are not run on it.
 - `sample --sampler ID`: run a sampler over a trace, to add one or check one.
 - `frames to-png|from-png`: byte-identical round trip.
 - `frames hash --method ID`: compute any hash method over a sampler's frames.
@@ -876,7 +885,9 @@ one project from the command line.
   simulates again with those inputs and keeps that run's trace; the first
   run's trace is deleted, since the kept run supersedes it; its own decoding for the clips is untouched, and it still hashes every
   frame it decodes, but writes the list to its own file in the run's output
-  directory instead of into timing.json (`tb.cpp:590-608`). The job compares
+  directory instead of into timing.json (`tb.cpp:590-608`). `result.json`'s
+  `frame_hashes_count` goes with it (nothing but the tests reads it); the
+  frame counts are in `frames.txt`. The job compares
   that list with `tb-v1`'s `fnv1a64-tb2026-rgb888` output on every run that
   ended with a list (status `ok`, `unstable-sync`, or `sim-timeout`, which
   stops on SIGTERM and still writes it) and fails the job if they differ; a
