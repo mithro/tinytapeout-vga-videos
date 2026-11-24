@@ -1,6 +1,6 @@
 # Raw signal traces, pluggable samplers and pluggable frame hashes
 
-Status: design, eleventh revision (after ten independent reviews, the owner's
+Status: design, twelfth revision (after eleven independent reviews, the owner's
 answers and the vgacap session's answers), awaiting the owner's review
 (2026-11-24).
 
@@ -123,7 +123,8 @@ lengths are unbounded in the format (see Shared code).
 
 The stored trace is a sequence of independently compressed blocks (each a
 separate zstd frame holding whole VGCH chunks for a stretch of samples,
-closed at 16 MiB of chunks, within VGCH's `VGACAP_MAX_CHUNK_LEN`, or after
+closed at 16 MiB of uncompressed chunk data (each chunk itself within
+VGCH's `VGACAP_MAX_CHUNK_LEN`, `stream.h:33`) or after
 2^24 clocks, whichever comes first, so even a static design's trace has a
 block every 0.17-0.73 s of simulated time at the clock rates in use),
 followed by an index. The file follows zstd's *seekable format* (zstd's
@@ -367,6 +368,14 @@ as in which clock they read a pixel at:
   clock-resolution frame, so libvgaframe's own crop (and its fallback of
   cropping to the bounding box of non-black pixels, wrong for designs with
   black borders) is never used.
+  - When: the mode, `cpp` and the window below are fixed once per run, at
+    `capture_after_clock`, from the shared calibration's measurements (sync
+    periods, hsync width, polarities; the same moment and data `tb-v1` uses),
+    except for the window check, which uses frames 0 to 59. The run then has
+    one mode, width and height per sampler, which `frames.txt`, the hash
+    headers and the store layout rely on. If the timing changes later in the
+    run, frames are still sampled with the fixed geometry and the run's
+    status (`unstable-sync`) says so.
   - Mode and `cpp`: the measured clocks per line and lines per frame are
     matched, with `tb-v1`'s rule (smallest summed error), against vgacap's
     shared 12-mode pixel table: `tb.cpp`'s 11 modes plus vgacap's own
@@ -376,16 +385,26 @@ as in which clock they read a pixel at:
   - Clocks per pixel, from the hsync pulse rather than the line length:
     `cpp_h` = hsync clocks / the mode's hsync pixels. If `cpp_h` is within 1%
     of a whole number, `cpp` is that number; otherwise `cpp = cpp_h` (the
-    designs at 1.9062 and 2.0 give the same value either way). Clocks in the
-    line beyond the mode's pixels times `cpp` are non-standard blanking and
-    fall in the front porch. Two checks are recorded in `frames.txt` for
-    every frame set: the spacing of `uo_out` colour changes within the
-    active area (all multiples of a whole `cpp`, or averaging `cpp` when it
-    is fractional), and `outside`, the number of non-black clocks outside
-    the active window, which is 0 when the window is placed right. Step 2
-    checks both on the 11 projects whose `cpp` this changes. Non-standard
-    line counts use `tb-v1`'s fallback (the mode's horizontal timing, every
-    line after the vsync pulse). With no mode at all, `tb-v1`'s "unknown" rule
+    designs at 1.9062 and 2.0 give the same value either way).
+  - Window: the active width is the mode's width; the line's actual
+    blanking, in pixels, is `B = clocks per line / cpp - hsync - width`,
+    which can be more than the mode's (nyan: 832 clocks at 1 clock per
+    pixel) or less (rle_vga: 800 clocks against 640x480@75's 840). The back
+    porch is the mode's back porch scaled so that back and front porch share
+    `B` in the mode's proportion, `hback' = round(B * hback / (hback +
+    hfront))`; vertically the same with lines. That window is then checked
+    against frames 0 to 59: if any non-black clock falls outside it, the
+    window is moved to the horizontal and vertical offsets with the fewest
+    non-black clocks outside, and the chosen porches are recorded. The window
+    never extends past the line or the frame.
+  - Checks recorded in `frames.txt`: the spacing of `uo_out` colour changes
+    within the active area (all multiples of a whole `cpp`, or averaging
+    `cpp` when it is fractional), the porches used, and `outside`, the number
+    of non-black clocks outside the window over the whole run, 0 when the
+    window is placed right. Step 2 checks them on the 11 projects whose `cpp`
+    this changes.
+  - Non-standard line counts use `tb-v1`'s fallback: the height is every
+    line after the vsync pulse, so the vertical blanking under Window is 0. With no mode at all, `tb-v1`'s "unknown" rule
     applies (`tb.cpp:441-444`): one clock per pixel, every clock after the
     hsync pulse and every line after the vsync pulse. None of the current 408
     projects needs it.
@@ -420,12 +439,13 @@ as in which clock they read a pixel at:
     is stored as 0, and the frame's number of missing pixels is recorded (a
     `missing` column in the `frames.txt` runs, 0 for complete frames).
   - Pixel `(p, y)` of the active area is read from frame line
-    `vsync + vback + y` at clock
-    `x = floor((hsync + hback + p + 1/2) * cpp)` from the line start, where
-    `hsync`, `hback`, `vsync` and `vback` are the mode's values in pixels and
-    lines. Nothing is rounded before the final `floor`, so a fractional `cpp`
-    (1.90625 today) needs no clock-domain mode. At `cpp = 1` this
-    is clock `hsync + hback + p`; at `cpp > 1` it is mid-pixel; at `cpp < 1`
+    `vsync + vback' + y` at clock
+    `x = floor((hsync + hback' + p + 1/2) * cpp)` from the line start, where
+    `hsync` and `vsync` are the measured pulse widths in pixels and lines and
+    `hback'` and `vback'` are the porches chosen under Window. Nothing is
+    rounded before the final `floor`, so a fractional `cpp` (1.90625 today)
+    needs no clock-domain mode. At `cpp = 1` this is clock
+    `hsync + hback' + p`; at `cpp > 1` it is mid-pixel; at `cpp < 1`
     neighbouring pixels can share a clock, so none is left unread.
 
 Because their line timing differs, the two can differ even at `cpp = 1`.
@@ -451,10 +471,16 @@ learner losing its lock) can renumber frames.
   `k`-th after it is frame `k`'s. A sub-line glitch on vsync therefore adds a
   frame number for every sampler alike.
 - Attaching: `tb-v1`'s frame `k` starts at the clock of the `k`-th end,
-  exactly as in `tb.cpp`. A `centre-v1` frame is attached to the counted end
-  that falls inside its vsync pulse (libvgaframe judges vsync once per line,
-  so its pulse spans whole lines and contains the per-clock end). A frame
-  number with no `centre-v1` frame attached, such as a glitch's, is a gap.
+  exactly as in `tb.cpp`. A `centre-v1` frame spans from its start clock (the
+  hsync leading edge of row 0) to the start of its first active row; it is
+  attached to the *latest* counted end in that closed range. The range
+  includes its upper bound because designs such as `hvsync_generator`
+  (`common/hvsync_generator.v:81-85`) end vsync on the very clock a line's
+  hsync starts, so the counted end is the first clock of the first line
+  after the pulse, which is the start of the first active row when the back
+  porch is 0. Taking the latest end handles a glitch inside the pulse (two
+  ends in range): the earlier end's number gets no frame. A frame number with
+  no `centre-v1` frame attached, such as a glitch's, is a gap.
 Each sampler emits every frame that ends before the trace ends, and drops a
 frame cut off by the end of the trace.
 
@@ -559,8 +585,9 @@ simulation trace are then read by the same code.
 State checked against vgacap's `rtl` branch at e1bb8c1 (stacked on its open
 PRs #1-#4, none merged). Two other vgacap branches touch the same code and
 are coordinated with that session before the plan is written: `fw-picosdk`
-(at 6c12526) changes the stream writer (`vgacap_writer_attach`, packed words
-in one write, `src/stream/writer.c`), and `pio-rle` (at a3bc061) streams
+(its writer change is commit 471e7de: `vgacap_writer_attach`, packed words
+in one write, `src/stream/writer.c`; the branch itself is still moving), and
+`pio-rle` (at a3bc061 when checked) streams
 run-length chunks from the board's PIO. Both are sub-agent branches the
 vgacap session has not reviewed yet, so their writer changes may still move.
 The format note is written against `rtl` plus `fw-picosdk`'s writer change
@@ -578,7 +605,7 @@ branch in vgacap; that session reviews before anything merges.
 | decoding runs, not clocks | `vgaframe_push(f, sample, run)`, `vgaframe_timing_push(l, hs, vs, run)`: an unchanged run is one call | a benchmark first (a synthetic 1.5e9-clock run stream, against the budget), then the C entry point `vgacap-sample` links. No CPython binding | here |
 | `tb-v1` | none (it is `tb.cpp`'s logic) | a port of `tb.cpp:400-557` (mode, capture and pixel rule) as its own sampler on top of the shared calibration and frame clock, tested against `tb.cpp` itself | here |
 | `centre-v1` | libvgaframe timing at clock resolution (one byte per clock: 6-bit colour + a written bit, in the `raw` buffer); no pixel rule; the frame callback gives only the cropped rgb24 | the raw clock-resolution frame (pointer, clocks per line, lines) delivered by a callback that fires for every frame boundary the learner reports, independent of lock, mode and content (unlike `emit()`, gated at `frame.c:219-220` and skipping all-black unmatched frames at `frame.c:117`). The raw and cover buffers are cleared today only inside `emit()` (`frame.c:171-176`), so on frames where `emit()` does not run they would still hold the previous frame's pixels, written bit set; the boundary handling therefore fires the raw callback first, then lets `emit()` run, then clears raw and cover on every boundary, keeping `emit()`'s own FRAM-mode clearing (`clear_lines`, `frame.c:173`). Tests: a shorter second frame has no written pixels past its own lines, and a retroactive first frame reads lines 0 to `vsync_lines - 1` as unwritten; valid only inside the frame callback, as `frame.h` will say. The shared 12-mode table: vgacap's 7 plus tb.cpp's other 5 (800x600@72 and @75, 1024x768@70, 1280x720@60, 1280x1024@60), keeping the existing clock-domain fields with a pixel-domain view beside them (the struct's meaning is unchanged), mirrored in the Python `vgacap.modes` with a new test that the C and Python tables agree field by field (there is none today: `tests/test_modes.c` checks only the C table's first entry and a few matches against it, never the Python table), and a test that the 12 are distinct as (clocks per line, lines per frame) pairs at one clock per pixel. Clock-per-line alone is not unique once the five are added (800x600@60 and @75 both have 1,056-clock lines), and `vgaframe_mode_match_cpl` (`frame.h:27-31`, used for FRAM windows at `frame.c:51`) relies on it being unique, so the five added modes carry a mark that `vgaframe_mode_match_cpl` skips (its comment, "unique across the built-in table" at `frame.c:46-47` and in `frame.h:27-28`, is updated to say so; the call is at `frame.c:51`), with a test that it gives the same result for every entry it gave before. The learner's own match on clocks and lines (`vgaframe_mode_match`, `timing.c:36`) does see the five, a deliberate change chosen with the vgacap session (its option (b)): a board capture in one of those modes, which today falls through to the fragile crop to the bounding box of non-black pixels, gets the correct table crop instead. Tests: a synthetic stream in each new mode gives the exact crop, and every existing entry still resolves as before. The mark is mirrored in the Python `vgacap.modes`. In streaming capture ttcap names no mode (the learner detects it from the signal), so the five are detected there with no ttcap change. ttcap's `--vga-mode` feeds only the frame and window programs (`frame_cfg()`, ttcap `capture.py:102-133`), which need clocks per line to be unique and a whole number of sample words (checked at `capture.py:131-135`), so it rejects the marked modes with an error saying why, with a test of that rejection. Then the centre pick; tests for row 0 with `hvsync_generator` timing and for missing pixels | here |
-| modes outside the table | 7 modes (640x480 at 60/72/75, 720x400@70, 800x600 at 56/60, 1024x768@60) matched by clocks and lines; a timing learner (`frame.h:47-112`); buffers sized by the caller (`max_clocks_per_line`, `max_lines`) | nothing in the learner: clocks per pixel is not a libvgaframe concept, and its acceptance rules are relative (within 25% of the learned hsync width, at least half a line apart), so they scale. `centre-v1` is fed from the start of the trace, before `tb-v1`'s calibration in the same pass has measured anything, so it sizes the buffers for the largest timing the mode matching accepts (4.5 clocks per pixel times the widest table line, 1,688 pixels, is 7,596 clocks; and 1,200 lines, above which `centre-v1` treats a frame as bad timing, since the non-standard-line fallback has no upper bound of its own): about 9.1 MB of raw buffer and, because `vgaframe_init` requires an rgb24 buffer too (`frame.c:35`), about 27 MB of rgb24, fixed (the largest in use today, in different projects: 3,584-clock lines, 640x480@75 at 4.2667 clk/px, and 666-line frames, 800x600@72), and picks pixels itself (as under `centre-v1`). Tests: the learner at 762- and 3,584-clock lines. Agreed with vgacap | here |
+| modes outside the table | 7 modes (640x480 at 60/72/75, 720x400@70, 800x600 at 56/60, 1024x768@60) matched by clocks and lines; a timing learner (`frame.h:47-112`); buffers sized by the caller (`max_clocks_per_line`, `max_lines`) | nothing in the learner: clocks per pixel is not a libvgaframe concept, and its acceptance rules are relative (within 25% of the learned hsync width, at least half a line apart), so they scale. `centre-v1`'s libvgaframe is fed from the start of the trace, before the shared calibration in the same pass has measured anything, so it sizes the buffers for the largest timing the mode matching accepts (4.5 clocks per pixel times the widest table line, 1,688 pixels, is 7,596 clocks; and 1,200 lines, above which `centre-v1` treats a frame as bad timing, since the non-standard-line fallback has no upper bound of its own): about 9.1 MB of raw buffer and, because `vgaframe_init` requires an rgb24 buffer too (`frame.c:35`), about 27 MB of rgb24, fixed (the largest in use today, in different projects: 3,584-clock lines, 640x480@75 at 4.2667 clk/px, and 666-line frames, 800x600@72), and picks pixels itself (as under `centre-v1`). Tests: the learner at 762- and 3,584-clock lines. Agreed with vgacap | here |
 | calibration and the frame clock | none (they are `tb.cpp`'s logic) | `tb.cpp`'s calibration (`tb.cpp:191-230`, `361-378`) ported once as a shared component, and the frame clock on top of it, used by `tb-v1`, `centre-v1` and any later sampler; tested against `tb.cpp` itself | here |
 | the native sampler and hash tool | `vgacap-frames` decodes a stream to PPM files (`src/tools/vgacap_frames.c`) | `vgacap-sample`, a C tool beside it: reads a trace once (both samplers in one pass, sharing the decompression), runs the requested samplers and hash methods, and writes each sampler's store, `frames.txt` (with gaps) and hash files; the job and `tt-vga sample` call it | here |
 | rgb6 output | the raw buffer holds the 6 bits; rgb24 is derived on emit | an rgb6 pointer beside rgb24 in `vgaframe_output_t`, checked against `R<<4 \| G<<2 \| B` with test vectors | here |
@@ -747,8 +774,9 @@ also worked and is the fallback. Pinning:
   frame it decodes, but writes the list to its own file in the run's output
   directory instead of into timing.json (`tb.cpp:590-608`). The job compares
   that list with `tb-v1`'s `fnv1a64-tb2026-rgb888` output on every run that
-  ended normally (status `ok` or `unstable-sync`) and fails the job if they
-  differ; a run whose list is missing (the model was killed) records
+  ended with a list (status `ok`, `unstable-sync`, or `sim-timeout`, which
+  stops on SIGTERM and still writes it) and fails the job if they differ; a
+  run whose list is missing (the model was killed outright) records
   `tb_v1_check: not-run` in its result instead, so `tb-v1` is checked against the decoding
   that makes the clips continuously, not just once.
 - `job.py`: writes everything for the published tree with umask 022 (files
@@ -780,7 +808,10 @@ also worked and is the fallback. Pinning:
   `frames diff/compare/to-png/from-png`); `ttvga/harness/verify.py`: lists
   published directories and files on the server that no longer exist
   locally, from its HTTPS directory listings.
-- README.md (lines 82-92) and docs/host-setup.md are rewritten.
+- README.md (lines 82-92) and docs/host-setup.md are rewritten, and
+  PROGRESS.md gets a new entry saying `frame_hashes.txt` and
+  `framehashes.py` (described at PROGRESS.md:13-14) are replaced; its older
+  entries stay as the history they are.
 - The two harness sessions are told before the files move: the new paths,
   `frames.txt`, the traces, the samplers, and that `hash_offset_basis` is
   unchanged.
@@ -795,7 +826,7 @@ also worked and is the fallback. Pinning:
    `cpp` 0.95, 1, 1.9 and 2; rgb6 and PNG round trip; hash methods against
    committed vectors; `compare` on constructed shifted and differing runs;
    the stale-file cases.
-2. Run 10 projects: nyancat, metaballs (800x600), a static one, a QSPI one,
+2. Run 11 projects: nyancat, metaballs (800x600), a static one, a QSPI one,
    the 640x504 tennis game, one at `cpp = 2`, one at 1.9062, and the three
    whose clocks per pixel `centre-v1` derives differently from `tb-v1`
    (`tt_um_nyan`, `MichaelBell_rle_vga`, `MichaelBell_mandelbrot`), plus
