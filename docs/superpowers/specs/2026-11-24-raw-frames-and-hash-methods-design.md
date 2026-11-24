@@ -89,15 +89,47 @@ are documented precisely enough to read without our code, and
 
 ### How it is written
 
-`tb.cpp` writes samples to a pipe, in the same way it already feeds ffmpeg,
-to a writer process running under the host's uv-managed Python (which
-compresses with the standard library's `compression.zstd`, or writes the
-chosen format), into the job's scratch directory on the fast root volume
-(see Where things live). No system package is needed. (If the FST format is
-chosen, Verilator's own FST writer is used instead, writing to the same
-place.) Raw, uncompressed samples never reach any disk. The existing in-testbench decoding (mode
+Inside `tb.cpp`, in C, through vgacap's C99 stream writer (extended as
+needed, see Shared code): each half-clock the pins are packed into one
+64-bit word and compared with the previous one, and only changes are
+encoded (runs). That is a compare and a branch per sample, a few
+nanoseconds, against the hundreds of nanoseconds a simulated clock takes
+(see Performance budget). The encoded runs are compressed in the same
+process in large blocks and written with buffered I/O into the job's
+scratch directory on the fast root volume (see Where things live). No
+per-sample pipe, no Python in the hot path, and raw samples never reach any
+disk. FST via Verilator's own tracer stays a candidate only if step 2 shows
+it fits the budget; it records every change through Verilator's generic
+tracing machinery, which is expected to cost far more. The existing in-testbench decoding (mode
 detection, frames for the clips, statistics in timing.json) stays as it is
 for now: the clips are out of scope.
+
+## Performance budget
+
+The owner's requirement (2026-11-24): keeping the record and deriving
+frames from it must not cost significant resources compared with simulating
+the design. The baseline, from the 408 current runs: the simulation runs at
+a median of 2.56 million clocks per wall second (0.25 slowest, 4.61
+fastest), a median of 603 s per project, 104 CPU hours in total. At the
+fastest that is about 220 ns per simulated clock.
+
+Targets, each measured in rollout step 2 against the same project simulated
+without a trace:
+
+- Recording the trace: at most 5% added to simulation wall time, so about
+  10 ns per clock at the fastest project. This rules out Python, a pipe
+  write per sample, and anything per-clock that allocates or makes a system
+  call; it is a compare, a branch and an occasional buffered write.
+- Everything after the simulation (samplers, hash methods, PNGs, pages,
+  copying to the bulk volume): at most 5% of the simulation's CPU time for
+  the same project. Samplers work on the encoded runs, hash methods and PNG
+  encoding run once per distinct frame, and only the native code touches
+  per-clock data.
+- Memory: a fixed buffer per job (the encoder's block and one frame per
+  sampler), independent of run length.
+
+If a target is missed, step 3 reports it with the profile and the fix, not
+just the number.
 
 ## Layer 2: samplers, trace to frames
 
@@ -105,8 +137,10 @@ A sampler turns a trace into frames. It owns everything between the pins
 and the pixels: finding sync, the mode, which clock each pixel is read at,
 the active window, and where each frame starts. Samplers are a registry
 (`ttvga/harness/samplers/`), each with an id, a definition precise enough to
-reimplement, and an implementation (Python with numpy, vectorised per frame
-period, so a 60 s trace is processed in minutes, not hours).
+reimplement, and an implementation in C in vgacap's `libvgaframe` (extended
+as needed), working directly on the encoded runs so a long run of unchanged
+pins costs one step, not one per clock. A Python reference implementation
+exists for each sampler for the tests only.
 
 The output pixel format is the same for every sampler, **rgb6**: one byte
 per pixel, `R << 4 | G << 2 | B`, each channel the two bits the design
@@ -165,9 +199,9 @@ For each sampler, per project, under `<project>/<sampler>/`:
   `:target` and `image-rendering: pixelated`. No scripts.
 
 Hash methods are a registry (`ttvga/harness/hashmethods.py`): id,
-definition, implementation (numpy where the algorithm allows; FNV, being
-sequential within a frame, is vectorised across all distinct frames at
-once), and committed test vectors. Initial methods:
+definition, an implementation in C (run by the same native tool as the
+samplers, once per distinct frame, never per captured frame), a Python
+reference implementation for the tests, and committed test vectors. Initial methods:
 
 | id | algorithm | input |
 | --- | --- | --- |
@@ -180,6 +214,24 @@ as comments, then its parameters as keys (for the FNV method,
 today, README.md:91), then `id`, `status`, `sampler`, `mode`, `width`,
 `height`, `clock_hz`, `clocks_per_pixel`, `capture_after_clock`, `frames`,
 then one hash per frame, frame 0 first.
+
+## Shared code: vgacap
+
+The trace format, the encoder, the samplers and the frame tools are not
+written here. They come from vgacap (github.com/mithro/vgacap: the VGCH
+capture stream format, `libvgaframe`, its Python mirror and tools), which
+already decodes VGA captured from real boards. Where it lacks something this
+design needs, the feature is added to vgacap, with the session that maintains
+it and through its review, not copied here (owner's decision 2026-11-24).
+That also means a hardware capture and a simulation trace are read by the
+same code.
+
+What vgacap has, and what it needs, is being agreed with that session; this
+section is rewritten with the answer before the plan is written. The needs
+known so far: a sample covering every user-module pin with clk at both
+edges, not only `uo_out`; the `tb-v1` and `centre-v1` pixel rules, including
+`cpp < 1`; rgb6 output beside RGB24; per-distinct-frame hashing; and the
+performance budget above.
 
 ## Where things live
 
@@ -233,25 +285,23 @@ is out of scope.
 
 ## Python and tools on the host
 
-All host-side Python (runqueue, job, verify, rerender, the trace writer,
-samplers, hash methods) runs under a uv-managed CPython 3.14 instead of the
+All host-side Python (runqueue, job, verify, rerender, and the glue that
+runs the native trace, sampler and hash tools) runs under a uv-managed CPython 3.14 instead of the
 system `python3` (Debian 3.13): `remote.py` starts every host script through
 it (`remote.py:187,228,252`; `runqueue.py:89` passes its interpreter on to
 jobs). Checked on the host 2026-11-24: uv fetched CPython 3.14.7 into the
 pipeline user's home and the standard library's `compression.zstd` worked;
-PyPI's `zstandard` on 3.13 also worked and is the fallback. numpy comes from
-PyPI. Pinning:
+PyPI's `zstandard` on 3.13 also worked and is the fallback. Pinning:
 
 - `ttvga/tools.toml` gains a `[uv]` entry (the uv release tarball, version
   and checksum, like the other tools; uv is installed today but not pinned)
   and a `python` version that bootstrap installs with `uv python install`.
-- `ttvga/harness/` gets a `pyproject.toml` and `uv.lock` pinning numpy, so
-  every host runs the same versions; `tt-vga bootstrap` runs `uv sync` there
-  after unpacking the tarballs.
-- Locally, `requires-python` becomes `>=3.14` and numpy is added.
-
-No system packages are added: compression is Python's standard library,
-SHA-256 `hashlib`, PNG `zlib`.
+- vgacap is a pinned dependency (a commit), built by `tt-vga bootstrap`
+  with the toolchain already on the host (g++/make, as for Verilator
+  models); its compression and hashing code is vendored C inside vgacap
+  (zstd and SHA-256 are BSD/public-domain C), so no system package is
+  needed.
+- Locally, `requires-python` becomes `>=3.14`.
 
 ## Runs that do not finish normally
 
@@ -312,8 +362,9 @@ SHA-256 `hashlib`, PNG `zlib`.
    constructed shifted and differing runs; the stale-file cases.
 2. Run 7 projects: nyancat, metaballs (800x600), a static one, a QSPI one,
    the 640x504 tennis game, one at `cpp = 2`, and one at `cpp = 0.9524`.
-   Measure: trace size and write time in each format; store and PNG sizes;
-   sampler and hashing times. Check tb-v1 frames reproduce the published FNV
+   Measure each project twice, without and with the trace, to get the
+   overhead against the budget; then trace size per format, store and PNG
+   sizes, and sampler, hashing and PNG CPU time. Check tb-v1 frames reproduce the published FNV
    hashes exactly. Compare SHA-256 and FNV distinct counts (543,730 today is
    a count of distinct FNV values, `tb.cpp:477,488`). Show tb-v1 against
    centre-v1 for the `cpp != 1` ones.
