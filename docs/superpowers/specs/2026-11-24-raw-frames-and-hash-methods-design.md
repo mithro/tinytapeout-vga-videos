@@ -587,14 +587,14 @@ PRs #1-#4, none merged). Two other vgacap branches touch the same code and
 are coordinated with that session before the plan is written: `fw-picosdk`
 (its writer change is commit 471e7de: `vgacap_writer_attach`, packed words
 in one write, `src/stream/writer.c`; the branch itself is still moving), and
-`pio-rle` (at a3bc061 when checked) streams
-run-length chunks from the board's PIO. Both are sub-agent branches the
-vgacap session has not reviewed yet, so their writer changes may still move.
-The format note is written against `rtl` plus `fw-picosdk`'s writer change
-once the vgacap session has reviewed it and says it is settled (it may split
-that change into its own pull request to rebase onto), and the new
-run-length chunk is the one `pio-rle` would also emit if decision 1 adopts
-it. *Here* means this project's session writing it on a
+`pio-rle`, now vgacap PR #6 (stacked on #4, hardware-checked), streams
+run-length data from the board's PIO in the existing `RLE ` chunk (32-bit
+value and run) and does not change the stream format, so the format note
+does not depend on it; if decision 1 adopts the new chunk, the board path
+can emit it later. `fw-picosdk` is still being written, so its writer change
+may still move: the format note is written against `rtl` plus that change
+once the vgacap session says it has settled (it may split the change into
+its own pull request to rebase onto). *Here* means this project's session writing it on a
 branch in vgacap; that session reviews before anything merges.
 
 | need | in vgacap today | work | by |
