@@ -1,8 +1,9 @@
 # The VGA library: a third design source on the FabricFox boards
 
-Status: draft for the owner, 2026-11-26. Second revision. It answers the first independent
-review (graded "not ready"; findings C1-C2, I1-I10 and 20 minor) under the controller's
-rulings AC and AD (below).
+Status: draft for the owner, 2026-11-26. Third revision. Revision 2 answered the first
+independent review (graded "not ready"; findings C1-C2, I1-I10 and 20 minor) under the
+controller's rulings AC and AD (below). Revision 3 answers the re-review (graded "ready with
+fixes"; findings N1-N5 and minors r1-r8).
 
 Owner decision (Tim, 2026-11-26): "Our custom commander app and the tinytapeout.fpgas.online
 interface should be updated to allow loading of the bitstreams from the same archive the vga
@@ -17,7 +18,7 @@ These rulings bind this spec.
 |---|---|
 | Y | The library is a real third source, `library`, in the [fpgas-tt daemon](https://github.com/fpgas-online/fpgas.online-tt). It has its own cache directory on each Pi and is filled by the [site](https://github.com/fpgas-online/fpgas.online-site) backend on tweed. The site fetches the index and the bitstreams from one fixed archive URL, checks them, and pushes the bytes to the daemon, so the Pis make no outbound connections. Option A, where the site loads library designs as ordinary uploads, is rejected: it would evict other visitors' uploads. |
 | AC | The id rule in section 1 stands. It replaces Ruling X's draft wording (`<shuttle>_<macro>`, cut to 40 characters plus a 6-hex hash) and the `demo_name` function on the harness's `demos-export` branch. Two independent checks found it collision-free: the harness session ran it over its 445 designs, and the reviewer ran it over the 440 targets in this repo. |
-| AD | The daemon never changes `tt.mode` and never uses the SDK's "MCU controls inputs" mode. It drives the `ui_in` pins directly, as `safe.py` does. It drives only the bits in the entry's `ui_in_mask`, which the harness publishes using its `effective_ui_in_mask` rule. Bits outside the mask stay inputs, and a mask of 0 drives nothing. Every enable, whatever the source, first releases the pins the daemon drove before, so a later demo or upload never inherits a library design's inputs. |
+| AD | The daemon never changes `tt.mode` and never uses the SDK's "MCU controls inputs" mode. It drives the `ui_in` pins directly, as `safe.py` does. It drives only the bits in the entry's `ui_in_mask`, which the harness publishes using its `effective_ui_in_mask` rule. The daemon makes every bit outside the mask an input with the pull-down when it drives a mask (finding N1). A mask of 0 drives nothing and changes no pin. Every enable, whatever the source, first releases the pins the daemon drove before, so a later demo or upload never inherits a library design's inputs. |
 
 ## Why
 
@@ -327,7 +328,6 @@ The module `ttvga/fpgalibrary.py` holds:
 | `validate(doc) -> list[str]` | every rule above, at most one violation per field |
 | `check_bins(doc, root)` | checks each bin's size, hash and preamble |
 | `load(path)` | reads a document, refusing NaN and Infinity |
-| `FOREIGN` | the archive files the harness owns (section 5) |
 
 `tt-vga fpga-library-check <file> [--bins <dir>]` exits 1 on any violation. The harness runs it
 as a program. Nothing imports it, so the two repos have no code dependency.
@@ -401,16 +401,22 @@ The answer gains a top-level `library` object, and library entries in `designs`:
      "docs_url": "...", "repo_url": "...", "clock_hz": 25175000, "pinout": {}, "source": "demo"},
     {"name": "my_upload", "title": "", "author": "", "description": "", "docs_url": "",
      "repo_url": "", "clock_hz": null, "pinout": {}, "source": "upload"},
-    {"name": "ttsky25a_vga_example", "source": "library", "size": 104090}
+    {"name": "ttsky25a_vga_example", "title": "", "author": "", "description": "",
+     "docs_url": "", "repo_url": "", "clock_hz": null, "pinout": {}, "source": "library",
+     "size": 104090}
   ]
 }
 ```
 
 - The top-level `library` object shows that the daemon supports the library. An old daemon
   does not send it.
-- A library entry is `{name, source: "library", size}` and nothing more. Its title, clock,
-  pinout, inputs and warnings come only from the site's index, keyed by `name`. The daemon
-  holds no second copy of that metadata.
+- A library entry has the shape of an upload entry: `title`, `author`, `description`,
+  `docs_url` and `repo_url` are `""`, `clock_hz` is null and `pinout` is `{}`. It adds
+  `source: "library"` and `size` (finding N2). These are the same "unknown" placeholders an
+  upload carries, so a client that reads `/designs` (the pinned 0.2.x Commander's
+  `pinoutFromDesign` reads `d.pinout[k]`, `fpgaDesigns.ts:43-48`) never meets a missing key.
+  They are not a second copy of the metadata: the real title, clock, pinout, inputs and
+  warnings come only from the site's index, keyed by `name`.
 - Demo and upload entries are unchanged.
 - Only cached entries are listed. The listing reads the directory and stats each `.json`. It
   never hashes a `.bin`.
@@ -481,13 +487,15 @@ The body is `{"clock_hz": int | null, "ui_in": int | null, "ui_in_mask": int}`.
 
   ```json
   {"enabled": "<name>", "clock_hz": 25175000, "ui_in": 1,
-   "ui_in_mask": 1, "ui_in_driven": [0], "ui_in_held": [], "released": [0]}
+   "ui_in_mask": 1, "ui_in_driven": [0], "ui_in_held": [], "ui_in_inputs": [1, 2, 3, 4, 5, 6, 7],
+   "released": [0]}
   ```
 
   | Key | Lists |
   |---|---|
   | `ui_in_driven` | the bits now driven |
   | `ui_in_held` | bits in the mask left as inputs because something outside held them high |
+  | `ui_in_inputs` | bits outside the mask, made inputs with the pull-down; empty when the mask is 0 |
   | `released` | bits a previous load had driven, released before this load |
 
 The REPL changes all live in `LOAD_CODE` (`designs.py:227-272`). Nothing touches `tt.mode`. The
@@ -495,8 +503,10 @@ The REPL changes all live in `LOAD_CODE` (`designs.py:227-272`). Nothing touches
 (`tt-micropython-firmware src/ttboard/demoboard.py:225-238`, `src/ttboard/pins/pins.py:165-251`,
 `:279-285`), and the harness spec says never to switch the SDK into that mode (lines 131-133).
 
-**Release, always, before the load.** A new `__RELEASE__` block runs at the top of `LOAD_CODE`,
-before the buffer checks. It reads the board-side global `_fo_ui_driven`, which holds the pins
+**Release, always, just before the SDK loads.** A new `__RELEASE__` block runs inside the `try`
+of `LOAD_CODE`, after the buffer's size and hash checks and immediately before
+`tt.shuttle.enable(...)` (finding r7). A load refused for a damaged buffer therefore leaves the
+previous design running with its inputs as they were. It reads the board-side global `_fo_ui_driven`, which holds the pins
 the daemon drove last time; it is empty when the global is missing. Each of those pins becomes
 `Pin.IN` with `Pin.PULL_DOWN`. Then the block clears `_fo_ui_driven` and prints
 `released=<list>`.
@@ -505,8 +515,9 @@ the daemon drove last time; it is empty when the global is missing. Each of thos
   (`idle.py:268`).
 - It releases only pins this daemon drove. Pins a visitor set through the Commander's ui_in
   controls are left alone.
-- A soft reset clears the global, and the SDK's start leaves the pins as inputs, so nothing is
-  lost there.
+- A soft reset clears the global. What the SDK's own start does to the `ui_in` pins depends
+  on the board's `config.ini` mode (see Input pins at rest, below); the daemon never relies on
+  it.
 
 **Drive, after the clock, only on success.** The `__UI_IN__` block goes after `__CLOCK__`, after
 the `try`/`finally`. That position runs only when the load succeeded. With `ui_in` null or the
@@ -514,25 +525,49 @@ mask 0, the block is empty. Otherwise it is:
 
 ```python
 from machine import Pin
-import time
+import time, json
 _fo_tt = tt
 _fo_held = []
 _fo_ui_driven = []
+_fo_inputs = []
 for _fo_i in range(8):
-    if not (__MASK__ >> _fo_i) & 1:
-        continue
     _fo_p = getattr(_fo_tt.pins, 'ui_in%d' % _fo_i)
+    if not (__MASK__ >> _fo_i) & 1:
+        _fo_p.mode = Pin.IN
+        _fo_p.pull = Pin.PULL_DOWN
+        _fo_inputs.append(_fo_i)
+        continue
 <UI_IN_GUARD at indent 4, held list "_fo_held">
     _fo_p.raw_pin.value((__UI_IN__ >> _fo_i) & 1)
     _fo_p.mode = Pin.OUT
     _fo_ui_driven.append(_fo_i)
-print('ui_in=%s %s' % (_fo_ui_driven, _fo_held))
+print('ui_in=' + json.dumps({'driven': _fo_ui_driven, 'held': _fo_held, 'inputs': _fo_inputs}))
 ```
 
-- Each pin's output latch is set before the pin becomes an output, so the pin never drives a
-  stale value.
+- Every bit outside the mask is made `Pin.IN` with `Pin.PULL_DOWN` first, and is not added to
+  `_fo_ui_driven` (finding N1). The SDK's default mode may have left those pins driven; this
+  is where the daemon stops that for a design whose mask leaves them out.
+- Each masked pin's output latch is set before the pin becomes an output, so the pin never
+  drives a stale value. `mode = OUT` goes through `raw_pin.init(Pin.OUT, pull=...)`
+  (`tt-micropython-firmware src/ttboard/pins/standard.py:61-64`), which leaves the latch alone
+  (finding r1).
+- The answer line is JSON, parsed with `designs._parse_json` like the daemon's other board
+  replies (finding r6). The released line is JSON too: `released=` followed by a JSON list.
 - The project clock is not touched, so it keeps running.
-- The last line is still `enabled`.
+- The last line is still `enabled`. `load_design` already checks only the last line, so the
+  idle display's path keeps working (finding r2).
+
+**Input pins at rest (finding N1, not yet verified on a board).** The SDK's default
+`config.ini` mode is `ASIC_RP_CONTROL` (`tt-micropython-firmware src/config.ini:21-25`). In that
+mode `begin_asiconboard` makes every `ui_in` pin that does not read high an output
+(`src/ttboard/pins/pins.py:234-251`), at start and on every re-init (`demoboard.py:157-162`),
+and `fpga_mux.enable` resets only `uio` (`fpga_mux.py:144-160`). So on a board with the default
+`config.ini`, the RP2350 may already drive `ui_in` today, for demos and uploads too. The
+harness saw `ui_in[0]` read 1 (hardware-validation spec, line 52), which suggests the Welland
+FPGA boards may not be in that mode. This spec does not know which. The hardware check reads
+`tt.mode_str` and the `ui_in` pin directions read-only before any load, and records the result
+here. Whatever it finds, a library load with a mask makes every unmasked bit an input. A load
+with mask 0, and every demo or upload load, leaves the SDK's pin state as it is today.
 
 **One guard, two callers, with `SAFE_CODE` unchanged byte for byte (finding I3).**
 `designs.ui_in_guard(indent: int, held: str) -> str` returns exactly these lines, each prefixed
@@ -598,8 +633,10 @@ carries `/bitstream`.
   in `/`. When it is empty, the panel is not rendered and the routes answer 404. No request can
   change it.
 - **A new cache alias, `ttsite`**, for the lock (finding I1). It is redis
-  `redis://127.0.0.1:6379/1` with `KEY_PREFIX: "ttsite"`, so it shares the `poe` alias's database
-  but not its keys.
+  `redis://127.0.0.1:6379/2` with `KEY_PREFIX: "ttsite"`: its own database (finding r5).
+  Django's `RedisCache.clear()` is a `FLUSHDB`, so sharing database 1 with `poe` would let
+  clearing either alias drop the other's keys, a held load lock included. Database 0 is the
+  channel layer's.
   - It is needed because gunicorn runs three workers
     (`fpgas.online-infra ansible/roles/site/templates/gunicorn.service.j2:13`), and the `default`
     locmem cache is per worker.
@@ -667,12 +704,12 @@ the last ETag the archive sent, and reads at most 4 MiB. The JSON is parsed with
     `X-TTSite-Library-Stale: <age>`.
   - `NotPublished` is cached for 60 s as its own state, so that visitors arriving before the
     first publish do not each hit the archive.
-- **The ETag.** It is strong: `"sha256-<first 32 hex of sha256(body_bytes)>"`. It is computed on
-  the uncompressed body, before gzip. The view uses
-  `django.views.decorators.http.condition(etag_func=...)` as its outer decorator and `gzip_page`
-  inside it, so the 304 decision happens before compression. Django compares `If-None-Match`
-  weakly, so the `W/` form that the gzip path sends back to browsers still matches
-  (finding m8).
+- **The ETag.** It is weak, and says so: `W/"sha256-<first 32 hex of sha256(body_bytes)>"`
+  (finding r4). It is computed on the uncompressed body, so one value names the content
+  whatever the encoding. The view uses `django.views.decorators.http.condition(etag_func=...)`
+  as its outer decorator and `gzip_page` inside it, so the 304 decision happens before
+  compression. Django compares `If-None-Match` weakly, so a browser's echo matches with or
+  without gzip (finding m8).
 
 ### Routes
 
@@ -680,7 +717,7 @@ the last ETag the archive sent, and reads at most 4 MiB. The JSON is parsed with
 |---|---|---|
 | `api/board/<slug:slug>/library` | GET | the normalised index; 404 `{"error": "VGA library not published", "detail": ""}` when the archive has no `fpga-library.json`; 502 `VGA library unavailable` when the cache is cold and the archive is down |
 | `api/board/<slug:slug>/library/<str:name>/load` | POST | load one design (below) |
-| `api/board/<slug:slug>/bitstream` (existing) | POST | refuses a `name` that is an id in the index, with 409 `<name> is a VGA library design; pick another` (finding I5). The check runs on the cached index when there is one; with no index copy at all, the upload goes ahead |
+| `api/board/<slug:slug>/bitstream` (existing) | POST | refuses a `name` that is an id in the index, with 409 `<name> is a VGA library design; pick another` (finding I5). The check calls `library.index(deadline)` with a 5 s deadline, so a worker that has never fetched the index fetches it (finding r3); when the archive is down and no copy exists, the upload goes ahead |
 
 The index route checks the board with `_fpga_board_or_error` (`views.py:113`); the result is
 cached for 60 s per slug. The index is the same for every board, but it sits under the board's
@@ -702,7 +739,7 @@ Load route, step by step:
 | 5 | `fetch_bin`, then `daemon.library_push(board, name, data, sha, deadline=D)` | |
 | 6 | If less than 27 s is left (the daemon's 25 s deadline plus a margin), stop | 504 `the load ran out of time; try again` (the bin is cached by now, so a retry is quick) |
 | 7 | `daemon.enable(board, name, {"clock_hz", "ui_in", "ui_in_mask"} from the entry)`, with read timeout `min(30, D - now)` | |
-| 8 | If step 7 answered 404, step 5 has not run, and at least 32 s are left, push once and enable once more. Otherwise pass the 404 through | |
+| 8 | If step 7 answered 404 and step 5 has not run: if at least 32 s are left, push once; then apply step 6's rule again (finding N4): under 27 s left gives the 504, otherwise enable once more. Otherwise pass the 404 through | 504 `the load ran out of time; try again` |
 | 9 | On success, delete `ttsite:designs:<slug>` | the enable body plus `"pushed": bool` and `"hides_upload": bool` |
 
 Every daemon call takes the deadline. A connect timeout stays 3.05 s, and a read timeout is
@@ -809,6 +846,10 @@ name is hidden while this one is on the board". Then it runs `loadDesigns()` and
   - `syncSelectionToEnabled` (`fpgaDesigns.ts:98-106`) picks the project whose `macro` equals
     `enabled` and whose `source` equals what `/designs` says for that name. If `/designs` does not
     list the name, it picks the library project.
+- **Pinout and description (finding N2).** `PinoutPanel` (`src/components/PinoutPanel.tsx:44-52`)
+  builds the pinout from `fpgaDesigns.byName[project.macro]`. For a library project it uses the
+  index entry's `pinout` and `description` instead; the daemon's `/designs` entry holds only the
+  upload-shape placeholders.
 - **Search.** `ProjectSelect` (`ProjectSelect.tsx:83-90`) matches on `title`, `author`, `shuttle`
   and `macro`. It shows at most 100 options, with a helper line: "showing 100 of 445; type to
   narrow".
@@ -836,16 +877,19 @@ The archive's design directories now hold files that this pipeline does not writ
 files in `<shuttle>/<macro>/`, and `fpga-library.json` at the root. These rules keep the
 pipeline from treating them as strays.
 
-- `ttvga.fpgalibrary.FOREIGN = ("/*/*/*.bin", "/fpga-library.json")` is the one list of
-  harness-owned patterns.
-- `tt-vga mirror` (`ttvga/remote.py:283-316`) still never uses `--delete`. It also adds an
-  `--exclude` for each `FOREIGN` pattern, so a mirror can neither overwrite these files nor ever
-  remove them. A test pins both behaviours.
-- The mirror's summary adds `bitstreams: <n>` and `fpga-library.json: present|absent`.
+- The one list of harness-owned patterns is `ttvga.harness.verify.FOREIGN_PATTERNS =
+  ("*/*/*.bin", "fpga-library.json")`, relative to the archive root. The raw-traces pipeline
+  plan on `main` (`docs/superpowers/plans/2026-11-26-raw-traces-pipeline.md:719-721`, its
+  Task 16) defines it and owns it (finding N3). `verify.py` is standard library only and is
+  copied to the host, so the list lives there and nothing on the library side holds a copy.
+- `tt-vga mirror` (`ttvga/remote.py:283-316`) still never uses `--delete`. Pipeline Task 16
+  adds an `--exclude "/" + p` for each pattern and pins it with its own test in
+  `tests/test_mirror.py`. The library work does not touch the excludes.
+- The library work adds only the mirror summary lines `bitstreams: <n>` and
+  `fpga-library.json: present|absent`, and a section in `docs/publishing.md` naming these files
+  and their owner.
 - Nothing here replaces or deletes an archive directory `<shuttle>/<macro>/` wholesale. The
-  raw-traces pipeline plan in the `pipeline-plan` worktree (lines 387-389, not committed)
-  assumes a `<shuttle>/<macro>/fpga/` subdirectory. It must use `FOREIGN` instead.
-- `docs/publishing.md` names these files and their owner.
+  pipeline plan on `main` follows Ruling AA and keeps its frames out of these directories.
 
 ## 6. Harness publisher (tt-harness-fpga-vga): the interface contract
 
@@ -880,11 +924,12 @@ upload any bitstream. A library visitor picks an id. The archive supplies the by
 bitstream gets loaded. That is the same power an uploader has. The site checks size, hash and
 preamble, and so does the daemon.
 
-**The board now drives inputs (new exposure, finding C2).** Today the daemon drives no `ui_in`
-pin on an FPGA board. With the library, it drives the bits in `ui_in_mask`. That is new, and
+**The board now drives inputs (new exposure, finding C2).** Today the daemon itself drives no
+`ui_in` pin on an FPGA board (the SDK's own mode may; see Input pins at rest in section 2). With
+the library, it drives the bits in `ui_in_mask`. That is new, and
 these limits apply:
 
-- Only the masked bits are driven.
+- Only the masked bits are driven, and the unmasked bits are made inputs with the pull-down.
 - A masked bit that something already holds high is left as an input.
 - The mask leaves out each `ui_in[k]` tied to a `uio[k]` that the design ever drives in its
   reference simulation.
@@ -957,8 +1002,9 @@ daemon, file names come only from ids that pass `NAME_RE`, and the metadata is t
 - non-contiguous shuttles are refused;
 - `--bins` mismatches are reported.
 
-**`tests/test_mirror.py`** checks the excludes, the absence of `--delete`, and the summary
-lines.
+**The mirror summary test** (added to pipeline Task 16's `tests/test_mirror.py` after that task
+lands) checks the `bitstreams:` and `fpga-library.json:` lines. The excludes and the absence of
+`--delete` are pipeline Task 16's tests.
 
 ### fpgas.online-tt
 
@@ -976,7 +1022,7 @@ lines.
 - precedence;
 - an upload refused when it takes a cached library id;
 - `hides_upload`;
-- library entries listed as `{name, source, size}`;
+- library entries listed in the upload shape plus `source` and `size`;
 - an enabled id that is not cached.
 
 **The REPL text:**
@@ -987,6 +1033,8 @@ lines.
 - with a mask, the drive block comes after `__CLOCK__`, and the text contains no `tt.mode` and no
   `clock_project_stop`;
 - each latch is set before the pin becomes an output;
+- every unmasked bit is made an input with the pull-down and is not in `_fo_ui_driven`;
+- the release sits after the buffer checks, just before `tt.shuttle.enable`;
 - `released`, `ui_in_driven` and `ui_in_held` are parsed from the board's answer.
 
 **The fake REPL:** a load with `ui_in: 1` and mask 1, then a demo load with null. The second load
@@ -1023,7 +1071,7 @@ releases bit 0.
 - the cached skip;
 - push, then enable with the index's values;
 - 501 from an old daemon;
-- the retry and its time rule;
+- the retry and its time rule, with the 27 s floor checked again before the second enable;
 - 504 when time runs short;
 - the lock taken through `caches["ttsite"]` (409 when held, 503 when redis is down);
 - the upload-name refusal;
@@ -1041,6 +1089,7 @@ badge text, and `renderPage` on a fake document for each panel state.
 - not published;
 - the 100 cap;
 - `selectFpgaDesign` routing, and `syncState` after a library load;
+- the Pinout tab of an enabled library design, taken from the index;
 - warnings that never disable Load.
 
 ### Hardware check (one FabricFox board, after Tim's deploys)
@@ -1055,7 +1104,9 @@ Before starting:
 Steps:
 
 1. **Read only.** `/designs` has the top-level `library` key; note the uploads it lists.
-   `/library` has about 445 entries, including `ttsky25a_vga_example`.
+   `/library` has about 445 entries, including `ttsky25a_vga_example`. In the Commander REPL,
+   read `tt.mode_str` and each `tt.pins.ui_in<i>.mode_str`, without changing anything. Record
+   them in section 2, Input pins at rest (finding N1).
 2. **First load.** On the board page, load `ttsky25a_vga_example`, the TinyVGA template that is
    the library's equivalent of the `tt_um_vga_pattern` demo. Expect `pushed: true`; `/designs`
    then shows it enabled with source `library`; the camera shows the pattern.
