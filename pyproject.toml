@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Simulate Tiny VGA compatible Tiny Tapeout projects on a remote host and record videos of their output"
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 dependencies = [
     "pyyaml>=6.0",
     "tinytapeout-project-search",

@@ -16,6 +16,7 @@ Everything on the host lives under `~/ttvga/` of the dedicated user.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import shlex
@@ -25,7 +26,7 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
-from ttvga import HARNESS_DIR, RESULTS_DIR, TARGETS_JSON, framehashes
+from ttvga import HARNESS_DIR, RESULTS_DIR, ROOT, TARGETS_JSON, framehashes
 
 CONFIG_PATH = Path.home() / ".config" / "tinytapeout-vga-videos" / "config.toml"
 FORBIDDEN_USERS = {"root", "tim", "ansible"}
@@ -97,12 +98,109 @@ def rsync_from(host: Host, source: str, dest: Path, extra: list[str] | None = No
         raise subprocess.CalledProcessError(p.returncode, cmd)
 
 
+def tarball_tools(tools: dict) -> dict:
+    """The tools.toml entries installed from a tarball (those with a `url`)."""
+    return {name: t for name, t in tools.items() if "url" in t}
+
+
+def host_python(tools: dict) -> str:
+    """The pinned interpreter every host script starts through."""
+    return f"~/{REMOTE_ROOT}/tools/uv/uv run --no-project --python {tools['python']['version']} python"
+
+
+def vgacap_build_commands(src: str, build: str, commit: str, url: str | None = None) -> list[str]:
+    """Shell lines that fetch `commit` shallowly into `src` and build the vgacap tools in `build`.
+
+    `url`, when given, sets up `src`'s origin first. The final PINNED file records
+    the commit that was built, and is removed before a build starts, so a
+    different pin or a failed build never looks current.
+    """
+    cmds = [f"[ -d {src}/.git ] || git init -q {src}"]
+    if url:
+        cmds.append(f"git -C {src} config --get remote.origin.url || git -C {src} remote add origin {shlex.quote(url)}")
+    cmds += [
+        f"git -C {src} cat-file -e {commit}^{{commit}} || git -C {src} fetch -q --depth 1 origin {commit}",
+        f"git -C {src} checkout -q --detach {commit}",
+        f"rm -f {build}/PINNED",
+        f"cmake -S {src} -B {build} -DCMAKE_BUILD_TYPE=Release",
+        f"cmake --build {build} -j 8 --target vgacap-sample vgacap-export vgacap-dump vgacap_trace vgacap_sample",
+        f"echo {commit} > {build}/PINNED",
+    ]
+    return cmds
+
+
+def bootstrap_script(tools: dict) -> str:
+    """The script that installs the pinned toolchain under ~/ttvga/tools on the host."""
+    steps = []
+    for name, t in tarball_tools(tools).items():
+        strip = f"--strip-components={t['strip']}" if t.get("strip") else ""
+        mkdir = f"mkdir -p {t['dir']}" if t.get("strip") else "true"
+        into = f"-C {t['dir']}" if t.get("strip") else ""
+        steps.append(f"""
+if [ ! -x {t['check']} ]; then
+  echo "installing {name} {t['version']}"
+  {mkdir}
+  curl -sSL -o dl/{name}.tar {shlex.quote(t['url'])}
+  tar xf dl/{name}.tar {into} {strip}
+  rm -f dl/{name}.tar
+else
+  echo "{name}: present"
+fi""")
+    py = tools["python"]["version"]
+    vg = tools["vgacap"]
+    build = "\n".join(vgacap_build_commands("vgacap-src", "vgacap-build", vg["commit"], vg["git"]))
+    return f"""
+set -e
+mkdir -p ~/{REMOTE_ROOT}/tools/dl ~/{REMOTE_ROOT}/harness ~/{REMOTE_ROOT}/overrides ~/{REMOTE_ROOT}/work ~/{REMOTE_ROOT}/videos
+cd ~/{REMOTE_ROOT}/tools
+{''.join(steps)}
+./oss-cad-suite/bin/verilator --version
+./ffmpeg/bin/ffmpeg -version | head -1
+./uv/uv --version
+./uv/uv python install {py}
+if [ -f vgacap-build/PINNED ] && [ "$(cat vgacap-build/PINNED)" = "{vg['commit']}" ]; then
+  echo "vgacap: present at {vg['commit']}"
+else
+  echo "building vgacap {vg['commit']}"
+{build}
+fi
+"""
+
+
+def harness_version(repo: Path = ROOT) -> str:
+    """A 16-hex key for the harness and tool pins; `-dirty` when either has uncommitted changes."""
+    def git(*args: str) -> str:
+        return subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True,
+                              text=True).stdout.strip()
+    tree = git("rev-parse", "HEAD:ttvga/harness")
+    blob = git("rev-parse", "HEAD:ttvga/tools.toml")
+    key = hashlib.sha256(f"{tree}\n{blob}\n".encode()).hexdigest()[:16]
+    if git("status", "--porcelain", "--", "ttvga/harness", "ttvga/tools.toml"):
+        key += "-dirty"
+    return key
+
+
+def queue_command(args: argparse.Namespace, host: Host, tools: dict) -> str:
+    """The command that starts the queue on the host, run under the pinned Python."""
+    jobs = args.jobs or host.jobs
+    q = (f"{host_python(tools)} ~/{REMOTE_ROOT}/harness/runqueue.py --root ~/{REMOTE_ROOT} --jobs {jobs} "
+         f"--seconds {args.seconds} --timeout {args.timeout}")
+    if args.only:
+        q += f" --only {shlex.quote(args.only)}"
+    if args.limit:
+        q += f" --limit {args.limit}"
+    if args.redo:
+        q += " --redo"
+    return q
+
+
 # ---------------------------------------------------------------------------
 # Sub-commands
 # ---------------------------------------------------------------------------
 
 def host_check(args: argparse.Namespace) -> int:
     host = resolve_host(args.host)
+    tools = tomllib.loads(TOOLS_TOML.read_text())
     script = f"""
 set -e
 echo "user: $(whoami)  host: $(hostname)"
@@ -110,7 +208,13 @@ echo "cores: $(nproc)  load: $(cut -d' ' -f1-3 /proc/loadavg)"
 free -g | awk '/Mem:/ {{print "memory GB: total " $2 ", available " $7}}'
 df -h ~ | awk 'NR==2 {{print "disk: " $4 " free of " $2}}'
 for t in tmux git g++ make python3; do printf "%s: " $t; command -v $t || echo MISSING; done
+printf "cmake: "; if command -v cmake > /dev/null; then cmake --version | head -1; else echo MISSING; fi
 R=~/{REMOTE_ROOT}
+[ -x $R/tools/uv/uv ] && $R/tools/uv/uv --version || echo "uv: not bootstrapped"
+[ -x $R/tools/uv/uv ] && $R/tools/uv/uv python list --only-installed {tools['python']['version']} || echo "python {tools['python']['version']}: not installed"
+if [ -f $R/tools/vgacap-build/PINNED ]; then echo "vgacap pin built: $(cat $R/tools/vgacap-build/PINNED)  (want {tools['vgacap']['commit']})"; else echo "vgacap pin built: none  (want {tools['vgacap']['commit']})"; fi
+loginctl show-user $(whoami) -p Linger || echo "Linger: unknown"
+[ -f $R/host.toml ] && echo "host.toml: present" || echo "host.toml: missing"
 [ -x $R/tools/oss-cad-suite/bin/verilator ] && $R/tools/oss-cad-suite/bin/verilator --version || echo "verilator: not bootstrapped"
 [ -x $R/tools/ffmpeg/bin/ffmpeg ] && $R/tools/ffmpeg/bin/ffmpeg -version | head -1 || echo "ffmpeg: not bootstrapped"
 [ -f $R/queue-state.json ] && python3 -c "import json;s=json.load(open('$R/queue-state.json'));print('queue:', 'running' if not s['finished'] else 'finished', s['done'], 'done', s['failed'], 'failed', len(s['running']), 'active')" || echo "queue: never run"
@@ -126,29 +230,7 @@ def bootstrap(args: argparse.Namespace) -> int:
     """Install the pinned toolchain under ~/ttvga/tools on the host. Idempotent."""
     host = resolve_host(args.host)
     tools = tomllib.loads(TOOLS_TOML.read_text())
-    steps = []
-    for name, t in tools.items():
-        strip = f"--strip-components={t['strip']}" if t.get("strip") else ""
-        mkdir = f"mkdir -p {t['dir']}" if t.get("strip") else "true"
-        into = f"-C {t['dir']}" if t.get("strip") else ""
-        steps.append(f"""
-if [ ! -x {t['check']} ]; then
-  echo "installing {name} {t['version']}"
-  {mkdir}
-  curl -sSL -o dl/{name}.tar {shlex.quote(t['url'])}
-  tar xf dl/{name}.tar {into} {strip}
-  rm -f dl/{name}.tar
-else
-  echo "{name}: present"
-fi""")
-    script = f"""
-set -e
-mkdir -p ~/{REMOTE_ROOT}/tools/dl ~/{REMOTE_ROOT}/harness ~/{REMOTE_ROOT}/overrides ~/{REMOTE_ROOT}/work ~/{REMOTE_ROOT}/videos
-cd ~/{REMOTE_ROOT}/tools
-{''.join(steps)}
-./oss-cad-suite/bin/verilator --version
-./ffmpeg/bin/ffmpeg -version | head -1
-"""
+    script = bootstrap_script(tools)
     return ssh(host, script, check=False, timeout=3600).returncode
 
 
@@ -160,6 +242,7 @@ def push_harness(host: Host) -> int:
     rsync(host, [str(HARNESS_DIR) + "/", str(TARGETS_JSON)], f"{REMOTE_ROOT}/harness/", delete=True,
           extra=["--exclude", "__pycache__"])
     rsync(host, [str(COMPILED_DIR) + "/"], f"{REMOTE_ROOT}/overrides/", delete=True)
+    ssh(host, f"echo {shlex.quote(harness_version())} > ~/{REMOTE_ROOT}/harness/HARNESS_VERSION")
     return n
 
 
@@ -183,15 +266,7 @@ def queue(args: argparse.Namespace) -> int:
         if not args.no_sync:
             n = push_harness(host)
             print(f"synced harness, targets and {n} overrides before starting")
-        jobs = args.jobs or host.jobs
-        q = (f"python3 ~/{REMOTE_ROOT}/harness/runqueue.py --root ~/{REMOTE_ROOT} --jobs {jobs} "
-             f"--seconds {args.seconds} --timeout {args.timeout}")
-        if args.only:
-            q += f" --only {shlex.quote(args.only)}"
-        if args.limit:
-            q += f" --limit {args.limit}"
-        if args.redo:
-            q += " --redo"
+        q = queue_command(args, host, tomllib.loads(TOOLS_TOML.read_text()))
         script = f"""
 set -e
 if tmux has-session -t ttvga 2>/dev/null; then echo "queue already running (tmux session ttvga)"; exit 1; fi
@@ -225,7 +300,7 @@ tail -n {args.lines} ~/{REMOTE_ROOT}/queue.log 2>/dev/null || true
 def rerender(args: argparse.Namespace) -> int:
     """Rebuild the published clips and previews on the host, migrating any old AVIs."""
     host = resolve_host(args.host)
-    cmd = (f"python3 ~/{REMOTE_ROOT}/harness/rerender.py --videos ~/{REMOTE_VIDEOS} "
+    cmd = (f"{host_python(tomllib.loads(TOOLS_TOML.read_text()))} ~/{REMOTE_ROOT}/harness/rerender.py --videos ~/{REMOTE_VIDEOS} "
            f"--root ~/{REMOTE_ROOT} --jobs {args.jobs or host.jobs}")
     if args.only:
         cmd += f" --only {shlex.quote(args.only)}"
@@ -249,7 +324,7 @@ echo "started in tmux session ttvga-rerender; watch ~/{REMOTE_ROOT}/rerender.log
 def verify(args: argparse.Namespace) -> int:
     """Check on the host that what is published is complete and playable."""
     host = resolve_host(args.host)
-    cmd = (f"python3 ~/{REMOTE_ROOT}/harness/verify.py --videos ~/{REMOTE_VIDEOS} "
+    cmd = (f"{host_python(tomllib.loads(TOOLS_TOML.read_text()))} ~/{REMOTE_ROOT}/harness/verify.py --videos ~/{REMOTE_VIDEOS} "
            f"--root ~/{REMOTE_ROOT} --decode {args.decode}")
     return ssh(host, cmd, check=False, timeout=7200).returncode
 
