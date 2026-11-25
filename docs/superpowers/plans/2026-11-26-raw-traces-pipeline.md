@@ -149,7 +149,8 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
     - the vgacap pin built and the Python version;
     - `loginctl show-user ttvga -p Linger`;
     - whether `host.toml` exists.
-  - `push_harness` also writes `harness/HARNESS_VERSION`, holding `git describe --always --dirty` of this repository.
+  - `remote.harness_version(repo: Path = ROOT) -> str`: the tree hash of the harness directory, `git rev-parse HEAD:ttvga/harness`, with `-dirty` appended only when `git status --porcelain -- ttvga/harness` is non-empty. A commit elsewhere in the repository (PROGRESS, collected data, docs) leaves it unchanged, so neither `--redo-unless-harness` nor the trace's META(open) `harness=` changes with it.
+  - `push_harness` also writes `harness/HARNESS_VERSION`, holding `harness_version()`.
 
 - [ ] **Step 1: Choose the vgacap commit.**
   - Log `git -C ~/github/TinyTapeout/vgacap log --oneline -1 m10-perf m10-export main` to `tmp/t1.log`.
@@ -161,7 +162,8 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - `test_host_scripts_run_under_the_pinned_python`: `queue_command(...)` starts with `host_python(tools)`.
   - `test_vgacap_commit_is_a_full_sha`: matches `^[0-9a-f]{40}$`.
   - `test_vgacap_path_adds_the_pinned_python`.
-- [ ] **Step 3: Run** `tests/test_remote_bootstrap.py`: 5 fail.
+  - `test_harness_version_ignores_commits_elsewhere`: in a scratch git repository under `tmp/pytest` with a `ttvga/harness/` file, a commit touching only `README.md` leaves `harness_version()` unchanged; a commit touching `ttvga/harness/x` changes it; an uncommitted change there appends `-dirty`, and one outside it does not.
+- [ ] **Step 3: Run** `tests/test_remote_bootstrap.py`: 6 fail.
 - [ ] **Step 4: Implement**, set `requires-python = ">=3.14"`, then `uv lock`.
 - [ ] **Step 5: Run** the whole suite: pass.
 - [ ] **Step 6: Bootstrap the host** (logs to `tmp/t1-bootstrap.log`): `uv run tt-vga bootstrap --host big`, then `uv run tt-vga host-check --host big`. Expected: `vgacap-sample` built, Python 3.14.7, cmake found. Linger and `host.toml` stay missing until Task 18.
@@ -185,12 +187,13 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
     - `tracetool` (built by Task 4);
     - `ffmpeg_sink` (`tests/sim/ffmpeg_sink`).
   - `tests/conftest.py` fixture `dev_tools() -> DevTools`.
-    - When a tool is missing it **fails** with "run `uv run tt-vga dev-tools` first". It never skips.
+    - `DevTools.require(*names: str) -> None` checks only the named tools (for example `dev_tools.require("verilator", "vgacap_sample")`). When one is missing it **fails** with "run `uv run tt-vga dev-tools` first" and names it. It never skips. The fixture itself checks nothing, so Task 3's tests run before Task 4 has built `tracetool`; every sim test calls `require` with the tools it uses.
     - `uv run pytest` alone deselects `sim`; `uv run pytest -m sim` runs it.
 - [ ] **Step 1: Write the failing tests:**
   - `test_paths_follow_the_env` (`TTVGA_DEV_TOOLS` set to a `tmp/pytest` path);
+  - `test_require_checks_only_named_tools` (a root with `verilator` present and `tracetool` absent: `require("verilator")` passes, `require("tracetool")` fails naming it);
   - `test_pytest_basetemp_is_in_tmp`.
-- [ ] **Step 2: Run:** 2 fail.
+- [ ] **Step 2: Run:** 3 fail.
 - [ ] **Step 3: Implement.**
 - [ ] **Step 4: Run** `uv run tt-vga dev-tools >> tmp/t2.log 2>&1`, then the suite: pass.
 - [ ] **Step 5: Commit and push.**
@@ -232,7 +235,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
     - It is written on every path that writes timing.json, with `capture_after_clock`, `status` (the value written to timing.json) and `frames` (0 on the fail paths).
     - SIGTERM reaches the normal path and so finishes the trace.
     - The exits that write no timing.json (cannot write it, cannot start ffmpeg) call `vgacap_trace_abandon` and unlink the trace.
-  - `TTVGA_TB_IGNORE_SIGTERM=1` in the environment makes `tb.cpp` ignore SIGTERM. It is a test hook, used only by Task 9's killed-model test.
+  - A test hook compiled in only when `TTVGA_TEST_HOOKS` is defined: then `TTVGA_TB_IGNORE_SIGTERM=1` in the environment makes `tb.cpp` ignore SIGTERM. A production model has no such code, so no environment can make it unkillable except by SIGKILL. `tests/sim/build.py` defines it (`-CFLAGS -DTTVGA_TEST_HOOKS`); `job.py` adds it only with the test-only option `--test-hooks`, which `runqueue.py` and `tt-vga queue` never pass and refuse (exit 2) if given. Used only by Task 9's killed-model test.
   - The frame hash list leaves timing.json and goes to `<out>/tb_frame_hashes.txt`: one 16-digit lowercase hex per line, frame 0 first, written on every path that writes timing.json.
   - The comment at the FNV constant names `frames/tb-v1/frame_hashes.fnv1a64-tb2026-rgb888.txt`.
 - [ ] **Step 1: Write the failing tests** (all `@pytest.mark.sim`).
@@ -250,8 +253,9 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - `test_tb_frame_hashes_moved`.
   - `test_trace_refuses_fractional_clock`: exit 2 before simulating.
   - `test_trace_refuses_duplicate_meta`: exit 2.
+  - `test_ignore_sigterm_hook_absent_in_production`: a model built without `-DTTVGA_TEST_HOOKS` and run with `TTVGA_TB_IGNORE_SIGTERM=1` still stops on SIGTERM with `status=sim-timeout`.
   - `test_no_trace_without_option`.
-- [ ] **Step 2: Run** `tests/sim/test_tb_trace.py`: 8 fail.
+- [ ] **Step 2: Run** `tests/sim/test_tb_trace.py`: 9 fail.
 - [ ] **Step 3: Implement.** The push is the inline `vgacap_trace_push`, with branch-free packing.
 - [ ] **Step 4: Run:** pass. Also time `bars640` at `--seconds 2` with and without `--trace`: 3 interleaved runs each, `/usr/bin/time -v` into the log. Put the ns/clock difference in the commit message.
 - [ ] **Step 5: Commit and push.**
@@ -279,7 +283,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
     - It is SHA-256 over byte `c` = `uo_out` of sample `2c + 1`, for `0 <= c < M`, the half-open clock range `[0, M)`.
     - `M = min(N, clocks in trace)`, with `N` default 33,554,432 (2^25).
 - [ ] **Step 1: Write the failing tests:**
-  - `test_info_on_killed_trace`: `bars640`, `--seconds 30 --trace`. Wait until the file holds at least two complete zstd frames (count them with `zstd -l` on a copy), then SIGKILL. Expected: `table_rebuilt: 1`, `close.status: truncated`, `blocks >= 1`. A SIGTERMed run gives `table_rebuilt: 0` and `close.status: sim-timeout`.
+  - `test_info_on_killed_trace`: `bars640`, `--seconds 30 --trace`. Poll every second (each poll logged): copy the growing file and run `tracetool info` on the copy, which rebuilds the table; once the copy reports `blocks >= 2`, SIGKILL the model (bounded: fail the test after 120 s). Expected: `table_rebuilt: 1`, `close.status: truncated`, `blocks >= 1`. A SIGTERMed run gives `table_rebuilt: 0` and `close.status: sim-timeout`.
   - `test_info_counts`: on `uio_echo`, `changes.ui_in: 0`, `changes.rst_n: 1`, `clocks == samples / 2`.
   - `test_slice_round_trip`: slice `[1000, 2000)` of `bars640`.
     - The VCDs of the slice and of the same range of the original (`vgacap-export`) have identical value changes once each VCD time is turned back into a sample number by the trace's time rule.
@@ -501,7 +505,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - `test_job_default_rerun_keeps_seeded_tb_v1`: `work/frames/tb-v1/` seeded by hand. The file is unchanged and the state is `stale` with `trace_sha` null;
   - `test_job_drop_tb_v1` (and `--tb-v1 --drop-tb-v1` exits 2);
   - `test_job_probe_keeps_only_the_rerun_trace` (add `tests/sim/designs/needs_ui2.v`, which syncs only with `ui_in = 0x04`): `auto_ui_in == 4`, one trace, `ui_in` 0x04 from clock 0;
-  - `test_job_killed_model_samples_truncated_trace`: `TTVGA_TB_IGNORE_SIGTERM=1`, `--timeout 5 --grace 1`. Expected: `error == "wall-clock limit"`, `published: true`, and published `centre-v1/frames.txt` says `status: truncated`;
+  - `test_job_killed_model_samples_truncated_trace`: `--test-hooks`, `TTVGA_TB_IGNORE_SIGTERM=1`, `--timeout 5 --grace 1`. Expected: `error == "wall-clock limit"`, `published: true`, and published `centre-v1/frames.txt` says `status: truncated`;
   - `test_job_no_sync_publishes_trace_only`;
   - `test_job_failure_keeps_previous_output`: a publish, then the `skip` override. The published directory and `work/frames/` are unchanged and `published: false`;
   - `test_job_mismatch_publishes_nothing` (a monkeypatched derive returning the error);
@@ -543,8 +547,9 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - `test_queue_waits_for_free_space`;
   - `test_queue_job_command_is_a_scope`;
   - `test_queue_refuses_without_user_manager`;
-  - `test_queue_redo_unless_harness_skips_done`.
-- [ ] **Step 2: Run:** 7 fail.
+  - `test_queue_redo_unless_harness_skips_done`;
+  - `test_queue_refuses_test_hooks`.
+- [ ] **Step 2: Run:** 8 fail.
 - [ ] **Step 3: Implement.**
 - [ ] **Step 4: Run:** pass.
 - [ ] **Step 5: Commit and push.**
@@ -553,19 +558,19 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
 
 **Files:**
 - Modify: `ttvga/remote.py` (`collect`).
+- Create: `ttvga/harness/list_results.py`.
 - Delete: `ttvga/framehashes.py`, `tests/test_framehashes.py`.
 - Test: `tests/test_collect.py`.
 
 **Interfaces:**
 - Produces:
   - **`remote.host_listing(host) -> HostListing`**: one SSH step that prints:
-    - `find ~/ttvga/work -mindepth 4 -path '*/frames/*' -type f` (the source of the stale check);
-    - the ids whose `result.json` has a `"harness"` key, found with a `grep -l '"harness"'` over `work/*/*/result.json` and logged in full on the host;
-    - each such project's `tb_v1.dropped`.
+    - `find ~/ttvga/work -mindepth 5 -maxdepth 5 -path '*/*/*/frames/*/*' -type f`, giving `<s>/<m>/frames/<sampler>/<file>` paths only (never `repo/` or `build/`);
+    - from a small script file, `ttvga/harness/list_results.py`, run under the host Python: for each `work/<s>/<m>/result.json`, parsed with `json.load` (a file that does not parse is listed as an error, logged), one JSON line `{"id", "harness": bool, "dropped": bool}` (`harness` is whether the parsed object has the key; `dropped` is `tb_v1.dropped`).
     - The result is `HostListing(new_results: set[str], frames_files: dict[str, set[str]], dropped: set[str])`.
   - **`remote.collect_filter(listing) -> list[str]`**: rsync arguments with `--files-from`:
     - `<id>/result.json` for ids in `new_results` only. An old-pipeline host result, with its full hash list and no `tb_v1`, never overwrites a converted local one;
-    - every path in `frames_files` that ends `/frames/<sampler>/frames.txt` or `/frames/tb-v1/frame_hashes.fnv1a64-tb2026-rgb888.txt`;
+    - every path in `frames_files` that matches exactly `^[A-Za-z0-9_]+/[A-Za-z0-9_]+/frames/(centre-v1|tb-v1)/frames\.txt$` or `^[A-Za-z0-9_]+/[A-Za-z0-9_]+/frames/tb-v1/frame_hashes\.fnv1a64-tb2026-rgb888\.txt$`;
     - never anything under `/testpatterns/`, `scratch/` or `kept/`.
   - **`remote.remove_stale_frames(results: Path, listing) -> list[Path]`**: for ids in `new_results`, it deletes local `frames/centre-v1/*` files the host lacks. It deletes `frames/tb-v1/*` only for ids in `dropped`. It returns what it removed.
   - There is no more `framehashes.export`.
@@ -574,8 +579,10 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - `test_collect_never_removes_tb_v1_without_drop`: the host has no `frames/tb-v1/`, and the local converted file stays;
   - `test_collect_removes_tb_v1_after_drop`;
   - `test_collect_leaves_out_testpatterns`;
+  - `test_collect_ignores_frames_named_files_in_repo` (a `repo/x/frames/centre-v1/frames.txt` on the host side is never collected);
+  - `test_list_results_parses_json` (a result whose log tail contains the text `"harness"` but has no such key is `harness: false`);
   - `test_collect_no_longer_imports_framehashes`.
-- [ ] **Step 2: Run:** 5 fail.
+- [ ] **Step 2: Run:** 7 fail.
 - [ ] **Step 3: Implement.**
 - [ ] **Step 4: Run:** pass.
 - [ ] **Step 5: Commit and push.**
@@ -809,13 +816,12 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - Task 23 does not start on a pin outside `main` unless the controller records a ruling naming the SHA and the reason.
 - [ ] **Step 2: Test the pin.** Run `uv run tt-vga dev-tools`, `uv run pytest -v` and `uv run pytest -m sim -v` (log `tmp/t18.log`): pass. Then `uv run tt-vga bootstrap --host big`.
 - [ ] **Step 3: Host setup** (controller, with `tim`'s sudo; every command and its output go to `tmp/t18-host.log`, and the list goes into the Task 22 report):
-  - `sudo install -d -o ttvga -g ttvga -m 755 <archive>/frames`, then `sudo -u ttvga touch <archive>/frames/.ttvga-frames-root`.
+  - The frames subtree is **not** created here: Task 19 creates it after the main upload excludes it, so not even the empty directory and its marker reach the server.
   - `sudo install -d -o ttvga -g ttvga -m 755 <staging>`, a directory outside the published tree on the same filesystem (on `/backups`, next to the publish tree's real directory).
   - `sudo loginctl enable-linger ttvga`.
   - As `ttvga`, write `~/ttvga/host.toml` (`frames_root`, `staging_dir`, `min_free_root_gb = 100`).
   - Record the two paths in the host setup memory note, not in the repository.
-  - `uv run tt-vga host-check --host big`: Linger=yes, `host.toml` present.
-  - Verify by hand that `hostconf.load` accepts it, with a script file run as `ttvga`.
+  - `uv run tt-vga host-check --host big`: Linger=yes, `host.toml` present (`hostconf.load` is checked in Task 19, once the frames subtree exists).
 - [ ] **Step 4: Rewrite `docs/host-setup.md`:**
   - the frames subtree and the staging directory (`install -d` lines with placeholders) and their markers;
   - `host.toml`;
@@ -843,15 +849,16 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
 **Interfaces:**
 - `data-upload-frames-sync [--full]`:
   - It reads `<staging_dir>/changed.log` from the byte offset in `/var/lib/data-upload-frames/offset`, through the last complete line only. If the offset is past the end (the log was shrunk), it starts from 0.
-  - It accepts only lines matching `^[0-9T:+-]+ [A-Za-z0-9_]+/[A-Za-z0-9_]+$` whose directory exists under the frames subtree. Everything else is logged and skipped.
+  - It accepts only lines matching `^[0-9T:+-]+ [A-Za-z0-9_]+/[A-Za-z0-9_]+$` whose project directory exists and passes the containment check: neither the project directory nor its shuttle directory is a symlink (`lstat`), and `realpath` of each is inside `realpath` of the frames subtree. Everything else is logged and skipped.
+  - It also refuses (logs and skips) a project that contains any symlink (`find <project> -type l`, output logged in full), and passes `--safe-links` to rsync as a second guard.
   - It builds each path itself, and runs one rsync with the existing options, plus `-r` and `--files-from` (no `--delete`).
   - On exit 0 or 23 it stores the new offset. On 24, or any other failure, it keeps the old offset, so those projects are retried next time.
   - `--full` (weekly, from a second timer) syncs the whole frames subtree.
-- [ ] **Step 1: Dry run** both scripts with `DATA_UPLOAD_DRY_RUN=1` as `data-upload` (log `tmp/t19.log`):
-  - the main run lists nothing under the frames subtree;
-  - the frames run, given a hand-made `changed.log` with one valid line, one invalid line and one partial line, lists exactly the valid project.
-- [ ] **Step 2: Install.** `systemctl daemon-reload`, restart the main timer, and **do not enable** the frames timers. Then `etckeeper commit "data-upload: skip the VGA frames subtree; frames upload installed, disabled (tinytapeout-vga-videos decision 4)"`. Watch two main runs: their file count and listing time in `/var/lib/data-upload/rsync.log`, read only.
-- [ ] **Step 3: Commit and push** `docs/publishing.md`.
+- [ ] **Step 1: Exclude first.** Install the main upload's exclusion (`data-upload-sync` and `frames.conf`), dry run it with `DATA_UPLOAD_DRY_RUN=1` as `data-upload` (log `tmp/t19.log`: the `--exclude` is on its command line), restart its timer, and `etckeeper commit "data-upload: skip the VGA frames subtree (tinytapeout-vga-videos decision 4)"`. Watch one real run in `/var/lib/data-upload/rsync.log` (read only).
+- [ ] **Step 2: Create the frames subtree** (only now): `sudo install -d -o ttvga -g ttvga -m 755 <archive>/frames`, then `sudo -u ttvga touch <archive>/frames/.ttvga-frames-root`. Record the path in the host setup memory note. Check that `hostconf.load` accepts `host.toml`, with a script file run as `ttvga`. The next main upload run lists nothing under it (`rsync.log`).
+- [ ] **Step 3: Dry run the frames upload** with `DATA_UPLOAD_DRY_RUN=1` as `data-upload`. Given a hand-made `changed.log` with one valid line, one invalid line, one partial last line and one line naming a symlinked project (a symlink `<frames>/test/link -> /etc`, made as `ttvga` and removed afterwards), plus a test project directory with a file and one with a symlink inside, it lists exactly the valid, symlink-free project.
+- [ ] **Step 4: Install the frames units.** `systemctl daemon-reload`, and **do not enable** the frames timers. `etckeeper commit "data-upload: frames upload installed, disabled (tinytapeout-vga-videos decision 4)"`. Watch two main runs: file count and listing time in `rsync.log`.
+- [ ] **Step 5: Commit and push** `docs/publishing.md`.
 
 ### Task 20: pilot (rollout step 2): the budget
 
