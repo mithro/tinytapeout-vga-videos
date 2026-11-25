@@ -1089,7 +1089,10 @@ lands) checks the `bitstreams:` and `fpga-library.json:` lines. The excludes and
 ### fpgas.online-tt
 
 **The `safe.py` register fix (Ruling AG), its own PR:** `SAFE_CODE` reads `0xd0000030` on an
-RP2350 and `0xd0000020` on an RP2040, chosen on the board from `sys.implementation._machine`.
+RP2350 and `0xd0000020` on an RP2040, chosen on the board from SYSINFO `CHIP_ID`'s PART
+field: `(0xd0000030 if (machine.mem32[0x40000000] >> 12) & 0xffff == 4 else 0xd0000020)`. PART is `0x0002` on the RP2040 and `0x0004` on the RP2350 (pico-sdk
+`rp2040/.../sysinfo.h:30`, `rp2350/.../sysinfo.h:30`). No `sys` is imported, and the fake board
+answers both chips.
 Its other lines are unchanged. A test runs the selection for both chips against a fake
 `machine.mem32`.
 
@@ -1200,7 +1203,8 @@ Steps:
    - each `tt.pins.ui_in<i>.mode_str`;
    - `hex(machine.mem32[0xd0000030])` (`GPIO_OE`);
    - SYSINFO `CHIP_ID` at `0x40000000`, both the raw value and the decoded revision: `m =
-     machine.mem32[0x40000000]; n = m >> 28; print(hex(m), n, (n & 3) | ((n & 8) >> 1))`. The
+     machine.mem32[0x40000000]; n = m >> 28; print(hex(m), hex((m >> 12) & 0xffff), n,
+     (n & 3) | ((n & 8) >> 1))`, which also prints the decoded PART (`0x4` on the RP2350). The
      raw nibble `n` is not the stepping. The SDK decodes it as `(n & 3) | ((n & 8) >> 1)`
      (pico-sdk `rp2350/pico_platform/platform.c:20-22`), where 2 means A2 and 4 means A4. An A4
      reads a raw nibble of 8 or more.
@@ -1214,14 +1218,15 @@ Steps:
 4. **Inputs and clock.** Through the Commander, load an entry with `ui_in` not null. Expect
    `ui_in_driven` to equal the mask's bits and `ui_in_held` to be empty. Then read the clock from
    the REPL: `tt.is_auto_clocking` must be True and `tt.auto_clocking_freq` equal to the entry's
-   `clock_hz`. The camera must show a picture.
+   `clock_hz`. The camera must show a picture. Then read the levels of the pins this load
+   released straight to inputs, as listed in its `ui_in_inputs` (finding s-a). If any reads 1,
+   that is the case Ruling AF reserves the IE workaround for: report it to the controller.
 5. **Release.** Load the `tt_um_vga_pattern` demo from the gallery. `released` lists the bits
    from step 4, and the clock is the demo's. Then read each released pin's level read-only
    (`getattr(tt.pins, 'ui_in%d' % i)()`). Each must read 0 (finding P1). With E9, the RP2350's
    own input reading and the level the FPGA sees are the same pad node. So this check reads the
-   level after the pull-down, which is the level that matters (finding q-a). Read the pins
-   released straight to inputs too, and record their levels. If any of them reads 1, that is the
-   case Ruling AF reserves the IE workaround for: report it to the controller.
+   level after the pull-down, which is the level that matters (finding q-a). A demo load lists no
+   straight-to-input pins; step 4 read those.
 6. **Restore.** Run vgacap's `tools/board_restart.py`, wait for the idle display to read
    `loaded`, and check that the upload list matches step 1. Then delete the claim.
 
