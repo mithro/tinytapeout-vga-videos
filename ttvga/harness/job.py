@@ -87,17 +87,53 @@ def fetch(target: dict, repo_dir: Path, log: Path, patch: Path | None = None) ->
     return None
 
 
+CELLS = Path(__file__).resolve().parent / "cells"
+TB_CPP = Path(__file__).resolve().parent / "tb.cpp"
+
+
+def verilator_base(verilator: str, top: str, build_dir: Path, src: Path) -> list[str]:
+    """The Verilator command `build` runs, before the project's own flags, tb.cpp and the sources."""
+    return [
+        verilator, "--cc", "--exe", "--build", "-j", "1",
+        "--prefix", "Vtop", "--top-module", top, "-Mdir", str(build_dir),
+        "-O3", "--x-assign", "fast", "--x-initial", "fast",
+        "-Wno-fatal", "-Wno-lint", "-Wno-style", "-Wno-MULTIDRIVEN", "-Wno-UNOPTFLAT",
+        "-CFLAGS", "-std=c++17", "-MAKEFLAGS", "OPT_FAST=-O2",
+        "-I" + str(src), "-y", str(src), "--relative-includes",
+        # Behavioural models for PDK cells instantiated by name (latches, clock
+        # gates, buffers). A `-v` library file only contributes modules that are
+        # actually referenced.
+        "-v", str(CELLS / "sky130_polyfill.v"),
+    ]
+
+
+def vgacap_link_flags(vgacap_src: Path, vgacap_build: Path) -> list[str]:
+    """Verilator flags that compile tb.cpp against vgacap's trace writer and link it.
+
+    Raises FileNotFoundError naming the first library that is missing.
+    """
+    libs = [
+        vgacap_build / "libvgacap_trace.a",
+        vgacap_build / "libvgacap_stream.a",
+        vgacap_build / "third_party" / "libvgacap_zstd.a",
+    ]
+    for lib in libs:
+        if not lib.is_file():
+            raise FileNotFoundError(f"vgacap library missing: {lib}")
+    return ["-CFLAGS", f"-I{vgacap_src / 'include'}",
+            "-LDFLAGS", " ".join(str(lib) for lib in libs) + " -pthread"]
+
+
 def build(target: dict, ov: dict, repo_dir: Path, build_dir: Path, log: Path, tools: dict) -> str | None:
     """Verilate the sources with tb.cpp. Returns an error string or None."""
     src = repo_dir / "src"
-    cells = Path(__file__).resolve().parent / "cells"
     sources = list(ov.get("sources") or target["source_files"])
     # IHP re-hardens of sky130 projects list a polyfill the project repo never
     # had (the shuttle added it); the same file also stands in for sky130
     # standard cells instantiated directly in RTL.
     for i, s in enumerate(sources):
         if Path(s).name == "sky130_polyfill.v" and not (src / s).exists():
-            sources[i] = str(cells / "sky130_polyfill.v")
+            sources[i] = str(CELLS / "sky130_polyfill.v")
     missing = [s for s in sources if not (src / s).exists() and not Path(s).is_absolute()]
     if missing:
         return "missing sources: " + ", ".join(missing)
@@ -116,21 +152,10 @@ def build(target: dict, ov: dict, repo_dir: Path, build_dir: Path, log: Path, to
     if build_dir.exists():
         shutil.rmtree(build_dir)
     build_dir.mkdir(parents=True)
-    base = [
-        tools["verilator"], "--cc", "--exe", "--build", "-j", "1",
-        "--prefix", "Vtop", "--top-module", top, "-Mdir", str(build_dir),
-        "-O3", "--x-assign", "fast", "--x-initial", "fast",
-        "-Wno-fatal", "-Wno-lint", "-Wno-style", "-Wno-MULTIDRIVEN", "-Wno-UNOPTFLAT",
-        "-CFLAGS", "-std=c++17", "-MAKEFLAGS", "OPT_FAST=-O2",
-        "-I" + str(src), "-y", str(src), "--relative-includes",
-        # Behavioural models for PDK cells instantiated by name (latches, clock
-        # gates, buffers). A `-v` library file only contributes modules that are
-        # actually referenced.
-        "-v", str(cells / "sky130_polyfill.v"),
-    ]
+    base = verilator_base(tools["verilator"], top, build_dir, src)
     flags = list(ov.get("verilator_flags") or [])
     files = [s if Path(s).is_absolute() else str(src / s) for s in sources if not s.endswith((".vh", ".svh", ".h"))]
-    tb = str(Path(__file__).resolve().parent / "tb.cpp")
+    tb = str(TB_CPP)
     rc = run(base + flags + [tb] + files, log, cwd=src, timeout=1800)
     text = log.read_text()
     if rc != 0 and "--timing" not in flags and ("NEEDTIMINGOPT" in text or "--timing" in text):
