@@ -93,3 +93,28 @@ def test_harness_version_ignores_commits_elsewhere(tmp_path):
     _git(repo, "checkout", "ttvga/harness/x")
     (repo / "ttvga/tools.toml").write_text('commit = "3"\n')
     assert remote.harness_version(repo) == v2 + "-dirty"
+
+
+def test_uv_state_lives_under_ttvga_tools():
+    for text in (remote.bootstrap_script(TOOLS), remote.host_python(TOOLS)):
+        assert "UV_PYTHON_INSTALL_DIR=~/ttvga/tools/python" in text
+        assert "UV_CACHE_DIR=~/ttvga/tools/uv-cache" in text
+    py = remote.host_python(TOOLS)
+    assert "UV_PYTHON_PREFERENCE=only-managed" in py
+    assert "UV_PYTHON_DOWNLOADS=never" in py
+
+
+def test_bootstrap_guards_on_pinned_and_clears_it_before_cmake():
+    script = remote.bootstrap_script(TOOLS)
+    assert f'"$(cat vgacap-build/PINNED)" = "{TOOLS["vgacap"]["commit"]}"' in script
+    assert script.index("rm -f vgacap-build/PINNED") < script.index("cmake -S")
+
+
+def test_host_check_reports_a_missing_interpreter(monkeypatch):
+    seen = {}
+    monkeypatch.setattr(remote, "resolve_host", lambda spec: remote.Host(ssh="ttvga@example.invalid"))
+    monkeypatch.setattr(remote, "ssh", lambda host, script, **kw: seen.update(script=script) or subprocess.CompletedProcess([], 0))
+    remote.host_check(argparse.Namespace(host=None))
+    assert "uv python find 3.14.7" in seen["script"]
+    assert "MISSING" in seen["script"]
+    assert "loginctl show-user" in seen["script"] and "2>&1" in seen["script"]

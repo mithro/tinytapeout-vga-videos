@@ -103,9 +103,21 @@ def tarball_tools(tools: dict) -> dict:
     return {name: t for name, t in tools.items() if "url" in t}
 
 
+def uv_env(runtime: bool = False) -> str:
+    """uv environment assignments that keep the interpreter and cache under ~/ttvga/tools.
+
+    At run time uv may only use that managed interpreter and never downloads one.
+    """
+    env = f"UV_PYTHON_INSTALL_DIR=~/{REMOTE_ROOT}/tools/python UV_CACHE_DIR=~/{REMOTE_ROOT}/tools/uv-cache"
+    if runtime:
+        env += " UV_PYTHON_PREFERENCE=only-managed UV_PYTHON_DOWNLOADS=never"
+    return env
+
+
 def host_python(tools: dict) -> str:
     """The pinned interpreter every host script starts through."""
-    return f"~/{REMOTE_ROOT}/tools/uv/uv run --no-project --python {tools['python']['version']} python"
+    return (f"{uv_env(runtime=True)} ~/{REMOTE_ROOT}/tools/uv/uv run --no-project "
+            f"--python {tools['python']['version']} python")
 
 
 def vgacap_build_commands(src: str, build: str, commit: str, url: str | None = None) -> list[str]:
@@ -151,6 +163,7 @@ fi""")
     build = "\n".join(vgacap_build_commands("vgacap-src", "vgacap-build", vg["commit"], vg["git"]))
     return f"""
 set -e
+export {uv_env()}
 mkdir -p ~/{REMOTE_ROOT}/tools/dl ~/{REMOTE_ROOT}/harness ~/{REMOTE_ROOT}/overrides ~/{REMOTE_ROOT}/work ~/{REMOTE_ROOT}/videos
 cd ~/{REMOTE_ROOT}/tools
 {''.join(steps)}
@@ -211,9 +224,9 @@ for t in tmux git g++ make python3; do printf "%s: " $t; command -v $t || echo M
 printf "cmake: "; if command -v cmake > /dev/null; then cmake --version | head -1; else echo MISSING; fi
 R=~/{REMOTE_ROOT}
 [ -x $R/tools/uv/uv ] && $R/tools/uv/uv --version || echo "uv: not bootstrapped"
-[ -x $R/tools/uv/uv ] && $R/tools/uv/uv python list --only-installed {tools['python']['version']} || echo "python {tools['python']['version']}: not installed"
+if [ -x $R/tools/uv/uv ] && P=$({uv_env(runtime=True)} $R/tools/uv/uv python find {tools['python']['version']}); then echo "python {tools['python']['version']}: $P"; else echo "python {tools['python']['version']}: MISSING"; fi
 if [ -f $R/tools/vgacap-build/PINNED ]; then echo "vgacap pin built: $(cat $R/tools/vgacap-build/PINNED)  (want {tools['vgacap']['commit']})"; else echo "vgacap pin built: none  (want {tools['vgacap']['commit']})"; fi
-loginctl show-user $(whoami) -p Linger || echo "Linger: unknown"
+L=$(loginctl show-user $(whoami) -p Linger 2>&1) || true; echo "${{L:-loginctl: no output}}"
 [ -f $R/host.toml ] && echo "host.toml: present" || echo "host.toml: missing"
 [ -x $R/tools/oss-cad-suite/bin/verilator ] && $R/tools/oss-cad-suite/bin/verilator --version || echo "verilator: not bootstrapped"
 [ -x $R/tools/ffmpeg/bin/ffmpeg ] && $R/tools/ffmpeg/bin/ffmpeg -version | head -1 || echo "ffmpeg: not bootstrapped"
