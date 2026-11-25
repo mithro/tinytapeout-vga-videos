@@ -725,6 +725,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
     - the trace is present and non-empty;
     - each sampler directory has `frames.txt`, `index.html` and the store, with a `png/` count equal to `distinct_frames`;
     - a `result.json` with `published: false` and an `error` prints `<id>: failed (previous output kept): <error>`. This is a failure;
+    - a `result.json` with `test_hooks: true` prints `<id>: built with test hooks`. This is a failure;
     - `tb_v1.state == "stale"` prints, under `notes:`, `<id>: tb-v1 files are from trace <trace_sha[:12] or "before traces">, not the current trace`. This is a note, not a failure.
   - **`tt-vga index --fpga-ids FILE`**: an optional list of `<shuttle>/<macro>` ids that have a bitstream in the archive. `tt-vga mirror --fpga-ids-out FILE` makes it on the host with `find <dest> -mindepth 3 -maxdepth 3 -name '*.bin'` (ids taken from the path, logged in full). Each listed row in `index.html` links "FPGA bitstream" to the project's directory in the archive. Nothing here reads `fpga-library.json`; its format is the FPGA session's and the owner's.
 - [ ] **Step 1: Write the failing tests:**
@@ -735,8 +736,9 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - `test_index_links_fpga_when_listed`;
   - `test_verify_frames_completeness`;
   - `test_verify_stale_tb_v1_is_a_note`;
-  - `test_verify_failed_project_is_a_failure`.
-- [ ] **Step 2: Run:** 8 fail.
+  - `test_verify_failed_project_is_a_failure`;
+  - `test_verify_test_hooks_is_a_failure`.
+- [ ] **Step 2: Run:** 9 fail.
 - [ ] **Step 3: Implement.**
 - [ ] **Step 4: Run:** pass.
 - [ ] **Step 5: Commit and push.**
