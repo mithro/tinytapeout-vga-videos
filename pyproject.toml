@@ -29,5 +29,6 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
+testpaths = ["tests"]
 addopts = "--basetemp=tmp/pytest -m 'not sim'"
 markers = ["sim: needs tt-vga dev-tools (Verilator and vgacap)"]
