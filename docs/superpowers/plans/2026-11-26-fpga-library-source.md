@@ -26,8 +26,8 @@ demos and visitor uploads.
 | tinytapeout-vga-videos (videos) | Python, uv, pytest |
 | fpgas.online-infra (infra) | Ansible |
 
-**Spec:** `docs/superpowers/specs/2026-11-26-fpga-library-source-design.md`, revision 5
-(commit `4d29646`, branch `fpga-library-spec` of tinytapeout-vga-videos). Every task names the
+**Spec:** `docs/superpowers/specs/2026-11-26-fpga-library-source-design.md`, revision 6
+(commit `eb9d001`, branch `fpga-library-spec` of tinytapeout-vga-videos). Every task names the
 spec sections it implements. Read them first.
 
 ## Global Constraints
@@ -51,7 +51,7 @@ spec sections it implements. Read them first.
 - Every enable releases the pins listed in the board global `_fo_ui_driven`. Every library
   load also releases every bit outside its mask, so all eight when the mask is 0.
 - Releasing a pin (Ruling AF): only a pin in `_fo_ui_driven` that `GPIO_OE` (bit
-  `_fo_p.gpio_num`, address from `rpregs.GPIO_OE_EXPR`) shows the RP2350 driving gets latch 0
+  `_fo_p.gpio_num`, address from `rpregs.GPIO_OE_EXPR`, chosen by SYSINFO `CHIP_ID` PART) shows the RP2350 driving gets latch 0
   and `time.sleep_ms(1)`; then `Pin.IN`, then `Pin.PULL_DOWN`. Every other released pin goes
   straight to `Pin.IN` and `Pin.PULL_DOWN` and is never made an output.
 - `safe.py`'s output-enable register is chosen by chip (Ruling AG, Task 2): `0xd0000030` on
@@ -218,26 +218,41 @@ The bug: `SAFE_CODE` reads `machine.mem32[0xd0000020]` as the SIO output-enable 
 `driven` is wrong on the RP2350 chip boards. The RP2350's `GPIO_OE` is `0xd0000030` (`sio.h:380`).
 
 **Files:**
-- Create: `src/fpgas_tt/rpregs.py`. It holds `GPIO_OE_EXPR = "(0xd0000030 if 'RP2350' in
-  sys.implementation._machine else 0xd0000020)"`, a board-side expression, with a docstring
-  citing both pico-sdk headers. It imports nothing from the package, so `safe.py` and
-  `designs.py` can both import it.
+- Create: `src/fpgas_tt/rpregs.py`. It holds `GPIO_OE_EXPR = "(0xd0000030 if (machine.mem32[0x40000000] >> 12) & 0xffff == 4 else 0xd0000020)"`, a board-side
+  expression that picks the register from SYSINFO `CHIP_ID`'s PART field. `CHIP_ID` is at
+  `0x40000000` on both chips, and PART (bits 27:12) is `0x0002` on the RP2040 and `0x0004` on
+  the RP2350 (pico-sdk `rp2040/hardware_regs/include/hardware/regs/sysinfo.h:30` and
+  `rp2350/hardware_regs/include/hardware/regs/sysinfo.h:30`). Its docstring cites those and
+  both `sio.h` lines. It needs only `machine`, which `SAFE_CODE` and the release block already
+  import; no `sys`. It imports nothing from the package, so `safe.py` and `designs.py` can both
+  import it.
 - Modify: `src/fpgas_tt/safe.py:67-107`. The `_fo_oe = machine.mem32[0xd0000020]` line becomes
-  `_fo_oe = machine.mem32[` + `GPIO_OE_EXPR` + `]`, and `import sys` goes next to the existing
-  `import machine`. No other line of `SAFE_CODE` changes.
+  `_fo_oe = machine.mem32[` + `GPIO_OE_EXPR` + `]`. No other line of `SAFE_CODE` changes.
+- Modify: `tests/fakerepl.py`. The fake board gets a chip setting, `chip: str`, `"rp2040"` or
+  `"rp2350"`. Today its `Mem32` answers only `0xD0000020` and raises
+  `AssertionError("the daemon read mem32[...]")` for anything else (`fakerepl.py:347-351`).
+  It now answers `0x40000000` with a `CHIP_ID` whose PART is 2 or 4, and answers the matching
+  output-enable address (`0xd0000020` or `0xd0000030`) with the pins made outputs. Reading the
+  other chip's address still raises.
+- Modify: `tests/conftest.py`, so the `fake_repl` fixture is parametrised over both chips for
+  `tests/test_safe.py`.
 - Test: `tests/test_safe.py`.
 
 **Interfaces:**
 - Produces: `rpregs.GPIO_OE_EXPR: str`. Task 4's release block uses it.
 
 - [ ] **Step 1: Write the failing tests**
-  - `test_safe_code_reads_gpio_oe_by_chip`: evaluate `GPIO_OE_EXPR` with a fake `sys` whose
-    `implementation._machine` is `"Raspberry Pi Pico 2 with RP2350"`, and get `0xd0000030`.
-    With `"Raspberry Pi Pico with RP2040"` it gives `0xd0000020`.
+  - `test_gpio_oe_expr_by_chip`: evaluate `GPIO_OE_EXPR` with a fake `machine` whose
+    `mem32[0x40000000]` is `(4 << 12) | 0x927` (PART 4), and get `0xd0000030`; with PART 2 it
+    gives `0xd0000020`.
   - `test_safe_code_uses_the_expression`: `safe.safe_code(False)` contains
-    `machine.mem32[(0xd0000030 if 'RP2350'` and no longer contains `mem32[0xd0000020]`.
-  - `test_safe_code_structure_unchanged`: apart from the `_fo_oe` line and the added
-    `import sys` line, the lines of `safe.safe_code(False)` equal those of today's text. Keep
+    `machine.mem32[(0xd0000030 if (machine.mem32[0x40000000] >> 12) & 0xffff == 4 else 0xd0000020)]`, contains no `import sys`, and no longer contains
+    `mem32[0xd0000020]`.
+  - `test_safe_code_structure_unchanged`: apart from the `_fo_oe` line, the lines of
+    `safe.safe_code(False)` equal those of today's text.
+  - The whole existing `tests/test_safe.py` runs once with the fake as an RP2040 and once as an
+    RP2350 (the parametrised fixture), and passes both times. The fake's assertion on
+    unexpected addresses proves each run read only its own chip's register. Keep
     today's text as `tests/data/safe_code_before_ag.txt`, written in this step from `main`.
   - In the existing `outcome()` tests, add a case with an RP2350 reply whose `driven` list now
     matches the pins made outputs.
@@ -449,7 +464,10 @@ The bug: `SAFE_CODE` reads `machine.mem32[0xd0000020]` as the SIO output-enable 
 - [ ] **Step 4: Implement.**
   - The `__RELEASE__` block goes inside the `try:` of `LOAD_CODE`, right after the hash check
     and before `_fo_reader = _fo_Reader(_fo_buf)` (so before `_fo_touched = True`). It
-    imports `machine`, `time`, `json` and `from machine import Pin` itself.
+    imports `machine`, `time`, `json` and `from machine import Pin` itself. It needs no `sys`,
+    because `rpregs.GPIO_OE_EXPR` uses only `machine`. It names `tt` and `_fo_ui_driven`, and
+    binds `_fo_i` and `_fo_p` itself in each of its two loops. The Task 4 fake-REPL tests use
+    the `rp2350` fake chip, since the FPGA boards carry an RP2350.
   - The `__UI_IN__` block goes between `__CLOCK__` and `print('enabled')`, exactly as in the
     spec.
   - `SAFE_CODE` swaps its six guard lines for the function call.
@@ -875,10 +893,11 @@ Hardware check.
     - `print(tt.mode_str)`;
     - for i in 0..7, `print(getattr(tt.pins, 'ui_in%d' % i).mode_str)`;
     - `import machine; print(hex(machine.mem32[0xd0000030]))`, which prints `GPIO_OE`;
-    - `m = machine.mem32[0x40000000]; n = m >> 28; print(hex(m), n, (n & 3) | ((n & 8) >> 1))`,
-      which prints SYSINFO `CHIP_ID`, the raw revision nibble, and the SDK's decoded version
-      (pico-sdk `rp2350/pico_platform/platform.c:20-22`): 2 means A2, 4 means A4. Record both
-      the raw nibble and the decoded value.
+    - `m = machine.mem32[0x40000000]; n = m >> 28; print(hex(m), hex((m >> 12) & 0xffff), n,
+      (n & 3) | ((n & 8) >> 1))`. This prints SYSINFO `CHIP_ID`, its decoded PART (`0x4` on
+      the RP2350, `0x2` on the RP2040; the value `GPIO_OE_EXPR` keys on), the raw revision
+      nibble, and the SDK's decoded version (pico-sdk `rp2350/pico_platform/platform.c:20-22`),
+      where 2 means A2 and 4 means A4. Record all of them.
 
     Record the results in the log and report them to the controller, which records them in
     spec section 2, Input pins at rest (findings N1 and P1). If the chip is A4, say so; the
@@ -895,12 +914,15 @@ Hardware check.
   - In the Commander REPL, run `print(tt.is_auto_clocking, tt.auto_clocking_freq)`. It must
     print `True` and the entry's `clock_hz`.
   - The camera shows a picture (`tmp/t13-ui-in.png`).
+  - Read the levels of the pins this load released straight to inputs, which are listed in its
+    `ui_in_inputs`: `print([getattr(tt.pins, 'ui_in%d' % i)() for i in <ui_in_inputs>])`.
+    Record them. If any reads 1, report it to the controller; that is the case Ruling AF
+    reserves the IE workaround for (finding s-a).
 - [ ] **Step 6: Load the `tt_um_vga_pattern` demo from the gallery.** `released` lists Step 5's
   bits, and the clock is the demo's. Read each released pin's level read-only with
   `print([getattr(tt.pins, 'ui_in%d' % i)() for i in <released>])`. Every value must be 0
   (finding P1). The reading is taken on the pad node the FPGA sees, after the pull-down
-  (finding q-a). Also read and record the levels of the pins released straight to inputs; if
-  any reads 1, report it to the controller (the case Ruling AF reserves the IE workaround for).
+  (finding q-a). A demo load lists no straight-to-input pins; Step 5 read those.
 - [ ] **Step 7: Restore.** Run vgacap `tools/board_restart.py <ws link>`. Wait for the idle
   display to show `loaded`. The upload names must equal Step 2's. Delete the claim. If `clients`
   ever goes above 0, stop at once and restore.
