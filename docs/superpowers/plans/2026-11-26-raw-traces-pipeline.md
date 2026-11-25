@@ -719,6 +719,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - **`verify.FOREIGN_PATTERNS = ("*/*/*.bin", "fpga-library.json")`**, relative to the archive root (Ruling AA). These are the FPGA session's bitstreams `<id>-<sha256[:12]>.bin` in each `<shuttle>/<macro>/`, and its library file.
     - `verify.stale_on_server` and every completeness check skip them.
     - `tt-vga mirror` keeps never deleting (no `--delete`, pinned by a test). It adds `--exclude /*/*/*.bin --exclude /fpga-library.json --exclude /frames/`, so it never writes over those files or the frames subtree.
+    - The rsync command is built by one function, `remote.mirror_script(src: str, dest: str, dry_run: bool) -> str`, which `mirror` calls and which the FPGA library plan's Task 10 consumes; its excludes are `"/" + p` for each `verify.FOREIGN_PATTERNS` entry plus `/frames/`, so the list lives only in `verify.FOREIGN_PATTERNS`.
     - It refuses a `--dest` that holds `.ttvga-frames-root`.
   - **`verify.server_listing(base_url, path, fetch=urllib.request.urlopen) -> tuple[set[str], set[str]]`** parses the server's autoindex HTML. **`verify.stale_on_server(local, base_url, roots) -> list[str]`** walks it recursively. They are run by `tt-vga verify --server-stale URL`, and print `stale on server (remove by hand):`. They never delete.
   - **`verify.py` on the host**, for each project under `frames_root`:
