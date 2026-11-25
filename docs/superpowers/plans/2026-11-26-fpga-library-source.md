@@ -26,8 +26,8 @@ demos and visitor uploads.
 | tinytapeout-vga-videos (videos) | Python, uv, pytest |
 | fpgas.online-infra (infra) | Ansible |
 
-**Spec:** `docs/superpowers/specs/2026-11-26-fpga-library-source-design.md`, revision 4
-(commit `42db0eb`, branch `fpga-library-spec` of tinytapeout-vga-videos). Every task names the
+**Spec:** `docs/superpowers/specs/2026-11-26-fpga-library-source-design.md`, revision 5
+(commit `4d29646`, branch `fpga-library-spec` of tinytapeout-vga-videos). Every task names the
 spec sections it implements. Read them first.
 
 ## Global Constraints
@@ -50,9 +50,12 @@ spec sections it implements. Read them first.
 - The daemon never sets `tt.mode` and never calls `clock_project_stop`.
 - Every enable releases the pins listed in the board global `_fo_ui_driven`. Every library
   load also releases every bit outside its mask, so all eight when the mask is 0.
-- Releasing a pin: if `GPIO_OE` (`machine.mem32[0xd0000030]`) shows the RP2350 driving it,
-  set latch 0 and wait `time.sleep_ms(1)`; then `Pin.IN`, then `Pin.PULL_DOWN` (finding P1,
-  RP2350-E9).
+- Releasing a pin (Ruling AF): only a pin in `_fo_ui_driven` that `GPIO_OE` (bit
+  `_fo_p.gpio_num`, address from `rpregs.GPIO_OE_EXPR`) shows the RP2350 driving gets latch 0
+  and `time.sleep_ms(1)`; then `Pin.IN`, then `Pin.PULL_DOWN`. Every other released pin goes
+  straight to `Pin.IN` and `Pin.PULL_DOWN` and is never made an output.
+- `safe.py`'s output-enable register is chosen by chip (Ruling AG, Task 2): `0xd0000030` on
+  the RP2350, `0xd0000020` on the RP2040.
 - The release runs after the hash check and before `_fo_reader` is built and
   `_fo_touched = True`.
 - Only mask bits are driven, and a mask of 0 drives nothing. Each pin's latch is set before the
@@ -93,7 +96,7 @@ spec sections it implements. Read them first.
 - Commander: prettier, SPDX headers, base branch `fpgas-online`.
 
 **Hardware**
-- No hardware access, except in Task 12.
+- No hardware access, except in Task 13.
 
 ## Review Focus
 
@@ -102,19 +105,19 @@ not exercise them. Each one has its pinning test in the owning task.
 
 1. **The index arrives before its bins.** The onward rsync sorts `fpga-library.json` first, so
    this is certain during every publish. The visitor should see the "still syncing" message,
-   with no 502 trace. Test: `test_load_bin_404_says_still_syncing`, Task 6.
+   with no 502 trace. Test: `test_load_bin_404_says_still_syncing`, Task 7.
 2. **The index is republished between page load and pressing Load, and the id is gone.** The
    panel should say the design is no longer in the library and reload the index. It should not
-   leave a dead card. Test: `load of a vanished id reloads the index`, Task 7.
+   leave a dead card. Test: `load of a vanished id reloads the index`, Task 8.
 3. **A visitor has set inputs in the Commander's Interact tab, then someone loads a library
    design.** The release must free only the pins the daemon drove, never the visitor's. Test:
-   `test_release_frees_only_daemon_driven_pins`, Task 3.
+   `test_release_frees_only_daemon_driven_pins`, Task 4.
 4. **The Pi reboots between the site's `GET /library` and its enable**, so the cache is empty.
    The site should push again and the load should succeed, once. Test:
-   `test_load_retries_once_after_404_enable`, Task 6.
+   `test_load_retries_once_after_404_enable`, Task 7.
 5. **A search that matches nothing, or a filter change while on page 7.** The panel should show
    page 1 and "0 of N designs", never a broken page range. Test: `paging clamps and resets`,
-   Task 7.
+   Task 8.
 
 ---
 
@@ -144,7 +147,7 @@ not exercise them. Each one has its pinning test in the owning task.
   - `load(path: Path) -> object`. It uses a `parse_constant` that raises on NaN and Infinity.
   - `add_parser(sub)`, which adds `fpga-library-check <file> [--bins DIR]`. It exits 0, or 1
     after printing every violation.
-  - The fixture directory `tests/fixtures/fpga-library/`. Tasks 2, 5 and 9 copy it, adding a
+  - The fixture directory `tests/fixtures/fpga-library/`. Tasks 3, 6 and 10 copy it, adding a
     `_comment` key naming the commit they copied from.
 
 The five fixture entries, in display order. They are grouped by shuttle, so the run order
@@ -202,10 +205,55 @@ row number.
   passes.
 - [ ] **Step 6: Commit** "fpgalibrary: schema 1 checker, id rule and fixture", then push.
 
-## Task 2: Daemon library store, routes and listing (fpgas.online-tt)
+## Task 2: `safe.py` reads the right output-enable register (fpgas.online-tt, Ruling AG)
+
+**Repo and branch:** `~/github/fpgas-online/fpgas.online-tt`, branch `safe-gpio-oe` off
+`origin/main`. It is its own PR, and it lands before Tasks 3 and 4, because the library's guard
+and release reuse `safe.py`'s pattern. **Spec:** controller rulings table (AG) and section 9,
+fpgas.online-tt.
+
+The bug: `SAFE_CODE` reads `machine.mem32[0xd0000020]` as the SIO output-enable register
+(`src/fpgas_tt/safe.py:99`). On the RP2040 that is `GPIO_OE`. On the RP2350 it is the write-only
+`GPIO_OUT_CLR` (pico-sdk `rp2350/hardware_regs/include/hardware/regs/sio.h:249`, `:254`), so
+`driven` is wrong on the RP2350 chip boards. The RP2350's `GPIO_OE` is `0xd0000030` (`sio.h:380`).
+
+**Files:**
+- Create: `src/fpgas_tt/rpregs.py`. It holds `GPIO_OE_EXPR = "(0xd0000030 if 'RP2350' in
+  sys.implementation._machine else 0xd0000020)"`, a board-side expression, with a docstring
+  citing both pico-sdk headers. It imports nothing from the package, so `safe.py` and
+  `designs.py` can both import it.
+- Modify: `src/fpgas_tt/safe.py:67-107`. The `_fo_oe = machine.mem32[0xd0000020]` line becomes
+  `_fo_oe = machine.mem32[` + `GPIO_OE_EXPR` + `]`, and `import sys` goes next to the existing
+  `import machine`. No other line of `SAFE_CODE` changes.
+- Test: `tests/test_safe.py`.
+
+**Interfaces:**
+- Produces: `rpregs.GPIO_OE_EXPR: str`. Task 4's release block uses it.
+
+- [ ] **Step 1: Write the failing tests**
+  - `test_safe_code_reads_gpio_oe_by_chip`: evaluate `GPIO_OE_EXPR` with a fake `sys` whose
+    `implementation._machine` is `"Raspberry Pi Pico 2 with RP2350"`, and get `0xd0000030`.
+    With `"Raspberry Pi Pico with RP2040"` it gives `0xd0000020`.
+  - `test_safe_code_uses_the_expression`: `safe.safe_code(False)` contains
+    `machine.mem32[(0xd0000030 if 'RP2350'` and no longer contains `mem32[0xd0000020]`.
+  - `test_safe_code_structure_unchanged`: apart from the `_fo_oe` line and the added
+    `import sys` line, the lines of `safe.safe_code(False)` equal those of today's text. Keep
+    today's text as `tests/data/safe_code_before_ag.txt`, written in this step from `main`.
+  - In the existing `outcome()` tests, add a case with an RP2350 reply whose `driven` list now
+    matches the pins made outputs.
+- [ ] **Step 2: Run them.** `uv run pytest tests/test_safe.py >> tmp/t2.log 2>&1`. Expected:
+  the new tests fail.
+- [ ] **Step 3: Implement.**
+- [ ] **Step 4: Run the suite and ruff.** `uv run pytest >> tmp/t2.log 2>&1; uv run ruff check >>
+  tmp/t2.log 2>&1`. Expected: all pass, and ruff is clean.
+- [ ] **Step 5: Commit** "safe: read GPIO_OE at the RP2350's address on an RP2350", then push.
+  Tell the controller the fix also changes what `/health`'s `safe_start` reports on RP2350
+  chip boards.
+
+## Task 3: Daemon library store, routes and listing (fpgas.online-tt)
 
 **Repo and branch:** `~/github/fpgas-online/fpgas.online-tt`, branch `library-store` off
-`origin/main`. **Spec:** section 2: Store, Name precedence, `GET /designs`, `GET /library`,
+`safe-gpio-oe` (Task 2). **Spec:** section 2: Store, Name precedence, `GET /designs`, `GET /library`,
 `POST /library/{id}`, Concurrency, Docs.
 
 **Files:**
@@ -287,18 +335,18 @@ row number.
     - `test_cli_library_flags`;
     - `test_bitstream_upload_unchanged_after_part_reader_move`, which re-runs the existing
       upload limit cases through the shared helper.
-- [ ] **Step 3: Run them.** `uv run pytest >> tmp/t2.log 2>&1`. Expected: only the new tests
+- [ ] **Step 3: Run them.** `uv run pytest >> tmp/t3.log 2>&1`. Expected: only the new tests
   fail.
 - [ ] **Step 4: Implement.** Writes go through `tempfile.mkstemp` and then `os.replace`, as
   `store_upload` does (designs.py:166-185). The lock is `library._LIBRARY_LOCK`. The store runs
   in `asyncio.to_thread`. `_read_parts(request, limits: dict[str, int]) -> dict[str, bytes] |
   web.Response` serves both multipart routes; the `meta` limit is 4096.
-- [ ] **Step 5: Run the suite and ruff.** `uv run pytest >> tmp/t2.log 2>&1; uv run ruff check
-  >> tmp/t2.log 2>&1`. Expected: all pass and ruff is clean.
+- [ ] **Step 5: Run the suite and ruff.** `uv run pytest >> tmp/t3.log 2>&1; uv run ruff check
+  >> tmp/t3.log 2>&1`. Expected: all pass and ruff is clean.
 - [ ] **Step 6: Commit three times and push.** The commits are the store, the routes and
   listing, and the docs.
 
-## Task 3: Releasing and driving `ui_in` on enable (fpgas.online-tt)
+## Task 4: Releasing and driving `ui_in` on enable (fpgas.online-tt)
 
 **Repo and branch:** fpgas.online-tt, branch `library-ui-in` off `library-store`.
 **Spec:** section 2, `POST /designs/{name}/enable` (Ruling AD).
@@ -322,7 +370,7 @@ row number.
   passing).
 
 **Interfaces:**
-- Consumes: Task 2's `enable_design` signature.
+- Consumes: Task 3's `enable_design` signature.
 - Produces:
   - `ui_in_guard(indent: int, held: str) -> str`. Its text is exactly the six lines in spec
     section 2, each prefixed by `indent` spaces.
@@ -337,7 +385,8 @@ row number.
     "ui_in_inputs", "released"}`.
   - `idle.py:268` is unchanged in source. Its load now releases pins too.
 
-- [ ] **Step 1: Write the snapshot files from the current code**, using a short
+- [ ] **Step 1: Write the snapshot files from the current code** (on top of Task 2's fix, so
+  the snapshot holds the chip-selected register), using a short
   `tests/data/make_snapshots.py` run with `uv run`. Commit them alone.
 - [ ] **Step 2: Write the failing tests**
   - `test_safe_code_byte_identical`: `safe.safe_code(False)` and `safe.safe_code(True)` equal
@@ -345,12 +394,18 @@ row number.
   - `test_ui_in_guard_text`: `ui_in_guard(4, "_fo_held")` equals the six spec lines, indented
     4 spaces, with `_fo_held.append(_fo_i)` at 8.
   - `test_release_block_on_every_load`: the last step of `_load_steps("x", d, None)` contains
-    `globals().get('_fo_ui_driven')`, `0xd0000030`, `time.sleep_ms(1)`, `Pin.PULL_DOWN` and
+    `globals().get('_fo_ui_driven')`, `rpregs.GPIO_OE_EXPR`'s text, `time.sleep_ms(1)`, `Pin.PULL_DOWN` and
     `print('released=' + json.dumps(`. All of it comes after the buffer's hash check and
     before both `_fo_reader = _fo_Reader(` and `_fo_touched = True` (findings r7 and m-b).
-  - `test_release_discharges_before_input`: inside the release loop, the latch-0 write and
-    `time.sleep_ms(1)` sit under the `GPIO_OE` test and come before `Pin.IN`, which comes
-    before `Pin.PULL_DOWN` (finding P1).
+  - `test_release_discharges_only_daemon_driven_pins` (Ruling AF, finding Q1): the release has
+    two loops. In the loop over the previous `_fo_ui_driven`, the latch-0 write and
+    `time.sleep_ms(1)` sit under the `GPIO_OE` bit test (`>> _fo_p.gpio_num & 1`) and come
+    before `Pin.IN`, which comes before `Pin.PULL_DOWN`. The loop over the other released pins
+    (the unmasked bits of a library load, minus `_fo_ui_driven`) contains `Pin.IN` and
+    `Pin.PULL_DOWN` and contains no `Pin.OUT`, no `raw_pin.value(` and no `sleep_ms`.
+  - `test_release_reports_two_lists`: against the fake REPL, a library load with mask 1 after
+    a load that drove bit 0 gives `released == [0]` and `ui_in_inputs == [1, 2, 3, 4, 5, 6, 7]`;
+    a bit present in both sets is listed only under `released`.
   - `test_library_release_includes_unmasked_bits`: `_load_steps(..., ui_in=1, ui_in_mask=1,
     library=True)` releases `[1..7]` plus `_fo_ui_driven`; with `ui_in=None, ui_in_mask=0,
     library=True` it releases all of `range(8)`; with `library=False` it releases
@@ -390,7 +445,7 @@ row number.
     | `{}` | 200 |
 
   - `test_idle_display_load_releases_too`, added to `tests/test_idle.py`.
-- [ ] **Step 3: Run them and record the failures.** `tmp/t3.log`.
+- [ ] **Step 3: Run them and record the failures.** `tmp/t4.log`.
 - [ ] **Step 4: Implement.**
   - The `__RELEASE__` block goes inside the `try:` of `LOAD_CODE`, right after the hash check
     and before `_fo_reader = _fo_Reader(_fo_buf)` (so before `_fo_touched = True`). It
@@ -402,7 +457,7 @@ row number.
 - [ ] **Step 6: Commit** "enable: release what the daemon drove, drive ui_in_mask bits
   directly", then push.
 
-## Task 4: Infra drop-in for the library cap (fpgas.online-infra)
+## Task 5: Infra drop-in for the library cap (fpgas.online-infra)
 
 **Repo and branch:** `~/github/fpgas-online/fpgas.online-infra`, branch `tt-library-cap` off
 `origin/main`. **Spec:** section 2 Store, and section 8 step 2.
@@ -417,16 +472,16 @@ row number.
 - Test: the repo's own checks, `ansible-lint` and its CI targets (see the repo's `CLAUDE.md`).
 
 **Interfaces:**
-- Consumes: Task 2's env var name.
+- Consumes: Task 3's env var name.
 - Produces: `/etc/systemd/system/fpgas-tt.service.d/library.conf`, mode 0644, in the Pi root.
 
 - [ ] **Step 1: Add the template, the default and the tasks.** First an
   `ansible.builtin.file` task creating `/etc/systemd/system/fpgas-tt.service.d` (mode 0755),
   then `ansible.builtin.template` to the drop-in path (finding r8). Add no handler: the Pi root is baked, and the service starts at boot.
-- [ ] **Step 2: Run the repo's lint.** Log to `tmp/t4.log`. Expected: clean.
+- [ ] **Step 2: Run the repo's lint.** Log to `tmp/t5.log`. Expected: clean.
 - [ ] **Step 3: Commit** "onpi: drop-in for the fpgas-tt library cap", then push.
 
-## Task 5: Site archive client, lock cache and daemon client (fpgas.online-site)
+## Task 6: Site archive client, lock cache and daemon client (fpgas.online-site)
 
 **Repo and branch:** `~/github/fpgas-online/fpgas.online-site`, branch `vga-library-client` off
 `origin/main`. **Spec:** section 3: Settings, `ttsite/library.py`, Caching.
@@ -447,7 +502,7 @@ row number.
 - Test: `tests/test_library.py`, `tests/test_daemon.py`, `tests/test_settings_import.py`.
 
 **Interfaces:**
-- Consumes: Task 2's wire contract and Task 3's enable body.
+- Consumes: Task 3's wire contract and Task 4's enable body.
 - Produces, in `library.py`:
   - `ArchiveError(Exception)`, with `.message`.
   - `NotPublished(ArchiveError)`.
@@ -497,13 +552,13 @@ row number.
   - `test_conftest_swaps_ttsite_to_locmem`: inside a test, `caches["ttsite"]` is a
     `LocMemCache`.
 - [ ] **Step 2: Run them.** `uv run pytest tests/test_library.py tests/test_daemon.py
-  tests/test_settings_import.py >> tmp/t5.log 2>&1`. Expected: the new tests fail.
+  tests/test_settings_import.py >> tmp/t6.log 2>&1`. Expected: the new tests fail.
 - [ ] **Step 3: Implement.** The schema rules are duplicated from the spec; do not import from
   tinytapeout-vga-videos. Close every response in a `finally`.
 - [ ] **Step 4: Run the suite and ruff.** Expected: all pass.
 - [ ] **Step 5: Commit** "ttsite: VGA library archive client", then push.
 
-## Task 6: Site routes and the upload-name check (fpgas.online-site)
+## Task 7: Site routes and the upload-name check (fpgas.online-site)
 
 **Repo and branch:** fpgas.online-site, branch `vga-library-routes` off `vga-library-client`.
 **Spec:** section 3 Routes.
@@ -515,7 +570,7 @@ row number.
 - Test: `tests/test_views.py`.
 
 **Interfaces:**
-- Consumes: everything Task 5 produces.
+- Consumes: everything Task 6 produces.
 - Produces:
   - URL names `ttsite-api-library` and `ttsite-api-library-load`.
   - `LOAD_DEADLINE_SECONDS = 50`, `LOCK_SECONDS = 70`, `ENABLE_MIN_SECONDS = 27`,
@@ -561,7 +616,7 @@ row number.
     - `test_upload_allowed_without_index_copy` (the archive is down and no copy exists)
     - `test_upload_check_fetches_a_cold_index` (finding r3): a worker with no copy calls
       `library.index` before deciding.
-- [ ] **Step 2: Run them and record the failures.** `tmp/t6.log`.
+- [ ] **Step 2: Run them and record the failures.** `tmp/t7.log`.
 - [ ] **Step 3: Implement.**
   - `api_library` takes `@require_GET`, then `@condition(etag_func=...)` outermost, then
     `@gzip_page`.
@@ -571,7 +626,7 @@ row number.
 - [ ] **Step 5: Commit** "ttsite: VGA library index and load routes; refuse upload names in
   the library", then push.
 
-## Task 7: VGA library panel (fpgas.online-site)
+## Task 8: VGA library panel (fpgas.online-site)
 
 **Repo and branch:** fpgas.online-site, branch `vga-library-panel` off `vga-library-routes`.
 **Spec:** section 3 Panel, and section 1 Warnings and Order.
@@ -592,7 +647,7 @@ row number.
 - Modify: `tests/test_static.py`, `tests/test_views.py`.
 
 **Interfaces:**
-- Consumes: Task 6's routes and bodies.
+- Consumes: Task 7's routes and bodies.
 - Produces: `library.js`, exported both through CommonJS and as `window.ttsiteLibrary`.
   - `matches(entry, query) -> bool`
   - `shuttles(designs) -> string[]`, in order of first appearance
@@ -604,7 +659,7 @@ row number.
     and `textContent` only. `state.kind` is one of `"too-old"`, `"loading"`,
     `"not-published"`, `"error"`, `"empty"`, `"ready"`.
 
-  The Commander (Task 9) copies the badge texts.
+  The Commander (Task 10) copies the badge texts.
 
 - [ ] **Step 1: Write the failing node tests.** They use a small fake document, as the
   power-button tests do.
@@ -627,17 +682,17 @@ row number.
     - `test_board_js_wires_library_and_csrf`, a grep test: `/library/`, `/load`,
       `X-CSRFToken`, `csrfToken: csrf`, `loading = 'lazy'`.
 - [ ] **Step 2: Run them.** `uv run pytest tests/test_library_js.py tests/test_static.py
-  tests/test_views.py >> tmp/t7.log 2>&1`. Expected: the new tests fail.
+  tests/test_views.py >> tmp/t8.log 2>&1`. Expected: the new tests fail.
 - [ ] **Step 3: Implement.**
   - `library.js` holds the logic and the drawing. `board.js` holds the fetches and events.
   - The gallery shows a library entry only while it is enabled, titled from the index.
   - CSS: `.tt-library`, `.tt-library-grid`, `.tt-badge--library`, `.tt-badge--warn`,
     `.tt-badge--info`.
-- [ ] **Step 4: Run the suite, ruff, and `node --test tests/js/`.** Each goes to `tmp/t7.log`
+- [ ] **Step 4: Run the suite, ruff, and `node --test tests/js/`.** Each goes to `tmp/t8.log`
   separately. Expected: all pass.
 - [ ] **Step 5: Commit** "ttsite: VGA library panel", then push.
 
-## Task 8: Commander CSRF header (tt-commander-app)
+## Task 9: Commander CSRF header (tt-commander-app)
 
 **Repo and branch:** `~/github/fpgas-online/tt-commander-app`, branch `csrf-token` off
 `origin/fpgas-online`. It depends on nothing; the controller may run it first (spec section 8
@@ -658,15 +713,15 @@ step 1). **Spec:** section 4, the "Its own PR" part.
   - `enable sends X-CSRFToken when a token getter is set`
   - `GET designs sends no CSRF header`
   - `no header when no getter is set`
-- [ ] **Step 2: Run them.** `npx vitest run src/model/fpgaDesigns.spec.ts >> tmp/t8.log
+- [ ] **Step 2: Run them.** `npx vitest run src/model/fpgaDesigns.spec.ts >> tmp/t9.log
   2>&1`. Expected: they fail.
 - [ ] **Step 3: Implement.**
-- [ ] **Step 4: Run the checks, each logged separately:** `npm run lint >> tmp/t8.log 2>&1;
-  npm run typecheck >> tmp/t8.log 2>&1; npx vitest run >> tmp/t8.log 2>&1`. Expected: all pass.
+- [ ] **Step 4: Run the checks, each logged separately:** `npm run lint >> tmp/t9.log 2>&1;
+  npm run typecheck >> tmp/t9.log 2>&1; npx vitest run >> tmp/t9.log 2>&1`. Expected: all pass.
 - [ ] **Step 5: Commit** "embed: send the host page's CSRF token on POST", then push. After
   merge, Tim tags `embed-v0.2.1`.
 
-## Task 9: Commander library source (tt-commander-app)
+## Task 10: Commander library source (tt-commander-app)
 
 **Repo and branch:** tt-commander-app, branch `library-source` off `csrf-token`.
 **Spec:** section 4, the "library source" part.
@@ -692,7 +747,7 @@ step 1). **Spec:** section 4, the "Its own PR" part.
   `src/components/BoardConfigPanel.spec.tsx`, `src/components/PinoutPanel.spec.tsx`.
 
 **Interfaces:**
-- Consumes: Task 6's routes, Task 8's `setCsrfToken`, and Task 7's badge texts, copied.
+- Consumes: Task 7's routes, Task 9's `setCsrfToken`, and Task 8's badge texts, copied.
 - Produces:
   - the `LibraryEntry` type;
   - `fpgaLibrary` store `{state: 'idle' | 'loading' | 'ready' | 'notPublished' | 'error',
@@ -728,7 +783,7 @@ step 1). **Spec:** section 4, the "Its own PR" part.
       entry in the upload shape (`pinout: {}`), the index entry has `uo_out` labels, and the
       tab shows `R1` for `uo[0]`.
     - `library entry missing from the index renders an empty pinout without throwing`.
-- [ ] **Step 2: Run them and record the failures.** `tmp/t9.log`.
+- [ ] **Step 2: Run them and record the failures.** `tmp/t10.log`.
 - [ ] **Step 3: Implement.** Map `warn` badges to `danger_level: 'medium'`, with
   `danger_reason` set to the badges joined by `; `. Never set `'high'`.
 - [ ] **Step 4: Run lint, typecheck, vitest and `npm run build:embed`, each logged separately.**
@@ -736,7 +791,7 @@ step 1). **Spec:** section 4, the "Its own PR" part.
 - [ ] **Step 5: Commit** "fpga: VGA library as a third design source", then push. After
   merge, Tim tags `embed-v0.3.0`.
 
-## Task 10: Docs and mirror summary for the harness's files (tinytapeout-vga-videos)
+## Task 11: Docs and mirror summary for the harness's files (tinytapeout-vga-videos)
 
 **Repo and branch:** tinytapeout-vga-videos, branch `fpga-library-foreign` off `origin/main`
 **after** the raw-traces pipeline plan's Task 16 has merged. **Spec:** section 5.
@@ -763,14 +818,14 @@ create `tests/test_mirror.py`.
   prints `bitstreams:` (a `find` for `*.bin` under the destination) and `fpga-library.json:`
   (`present` or `absent`).
 - [ ] **Step 2: Run it and record the failure.** `uv run pytest tests/test_mirror.py >>
-  tmp/t10.log 2>&1`.
+  tmp/t11.log 2>&1`.
 - [ ] **Step 3: Add the two summary lines and the docs section.**
-- [ ] **Step 4: Run `uv run pytest >> tmp/t10.log 2>&1`.** Expected: all pass, including Task
+- [ ] **Step 4: Run `uv run pytest >> tmp/t11.log 2>&1`.** Expected: all pass, including Task
   16's own mirror tests.
 - [ ] **Step 5: Commit** "mirror: count the FPGA harness's files in the summary; document
   them", then push.
 
-## Task 11: Harness publisher, the interface contract (tt-harness-fpga-vga session)
+## Task 12: Harness publisher, the interface contract (tt-harness-fpga-vga session)
 
 The tt-harness-fpga-vga session executes this task. The controller sends the session this task
 and spec section 6, then waits for the pushed branch.
@@ -799,29 +854,31 @@ and spec section 6, then waits for the pushed branch.
 - [ ] **Step 1: Send the contract and the spec path** to the session.
 - [ ] **Step 2: Receive the session's pushed branch and its dry-run output** in a local
   directory. Run `uv run tt-vga fpga-library-check <out>/fpga-library.json --bins <out> >>
-  tmp/t11.log 2>&1`. Expected: exit 0, recorded in the log.
+  tmp/t12.log 2>&1`. Expected: exit 0, recorded in the log.
 
-## Task 12: Hardware check on one FabricFox board
+## Task 13: Hardware check on one FabricFox board
 
 **When:** after spec section 8, steps 1 to 5 are deployed and published. **Spec:** section 9,
 Hardware check.
 
 **Files:**
-- Create: `tmp/t12-hardware.log` and screenshots. They are not committed.
+- Create: `tmp/t13-hardware.log` and screenshots. They are not committed.
 - Create: a claim at `~/github/TinyTapeout/tmp/board-claims/<board>-p<port>.json`.
 
 - [ ] **Step 1: Claim the board.** Choose it per owner question 4. Confirm the USB serial.
   `status.json` must show `clients == 0` and the idle display `loaded`. Write the claim with
   UTC times and a 30-minute expiry.
-- [ ] **Step 2: Read-only checks.** Log each `curl` to `tmp/t12-hardware.log`.
+- [ ] **Step 2: Read-only checks.** Log each `curl` to `tmp/t13-hardware.log`.
   - `/designs` has the top-level `library` key. Record the upload names.
   - `/library` has about 445 designs, including `ttsky25a_vga_example`.
   - In the Commander REPL, read only:
     - `print(tt.mode_str)`;
     - for i in 0..7, `print(getattr(tt.pins, 'ui_in%d' % i).mode_str)`;
-    - `import machine; print(hex(machine.mem32[0xd0000030]), hex(machine.mem32[0x40000000]))`,
-      which prints `GPIO_OE` and SYSINFO `CHIP_ID`. The top four bits of `CHIP_ID` are the
-      revision; look up A2 or A4 in the RP2350 datasheet.
+    - `import machine; print(hex(machine.mem32[0xd0000030]))`, which prints `GPIO_OE`;
+    - `m = machine.mem32[0x40000000]; n = m >> 28; print(hex(m), n, (n & 3) | ((n & 8) >> 1))`,
+      which prints SYSINFO `CHIP_ID`, the raw revision nibble, and the SDK's decoded version
+      (pico-sdk `rp2350/pico_platform/platform.c:20-22`): 2 means A2, 4 means A4. Record both
+      the raw nibble and the decoded value.
 
     Record the results in the log and report them to the controller, which records them in
     spec section 2, Input pins at rest (findings N1 and P1). If the chip is A4, say so; the
@@ -830,18 +887,20 @@ Hardware check.
   driven by Playwright.
   - The response shows `pushed: true`.
   - `/designs` shows it enabled, with `source: "library"`.
-  - Save a camera screenshot to `tmp/t12-pattern.png`.
+  - Save a camera screenshot to `tmp/t13-pattern.png`.
 - [ ] **Step 4: Load it again.** The response shows `pushed: false`.
 - [ ] **Step 5: Load a `ui_in` entry through the Commander and check the clock.** Use the first
   entry with `ui_in` not null.
   - `ui_in_driven` equals the mask's bits, and `ui_in_held` is empty.
   - In the Commander REPL, run `print(tt.is_auto_clocking, tt.auto_clocking_freq)`. It must
     print `True` and the entry's `clock_hz`.
-  - The camera shows a picture (`tmp/t12-ui-in.png`).
+  - The camera shows a picture (`tmp/t13-ui-in.png`).
 - [ ] **Step 6: Load the `tt_um_vga_pattern` demo from the gallery.** `released` lists Step 5's
   bits, and the clock is the demo's. Read each released pin's level read-only with
   `print([getattr(tt.pins, 'ui_in%d' % i)() for i in <released>])`. Every value must be 0
-  (finding P1).
+  (finding P1). The reading is taken on the pad node the FPGA sees, after the pull-down
+  (finding q-a). Also read and record the levels of the pins released straight to inputs; if
+  any reads 1, report it to the controller (the case Ruling AF reserves the IE workaround for).
 - [ ] **Step 7: Restore.** Run vgacap `tools/board_restart.py <ws link>`. Wait for the idle
   display to show `loaded`. The upload names must equal Step 2's. Delete the claim. If `clients`
   ever goes above 0, stop at once and restore.
