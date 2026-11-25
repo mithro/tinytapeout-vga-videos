@@ -3,7 +3,7 @@
 Status: draft for the owner, 2026-11-26. Third revision. Revision 2 answered the first
 independent review (graded "not ready"; findings C1-C2, I1-I10 and 20 minor) under the
 controller's rulings AC and AD (below). Revision 3 answers the re-review (graded "ready with
-fixes"; findings N1-N5 and minors r1-r8). Revision 4 answers the re-check (P1, m-a to m-d).
+fixes"; findings N1-N5 and minors r1-r8). Revision 4 answers the re-check (P1, m-a to m-d). Revision 5 answers the second re-check (Q1, q-a, q-b) under rulings AF and AG.
 
 Owner decision (Tim, 2026-11-26): "Our custom commander app and the tinytapeout.fpgas.online
 interface should be updated to allow loading of the bitstreams from the same archive the vga
@@ -18,7 +18,9 @@ These rulings bind this spec.
 |---|---|
 | Y | The library is a real third source, `library`, in the [fpgas-tt daemon](https://github.com/fpgas-online/fpgas.online-tt). It has its own cache directory on each Pi and is filled by the [site](https://github.com/fpgas-online/fpgas.online-site) backend on tweed. The site fetches the index and the bitstreams from one fixed archive URL, checks them, and pushes the bytes to the daemon, so the Pis make no outbound connections. Option A, where the site loads library designs as ordinary uploads, is rejected: it would evict other visitors' uploads. |
 | AC | The id rule in section 1 stands. It replaces Ruling X's draft wording (`<shuttle>_<macro>`, cut to 40 characters plus a 6-hex hash) and the `demo_name` function on the harness's `demos-export` branch. Two independent checks found it collision-free: the harness session ran it over its 445 designs, and the reviewer ran it over the 440 targets in this repo. |
-| AD | The daemon never changes `tt.mode` and never uses the SDK's "MCU controls inputs" mode. It drives the `ui_in` pins directly, as `safe.py` does. It drives only the bits in the entry's `ui_in_mask`, which the harness publishes using its `effective_ui_in_mask` rule. Every library load makes the bits outside its mask inputs with the pull-down, released as described in section 2, including when the mask is 0, so a mask of 0 makes all eight bits inputs (controller ruling on m-a). "A mask of 0 drives nothing" still holds: no bit is driven. Every enable, whatever the source, first releases the pins the daemon drove before, so a later demo or upload never inherits a library design's inputs. |
+| AD | The daemon never changes `tt.mode` and never uses the SDK's "MCU controls inputs" mode. It drives the `ui_in` pins directly, as `safe.py` intends. It drives only the bits in the entry's `ui_in_mask`, which the harness publishes using its `effective_ui_in_mask` rule. Every library load makes the bits outside its mask inputs with the pull-down, released as described in section 2, including when the mask is 0, so a mask of 0 makes all eight bits inputs (controller ruling on m-a). "A mask of 0 drives nothing" still holds: no bit is driven. Every enable, whatever the source, first releases the pins the daemon drove before, so a later demo or upload never inherits a library design's inputs. |
+| AF | Only pins in `_fo_ui_driven` get the 1 ms output-low discharge. Every other released pin goes straight to `Pin.IN` with the pull-down and is never made an output. The E9 input-enable workaround (PADS_BANK0 `GPIOn.IE = 0`) is used only if the hardware check shows the discharge alone is not enough. |
+| AG | `safe.py:99` reads `0xd0000020` as the SIO output-enable register. That is `GPIO_OE` on the RP2040, but on the RP2350 it is the write-only `GPIO_OUT_CLR`; the RP2350's `GPIO_OE` is `0xd0000030`. A separate fpgas.online-tt PR, before the daemon's library work, picks the register by chip, with a test, and keeps `SAFE_CODE`'s structure. |
 
 ## Why
 
@@ -44,7 +46,7 @@ from that archive.
 |---|---|
 | [tinytapeout-vga-videos](https://github.com/mithro/tinytapeout-vga-videos) (this repo, owns the archive) | the schema, a fixture, the checker `tt-vga fpga-library-check`, and a mirror that leaves the harness's files alone |
 | [tt-harness-fpga-vga](https://github.com/mithro/tt-harness-fpga-vga) | `tthfv publish` writes the `.bin` files and `fpga-library.json` into the archive (the contract is in section 6) |
-| [fpgas.online-tt](https://github.com/fpgas-online/fpgas.online-tt) (the daemon) | a library cache, `GET /library`, `POST /library/{id}`, library entries in `/designs`, and `ui_in` and `ui_in_mask` on enable |
+| [fpgas.online-tt](https://github.com/fpgas-online/fpgas.online-tt) (the daemon) | first, a fix PR for `safe.py`'s output-enable register (Ruling AG); then a library cache, `GET /library`, `POST /library/{id}`, library entries in `/designs`, and `ui_in` and `ui_in_mask` on enable |
 | [fpgas.online-site](https://github.com/fpgas-online/fpgas.online-site) (the `ttsite` app) | an index proxy, a load route, a redis lock, the upload-name check, and the VGA library panel |
 | [tt-commander-app](https://github.com/fpgas-online/tt-commander-app) (the fpgas-online fork, branch `fpgas-online`) | a CSRF header (shipped first), the `library` source, search by shuttle and macro, and warnings |
 | [fpgas.online-infra](https://github.com/fpgas-online/fpgas.online-infra) | a systemd drop-in for the library cap; Tim re-runs the plays and bumps the Commander pin |
@@ -495,8 +497,8 @@ The body is `{"clock_hz": int | null, "ui_in": int | null, "ui_in_mask": int}`.
   |---|---|
   | `ui_in_driven` | the bits now driven |
   | `ui_in_held` | bits in the mask left as inputs because something outside held them high |
-  | `ui_in_inputs` | on a library load, the bits outside the mask, made inputs with the pull-down (all eight when the mask is 0); empty for a demo or upload |
-  | `released` | bits a previous load had driven, released before this load |
+  | `ui_in_inputs` | from the release line's `inputs` list (finding q-b): on a library load, the bits outside the new mask that the daemon had not driven, released straight to inputs with the pull-down (all eight when the mask is 0 and nothing was driven before); empty for a demo or upload |
+  | `released` | from the release line's `released` list: bits a previous load had driven, discharged and released before this load |
 
 The REPL changes all live in `LOAD_CODE` (`designs.py:227-272`). Nothing touches `tt.mode`. The
 `DemoBoard.mode` setter stops the project clock and re-creates every pin
@@ -517,28 +519,45 @@ The release set is:
 - on a library load, also every bit outside the new entry's `ui_in_mask`, so all eight bits when
   the mask is 0 (controller ruling on m-a).
 
-Each pin in the set is released in three steps (finding P1):
+The set is released in two ways (Ruling AF; findings P1 and Q1).
 
-1. If the RP2350 is driving it, as the SIO `GPIO_OE` register says (`machine.mem32[0xd0000030]`,
-   the RP2350's SIO GPIO_OE; read from the hardware, not from the SDK, as `safe.py` does), its
-   output latch is set to 0 and it stays an output for 1 ms (`time.sleep_ms(1)`). That
-   discharges the pad.
-2. It becomes `Pin.IN`.
-3. It gets `Pin.PULL_DOWN`.
+**Pins in `_fo_ui_driven`** (the daemon drove them for the previous load) are released in three
+steps:
 
-A pin that was already an input skips step 1.
+1. If the RP2350 is driving the pin, its output latch is set to 0 and it stays an output for
+   1 ms (`time.sleep_ms(1)`). That discharges the pad. "Driving" is read from the hardware, not
+   from the SDK: bit `_fo_p.gpio_num` of the SIO `GPIO_OE` register, at `0xd0000030` on the
+   RP2350 (`SIO_BASE` `0xd0000000` plus `SIO_GPIO_OE_OFFSET` `0x030`; the `ui_in` pins, GPIO 17
+   to 24, are all in that low bank). The address comes from the shared expression that Ruling
+   AG's fix introduces, which picks `0xd0000020` on an RP2040.
+2. The pin becomes `Pin.IN`.
+3. The pin gets `Pin.PULL_DOWN`.
 
-Why the discharge: on RP2350 A2 silicon (erratum RP2350-E9) a Bank 0 pad with its input buffer
-on and only the internal pull-down can stay at about 2 V once it has been high, so a pull-down
-alone may leave a released pin looking high to the FPGA, and the guard may then report the pin
-as held. Driving it low for 1 ms first leaves it low.
+**Every other pin in the set** (on a library load, the bits outside the new mask that the daemon
+did not drive) goes straight to `Pin.IN` and then `Pin.PULL_DOWN`. It is never made an output,
+even for a moment.
 
-The discharge is safe:
+Why the discharge exists. On RP2350 A2 silicon (erratum RP2350-E9), a Bank 0 pad with its input
+buffer on and only the internal pull-down can stay at about 2 V once it has been high. So a
+pull-down alone may leave a released pin looking high to the FPGA, and the guard may then report
+that pin as held. Driving it low for 1 ms first leaves it low.
 
-- Step 1 only applies to a pin the RP2350 is already driving, so it adds no driver to the net;
-  it only changes the level that driver puts out, for 1 ms.
-- For pins the daemon drove, the outgoing design's own mask already excluded every `ui_in[k]`
-  whose tied `uio[k]` that design drives, so driving such a pin low cannot fight that design.
+Why only the daemon's own pins are discharged:
+
+- The discharge adds no driver to the net, because it only applies to a pin the RP2350 is
+  already driving. It only changes that driver's level, for 1 ms.
+- For pins in `_fo_ui_driven`, the outgoing design's mask already excluded every `ui_in[k]`
+  whose tied `uio[k]` that design drives. So the discharge cannot fight the outgoing design on
+  those pins. It can still fight a Pi GPIO configured as an output on a tied net, for 1 ms. The
+  census found no such GPIO; the harness's census rules exclude it.
+- For any other pin the RP2350 drives, the daemon has no mask for the running design. That pin
+  may be driven by the SDK's `ASIC_RP_CONTROL` baseline or by a visitor's `write_ui_in`. A 1 ms
+  low there could fight a design that drives the tied `uio[k]` high, two push-pull drivers on one
+  net (finding Q1). Those pins are therefore never discharged.
+- Such a pin, released by the pull-down alone, may keep looking high on A2 silicon. Ruling AF
+  accepts that. If the hardware check shows it matters, the E9 workaround is used for those pins
+  instead: clear the pad's input enable (PADS_BANK0 `GPIOn.IE = 0`). That drives nothing, and the
+  pull-down then holds the pin low. MicroPython's next `Pin.init` sets IE again.
 
 The board's stepping is not yet known. The hardware check reads it. If the boards are A4 (E9
 fixed), that is recorded here and the discharge stays: it is harmless.
@@ -546,8 +565,11 @@ fixed), that is recorded here and the discharge stays: it is harmless.
 Then the block clears `_fo_ui_driven` and prints
 `released=` followed by JSON `{"released": [...], "inputs": [...]}`:
 
-- `released` lists the previous `_fo_ui_driven`;
-- `inputs` lists the bits outside the new mask on a library load, and is empty otherwise.
+- `released` lists the previous `_fo_ui_driven` (the discharged pins);
+- `inputs` lists the other pins released on a library load: the bits outside the new mask that
+  were not in `_fo_ui_driven`. It is empty otherwise.
+
+The enable answer's `released` and `ui_in_inputs` both come from this line (finding q-b).
 
 Further rules for the release:
 
@@ -1027,7 +1049,8 @@ daemon, file names come only from ids that pass `NAME_RE`, and the metadata is t
 
 1. **Commander CSRF PR.** Merge it, tag `embed-v0.2.1`, and bump the pin; Tim runs the site play.
    This fixes the Commander's Load and depends on nothing.
-2. **Daemon PR.** Merge it. CI builds the deb, and the APT repo pulls it within 15 minutes.
+2. **Daemon PRs.** Merge the `safe.py` register fix (Ruling AG) first, then the library PRs. CI
+   builds the deb, and the APT repo pulls it within 15 minutes.
    - The infra PR adds the drop-in (`onpi_tt_library_max_bytes`, default 16777216).
    - Tim re-runs the Pi play (`ansible/roles/onpi/tasks/tt.yml`), and the Pis restart the
      service.
@@ -1065,6 +1088,11 @@ lands) checks the `bitstreams:` and `fpga-library.json:` lines. The excludes and
 
 ### fpgas.online-tt
 
+**The `safe.py` register fix (Ruling AG), its own PR:** `SAFE_CODE` reads `0xd0000030` on an
+RP2350 and `0xd0000020` on an RP2040, chosen on the board from `sys.implementation._machine`.
+Its other lines are unchanged. A test runs the selection for both chips against a fake
+`machine.mem32`.
+
 **The store:**
 
 - store, replace, an idempotent push;
@@ -1092,8 +1120,9 @@ lands) checks the `bitstreams:` and `fpga-library.json:` lines. The excludes and
 - each latch is set before the pin becomes an output;
 - on a library load the release set includes every unmasked bit (all eight for mask 0); on a
   demo or upload load it is `_fo_ui_driven` only;
-- a pin that `GPIO_OE` shows as an output gets latch 0, then `time.sleep_ms(1)`, before
-  `Pin.IN` and `Pin.PULL_DOWN`; an input pin skips that step;
+- only a pin in `_fo_ui_driven` that `GPIO_OE` (bit `gpio_num`) shows as an output gets latch
+  0, then `time.sleep_ms(1)`, before `Pin.IN` and `Pin.PULL_DOWN`; every other released pin
+  goes straight to `Pin.IN` and `Pin.PULL_DOWN` and is never made an output (Ruling AF);
 - the release sits after the hash check and before `_fo_reader` is built and
   `_fo_touched = True`;
 - `released`, `ui_in_driven` and `ui_in_held` are parsed from the board's answer.
@@ -1170,8 +1199,11 @@ Steps:
    - `tt.mode_str`;
    - each `tt.pins.ui_in<i>.mode_str`;
    - `hex(machine.mem32[0xd0000030])` (`GPIO_OE`);
-   - `hex(machine.mem32[0x40000000])` (SYSINFO `CHIP_ID`; the top four bits are the revision,
-     to look up as A2 or A4 in the RP2350 datasheet).
+   - SYSINFO `CHIP_ID` at `0x40000000`, both the raw value and the decoded revision: `m =
+     machine.mem32[0x40000000]; n = m >> 28; print(hex(m), n, (n & 3) | ((n & 8) >> 1))`. The
+     raw nibble `n` is not the stepping. The SDK decodes it as `(n & 3) | ((n & 8) >> 1)`
+     (pico-sdk `rp2350/pico_platform/platform.c:20-22`), where 2 means A2 and 4 means A4. An A4
+     reads a raw nibble of 8 or more.
 
    Record them in section 2, Input pins at rest (findings N1 and P1). If the chip is A4, record
    that; the discharge step stays.
@@ -1185,7 +1217,11 @@ Steps:
    `clock_hz`. The camera must show a picture.
 5. **Release.** Load the `tt_um_vga_pattern` demo from the gallery. `released` lists the bits
    from step 4, and the clock is the demo's. Then read each released pin's level read-only
-   (`getattr(tt.pins, 'ui_in%d' % i)()`). Each must read 0 (finding P1).
+   (`getattr(tt.pins, 'ui_in%d' % i)()`). Each must read 0 (finding P1). With E9, the RP2350's
+   own input reading and the level the FPGA sees are the same pad node. So this check reads the
+   level after the pull-down, which is the level that matters (finding q-a). Read the pins
+   released straight to inputs too, and record their levels. If any of them reads 1, that is the
+   case Ruling AF reserves the IE workaround for: report it to the controller.
 6. **Restore.** Run vgacap's `tools/board_restart.py`, wait for the idle display to read
    `loaded`, and check that the upload list matches step 1. Then delete the claim.
 
