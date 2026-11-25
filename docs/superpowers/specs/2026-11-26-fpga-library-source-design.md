@@ -248,7 +248,7 @@ with a visible warning.
 
 | Condition | Badge text | Class |
 |---|---|---|
-| `build_status == "timing-fail"` | `timing: <fmax_mhz> MHz < <clock_hz / 1e6> MHz` (two decimals) | warn |
+| `build_status == "timing-fail"` | `timing: <fmax_mhz> MHz < <clock_hz / 1e6> MHz` (fmax two decimals, clock three: `timing: 17.08 MHz < 25.175 MHz`) | warn |
 | `validation == "none"` | `not hardware-validated` | warn |
 | `validation == "mcu"` | `validated at MCU speed only` | info |
 | `qspi == "emulated"` | `QSPI emulated` | info |
