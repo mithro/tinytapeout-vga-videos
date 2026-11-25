@@ -9,10 +9,16 @@
 //
 // Tiny VGA bit layout on uo_out (from vga-playground src/sim/vga.ts):
 //   bit 7 hsync, bit 3 vsync, bits 0..2 = R1 G1 B1, bits 4..6 = R0 G0 B0.
+//
+// With --trace PATH it also records every pin at both halves of every clock
+// through vgacap's trace writer (vgacap docs/trace-format.md, layout
+// tt-um-43). The build then needs job.vgacap_link_flags.
 
 #include "Vtop.h"
 #include "qspi.h"
 #include "verilated.h"
+#include "vgacap/stream.h"
+#include "vgacap/trace.h"
 
 #include <algorithm>
 #include <chrono>
@@ -64,7 +70,25 @@ struct Options {
     double audio_rate = 192000.0; // audio sample rate, as the playground uses
     bool no_audio = false;
     bool quiet = false;
+    std::string trace;            // "" (no trace) or the trace file to write
+    std::vector<std::pair<std::string, std::string>> meta;   // --meta, in order
+    std::string clock_hz_arg, seconds_arg = "60", calib_seconds_arg = "1";   // as given
 };
+
+// The zstd level of the trace's blocks. The pilot may change it.
+constexpr int kTraceZstdLevel = 1;
+
+// --meta keys tb.cpp writes itself into META(open).
+bool meta_key_reserved(const std::string& k) {
+    return k == "meta" || k == "calib_seconds" || k == "seconds" || k == "layout";
+}
+
+bool meta_key_ok(const std::string& k) {
+    if (k.empty() || k[0] < 'a' || k[0] > 'z') return false;
+    for (char c : k)
+        if (!((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_')) return false;
+    return true;
+}
 
 // The Audio Pmod carries one bit on uio[7]. The playground reads it as
 // `(uio_out & uio_oe) >> 7`: only while the design is driving that pin, so a
@@ -236,9 +260,11 @@ void on_signal(int) { g_stop = 1; }
 
 // NOT standard FNV-1a 64: the offset basis should be 14695981039346656037
 // (0xcbf29ce484222325) and this one lost its last digit. Every published
-// frame hash used this value, and ttvga/framehashes.py states it in each
-// frame_hashes.txt. Changing it means re-simulating everything, or the
-// published hashes and new ones stop being comparable.
+// frame hash used this value, and each
+// frames/tb-v1/frame_hashes.fnv1a64-tb2026-rgb888.txt states it. Changing it
+// means re-simulating everything, or the published hashes and new ones stop
+// being comparable. tb.cpp writes its own list to tb_frame_hashes.txt, which
+// the job checks against vgacap's tb-v1 sampler.
 uint64_t fnv1a(const uint8_t* p, size_t n) {
     uint64_t h = 1469598103934665603ULL;
     for (size_t i = 0; i < n; i++) { h ^= p[i]; h *= 1099511628211ULL; }
@@ -255,9 +281,30 @@ int main(int argc, char** argv) {
             if (i + 1 >= argc) { std::fprintf(stderr, "tb: %s needs a value\n", a.c_str()); std::exit(2); }
             return argv[++i];
         };
-        if (a == "--clock-hz") opt.clock_hz = std::atof(next().c_str());
-        else if (a == "--seconds") opt.seconds = std::atof(next().c_str());
-        else if (a == "--calib-seconds") opt.calib_seconds = std::atof(next().c_str());
+        if (a == "--clock-hz") { opt.clock_hz_arg = next(); opt.clock_hz = std::atof(opt.clock_hz_arg.c_str()); }
+        else if (a == "--seconds") { opt.seconds_arg = next(); opt.seconds = std::atof(opt.seconds_arg.c_str()); }
+        else if (a == "--calib-seconds") {
+            opt.calib_seconds_arg = next(); opt.calib_seconds = std::atof(opt.calib_seconds_arg.c_str());
+        }
+        else if (a == "--trace") opt.trace = next();
+        else if (a == "--meta") {
+            const std::string kv = next();
+            const size_t eq = kv.find('=');
+            const std::string key = eq == std::string::npos ? kv : kv.substr(0, eq);
+            if (eq == std::string::npos || !meta_key_ok(key) || meta_key_reserved(key)) {
+                std::fprintf(stderr, "tb: bad --meta key in %s (want key=value, key [a-z][a-z0-9_]*, "
+                                     "not meta, calib_seconds, seconds or layout)\n", kv.c_str());
+                return 2;
+            }
+            const std::string value = kv.substr(eq + 1);
+            if (value.find('\n') != std::string::npos || value.find('\r') != std::string::npos) {
+                std::fprintf(stderr, "tb: --meta %s: the value has a newline\n", key.c_str());
+                return 2;
+            }
+            for (const auto& m : opt.meta)
+                if (m.first == key) { std::fprintf(stderr, "tb: --meta %s given twice\n", key.c_str()); return 2; }
+            opt.meta.emplace_back(key, value);
+        }
         else if (a == "--out") opt.out_dir = next();
         else if (a == "--audio-rate") opt.audio_rate = std::atof(next().c_str());
         else if (a == "--no-audio") opt.no_audio = true;
@@ -272,6 +319,17 @@ int main(int argc, char** argv) {
         else if (a.rfind("+", 0) == 0) continue;   // Verilator plusargs
         else { std::fprintf(stderr, "tb: unknown option %s\n", a.c_str()); return 2; }
     }
+    // A trace stores the clock as whole hertz in a u32, so refuse anything else
+    // before simulating rather than round it.
+    if (!opt.trace.empty() && !opt.clock_hz_arg.empty()) {
+        const char* s = opt.clock_hz_arg.c_str();
+        char* end = nullptr;
+        const double v = std::strtod(s, &end);
+        if (end == s || *end != '\0' || !(v >= 1.0 && v <= 4294967295.0) || v != std::floor(v)) {
+            std::fprintf(stderr, "tb: --trace needs an integer --clock-hz from 1 to 4294967295, not %s\n", s);
+            return 2;
+        }
+    }
     if (opt.clock_hz <= 0) opt.clock_hz = 25175000.0;
 
     const auto t_start = std::chrono::steady_clock::now();
@@ -279,6 +337,13 @@ int main(int argc, char** argv) {
 
     std::signal(SIGTERM, on_signal);
     std::signal(SIGINT, on_signal);
+#ifdef TTVGA_TEST_HOOKS
+    // Test only (job.py --test-hooks, tests/sim/build.py): a model that
+    // ignores SIGTERM, for the job's killed-model test. A production build
+    // has no such code, so nothing can make it ignore SIGTERM.
+    if (const char* e = std::getenv("TTVGA_TB_IGNORE_SIGTERM"); e && std::strcmp(e, "1") == 0)
+        std::signal(SIGTERM, SIG_IGN);
+#endif
     VerilatedContext ctx;
     ctx.commandArgs(argc, argv);
     Vtop top{&ctx};
@@ -324,6 +389,52 @@ int main(int argc, char** argv) {
     uint64_t pad_next_step_clock = 0;
     int ui_in_base = opt.ui_in & 0xff;
 
+    // ---- The trace. Sample 2c is clock c with clk low, 2c + 1 with clk high;
+    // clock 0 is the first clock of reset.
+    vgacap_trace_writer_t* tw = nullptr;
+    if (!opt.trace.empty()) {
+        vgacap_header_t h;
+        vgacap_header_init_v2(&h, 43, 2, 42, 0);
+        h.mode = 2;
+        h.clock_hz = static_cast<uint32_t>(opt.clock_hz);
+        std::string open_meta = "meta=open\n";
+        for (const auto& m : opt.meta) open_meta += m.first + "=" + m.second + "\n";
+        open_meta += "calib_seconds=" + opt.calib_seconds_arg + "\nseconds=" + opt.seconds_arg + "\nlayout=tt-um-43\n";
+        char err[512];
+        tw = vgacap_trace_create(opt.trace.c_str(), &h, open_meta.c_str(), kTraceZstdLevel, err, sizeof err);
+        if (!tw) { std::fprintf(stderr, "tb: cannot start the trace %s: %s\n", opt.trace.c_str(), err); return 2; }
+    }
+    // The exits that write no timing.json leave no trace either.
+    auto abandon_trace = [&]() {
+        if (!tw) return;
+        vgacap_trace_abandon(tw);
+        tw = nullptr;
+        std::remove(opt.trace.c_str());
+    };
+    // META(close), the seek table, and the file closed. False (and the
+    // writer's message on stderr) if the writer failed at any point.
+    auto finish_trace = [&](const char* status, uint64_t capture_after, uint64_t frames) -> bool {
+        if (!tw) return true;
+        char close_meta[256];
+        std::snprintf(close_meta, sizeof close_meta, "meta=close\ncapture_after_clock=%llu\nstatus=%s\nframes=%llu\n",
+                      (unsigned long long)capture_after, status, (unsigned long long)frames);
+        char err[512];
+        const int rc = vgacap_trace_finish(tw, close_meta, err, sizeof err);
+        tw = nullptr;
+        if (rc != 0) { std::fprintf(stderr, "tb: trace %s: %s\n", opt.trace.c_str(), err); return false; }
+        return true;
+    };
+    // One sample of every pin, in the tt-um-43 layout, as the ports hold them
+    // now. The inline push: no call, allocation or syscall in the common case.
+    // A failed writer stops the run, which then exits 4.
+    auto record = [&]() {
+        const uint64_t v = static_cast<uint64_t>(top.uo_out) | static_cast<uint64_t>(top.uio_out) << 8 |
+                           static_cast<uint64_t>(top.uio_oe) << 16 | static_cast<uint64_t>(top.ui_in) << 24 |
+                           static_cast<uint64_t>(top.uio_in) << 32 | static_cast<uint64_t>(top.rst_n & 1) << 40 |
+                           static_cast<uint64_t>(top.ena & 1) << 41 | static_cast<uint64_t>(top.clk & 1) << 42;
+        if (vgacap_trace_push(tw, v)) g_stop = 1;
+    };
+
     uint64_t clock = 0;
     auto tick = [&]() {
         while (next_event < events.size() && events[next_event].clock <= clock) {
@@ -342,6 +453,7 @@ int main(int argc, char** argv) {
             }
         }
         top.clk = 0; top.eval(); ctx.timeInc(1);
+        if (tw) record();
         top.clk = 1; top.eval(); ctx.timeInc(1);
         if (use_qspi) {
             // Answer the design's memory bus. Re-evaluating only when the
@@ -349,6 +461,7 @@ int main(int argc, char** argv) {
             const uint8_t v = qspi.step(top.uio_out, top.uio_oe, top.uio_in);
             if (v != top.uio_in) { top.uio_in = v; top.eval(); }
         }
+        if (tw) record();
         clock++;
     };
 
@@ -378,10 +491,20 @@ int main(int argc, char** argv) {
     const uint64_t first_sync_clock = vt.phases.size() > 1 ? vt.phases[0].second : 0;
 
     std::string timing_path = opt.out_dir + "/timing.json";
+    std::string hashes_path = opt.out_dir + "/tb_frame_hashes.txt";
     FILE* tj = std::fopen(timing_path.c_str(), "w");
-    if (!tj) { std::fprintf(stderr, "tb: cannot write %s\n", timing_path.c_str()); return 2; }
+    if (!tj) { std::fprintf(stderr, "tb: cannot write %s\n", timing_path.c_str()); abandon_trace(); return 2; }
+    FILE* th = std::fopen(hashes_path.c_str(), "w");
+    if (!th) {
+        std::fprintf(stderr, "tb: cannot write %s\n", hashes_path.c_str());
+        std::fclose(tj);
+        std::remove(timing_path.c_str());
+        abandon_trace();
+        return 2;
+    }
 
     auto fail = [&](const char* status) {
+        std::fclose(th);   // no frames: an empty list
         std::fprintf(tj, "{\n  \"status\": \"%s\",\n  \"clock_hz\": %.0f,\n  \"clocks_simulated\": %llu,\n"
                          "  \"hsync_transitions\": %zu,\n  \"vsync_transitions\": %zu,\n"
                          "  \"hsync_pulse_clocks\": %llu,\n  \"hsync_period_clocks\": %llu,\n"
@@ -392,7 +515,8 @@ int main(int argc, char** argv) {
         std::fclose(tj);
         std::fprintf(stderr, "tb: %s after %llu clocks (hsync transitions %zu, vsync transitions %zu)\n",
                      status, (unsigned long long)clock, ht.phases.size(), vt.phases.size());
-        return 3;
+        // The calibration ended here, so this is where a sampler would start.
+        return finish_trace(status, clock, 0) ? 3 : 4;
     };
     if (!hs.found || !vs.found) return fail("no-sync");
     if (hs.period == 0 || vs.period < 2 * hs.period) return fail("bad-timing");
@@ -465,7 +589,13 @@ int main(int argc, char** argv) {
                   "-c:v mjpeg -q:v 2 -pix_fmt yuvj444p -huffman optimal \"%s/capture.avi\"",
                   opt.ffmpeg.c_str(), width, height, fps, opt.out_dir.c_str());
     FILE* ff = popen(cmd, "w");
-    if (!ff) { std::fprintf(stderr, "tb: cannot start ffmpeg: %s\n", cmd); return 2; }
+    if (!ff) {
+        std::fprintf(stderr, "tb: cannot start ffmpeg: %s\n", cmd);
+        std::fclose(tj); std::fclose(th);
+        std::remove(timing_path.c_str()); std::remove(hashes_path.c_str());
+        abandon_trace();
+        return 2;
+    }
 
     // ---- Capture.
     std::vector<uint8_t> frame(static_cast<size_t>(width) * height * 3, 0);
@@ -586,8 +716,7 @@ int main(int argc, char** argv) {
                      "  \"clocks_simulated\": %llu,\n  \"sim_seconds\": %.3f,\n  \"wall_seconds\": %.1f,\n"
                      "  \"clocks_per_wall_second\": %.0f,\n  \"ffmpeg_status\": %d,\n"
                      "  \"audio_driven\": %s,\n  \"audio_transitions\": %llu,\n"
-                     "  \"audio_rate\": %.0f,\n  \"audio_samples\": %zu,\n"
-                     "  \"frame_hashes\": [",
+                     "  \"audio_rate\": %.0f,\n  \"audio_samples\": %zu\n}\n",
                  status, opt.clock_hz, (unsigned long long)first_sync_clock,
                  (unsigned long long)capture_after_clock, hs.active_low ? "true" : "false", vs.active_low ? "true" : "false",
                  (unsigned long long)line_clocks, lines, (unsigned long long)hs.pulse, (unsigned long long)vs.pulse,
@@ -604,10 +733,10 @@ int main(int argc, char** argv) {
                  (unsigned long long)clock, clock / opt.clock_hz, wall_s, clock / std::max(wall_s, 1e-3), rc,
                  audio.driven ? "true" : "false", (unsigned long long)audio.transitions,
                  opt.audio_rate, audio_written);
-    for (size_t i = 0; i < hashes.size(); i++)
-        std::fprintf(tj, "%s\"%016llx\"", i ? ", " : "", (unsigned long long)hashes[i]);
-    std::fprintf(tj, "]\n}\n");
     std::fclose(tj);
+    for (uint64_t hv : hashes) std::fprintf(th, "%016llx\n", (unsigned long long)hv);
+    std::fclose(th);
+    const bool trace_ok = finish_trace(status, capture_after_clock, frames);
     if (!opt.quiet)
         std::fprintf(stderr, "tb: %s: %llu frames (%zu distinct, %llu uniform, %d colours, %.3f%% of pixels change "
                              "per frame, %.1f%% ever), %llu clocks in %.1fs wall (%.2f Mclk/s)\n",
@@ -617,5 +746,6 @@ int main(int argc, char** argv) {
                      100.0 * static_cast<double>(std::count(ever.begin(), ever.end(), 1)) /
                          static_cast<double>(std::max<size_t>(1, ever.size())),
                      (unsigned long long)clock, wall_s, clock / std::max(wall_s, 1e-3) / 1e6);
+    if (!trace_ok) return 4;
     return std::strcmp(status, "ok") == 0 ? 0 : 3;
 }
