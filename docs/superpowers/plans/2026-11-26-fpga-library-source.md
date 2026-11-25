@@ -26,8 +26,8 @@ demos and visitor uploads.
 | tinytapeout-vga-videos (videos) | Python, uv, pytest |
 | fpgas.online-infra (infra) | Ansible |
 
-**Spec:** `docs/superpowers/specs/2026-11-26-fpga-library-source-design.md`, revision 3
-(commit `ca9ef0a`, branch `fpga-library-spec` of tinytapeout-vga-videos). Every task names the
+**Spec:** `docs/superpowers/specs/2026-11-26-fpga-library-source-design.md`, revision 4
+(commit `42db0eb`, branch `fpga-library-spec` of tinytapeout-vga-videos). Every task names the
 spec sections it implements. Read them first.
 
 ## Global Constraints
@@ -48,10 +48,15 @@ spec sections it implements. Read them first.
 
 **Board behaviour (Ruling AD)**
 - The daemon never sets `tt.mode` and never calls `clock_project_stop`.
-- Every enable releases the pins listed in the board global `_fo_ui_driven`.
-- Only mask bits are driven. Each pin's latch is set before the pin becomes an output. When a
-  mask is driven, every bit outside it is made `Pin.IN` with `Pin.PULL_DOWN` and is not
-  recorded in `_fo_ui_driven`.
+- Every enable releases the pins listed in the board global `_fo_ui_driven`. Every library
+  load also releases every bit outside its mask, so all eight when the mask is 0.
+- Releasing a pin: if `GPIO_OE` (`machine.mem32[0xd0000030]`) shows the RP2350 driving it,
+  set latch 0 and wait `time.sleep_ms(1)`; then `Pin.IN`, then `Pin.PULL_DOWN` (finding P1,
+  RP2350-E9).
+- The release runs after the hash check and before `_fo_reader` is built and
+  `_fo_touched = True`.
+- Only mask bits are driven, and a mask of 0 drives nothing. Each pin's latch is set before the
+  pin becomes an output. Unmasked bits are never recorded in `_fo_ui_driven`.
 - The daemon library cap comes from `--library-max-bytes`. Its default is the env var
   `FPGAS_TT_LIBRARY_MAX_BYTES`, else 16777216.
 - The library store never touches uploads.
@@ -321,9 +326,11 @@ row number.
 - Produces:
   - `ui_in_guard(indent: int, held: str) -> str`. Its text is exactly the six lines in spec
     section 2, each prefixed by `indent` spaces.
-  - `_load_steps(name, data, clock_hz, *, ui_in=None, ui_in_mask=0) -> list[str]`.
-  - `load_design(runner, name, data, clock_hz, *, ui_in=None, ui_in_mask=0,
-    overall=ENABLE_OVERALL_TIMEOUT) -> dict`. It returns `{"released": [...], "ui_in_driven":
+  - `_load_steps(name, data, clock_hz, *, ui_in=None, ui_in_mask=0, library=False) ->
+    list[str]`. With `library=True` the release set adds every bit outside `ui_in_mask`.
+  - `load_design(runner, name, data, clock_hz, *, ui_in=None, ui_in_mask=0, library=False,
+    overall=ENABLE_OVERALL_TIMEOUT) -> dict`. `enable_design` passes `library=True` when
+    `design_file` resolved the name to the library store. It returns `{"released": [...], "ui_in_driven":
     [...], "ui_in_held": [...], "ui_in_inputs": [...]}`.
   - `enable_design(..., *, library_dir=None, ui_in=None, ui_in_mask=0, waited=0.0)`. It
     returns `{"enabled", "clock_hz", "ui_in", "ui_in_mask", "ui_in_driven", "ui_in_held",
@@ -338,22 +345,30 @@ row number.
   - `test_ui_in_guard_text`: `ui_in_guard(4, "_fo_held")` equals the six spec lines, indented
     4 spaces, with `_fo_held.append(_fo_i)` at 8.
   - `test_release_block_on_every_load`: the last step of `_load_steps("x", d, None)` contains
-    `globals().get('_fo_ui_driven')`, `Pin.PULL_DOWN` and `print('released=' + json.dumps(`,
-    all after the buffer's hash check and before `tt.shuttle.enable(` (finding r7).
-  - `test_unmasked_bits_become_inputs`: with `ui_in=1, ui_in_mask=1`, the loop makes every bit
-    outside the mask `Pin.IN` with `Pin.PULL_DOWN` and appends it to `_fo_inputs`, never to
-    `_fo_ui_driven` (finding N1).
+    `globals().get('_fo_ui_driven')`, `0xd0000030`, `time.sleep_ms(1)`, `Pin.PULL_DOWN` and
+    `print('released=' + json.dumps(`. All of it comes after the buffer's hash check and
+    before both `_fo_reader = _fo_Reader(` and `_fo_touched = True` (findings r7 and m-b).
+  - `test_release_discharges_before_input`: inside the release loop, the latch-0 write and
+    `time.sleep_ms(1)` sit under the `GPIO_OE` test and come before `Pin.IN`, which comes
+    before `Pin.PULL_DOWN` (finding P1).
+  - `test_library_release_includes_unmasked_bits`: `_load_steps(..., ui_in=1, ui_in_mask=1,
+    library=True)` releases `[1..7]` plus `_fo_ui_driven`; with `ui_in=None, ui_in_mask=0,
+    library=True` it releases all of `range(8)`; with `library=False` it releases
+    `_fo_ui_driven` only.
+  - `test_release_exception_keeps_enabled_name`: the fake REPL raises inside the release; the
+    reply leaves `tt.shuttle.enabled` as it was, because `_fo_touched` was never set.
   - `test_no_drive_block_when_mask_zero`: with `ui_in=None, ui_in_mask=0`, the step has no
-    `raw_pin.value`.
+    `raw_pin.value((`, the drive block's value write.
   - `test_drive_block_never_touches_mode_or_clock`: with `ui_in=1, ui_in_mask=1`:
     - the step contains no `tt.mode`, no `clock_project_stop` and no `RPMode`;
-    - inside the masked branch, `raw_pin.value(` comes before `_fo_p.mode = Pin.OUT`;
+    - in the drive loop, `raw_pin.value((__UI_IN__` comes before `_fo_p.mode = Pin.OUT`;
     - the drive block comes after the clock line and after the `finally:` block;
     - `print('enabled')` is the last line.
 
     This test asserts no ordering against mode changes, because there are none.
-  - `test_load_design_parses_released_driven_held`: the fake REPL replies `released=[0]`,
-    `ui_in={"driven": [0], "held": [], "inputs": [1, 2, 3, 4, 5, 6, 7]}` and `enabled`. The
+  - `test_load_design_parses_released_driven_held`: the fake REPL replies
+    `released={"released": [0], "inputs": [1, 2, 3, 4, 5, 6, 7]}`, `ui_in={"driven": [0],
+    "held": []}` and `enabled`. The
     result is `{"released": [0], "ui_in_driven": [0], "ui_in_held": [], "ui_in_inputs": [1, 2,
     3, 4, 5, 6, 7]}`. Both lines are parsed with `_parse_json` (finding r6).
   - `test_release_frees_only_daemon_driven_pins` (Review Focus 3). Against the fake REPL:
@@ -377,9 +392,9 @@ row number.
   - `test_idle_display_load_releases_too`, added to `tests/test_idle.py`.
 - [ ] **Step 3: Run them and record the failures.** `tmp/t3.log`.
 - [ ] **Step 4: Implement.**
-  - The `__RELEASE__` block goes inside the `try:` of `LOAD_CODE`, after the hash check and
-    immediately before `tt.shuttle.enable(`. It imports `from machine import Pin` and `json`
-    itself.
+  - The `__RELEASE__` block goes inside the `try:` of `LOAD_CODE`, right after the hash check
+    and before `_fo_reader = _fo_Reader(_fo_buf)` (so before `_fo_touched = True`). It
+    imports `machine`, `time`, `json` and `from machine import Pin` itself.
   - The `__UI_IN__` block goes between `__CLOCK__` and `print('enabled')`, exactly as in the
     spec.
   - `SAFE_CODE` swaps its six guard lines for the function call.
@@ -422,7 +437,9 @@ row number.
   `Unsupported`, and a `deadline` keyword on `enable`.
 - Modify: `pib/settings.py`:
   - `TTSITE_LIBRARY_BASE_URL` next to lines 216-220;
-  - the `"ttsite"` alias in `CACHES` at lines 192-202.
+  - the `"ttsite"` alias in `CACHES` at lines 192-202, and the comment above `CACHES`
+    rewritten to list db 0 (channel layer), db 1 (`poe`), db 2 (`ttsite`) and why each alias
+    has its own database: `clear()` is a `FLUSHDB` (finding m-d).
 - Modify: `tests/conftest.py:12-17`. The autouse fixture that swaps `poe` to locmem also
   swaps `ttsite` to `{"BACKEND": "django.core.cache.backends.locmem.LocMemCache",
   "LOCATION": "ttsite"}`, because CI has no redis (finding N5).
@@ -737,8 +754,10 @@ create `tests/test_mirror.py`.
 - Modify: `tests/test_mirror.py`, created by Task 16; add one test.
 
 **Interfaces:**
-- Consumes: `ttvga.harness.verify.FOREIGN_PATTERNS` and whatever function Task 16 uses to build
-  the mirror script.
+- Consumes: `ttvga.harness.verify.FOREIGN_PATTERNS`, and `remote.mirror_script(src: str,
+  dest: str, dry_run: bool) -> str`, which pipeline Task 16 exposes (the controller carries
+  this into that task's brief; finding m-c). This task adds its summary lines inside
+  `mirror_script` and tests them through it.
 
 - [ ] **Step 1: Write the failing test** `test_mirror_summary_counts_bitstreams`: the script
   prints `bitstreams:` (a `find` for `*.bin` under the destination) and `fpga-library.json:`
@@ -797,10 +816,16 @@ Hardware check.
 - [ ] **Step 2: Read-only checks.** Log each `curl` to `tmp/t12-hardware.log`.
   - `/designs` has the top-level `library` key. Record the upload names.
   - `/library` has about 445 designs, including `ttsky25a_vga_example`.
-  - In the Commander REPL, read only: `print(tt.mode_str)` and, for i in 0..7,
-    `print(getattr(tt.pins, 'ui_in%d' % i).mode_str)`. Record the results in the log and
-    report them to the controller, which records them in spec section 2, Input pins at rest
-    (finding N1). Change nothing.
+  - In the Commander REPL, read only:
+    - `print(tt.mode_str)`;
+    - for i in 0..7, `print(getattr(tt.pins, 'ui_in%d' % i).mode_str)`;
+    - `import machine; print(hex(machine.mem32[0xd0000030]), hex(machine.mem32[0x40000000]))`,
+      which prints `GPIO_OE` and SYSINFO `CHIP_ID`. The top four bits of `CHIP_ID` are the
+      revision; look up A2 or A4 in the RP2350 datasheet.
+
+    Record the results in the log and report them to the controller, which records them in
+    spec section 2, Input pins at rest (findings N1 and P1). If the chip is A4, say so; the
+    discharge step stays. Change nothing.
 - [ ] **Step 3: Load from the board page.** Load `ttsky25a_vga_example` through the board page,
   driven by Playwright.
   - The response shows `pushed: true`.
@@ -814,7 +839,9 @@ Hardware check.
     print `True` and the entry's `clock_hz`.
   - The camera shows a picture (`tmp/t12-ui-in.png`).
 - [ ] **Step 6: Load the `tt_um_vga_pattern` demo from the gallery.** `released` lists Step 5's
-  bits, and the clock is the demo's.
+  bits, and the clock is the demo's. Read each released pin's level read-only with
+  `print([getattr(tt.pins, 'ui_in%d' % i)() for i in <released>])`. Every value must be 0
+  (finding P1).
 - [ ] **Step 7: Restore.** Run vgacap `tools/board_restart.py <ws link>`. Wait for the idle
   display to show `loaded`. The upload names must equal Step 2's. Delete the claim. If `clients`
   ever goes above 0, stop at once and restore.
