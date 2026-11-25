@@ -124,8 +124,13 @@ def vgacap_link_flags(vgacap_src: Path, vgacap_build: Path) -> list[str]:
             "-LDFLAGS", " ".join(str(lib) for lib in libs) + " -pthread"]
 
 
-def build(target: dict, ov: dict, repo_dir: Path, build_dir: Path, log: Path, tools: dict) -> str | None:
-    """Verilate the sources with tb.cpp. Returns an error string or None."""
+def build(target: dict, ov: dict, repo_dir: Path, build_dir: Path, log: Path, tools: dict,
+          vgacap_src: Path, vgacap_build: Path) -> str | None:
+    """Verilate the sources with tb.cpp, linked with vgacap's trace writer. Returns an error string or None."""
+    try:
+        link = vgacap_link_flags(vgacap_src, vgacap_build)
+    except FileNotFoundError as e:
+        return str(e)
     src = repo_dir / "src"
     sources = list(ov.get("sources") or target["source_files"])
     # IHP re-hardens of sky130 projects list a polyfill the project repo never
@@ -152,7 +157,7 @@ def build(target: dict, ov: dict, repo_dir: Path, build_dir: Path, log: Path, to
     if build_dir.exists():
         shutil.rmtree(build_dir)
     build_dir.mkdir(parents=True)
-    base = verilator_base(tools["verilator"], top, build_dir, src)
+    base = verilator_base(tools["verilator"], top, build_dir, src) + link
     flags = list(ov.get("verilator_flags") or [])
     files = [s if Path(s).is_absolute() else str(src / s) for s in sources if not s.endswith((".vh", ".svh", ".h"))]
     tb = str(TB_CPP)
@@ -344,6 +349,8 @@ def main() -> int:
         "verilator": str(args.root / "tools" / "oss-cad-suite" / "bin" / "verilator"),
         "ffmpeg": str(args.root / "tools" / "ffmpeg" / "bin" / "ffmpeg"),
     }
+    # The pinned vgacap clone and build (`tt-vga bootstrap`, see vgacap_path.py).
+    vgacap_src, vgacap_build = args.root / "tools" / "vgacap-src", args.root / "tools" / "vgacap-build"
     ov = read_override(args.overrides / shuttle / f"{macro}.json")
     patch = (args.overrides / shuttle / ov["patch"]) if ov.get("patch") else None
 
@@ -375,7 +382,7 @@ def main() -> int:
             if stage == "fetch":
                 error = fetch(target, repo_dir, work / "build.log", patch)
             elif stage == "build":
-                error = build(target, ov, repo_dir, build_dir, work / "build.log", tools)
+                error = build(target, ov, repo_dir, build_dir, work / "build.log", tools, vgacap_src, vgacap_build)
             elif stage == "simulate":
                 error = simulate(target, ov, repo_dir, build_dir, work, work / "sim.log", tools, args, result)
             elif stage == "encode":
