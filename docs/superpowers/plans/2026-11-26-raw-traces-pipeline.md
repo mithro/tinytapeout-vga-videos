@@ -149,7 +149,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
     - the vgacap pin built and the Python version;
     - `loginctl show-user ttvga -p Linger`;
     - whether `host.toml` exists.
-  - `remote.harness_version(repo: Path = ROOT) -> str`: the tree hash of the harness directory, `git rev-parse HEAD:ttvga/harness`, with `-dirty` appended only when `git status --porcelain -- ttvga/harness` is non-empty. A commit elsewhere in the repository (PROGRESS, collected data, docs) leaves it unchanged, so neither `--redo-unless-harness` nor the trace's META(open) `harness=` changes with it.
+  - `remote.harness_version(repo: Path = ROOT) -> str`: `sha256(tree + "\n" + blob + "\n")[:16]` (hex), with `tree = git rev-parse HEAD:ttvga/harness` and `blob = git rev-parse HEAD:ttvga/tools.toml`. `tools.toml` carries the vgacap pin and the oss-cad-suite (Verilator) and ffmpeg versions, so a pin or toolchain change changes the key. `-dirty` is appended when `git status --porcelain -- ttvga/harness ttvga/tools.toml` is non-empty. A commit anywhere else (PROGRESS, collected data, docs) leaves it unchanged, so neither `--redo-unless-harness` nor the trace's META(open) `harness=` changes with it. Overrides and `data/targets.json` are not in the key; Task 23 Step 1 checks them for the projects the key would skip.
   - `push_harness` also writes `harness/HARNESS_VERSION`, holding `harness_version()`.
 
 - [ ] **Step 1: Choose the vgacap commit.**
@@ -162,7 +162,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - `test_host_scripts_run_under_the_pinned_python`: `queue_command(...)` starts with `host_python(tools)`.
   - `test_vgacap_commit_is_a_full_sha`: matches `^[0-9a-f]{40}$`.
   - `test_vgacap_path_adds_the_pinned_python`.
-  - `test_harness_version_ignores_commits_elsewhere`: in a scratch git repository under `tmp/pytest` with a `ttvga/harness/` file, a commit touching only `README.md` leaves `harness_version()` unchanged; a commit touching `ttvga/harness/x` changes it; an uncommitted change there appends `-dirty`, and one outside it does not.
+  - `test_harness_version_ignores_commits_elsewhere`: in a scratch git repository under `tmp/pytest` with a `ttvga/harness/` file, a commit touching only `README.md` leaves `harness_version()` unchanged; a commit touching `ttvga/harness/x` changes it; a commit touching only `ttvga/tools.toml` (the vgacap `commit` line) changes it; an uncommitted change in either appends `-dirty`, and one elsewhere does not.
 - [ ] **Step 3: Run** `tests/test_remote_bootstrap.py`: 6 fail.
 - [ ] **Step 4: Implement**, set `requires-python = ">=3.14"`, then `uv lock`.
 - [ ] **Step 5: Run** the whole suite: pass.
@@ -235,7 +235,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
     - It is written on every path that writes timing.json, with `capture_after_clock`, `status` (the value written to timing.json) and `frames` (0 on the fail paths).
     - SIGTERM reaches the normal path and so finishes the trace.
     - The exits that write no timing.json (cannot write it, cannot start ffmpeg) call `vgacap_trace_abandon` and unlink the trace.
-  - A test hook compiled in only when `TTVGA_TEST_HOOKS` is defined: then `TTVGA_TB_IGNORE_SIGTERM=1` in the environment makes `tb.cpp` ignore SIGTERM. A production model has no such code, so no environment can make it unkillable except by SIGKILL. `tests/sim/build.py` defines it (`-CFLAGS -DTTVGA_TEST_HOOKS`); `job.py` adds it only with the test-only option `--test-hooks`, which `runqueue.py` and `tt-vga queue` never pass and refuse (exit 2) if given. Used only by Task 9's killed-model test.
+  - A test hook compiled in only when `TTVGA_TEST_HOOKS` is defined: then `TTVGA_TB_IGNORE_SIGTERM=1` in the environment makes `tb.cpp` ignore SIGTERM. A production model has no such code, so no environment can make it unkillable except by SIGKILL. `tests/sim/build.py` defines it (`-CFLAGS -DTTVGA_TEST_HOOKS`). Task 9 adds `job.py --test-hooks`, the only other way in; `runqueue.py` and `tt-vga queue` never pass it and refuse it (exit 2). Used only by Task 9's killed-model test.
   - The frame hash list leaves timing.json and goes to `<out>/tb_frame_hashes.txt`: one 16-digit lowercase hex per line, frame 0 first, written on every path that writes timing.json.
   - The comment at the FNV constant names `frames/tb-v1/frame_hashes.fnv1a64-tb2026-rgb888.txt`.
 - [ ] **Step 1: Write the failing tests** (all `@pytest.mark.sim`).
@@ -473,6 +473,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
     - `harness=<HARNESS_VERSION>`.
     - Probe runs pass no trace. After a successful probe, the first run's trace is deleted before the re-run.
   - **`--grace SECONDS`**: default 120, the simulation's SIGTERM-to-SIGKILL grace.
+  - **`--test-hooks`** (test-only, default off): `build()` then adds `-CFLAGS -DTTVGA_TEST_HOOKS` to its Verilator command (after `vgacap_link_flags`' `-CFLAGS`), compiling in Task 3's SIGTERM hook; `result.json` records `test_hooks: true`, and Task 16's `verify` treats a published project with `test_hooks: true` as a failure. Without the flag the command is unchanged (`test_vgacap_link_flags` also checks the define is absent).
   - **Scratch.** `work/scratch/` is the project's output directory: the trace, plus `<sampler>/...`. Each job creates it fresh and deletes it at the end on every path.
   - **Stages:** `STAGES = ("fetch", "build", "simulate", "derive", "encode", "publish")`.
     - A model killed with a trace left, which leaves no timing.json (or an empty one), still goes through `derive` and `publish`, and the job then returns the original error.
@@ -844,19 +845,20 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - modify `/usr/local/sbin/data-upload-sync`: `--exclude=/<frames subtree relative to the publish root>/`, read from `/etc/data-upload/frames.conf`;
   - create `/usr/local/sbin/data-upload-frames-sync`;
   - create `/etc/systemd/system/data-upload-wafer-space-frames.{service,timer}`: every 15 minutes, the existing unit's sandboxing, plus `ReadOnlyPaths=` the staging directory and its own `StateDirectory=data-upload-frames`.
-- Repository: `docs/publishing.md`, section "Frames upload". It describes the design without hosts or paths, and states what the job scope confines (resources only) and what the upload trusts (nothing `ttvga` writes, unvalidated).
+- Repository: `docs/publishing.md`, section "Frames upload". It describes the design without hosts or paths, and states what the job scope confines (resources only) and what the upload trusts (nothing `ttvga` writes, unvalidated). It also names the residual risk: the checks run before rsync, so `ttvga` could swap a checked path component for a symlink between check and transfer; `--safe-links` covers symlinks inside the transfer only. The window is short and the account is the pipeline's own, and the post-transfer re-check below detects it.
 
 **Interfaces:**
 - `data-upload-frames-sync [--full]`:
   - It reads `<staging_dir>/changed.log` from the byte offset in `/var/lib/data-upload-frames/offset`, through the last complete line only. If the offset is past the end (the log was shrunk), it starts from 0.
   - It accepts only lines matching `^[0-9T:+-]+ [A-Za-z0-9_]+/[A-Za-z0-9_]+$` whose project directory exists and passes the containment check: neither the project directory nor its shuttle directory is a symlink (`lstat`), and `realpath` of each is inside `realpath` of the frames subtree. Everything else is logged and skipped.
-  - It also refuses (logs and skips) a project that contains any symlink (`find <project> -type l`, output logged in full), and passes `--safe-links` to rsync as a second guard.
+  - It also refuses (logs and skips) a project that contains any symlink (`find <project> -type l`, output logged in full), and passes `--safe-links` and `--no-implied-dirs` to rsync as further guards.
+  - After the transfer it re-runs the containment and symlink checks on every project it sent, and logs `realpath changed during transfer: <id>` for any that now fails (for a person to look at and delete on the server by hand); it then exits non-zero so the journal shows it.
   - It builds each path itself, and runs one rsync with the existing options, plus `-r` and `--files-from` (no `--delete`).
   - On exit 0 or 23 it stores the new offset. On 24, or any other failure, it keeps the old offset, so those projects are retried next time.
   - `--full` (weekly, from a second timer) syncs the whole frames subtree.
 - [ ] **Step 1: Exclude first.** Install the main upload's exclusion (`data-upload-sync` and `frames.conf`), dry run it with `DATA_UPLOAD_DRY_RUN=1` as `data-upload` (log `tmp/t19.log`: the `--exclude` is on its command line), restart its timer, and `etckeeper commit "data-upload: skip the VGA frames subtree (tinytapeout-vga-videos decision 4)"`. Watch one real run in `/var/lib/data-upload/rsync.log` (read only).
 - [ ] **Step 2: Create the frames subtree** (only now): `sudo install -d -o ttvga -g ttvga -m 755 <archive>/frames`, then `sudo -u ttvga touch <archive>/frames/.ttvga-frames-root`. Record the path in the host setup memory note. Check that `hostconf.load` accepts `host.toml`, with a script file run as `ttvga`. The next main upload run lists nothing under it (`rsync.log`).
-- [ ] **Step 3: Dry run the frames upload** with `DATA_UPLOAD_DRY_RUN=1` as `data-upload`. Given a hand-made `changed.log` with one valid line, one invalid line, one partial last line and one line naming a symlinked project (a symlink `<frames>/test/link -> /etc`, made as `ttvga` and removed afterwards), plus a test project directory with a file and one with a symlink inside, it lists exactly the valid, symlink-free project.
+- [ ] **Step 3: Dry run the frames upload** with `DATA_UPLOAD_DRY_RUN=1` as `data-upload`. Given a hand-made `changed.log` with one valid line, one invalid line, one partial last line and one line naming a symlinked project (a symlink `<frames>/test/link -> /etc`, made as `ttvga` and removed afterwards), plus a test project directory with a file and one with a symlink inside, it lists exactly the valid, symlink-free project, and the log shows the post-transfer re-check passing.
 - [ ] **Step 4: Install the frames units.** `systemctl daemon-reload`, and **do not enable** the frames timers. `etckeeper commit "data-upload: frames upload installed, disabled (tinytapeout-vga-videos decision 4)"`. Watch two main runs: file count and listing time in `rsync.log`.
 - [ ] **Step 5: Commit and push** `docs/publishing.md`.
 
@@ -981,11 +983,13 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - the frames timer is still disabled;
   - the limit is `--timeout 10800`, the reference run's limit;
   - `ps -eo user,pcpu,etime,args --sort=-pcpu` is logged in full and read for outside users.
-  - Record `main`'s SHA as `PRE`.
-- [ ] **Step 2: Start the opt-in tb-v1 re-run** of all 408 (the `testpatterns` pseudo-shuttle included, unpublished): `uv run tt-vga queue start --host big --redo-unless-harness <HARNESS_VERSION> --tb-v1 --timeout 10800 --jobs 24 >> tmp/t23-queue.log 2>&1`.
+  - Record `main`'s SHA as `PRE`, and the current `harness_version()` as `KEY`.
+  - List the projects `--redo-unless-harness KEY` would skip (on the host, the `result.json` files with `trace`, `harness == KEY` and `tb_v1_check: match`; logged in full). Expected: the 11 pilot projects if neither `ttvga/harness/` nor `tools.toml` has changed since Task 20, else none. A pin move in Task 18 or any harness fix after the pilot changes `KEY`, so the pilot projects re-run with everything else.
+  - For every project on that list, check that `git diff <pilot commit> PRE -- overrides/<s>/<m>.* data/targets.json` changes nothing for it (logged). Any that changed goes in an explicit `--redo --only <ids>` queue run before Step 2.
+- [ ] **Step 2: Start the opt-in tb-v1 re-run** of all 408 (the `testpatterns` pseudo-shuttle included, unpublished): `uv run tt-vga queue start --host big --redo-unless-harness KEY --tb-v1 --timeout 10800 --jobs 24 >> tmp/t23-queue.log 2>&1`.
   - ETA: the sum of each project's previous `wall_seconds` times the pilot's overhead factor, over 24 slots, with a tail of at least the longest single run (6,381 s for `ttcad25a/tt_um_toivoh_demo_deluxe`). That is about 5-6 hours.
   - Report every 15 minutes from `queue-state.json` and `queue.log`, with remaining time and finish clock time.
-  - After a crash, restart with the same command: `--redo-unless-harness` skips the finished projects.
+  - After a crash, restart with the same command and the same `KEY`: `--redo-unless-harness` skips the finished projects. If a fix had to change the harness or `tools.toml` before the restart, `KEY` changes and every project re-runs; that is intended (the runs must share one harness).
 - [ ] **Step 3: Collect.** Run `uv run tt-vga collect --host big >> tmp/t23-collect.log 2>&1`, then `analyze`, `report` and `index`.
 - [ ] **Step 4: The tb-v1 check of all 408.** `scripts/check_tbv1_against.py --base PRE` compares, for each project:
   - the hash lines of `git show PRE:data/results/<s>/<m>/frames/tb-v1/frame_hashes.fnv1a64-tb2026-rgb888.txt` with the new file's;
