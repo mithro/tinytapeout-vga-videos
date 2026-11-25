@@ -13,3 +13,21 @@ url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-09
 dir = "ffmpeg"
 strip = 1
 check = "ffmpeg/bin/ffmpeg"
+
+[uv]
+version = "0.13.8"
+url = "https://github.com/astral-sh/uv/releases/download/0.13.8/uv-x86_64-unknown-linux-gnu.tar.gz"
+dir = "uv"
+strip = 1
+check = "uv/uv"
+
+# Every host script runs under this interpreter, installed by `uv python install`.
+[python]
+version = "3.14.7"
+
+# Pinned to the tip of vgacap's `m10-export` branch (2026-11-26). `m10-perf` is
+# still being worked on and its ctest run has not finished, so it is not used.
+# Task 18 moves this pin to vgacap `main` once PRs #14-#22 have merged.
+[vgacap]
+git = "https://github.com/mithro/vgacap"
+commit = "d8df216826aa7a2219bc9d221e5c9de4df3b4841"
