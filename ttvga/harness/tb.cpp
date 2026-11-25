@@ -21,6 +21,7 @@
 #include "vgacap/trace.h"
 
 #include <algorithm>
+#include <cerrno>
 #include <chrono>
 #include <csignal>
 #include <cmath>
@@ -337,6 +338,9 @@ int main(int argc, char** argv) {
 
     std::signal(SIGTERM, on_signal);
     std::signal(SIGINT, on_signal);
+    // A dead ffmpeg must not kill the model: the write fails with EPIPE
+    // instead, and the run goes on so the trace and timing.json are finished.
+    std::signal(SIGPIPE, SIG_IGN);
 #ifdef TTVGA_TEST_HOOKS
     // Test only (job.py --test-hooks, tests/sim/build.py): a model that
     // ignores SIGTERM, for the job's killed-model test. A production build
@@ -411,17 +415,24 @@ int main(int argc, char** argv) {
         tw = nullptr;
         std::remove(opt.trace.c_str());
     };
-    // META(close), the seek table, and the file closed. False (and the
-    // writer's message on stderr) if the writer failed at any point.
-    auto finish_trace = [&](const char* status, uint64_t capture_after, uint64_t frames) -> bool {
+    // META(close), the seek table, and the file closed. `extra` is more
+    // key=value lines for META(close) ("" for none). False, with the writer's
+    // message on stderr and the file removed, if the writer failed at any
+    // point: a trace the writer gave up on is not kept.
+    auto finish_trace = [&](const char* status, uint64_t capture_after, uint64_t frames,
+                            const std::string& extra) -> bool {
         if (!tw) return true;
         char close_meta[256];
-        std::snprintf(close_meta, sizeof close_meta, "meta=close\ncapture_after_clock=%llu\nstatus=%s\nframes=%llu\n",
-                      (unsigned long long)capture_after, status, (unsigned long long)frames);
+        std::snprintf(close_meta, sizeof close_meta, "meta=close\ncapture_after_clock=%llu\nstatus=%s\nframes=%llu\n%s",
+                      (unsigned long long)capture_after, status, (unsigned long long)frames, extra.c_str());
         char err[512];
         const int rc = vgacap_trace_finish(tw, close_meta, err, sizeof err);
         tw = nullptr;
-        if (rc != 0) { std::fprintf(stderr, "tb: trace %s: %s\n", opt.trace.c_str(), err); return false; }
+        if (rc != 0) {
+            std::fprintf(stderr, "tb: trace %s: %s\n", opt.trace.c_str(), err);
+            std::remove(opt.trace.c_str());
+            return false;
+        }
         return true;
     };
     // One sample of every pin, in the tt-um-43 layout, as the ports hold them
@@ -516,7 +527,7 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "tb: %s after %llu clocks (hsync transitions %zu, vsync transitions %zu)\n",
                      status, (unsigned long long)clock, ht.phases.size(), vt.phases.size());
         // The calibration ended here, so this is where a sampler would start.
-        return finish_trace(status, clock, 0) ? 3 : 4;
+        return finish_trace(status, clock, 0, "") ? 3 : 4;
     };
     if (!hs.found || !vs.found) return fail("no-sync");
     if (hs.period == 0 || vs.period < 2 * hs.period) return fail("bad-timing");
@@ -612,8 +623,16 @@ int main(int argc, char** argv) {
     int y = -1, last_px = -1;
     const double half = cpp / 2.0;   // sample in the middle of each pixel period
 
+    // Once a write to ffmpeg fails (it exited, or never started: popen runs
+    // a shell, so a bad --ffmpeg only shows here), stop feeding it and carry
+    // on; ffmpeg_status records the failure.
+    bool ffmpeg_ok = true;
     auto emit_frame = [&]() {
-        std::fwrite(frame.data(), 1, frame.size(), ff);
+        if (ffmpeg_ok && std::fwrite(frame.data(), 1, frame.size(), ff) != frame.size()) {
+            ffmpeg_ok = false;
+            std::fprintf(stderr, "tb: writing to ffmpeg failed at frame %llu: %s; the run continues without video\n",
+                         (unsigned long long)frames, std::strerror(errno));
+        }
         uint64_t h = fnv1a(frame.data(), frame.size());
         hashes.push_back(h); distinct.insert(h);
         bool uniform = true;
@@ -686,6 +705,9 @@ int main(int argc, char** argv) {
         prev_h = h_pulse; prev_v = v_pulse;
     }
     int rc = pclose(ff);
+    // A flush that fails in pclose has lost frames too; a shell that cannot
+    // run --ffmpeg exits 127, so rc is nonzero then as well.
+    if (rc == 0 && !ffmpeg_ok) rc = -1;
     top.final();
 
     // The audio track, mono 32 bit float at opt.audio_rate. Written raw
@@ -736,7 +758,7 @@ int main(int argc, char** argv) {
     std::fclose(tj);
     for (uint64_t hv : hashes) std::fprintf(th, "%016llx\n", (unsigned long long)hv);
     std::fclose(th);
-    const bool trace_ok = finish_trace(status, capture_after_clock, frames);
+    const bool trace_ok = finish_trace(status, capture_after_clock, frames, "ffmpeg_status=" + std::to_string(rc) + "\n");
     if (!opt.quiet)
         std::fprintf(stderr, "tb: %s: %llu frames (%zu distinct, %llu uniform, %d colours, %.3f%% of pixels change "
                              "per frame, %.1f%% ever), %llu clocks in %.1fs wall (%.2f Mclk/s)\n",
