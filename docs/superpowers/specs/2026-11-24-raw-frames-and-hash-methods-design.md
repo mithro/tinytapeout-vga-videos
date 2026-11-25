@@ -1,8 +1,8 @@
 # Raw signal traces, pluggable samplers and pluggable frame hashes
 
-Status: design, seventeenth revision (2026-11-24). The sixteenth independent
-review found no blocking and no medium problems; its minor points are folded
-in. Awaiting the owner's review.
+Status: approved by the owner on 2026-11-25, seventeenth revision, amended
+2026-11-25 (`tb-v1` is legacy and runs only on request; see below). The
+sixteenth independent review found no blocking and no medium problems.
 
 ## Why
 
@@ -497,6 +497,16 @@ as in which clock they read a pixel at:
     `hsync + hback' + p`; at `cpp > 1` it is mid-pixel; at `cpp < 1`
     neighbouring pixels can share a clock, so none is left unread.
 
+**`tb-v1` is legacy** (owner, 2026-11-25). It exists only to continue the
+hashes published so far, which the other harnesses compare against, and to
+cross-check `tb.cpp`'s own decoding; once those harnesses compare against
+`centre-v1`, it goes away. So it is not run by default: `vgacap-sample` runs
+`centre-v1` unless `--sampler tb-v1` is given, and the job runs `tb-v1` only
+when asked (testing, and re-checking the published projects in rollout steps 2
+and 4). Measured on the busiest synthetic trace (a new colour every active
+clock), `centre-v1` alone costs about 16 ns a clock and both together about
+25 (vgacap Milestone 10, Task 16a).
+
 Because their line timing differs, the two can differ even at `cpp = 1`.
 Rollout step 2 shows where and why. Which sampler is the reference for
 comparisons is a decision (below).
@@ -887,13 +897,15 @@ one project from the command line.
   frame it decodes, but writes the list to its own file in the run's output
   directory instead of into timing.json (`tb.cpp:590-608`). `result.json`'s
   `frame_hashes_count` goes with it (nothing but the tests reads it); the
-  frame counts are in `frames.txt`. The job compares
+  frame counts are in `frames.txt`. When the job is asked to run `tb-v1`
+  (it is off by default; see Layer 2), it compares
   that list with `tb-v1`'s `fnv1a64-tb2026-rgb888` output on every run that
   ended with a list (status `ok`, `unstable-sync`, or `sim-timeout`, which
   stops on SIGTERM and still writes it) and fails the job if they differ; a
   run whose list is missing (the model was killed outright) records
   `tb_v1_check: not-run` in its result instead, so `tb-v1` is checked against the decoding
-  that makes the clips continuously, not just once.
+  that makes the clips whenever `tb-v1` is run; a run without it records
+  `tb_v1_check: off`.
 - `job.py`: writes everything for the published tree with umask 022 (files
   0644, directories 0755), so the upload account can read it; the Verilator
   build (`job.py:120-125`) gains vgacap's include
@@ -1005,7 +1017,8 @@ one project from the command line.
    much smaller.
 3. Which sampler is the reference the other harnesses should match: `tb-v1`
    (matches everything published so far, wrong for 47 projects: 36 by
-   pixel timing and 11 by a mis-derived clocks per pixel) or `centre-v1`. Both are computed and published either way. Recommended:
+   pixel timing and 11 by a mis-derived clocks per pixel) or `centre-v1`. `centre-v1` is computed and published for every project; `tb-v1` only when
+   it is run on request, since it is legacy (owner, 2026-11-25). Recommended:
    `centre-v1`, once step 2 shows it pixel-exact on the calibration designs
    (which all run at one clock per pixel) and, for the `cpp != 1` projects,
    in agreement with hardware captures where they exist and visibly right
