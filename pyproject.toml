@@ -27,3 +27,7 @@ packages = ["ttvga"]
 dev = [
     "pytest>=8.0",
 ]
+
+[tool.pytest.ini_options]
+addopts = "--basetemp=tmp/pytest -m 'not sim'"
+markers = ["sim: needs tt-vga dev-tools (Verilator and vgacap)"]
