@@ -313,7 +313,7 @@ Tim said on 2026-11-24 that designs which fail timing are listed, with a visible
 | `validation == "mcu"` | `validated at MCU speed only` | info |
 | `qspi == "emulated"` | `QSPI emulated` | info |
 | `verdict != "ok"` | `video: <verdict>` | info |
-| `ui_in` not null | `inputs set: 0x<ui_in as 2 hex digits>` | info |
+| `ui_in` not null and not 0 | `inputs set: 0x<ui_in as 2 hex digits>` | info |
 
 `not hardware-validated` is an info badge, not a warning. Every entry has it in the first pass,
 and a warning icon on all 445 entries would teach visitors to ignore warnings (finding m16).

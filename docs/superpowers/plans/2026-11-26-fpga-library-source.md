@@ -690,6 +690,7 @@ The bug: `SAFE_CODE` reads `machine.mem32[0xd0000020]` as the SIO output-enable 
       hardware-validated", cls: "info"}`;
     - row 0 includes `{text: "video: barely-moving", cls: "info"}` and `{text: "inputs set:
       0x01", cls: "info"}`.
+    - an entry with `ui_in: 0` and a non-zero mask gets no `inputs set` badge (Ruling AH).
   - `renderPage draws each state`: one assertion on the visible text of each state.
   - `load of a vanished id reloads the index` (Review Focus 2): a fake `fetch` answers the load
     with 404 `no such library design`; the controller function then calls the index fetch
@@ -909,7 +910,7 @@ Hardware check.
   - Save a camera screenshot to `tmp/t13-pattern.png`.
 - [ ] **Step 4: Load it again.** The response shows `pushed: false`.
 - [ ] **Step 5: Load a `ui_in` entry through the Commander and check the clock.** Use the first
-  entry with `ui_in` not null.
+  entry with `ui_in` not null and not 0.
   - `ui_in_driven` equals the mask's bits, and `ui_in_held` is empty.
   - In the Commander REPL, run `print(tt.is_auto_clocking, tt.auto_clocking_freq)`. It must
     print `True` and the entry's `clock_hz`.
