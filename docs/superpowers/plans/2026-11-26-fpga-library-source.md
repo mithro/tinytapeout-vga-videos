@@ -2,671 +2,788 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task by task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Visitors at tinytapeout.fpgas.online, using either the board page or the customised
-Commander, can load any of about 445 prebuilt Tiny Tapeout VGA bitstreams from the VGA archive
-onto a FabricFox board. This is a third source, `library`, beside the packaged demos and
-visitor uploads.
+**Goal:** Visitors at tinytapeout.fpgas.online can load any of about 445 prebuilt Tiny Tapeout
+VGA bitstreams from the VGA archive onto a FabricFox board. They can do it from the board page
+or from the customised Commander. This adds a third source, `library`, next to the packaged
+demos and visitor uploads.
 
 **Architecture:**
-- The archive holds `fpga-library.json` and content-addressed `.bin` files, which the harness
-  session publishes.
-- The site backend on tweed fetches and checks them, then pushes the bytes into a separate
-  library cache in the fpgas-tt daemon on the Pi.
-- Loading uses the daemon's existing `load_design` path, with `clock_hz` and `ui_in` applied
-  in the same REPL step.
-- board.js and the Commander both list the site's checked index and call one site load route.
+- The harness publishes `fpga-library.json` and content-addressed `.bin` files in the archive.
+- The site backend on tweed checks them against the schema. It pushes the bytes into a
+  separate library cache in the fpgas-tt daemon, under a redis lock and one 50 s deadline.
+- Loading reuses the daemon's `load_design`. In the same REPL step it releases the `ui_in`
+  pins the daemon drove before. It drives the entry's `ui_in_mask` bits directly, never through
+  `tt.mode`.
+- board.js and the Commander take all library metadata from the site's index.
 
 **Tech Stack:**
 
-| Repository | Stack |
+| Repo | Stack |
 |---|---|
-| daemon | Python 3.11, aiohttp, pytest |
-| site | Django, requests, pytest, `node --test` |
-| Commander | Solid.js and TypeScript, vitest |
-| videos | Python, uv, pytest |
+| fpgas.online-tt (daemon) | Python 3.11, aiohttp, pytest |
+| fpgas.online-site (site) | Django, requests, redis cache, pytest, `node --test` |
+| tt-commander-app (Commander) | Solid.js, TypeScript, vitest |
+| tinytapeout-vga-videos (videos) | Python, uv, pytest |
+| fpgas.online-infra (infra) | Ansible |
 
-**Spec:** `docs/superpowers/specs/2026-11-26-fpga-library-source-design.md` (this repository,
-commit `06140b6`, branch `fpga-library-spec`). Read the spec section each task names before
-starting.
+**Spec:** `docs/superpowers/specs/2026-11-26-fpga-library-source-design.md`, revision 2
+(commit `e6acad8`, branch `fpga-library-spec` of tinytapeout-vga-videos). Every task names the
+spec sections it implements. Read them first.
 
 ## Global Constraints
 
-- The schema is exactly spec section 1. Readers ignore unknown keys. No `count`, `source_id`,
-  `status` or `warnings` keys.
-- The id rule:
-  1. Take `lower(<shuttle> + "_" + <macro without the leading "tt_um_">)`.
+**Schema and names**
+- The schema is exactly spec section 1, including `ui_in_mask` and `fmax_hz`. NaN and Infinity
+  are refused on write and on read. A bool is never accepted where an int is required.
+- The id rule (Ruling AC):
+  1. Take `lower(<shuttle> + "_" + <macro without leading "tt_um_">)`.
   2. Map every character outside `[a-z0-9_]` to `_`.
-  3. If the result is over 40 characters: its first 31 characters, then `_`, then the first 8
-     lowercase hex digits of the SHA-256 of the UTF-8 string `<shuttle>/<macro>`, which keeps
-     its original case and `tt_um_`.
+  3. If the result is over 40 characters, keep the first 31 characters, then `_`, then the
+     first 8 lowercase hex digits of the SHA-256 of the UTF-8 `<shuttle>/<macro>`. That string
+     keeps its original case and its `tt_um_`.
+- A design name matches `^[a-z0-9_]{1,40}\Z`.
+- A bitstream is at most 262144 bytes, with the preamble `7E AA 99 7E` in its first 68 bytes.
+- `clock_hz` is 1 to 200000000. `ui_in_mask` is 0 to 255. `ui_in` is null when the mask is 0;
+  otherwise it is 0 to 255 with `ui_in & ~ui_in_mask == 0`.
 
-  A macro without `tt_um_` is an error.
-- Names: `^[a-z0-9_]{1,40}\Z`. Bitstreams: at most 262144 bytes, with the preamble
-  `7E AA 99 7E` in the first 68 bytes.
-- `clock_hz` is from 1 to 200000000. `ui_in` is an int from 0 to 255, or null; a bool is never
-  accepted as an int.
-- Archive base URL (fixed): `https://data.wafer.space/big-storage/tinytapeout-vga-videos/`.
-- Daemon library: `--library-dir` defaults to `/var/lib/fpgas-tt/library`, and
-  `--library-max-bytes` to `16777216`. It is LRU by the mtime of `<id>.json` and never touches
-  uploads.
-- Every POST from a page carries `X-CSRFToken`. No view is `csrf_exempt`.
-- Python is run through `uv run` (never bare `python`, never `python -c`). Never
-  `2>/dev/null`. Never `/tmp`: logs go to `<worktree>/tmp/` (gitignored in all five repos).
-  Never pipe a command into grep or tail; log to a file, then grep the file.
-- Workflow:
-  - Each task gets its own worktree and branch: `<repo>/.worktrees/<branch>`, created with
-    `git worktree add -b <branch> .worktrees/<branch> <base>`.
-  - Make small commits and push after each one (`git push -u origin <branch>`).
-  - A task ends at "push branch". The controller opens the PR to Tim after independent review.
-- Commit trailer, on every commit:
+**Board behaviour (Ruling AD)**
+- The daemon never sets `tt.mode` and never calls `clock_project_stop`.
+- Every enable releases the pins listed in the board global `_fo_ui_driven`.
+- Only mask bits are driven. Each pin's latch is set before the pin becomes an output.
+- The daemon library cap comes from `--library-max-bytes`. Its default is the env var
+  `FPGAS_TT_LIBRARY_MAX_BYTES`, else 16777216.
+- The library store never touches uploads.
+
+**Site**
+- Archive base: `https://data.wafer.space/big-storage/tinytapeout-vga-videos/`.
+- The load route has one deadline of 50 s.
+- The lock lives in `caches["ttsite"]` (redis db 1, `KEY_PREFIX "ttsite"`) with a 70 s TTL.
+  Redis down means 503.
+- Every page POST carries `X-CSRFToken`. No view is `csrf_exempt`.
+
+**Commands**
+- Python runs through `uv run`. Never bare `python`, never `python -c`.
+- Never `2>/dev/null`. Never `/tmp`. Logs go to `<worktree>/tmp/`, which all five repos
+  gitignore.
+- Redirect each command of a chain separately, for example `cmd1 >> tmp/x.log 2>&1; cmd2 >>
+  tmp/x.log 2>&1`. Grep the log; never pipe into grep or tail.
+
+**Branches and commits**
+- One worktree and one branch per task: `git worktree add -b <branch> .worktrees/<branch>
+  <base>`. Stacked tasks branch from the previous task's branch.
+- Commit small and push after each commit with `git push -u origin <branch>`.
+- A task ends at "push branch". The controller opens PRs after independent review.
+- Every commit ends with this trailer:
 
   ```
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
   Claude-Session: https://claude.ai/code/session_01M4cwEsPm9kJ96LQeYKwqhK
   ```
-- Follow each repo's own `CLAUDE.md`. In the daemon and the site: ruff, line length 120, and
-  docstrings in the existing plain-English style. In the Commander: prettier, an SPDX header,
-  and base branch `fpgas-online`.
-- No hardware access except in Task 11.
+
+**Repo conventions**
+- Follow each repo's `CLAUDE.md`.
+- Daemon and site: ruff, line length 120.
+- Commander: prettier, SPDX headers, base branch `fpgas-online`.
+
+**Hardware**
+- No hardware access, except in Task 12.
 
 ## Review Focus
 
-These are the five conditions most likely to bite a user that no task's main tests cover. Each
-has its pinning test in the task named.
+These five conditions are the likeliest to bite a visitor, and the main tests of each task do
+not exercise them. Each one has its pinning test in the owning task.
 
-1. **The archive serves the index before the `.bin` it names** (the onward rsync reorders
-   them). The user should see "may still be syncing", not a 502 stack. Test
-   `test_load_bin_404_says_still_syncing` in Task 5.
-2. **Two browser tabs press Load on the same board at once.** The second should get 409 "a
-   library load is already running", and the first should still finish. Test
-   `test_second_concurrent_load_gets_409` in Task 5.
-3. **A search with no matches, or a filter change while on page 7.** The page should reset to
-   1, show "0 of N designs", and never show a negative or empty page range. Test
-   `paging clamps and resets` in Task 6.
-4. **A library entry evicted on the Pi while it is the enabled design.** `/designs` no longer
-   lists it, but `enabled` still names it. The gallery and the Commander should show it as
-   running without crashing. Tests `test_enabled_library_design_not_in_cache_still_lists_enabled`
-   in Task 2, and `enabled id missing from list does not throw` in Task 8.
-5. **The site's cache is cold and the archive is down on the first request.** That should be a
-   clean 502 "VGA library unavailable", and the panel should offer Retry. Test
-   `test_index_cold_and_archive_down_is_502` in Task 5.
+1. **The index arrives before its bins.** The onward rsync sorts `fpga-library.json` first, so
+   this is certain during every publish. The visitor should see the "still syncing" message,
+   with no 502 trace. Test: `test_load_bin_404_says_still_syncing`, Task 6.
+2. **The index is republished between page load and pressing Load, and the id is gone.** The
+   panel should say the design is no longer in the library and reload the index. It should not
+   leave a dead card. Test: `load of a vanished id reloads the index`, Task 7.
+3. **A visitor has set inputs in the Commander's Interact tab, then someone loads a library
+   design.** The release must free only the pins the daemon drove, never the visitor's. Test:
+   `test_release_frees_only_daemon_driven_pins`, Task 3.
+4. **The Pi reboots between the site's `GET /library` and its enable**, so the cache is empty.
+   The site should push again and the load should succeed, once. Test:
+   `test_load_retries_once_after_404_enable`, Task 6.
+5. **A search that matches nothing, or a filter change while on page 7.** The panel should show
+   page 1 and "0 of N designs", never a broken page range. Test: `paging clamps and resets`,
+   Task 7.
 
 ---
 
 ## Task 1: Schema module, checker CLI and fixture (tinytapeout-vga-videos)
 
-**Repo:** `~/github/TinyTapeout/tinytapeout-vga-videos`. Branch `fpga-library-schema` off
-`origin/main`. Spec section 1.
+**Repo and branch:** `~/github/TinyTapeout/tinytapeout-vga-videos`, branch
+`fpga-library-schema` off `origin/main`. **Spec:** section 1.
 
 **Files:**
 - Create: `ttvga/fpgalibrary.py`
-- Create: `tests/fixtures/fpga-library/fpga-library.json`
-- Create: `tests/fixtures/fpga-library/<shuttle>/<macro>/<id>-<sha12>.bin` (5 files)
-- Create: `tests/fixtures/fpga-library/make_fixture.py`, which writes the bins and the hashes
-  into the JSON, so the fixture can be rebuilt
-- Modify: `ttvga/cli.py:16-22` (register the parser)
+- Create: `tests/fixtures/fpga-library/make_fixture.py`
+- Create: `tests/fixtures/fpga-library/fpga-library.json`, plus 5 bins under
+  `<shuttle>/<macro>/`
+- Modify: `ttvga/cli.py:16-22`, to register the subcommand
 - Test: `tests/test_fpgalibrary.py`
 
 **Interfaces:**
 - Produces:
-  - `library_id(shuttle: str, macro: str) -> str`, which raises `ValueError` when the macro
-    lacks `tt_um_`;
-  - `validate(doc: object) -> list[str]`: each violation as `"designs[3].ui_in: must be int
-    0..255 or null"`, empty when valid;
-  - `check_bins(doc: dict, root: Path) -> list[str]`;
-  - `load(path: Path) -> object`;
-  - `FOREIGN: tuple[str, ...] = ("/*/*/*.bin", "/fpga-library.json")`;
-  - `add_parser(sub)`, which adds `fpga-library-check <file> [--bins DIR]` and exits 0 or 1,
-    printing each violation;
-  - the fixture path `tests/fixtures/fpga-library/`, which Tasks 2, 4 and 8 copy.
+  - `library_id(shuttle: str, macro: str) -> str`. Raises `ValueError` when the macro has no
+    `tt_um_` prefix.
+  - `check_reserved(id: str) -> str | None`.
+  - `DEMO_NAMES: tuple[str, ...]`, the five names of spec section 1. Its comment cites
+    tinytapeout-fpga-demos `da7d10d`.
+  - `validate(doc: object) -> list[str]`. Each item reads like `"designs[3].ui_in: <rule>"`.
+    A field gets at most one violation: its first failing rule.
+  - `check_bins(doc: dict, root: Path) -> list[str]`.
+  - `load(path: Path) -> object`. It uses a `parse_constant` that raises on NaN and Infinity.
+  - `FOREIGN = ("/*/*/*.bin", "/fpga-library.json")`.
+  - `add_parser(sub)`, which adds `fpga-library-check <file> [--bins DIR]`. It exits 0, or 1
+    after printing every violation.
+  - The fixture directory `tests/fixtures/fpga-library/`. Tasks 2, 5 and 9 copy it, adding a
+    `_comment` key naming the commit they copied from.
 
-The fixture's five entries (spec section 1, Reference validator):
+The five fixture entries, in display order. They are grouped by shuttle, so the run order
+holds. All have `validation: "none"` and `qspi: "none"`.
 
-| id | shuttle/macro | build_status | ui_in | paths |
-|---|---|---|---|---|
-| `ttsky25a_vga_example` | `ttsky25a/tt_um_vga_example` | `ok` | null | all set |
-| `tt05_flappy_vga_cutout1` | `tt05/tt_um_flappy_vga_cutout1` | `timing-fail`, `fmax_mhz` 17.08 | null | all set |
-| `ttihp25a_yuri_panchul_sea_battl_09a2562b` | `ttihp25a/tt_um_yuri_panchul_sea_battle_vga_game` | `ok` | null | all set |
-| `ttsky25b_lukasdragoste_vga_patterns` | `ttsky25b/tt_um_lukasdragoste_vga_patterns` | `ok` | 5 | all set |
-| `ttihp26a_vga_example` | `ttihp26a/tt_um_vga_example` | `ok` | null | `poster`, `preview_gif`, `video_10s_webm` null |
+| # | id | shuttle/macro | status | `ui_in` / mask | other |
+|---|---|---|---|---|---|
+| 0 | `ttsky25b_lukasdragoste_vga_patterns` | `ttsky25b/tt_um_lukasdragoste_vga_patterns` | `ok` | 1 / 1 | `verdict: "barely-moving"` |
+| 1 | `ttsky25a_vga_example` | `ttsky25a/tt_um_vga_example` | `ok` | null / 0 | |
+| 2 | `ttihp26a_vga_example` | `ttihp26a/tt_um_vga_example` | `ok` | null / 0 | `poster`, `preview_gif`, `video_10s_webm` null |
+| 3 | `ttihp25a_yuri_panchul_sea_battl_09a2562b` | `ttihp25a/tt_um_yuri_panchul_sea_battle_vga_game` | `ok` | null / 0 | |
+| 4 | `tt05_flappy_vga_cutout1` | `tt05/tt_um_flappy_vga_cutout1` | `timing-fail`, `fmax_hz` 17080000 | null / 0 | |
 
 Each bin is 4096 bytes: `ff 00 00 ff 7e aa 99 7e`, then zeros, with byte 8 set to the entry's
-index (0 to 4) so the hashes differ. Use `validation: "none"`, `qspi: "none"` and
-`verdict: "ok"` throughout, except `verdict: "barely-moving"` on the fourth entry.
+row number.
 
-- [ ] **Step 1: Write the failing tests** in `tests/test_fpgalibrary.py`:
-  - `test_library_id_examples`: the four example rows of spec section 1, exactly.
-  - `test_library_id_hashed_is_40_chars`: for
-    `("ttsky25a", "tt_um_rebeccargb_vga_timing_experiments")`, the result is
-    `"ttsky25a_rebeccargb_vga_timing__4638a050"` and its length is 40.
-  - `test_library_id_hash_uses_original_case`: `library_id("tt07", "tt_um_MichaelBell_rle_vga")`
-    equals `"tt07_michaelbell_rle_vga"` (not cut). For a made-up macro with 50 uppercase letters,
-    the last 8 characters equal `sha256(b"tt07/tt_um_" + upper)[:8]`.
-  - `test_library_id_refuses_non_tt_um`: `ValueError`.
-  - `test_fixture_is_valid`: both `validate(load(fixture))` and `check_bins(doc, fixture_dir)`
-    are empty.
-  - `test_each_rule_is_enforced`: parametrised, one mutation per row of the spec's entry and
-    top-level tables, plus these: a duplicate id; an id equal to `idle_display`; an id equal to
-    `tt_um_vga_pattern`; `bin` not equal to `<shuttle>/<macro>/<id>-<sha12>.bin`; a path with
-    `..`; an absolute `https://` poster; `ui_in` set to `True`; `pinout.uo_out` with 7
-    elements; an unknown top-level key (allowed); `generated` without `Z`. Each case asserts
-    that exactly one violation's prefix names the field.
-  - `test_check_bins_catches`: a wrong size, a wrong hash, a missing preamble and a missing
-    file. Each gives one violation.
-  - `test_cli_exit_codes`: `main(["fpga-library-check", str(fixture), "--bins",
-    str(fixture_dir)]) == 0`. On a mutated copy in `tmp_path` it returns 1 and prints the
-    violation.
+- [ ] **Step 1: Write the failing tests**
+  - `test_library_id_examples`: the five rows of the spec's id table, exactly.
+  - `test_library_id_hashed_is_40_chars`: `("ttsky25a",
+    "tt_um_rebeccargb_vga_timing_experiments")` gives
+    `"ttsky25a_rebeccargb_vga_timing__4638a050"`, of length 40.
+  - `test_library_id_refuses_non_tt_um`.
+  - `test_check_reserved`: `idle_display` and each of the five demo names give a message;
+    `ttsky25a_vga_example` gives None.
+  - `test_fixture_is_valid`: `validate` and `check_bins` both return empty lists.
+  - `test_each_rule_is_enforced`: parametrised with one mutation per rule in the spec's tables,
+    plus these cases:
+    - a duplicate id;
+    - `bin` differing from the derived path;
+    - a `..` path;
+    - an absolute poster URL;
+    - `ui_in: True`;
+    - `ui_in: 3` with mask 1;
+    - `ui_in: null` with mask 1;
+    - 7 `uo_out` labels;
+    - `generated` without a trailing `Z`;
+    - `fmax_hz: 17.5`;
+    - a non-contiguous shuttle;
+    - an unknown top-level key, which is allowed and gives no violation.
+
+    Each case asserts exactly one violation, whose prefix names the mutated field.
+  - `test_load_refuses_nan`: a document containing `NaN` raises `ValueError`.
+  - `test_check_bins_catches`: wrong size, wrong hash, no preamble, missing file. Each gives
+    one violation.
+  - `test_cli_exit_codes`: 0 on the fixture; 1 on a mutated copy in `tmp_path`, with the
+    violation printed.
 - [ ] **Step 2: Run them.** `uv run pytest tests/test_fpgalibrary.py -v >> tmp/t1.log 2>&1`,
-  then grep the log. Expected: they fail, with `ModuleNotFoundError: ttvga.fpgalibrary`.
-- [ ] **Step 3: Write `make_fixture.py`, then run it** (`uv run
-  tests/fixtures/fpga-library/make_fixture.py`) and commit its output. The demo names to check
-  against live in the module as `DEMO_NAMES = ("tt_um_counter_7seg", "tt_um_factory_test",
-  "tt_um_pwm_breathe", "tt_um_uart_hello", "tt_um_vga_pattern")`. Add a comment naming
-  tinytapeout-fpga-demos `da7d10d` as their source.
-- [ ] **Step 4: Implement `ttvga/fpgalibrary.py` and register it in `cli.py`.** Write one rule
-  function per key, driven by a table, so that each rule appears exactly once.
-- [ ] **Step 5: Run the whole suite.** `uv run pytest >> tmp/t1.log 2>&1`. Expected: everything
+  then grep the log. Expected: they fail with `ModuleNotFoundError`.
+- [ ] **Step 3: Write and run `make_fixture.py`** (`uv run
+  tests/fixtures/fpga-library/make_fixture.py`). It writes the bins and the JSON with
+  `allow_nan=False`.
+- [ ] **Step 4: Implement `ttvga/fpgalibrary.py`.** Use one rule function per key, driven from
+  a table. Register the parser in `cli.py`.
+- [ ] **Step 5: Run the suite.** `uv run pytest >> tmp/t1.log 2>&1`. Expected: everything
   passes.
-- [ ] **Step 6: Commit** ("fpgalibrary: schema 1 checker, id rule and fixture"), then push the
-  branch.
+- [ ] **Step 6: Commit** "fpgalibrary: schema 1 checker, id rule and fixture", then push.
 
 ## Task 2: Daemon library store, routes and listing (fpgas.online-tt)
 
-**Repo:** `~/github/fpgas-online/fpgas.online-tt`. Branch `library-source` off `origin/main`.
-Spec section 2, except `ui_in`.
+**Repo and branch:** `~/github/fpgas-online/fpgas.online-tt`, branch `library-store` off
+`origin/main`. **Spec:** section 2: Store, Name precedence, `GET /designs`, `GET /library`,
+`POST /library/{id}`, Concurrency, Docs.
 
 **Files:**
-- Create: `src/fpgas_tt/library.py` (the store and the metadata checks)
-- Modify: `src/fpgas_tt/designs.py:100-160` (`_meta`, `design_names`, `design_file`,
-  `validate_bitstream`, `_listing`, `list_designs`, `enable_design`)
-- Modify: `src/fpgas_tt/server.py` (`create_app`, the routes, `build_parser`, `main`, the module
-  docstring)
-- Modify: `README.md` (route table), `CLAUDE.md` (module list, invariant note)
-- Create: `tests/data/library/` (a copy of Task 1's fixture; its first line `_comment` names the
-  source commit)
-- Test: `tests/test_library.py` (store), `tests/test_server.py`, `tests/test_designs.py`
+- Create: `src/fpgas_tt/library.py`. It must not import `designs`.
+- Modify: `src/fpgas_tt/designs.py`:
+  - `_meta` at lines 100-106;
+  - `validate_bitstream` at 110-120;
+  - `design_names` at 143-151;
+  - `design_file` at 154-163;
+  - `_listing` at 294-296;
+  - `_read_design` at 299-303;
+  - `list_designs` at 318-321;
+  - `enable_design` at 324-342.
+- Modify: `src/fpgas_tt/server.py`:
+  - `create_app` at lines 78-112;
+  - the routes;
+  - move the part loop at 234-258 into `_read_parts`;
+  - `build_parser` and `main`;
+  - the module docstring.
+- Modify: `README.md` and `CLAUDE.md`.
+- Create: `tests/data/library/`, a copy of the Task 1 fixture.
+- Test: `tests/test_library.py` (new), `tests/test_designs.py`, `tests/test_server.py`.
 
 **Interfaces:**
-- Consumes: Task 1's fixture, copied.
-- Produces:
-  - `library.LIBRARY_DIR_DEFAULT = Path("/var/lib/fpgas-tt/library")` and
-    `library.LIBRARY_MAX_BYTES_DEFAULT = 16 * 1024 * 1024`;
-  - `library.STORED_KEYS`, the 21-key tuple of spec section 2, Store;
-  - `library.check_meta(meta: object) -> str | None`, the first violation or None (the rules
-    of spec section 1; the 40-character id rule is checked with `designs.NAME_RE`);
-  - `library.store(library_dir: Path, meta: dict, data: bytes, max_bytes: int) -> tuple[bool,
-    list[str]]`, returning `(created, evicted)`;
-  - `library.entries(library_dir) -> list[dict]`, each `{"id", "bin_sha256", "bin_bytes",
-    "used_at"}`;
-  - `library.names(library_dir) -> set[str]`;
-  - `library.meta(library_dir, id) -> dict | None`;
-  - `library.touch(library_dir, id) -> None`;
-  - `library.used_bytes(library_dir) -> int`.
-
-  `designs.py` functions gain a `library_dir: Path` parameter after `uploads_dir`:
-  `design_names`, `design_file`, `_listing`, `list_designs` and `enable_design`. In
-  `enable_design` it goes after `uploads_dir` and before the keyword-only `waited`. Task 3
-  adds `ui_in`.
-
-  The wire contract is exactly spec section 2: `GET /library`, `POST /library/{id}`,
-  `/designs` with the top-level `library` object and each design's `library: null | {...}`.
-  `app["library_dir"]` and `app["library_max_bytes"]` are set in `create_app(...,
-  library_dir=..., library_max_bytes=...)`.
+- Consumes: the Task 1 fixture, copied.
+- Produces, in `library.py`:
+  - `LIBRARY_DIR_DEFAULT = Path("/var/lib/fpgas-tt/library")`.
+  - `max_bytes_default() -> int`, which reads env `FPGAS_TT_LIBRARY_MAX_BYTES` and falls back
+    to 16777216.
+  - `check_meta(meta: object) -> str | None`. Exactly the keys `id`, `bin_sha256` and
+    `bin_bytes`, typed, with no bools.
+  - `store(library_dir: Path, id: str, sha256: str, data: bytes, max_bytes: int) ->
+    tuple[bool, list[str]]`, returning `(created, evicted)`. It removes orphans first.
+  - `entries(library_dir) -> list[dict]`, each `{"id", "bin_sha256", "bin_bytes", "used_at"}`.
+  - `names(library_dir) -> set[str]`.
+  - `touch(library_dir, id) -> None`. It ignores `FileNotFoundError`.
+  - `used_bytes(library_dir) -> int`.
+  - `bin_path(library_dir, id) -> Path`.
+- Produces, in `designs.py` (keyword-only, so existing callers are unchanged):
+  - `design_names(demos_dir, uploads_dir, *, library_dir=None)`;
+  - `design_file(demos_dir, uploads_dir, name, *, library_dir=None)`;
+  - `list_designs(runner, demos_dir, uploads_dir, *, library_dir=None)`;
+  - `enable_design(runner, name, clock_hz, demos_dir, uploads_dir, *, library_dir=None,
+    waited=0.0)`.
+- Produces, in the app: `app["library_dir"]` and `app["library_max_bytes"]`;
+  `create_app(..., library_dir=..., library_max_bytes=...)`.
+- Wire: exactly spec section 2. That includes `hides_upload` and library entries listed as
+  `{name, source: "library", size}`.
 
 - [ ] **Step 1: Write the failing store tests** in `tests/test_library.py`:
   - `test_store_writes_bin_then_json_and_lists_it`;
-  - `test_same_sha_push_is_idempotent_and_refreshes_lru` (returns `(False, [])`; the mtime
-    increases);
+  - `test_same_sha_push_is_idempotent_and_refreshes_lru`;
   - `test_new_build_replaces_old_bytes`;
-  - `test_lru_evicts_oldest_until_it_fits`: `max_bytes = 3*4096`, push 4, and the first is
-    evicted;
-  - `test_eviction_never_touches_uploads`: an uploads dir with 16 files is unchanged;
-  - `test_entry_without_json_is_not_listed`;
-  - `test_check_meta_rules`: parametrised over the same mutations as Task 1's
-    `test_each_rule_is_enforced` for entry keys;
-  - `test_concurrent_stores_lose_nothing`: 8 threads each push a distinct id, under a cap that
-    fits all 8, and all 8 are listed.
-- [ ] **Step 2: Write the failing designs and server tests.**
+  - `test_lru_evicts_oldest_until_it_fits`, with `max_bytes=3*4096` and 4 pushes;
+  - `test_orphans_are_removed_and_never_counted`: a lone `.bin`, a lone `.json` and a
+    `.x.tmp` file;
+  - `test_touch_after_eviction_is_harmless`;
+  - `test_eviction_never_touches_uploads`;
+  - `test_check_meta_rules`, parametrised: an extra key, `bin_bytes: true`, `bin_sha256` in
+    uppercase hex;
+  - `test_concurrent_stores_lose_nothing`: 8 threads;
+  - `test_max_bytes_default_reads_env`.
+- [ ] **Step 2: Write the failing designs and server tests**
   - In `tests/test_designs.py`:
     - `test_precedence_demo_then_library_then_upload`;
-    - `test_upload_refused_for_cached_library_id` (`ValidationError` with status 409, message
-      contains `is a VGA library design`);
-    - `test_listing_reports_library_entries_with_metadata` (`source == "library"`; the
-      `library` object has exactly the 11 keys of the spec's `/designs` example; demos and
-      uploads have `library is None`);
-    - `test_enabled_library_design_not_in_cache_still_lists_enabled` (Review Focus 4: the board
-      reports an enabled id that is not cached, and `list_designs` returns that `enabled` with
-      no exception);
+    - `test_upload_refused_for_cached_library_id`;
+    - `test_listing_reports_library_entries_as_name_source_size`;
+    - `test_enabled_library_design_not_in_cache_still_lists_enabled`;
     - `test_enable_reads_library_bin_and_touches_lru`.
   - In `tests/test_server.py`:
     - `test_get_library`;
-    - `test_designs_has_top_level_library_key` (`{"max_bytes": 16777216, "used_bytes": n}`);
-    - `test_push_checks`: parametrised over the spec's `POST /library/{id}` table, one case per
-      row, asserting status and error text;
+    - `test_designs_has_top_level_library_key`;
+    - `test_push_checks`, parametrised with one case per row of the spec's check table,
+      including the `_fpga_only` row;
     - `test_push_created_then_idempotent_200`;
+    - `test_push_reports_hides_upload`;
     - `test_push_counts_as_activity`;
-    - `test_library_routes_obey_fpga_only`: 404 on `IS_OTHER`, 503 on `NOT_NAMED`;
-    - `test_cli_library_flags`: `build_parser().parse_args([])` gives
-      `/var/lib/fpgas-tt/library` and `16777216`.
-- [ ] **Step 3: Run them.** `uv run pytest tests/test_library.py tests/test_designs.py
-  tests/test_server.py >> tmp/t2.log 2>&1`. Expected: the new tests fail and the old ones pass.
-- [ ] **Step 4: Implement.**
-  - Writes use `tempfile.mkstemp` in the directory, then `os.replace`, as `store_upload` does
-    (designs.py:166-185).
-  - `_LIBRARY_LOCK = threading.Lock()` lives in `library.py`.
-  - `POST /library/{id}` reuses `bitstream_upload`'s bounded part loop (server.py:243-260). Move
-    it into a helper `_read_parts(request, limits: dict[str, int]) -> dict[str, bytes] |
-    web.Response`, used by both routes; this must not change `/bitstream`'s behaviour or its
-    tests. The limits are `meta` 32768 bytes and `file` `MAX_BITSTREAM_BYTES`.
-  - The store runs in `asyncio.to_thread`.
-- [ ] **Step 5: Run the full suite and the linter.** `uv run pytest >> tmp/t2.log 2>&1; uv run
-  ruff check >> tmp/t2.log 2>&1`. Expected: all pass, and ruff is clean.
-- [ ] **Step 6: Update the README and CLAUDE.md.** Commit in three commits: the store; the
-  routes and listing; the docs. Then push the branch.
+    - `test_cli_library_flags`;
+    - `test_bitstream_upload_unchanged_after_part_reader_move`, which re-runs the existing
+      upload limit cases through the shared helper.
+- [ ] **Step 3: Run them.** `uv run pytest >> tmp/t2.log 2>&1`. Expected: only the new tests
+  fail.
+- [ ] **Step 4: Implement.** Writes go through `tempfile.mkstemp` and then `os.replace`, as
+  `store_upload` does (designs.py:166-185). The lock is `library._LIBRARY_LOCK`. The store runs
+  in `asyncio.to_thread`. `_read_parts(request, limits: dict[str, int]) -> dict[str, bytes] |
+  web.Response` serves both multipart routes; the `meta` limit is 4096.
+- [ ] **Step 5: Run the suite and ruff.** `uv run pytest >> tmp/t2.log 2>&1; uv run ruff check
+  >> tmp/t2.log 2>&1`. Expected: all pass and ruff is clean.
+- [ ] **Step 6: Commit three times and push.** The commits are the store, the routes and
+  listing, and the docs.
 
-## Task 3: `ui_in` on enable (fpgas.online-tt)
+## Task 3: Releasing and driving `ui_in` on enable (fpgas.online-tt)
 
-**Repo:** fpgas.online-tt. Branch `library-ui-in` off `library-source` (stacked; its PR goes
-after Task 2's). Spec section 2, `POST /designs/{name}/enable`.
+**Repo and branch:** fpgas.online-tt, branch `library-ui-in` off `library-store`.
+**Spec:** section 2, `POST /designs/{name}/enable` (Ruling AD).
 
 **Files:**
-- Modify: `src/fpgas_tt/designs.py` (`LOAD_CODE`, `_load_steps`, `load_design`,
-  `enable_design`)
-- Modify: `src/fpgas_tt/safe.py:84-95` (use the shared guard)
-- Modify: `src/fpgas_tt/server.py:181-218` (body checks)
-- Modify: `README.md`
-- Test: `tests/test_designs.py`, `tests/test_server.py`, `tests/test_safe.py`
+- Modify: `src/fpgas_tt/designs.py`:
+  - `LOAD_CODE` at lines 227-272;
+  - `_load_steps` at 275-291;
+  - `load_design` at 345-354;
+  - `enable_design`.
+- Modify: `src/fpgas_tt/safe.py:67-107`, so `SAFE_CODE` uses `ui_in_guard(12,
+  "_fo_r['held']")`.
+- Modify: `src/fpgas_tt/server.py:181-218`, the body checks.
+- Modify: `README.md`.
+- Create: these snapshot files, written before any code changes, from today's code:
+  - `tests/data/safe_code_retry_false.txt` and `tests/data/safe_code_retry_true.txt`;
+  - `tests/data/load_code_null_ui_in.txt`, the old last step for
+    `_load_steps("x", data, 1000)`. It is used only to show what changes.
+- Test: `tests/test_designs.py`, `tests/test_safe.py`, `tests/test_server.py`,
+  `tests/test_idle.py` (call sites at lines 244-391; keyword defaults should keep them
+  passing).
 
 **Interfaces:**
-- Consumes: Task 2's signatures.
+- Consumes: Task 2's `enable_design` signature.
 - Produces:
-  - `designs.UI_IN_GUARD: str`, the per-pin guard loop with no indentation. Callers indent it.
-    It needs `_fo_tt`, `Pin` and `time` in scope, and it fills `_fo_held: list[int]`.
-  - `enable_design(runner, name, clock_hz, ui_in, demos_dir, uploads_dir, library_dir, *,
-    waited=0.0) -> {"enabled", "clock_hz", "ui_in", "ui_in_held"}`.
-  - `load_design(runner, name, data, clock_hz, ui_in, *, overall) -> list[int]`, which returns
-    the held pins.
-  - `_load_steps(name, data, clock_hz, ui_in) -> list[str]`.
+  - `ui_in_guard(indent: int, held: str) -> str`. Its text is exactly the six lines in spec
+    section 2, each prefixed by `indent` spaces.
+  - `_load_steps(name, data, clock_hz, *, ui_in=None, ui_in_mask=0) -> list[str]`.
+  - `load_design(runner, name, data, clock_hz, *, ui_in=None, ui_in_mask=0,
+    overall=ENABLE_OVERALL_TIMEOUT) -> dict`. It returns `{"released": [...], "ui_in_driven":
+    [...], "ui_in_held": [...]}`.
+  - `enable_design(..., *, library_dir=None, ui_in=None, ui_in_mask=0, waited=0.0)`. It
+    returns `{"enabled", "clock_hz", "ui_in", "ui_in_mask", "ui_in_driven", "ui_in_held",
+    "released"}`.
+  - `idle.py:268` is unchanged in source. Its load now releases pins too.
 
-- [ ] **Step 1: Write the failing tests.**
-  - `test_load_code_unchanged_when_ui_in_is_null`: compare `_load_steps(n, d, 1000, None)[-1]`
-    with a snapshot of today's output, kept as `tests/data/load_code_no_ui_in.txt` and
-    generated before any change.
-  - `test_ui_in_sets_mode_guards_pins_then_value`: the last step contains, in this order,
-    `ASIC_RP_CONTROL`, `ui_in.value = 0`, `PULL_DOWN`, `ui_in.value = 5`,
-    `print('ui_in_held=`, and `print('enabled')`. All of it comes after the clock line, and
-    `ui_in.value = 5` sits inside the success path (after `_fo_ok = True`).
-  - `test_enable_returns_ui_in_held`: the fake REPL replies `ui_in_held=[3]\nenabled`, and the
-    result has `ui_in_held == [3]`.
-  - `test_safe_code_unchanged`: compare `safe.safe_code(False)` and `safe.safe_code(True)` with
-    snapshots taken before the change (`tests/data/safe_code_*.txt`).
-  - `test_enable_body_ui_in`: parametrised. `true`, `-1`, `256`, `"5"` and `5.0` give 400 `ui_in
-    must be an integer between 0 and 255`. `5` and `null` give 200, and the response echoes
-    `ui_in`.
-- [ ] **Step 2: Run them and record that they fail** (`tmp/t3.log`).
-- [ ] **Step 3: Implement.** Extract the guard from `SAFE_CODE` into `UI_IN_GUARD` and import
-  it in `safe.py`, so the snapshots stay identical. Add the `__UI_IN__` placeholder after
-  `__CLOCK__`. Parse the `ui_in_held=` line from the last output before checking `enabled`.
-- [ ] **Step 4: Run the full suite and ruff.** Expected: all pass.
-- [ ] **Step 5: Commit** ("enable: ui_in applied with the pin guard in the load step"), then
-  push the branch.
+- [ ] **Step 1: Write the snapshot files from the current code**, using a short
+  `tests/data/make_snapshots.py` run with `uv run`. Commit them alone.
+- [ ] **Step 2: Write the failing tests**
+  - `test_safe_code_byte_identical`: `safe.safe_code(False)` and `safe.safe_code(True)` equal
+    the snapshots.
+  - `test_ui_in_guard_text`: `ui_in_guard(4, "_fo_held")` equals the six spec lines, indented
+    4 spaces, with `_fo_held.append(_fo_i)` at 8.
+  - `test_release_block_on_every_load`: the last step of `_load_steps("x", d, None)` contains
+    `globals().get('_fo_ui_driven')`, `Pin.PULL_DOWN` and `print('released=`, all before
+    `if _fo_n !=`.
+  - `test_no_drive_block_when_mask_zero`: with `ui_in=None, ui_in_mask=0`, the step has no
+    `raw_pin.value`.
+  - `test_drive_block_never_touches_mode_or_clock`: with `ui_in=1, ui_in_mask=1`:
+    - the step contains no `tt.mode`, no `clock_project_stop` and no `RPMode`;
+    - `raw_pin.value(` comes before `_fo_p.mode = Pin.OUT` inside the loop;
+    - the drive block comes after the clock line and after the `finally:` block;
+    - `print('enabled')` is the last line.
 
-## Task 4: Site archive client and daemon client (fpgas.online-site)
+    This test asserts no ordering against mode changes, because there are none.
+  - `test_load_design_parses_released_driven_held`: the fake REPL replies `released=[0]`,
+    `ui_in=[0] []` and `enabled`. The result is `{"released": [0], "ui_in_driven": [0],
+    "ui_in_held": []}`.
+  - `test_release_frees_only_daemon_driven_pins` (Review Focus 3). Against the fake REPL:
+    1. A load with `ui_in=1, mask=1`.
+    2. Then the visitor's own `write_ui_in` sets bit 1 (simulated as board state).
+    3. Then a demo load.
 
-**Repo:** `~/github/fpgas-online/fpgas.online-site`. Branch `vga-library` off `origin/main`.
-Spec section 3: Setting, `ttsite/library.py` and Caching.
+    The release lists `[0]` only, and bit 1 is untouched.
+  - `test_enable_body_ui_in_rules`, parametrised:
+
+    | body | status |
+    |---|---|
+    | `{"ui_in": true}` | 400 |
+    | `{"ui_in": 256, "ui_in_mask": 255}` | 400 |
+    | `{"ui_in": 3, "ui_in_mask": 1}` | 400, `ui_in has bits outside ui_in_mask` |
+    | `{"ui_in": null, "ui_in_mask": 1}` | 400, `ui_in_mask needs a ui_in` |
+    | `{"ui_in_mask": -1}` | 400 |
+    | `{"ui_in": 1, "ui_in_mask": 1}` | 200, echoed |
+    | `{}` | 200 |
+
+  - `test_idle_display_load_releases_too`, added to `tests/test_idle.py`.
+- [ ] **Step 3: Run them and record the failures.** `tmp/t3.log`.
+- [ ] **Step 4: Implement.**
+  - The `__RELEASE__` block goes before the existing `try:` in `LOAD_CODE`. It imports
+    `from machine import Pin` itself.
+  - The `__UI_IN__` block goes between `__CLOCK__` and `print('enabled')`, exactly as in the
+    spec.
+  - `SAFE_CODE` swaps its six guard lines for the function call.
+- [ ] **Step 5: Run the suite and ruff.** Expected: all pass, and the snapshot test is green.
+- [ ] **Step 6: Commit** "enable: release what the daemon drove, drive ui_in_mask bits
+  directly", then push.
+
+## Task 4: Infra drop-in for the library cap (fpgas.online-infra)
+
+**Repo and branch:** `~/github/fpgas-online/fpgas.online-infra`, branch `tt-library-cap` off
+`origin/main`. **Spec:** section 2 Store, and section 8 step 2.
+
+**Files:**
+- Modify: `ansible/roles/onpi/tasks/tt.yml`, adding a task in the "enabled" block after
+  "Enable fpgas-tt.service".
+- Create: `ansible/roles/onpi/templates/fpgas-tt-library.conf.j2`, which renders `[Service]`
+  and `Environment=FPGAS_TT_LIBRARY_MAX_BYTES={{ onpi_tt_library_max_bytes }}`.
+- Modify: `ansible/roles/onpi/defaults/main.yml`, adding `onpi_tt_library_max_bytes:
+  16777216`.
+- Test: the repo's own checks, `ansible-lint` and its CI targets (see the repo's `CLAUDE.md`).
+
+**Interfaces:**
+- Consumes: Task 2's env var name.
+- Produces: `/etc/systemd/system/fpgas-tt.service.d/library.conf`, mode 0644, in the Pi root.
+
+- [ ] **Step 1: Add the template, the default and the task.** The task is
+  `ansible.builtin.template` to the drop-in path, followed by a directory task for
+  `fpgas-tt.service.d`. Add no handler: the Pi root is baked, and the service starts at boot.
+- [ ] **Step 2: Run the repo's lint.** Log to `tmp/t4.log`. Expected: clean.
+- [ ] **Step 3: Commit** "onpi: drop-in for the fpgas-tt library cap", then push.
+
+## Task 5: Site archive client, lock cache and daemon client (fpgas.online-site)
+
+**Repo and branch:** `~/github/fpgas-online/fpgas.online-site`, branch `vga-library-client` off
+`origin/main`. **Spec:** section 3: Settings, `ttsite/library.py`, Caching.
 
 **Files:**
 - Create: `ttsite/src/ttsite/library.py`
-- Modify: `ttsite/src/ttsite/daemon.py` (add `library_state`, `library_push`, `Unsupported`)
-- Modify: `pib/settings.py:216-220` (`TTSITE_LIBRARY_BASE_URL`)
-- Create: `tests/data/fpga-library.json` (a copy of Task 1's fixture, with its `_comment`)
-- Test: `tests/test_library.py`, `tests/test_daemon.py`, `tests/test_settings_import.py`
+- Modify: `ttsite/src/ttsite/daemon.py`, adding `library_state`, `library_push` and
+  `Unsupported`, and a `deadline` keyword on `enable`.
+- Modify: `pib/settings.py`:
+  - `TTSITE_LIBRARY_BASE_URL` next to lines 216-220;
+  - the `"ttsite"` alias in `CACHES` at lines 192-202.
+- Create: `tests/data/fpga-library.json`, a copy of the Task 1 fixture.
+- Test: `tests/test_library.py`, `tests/test_daemon.py`, `tests/test_settings_import.py`.
 
 **Interfaces:**
-- Consumes: Task 2's wire contract.
-- Produces:
-  - `library.ArchiveError(Exception)`, with `.message: str`;
-  - `library.normalise(doc: object, base_url: str) -> tuple[dict, list[str]]`, returning the
-    site wire format `{"schema": 1, "generated", "base_url", "designs"}` and the dropped
-    reasons; it raises `ArchiveError("VGA library unavailable")` when the top level is invalid;
-  - `library.index() -> tuple[bytes, str, int | None]`: the normalised body, the site ETag
-    `"sha256:<16 hex>"`, and the stale age in seconds or None. It raises `ArchiveError` when it
-    has neither a fresh copy nor one at most 24 h old.
-  - `library.entry(id: str) -> dict | None`;
-  - `library.fetch_bin(entry: dict) -> bytes`, which raises `ArchiveError` with the spec's
-    exact messages;
-  - `library.FRESH_SECONDS = 300`, `library.STALE_SECONDS = 86400`,
-    `library.INDEX_MAX_BYTES = 4 * 1024 * 1024`;
-  - `daemon.library_state(board) -> tuple[int, dict]`, which raises `daemon.Unsupported` on a
-    404 with a non-JSON body;
-  - `daemon.library_push(board, name: str, meta: dict, data: bytes) -> tuple[int, dict]`, with
-    timeout `(3.05, 15.0)`.
+- Consumes: Task 2's wire contract and Task 3's enable body.
+- Produces, in `library.py`:
+  - `ArchiveError(Exception)`, with `.message`.
+  - `NotPublished(ArchiveError)`.
+  - `SESSION`, a `requests.Session` with `trust_env = False`.
+  - `normalise(doc: object, base_url: str) -> tuple[dict, list[str]]`.
+  - `index(deadline: float) -> tuple[bytes, str, int | None]`, returning the body, the strong
+    ETag `"sha256-<32 hex>"` and the stale age.
+  - `entry(id: str, deadline: float) -> dict | None`.
+  - `cached_ids() -> set[str] | None`, which returns None when there is no copy.
+  - `fetch_bin(entry: dict, deadline: float) -> bytes`.
+  - Constants: `FRESH_SECONDS = 300`, `STALE_SECONDS = 86400`, `NOT_PUBLISHED_SECONDS = 60`,
+    `INDEX_MAX_BYTES = 4 * 1024 * 1024`.
+- Produces, in `daemon.py`:
+  - `library_state(board, *, deadline: float) -> tuple[int, dict]`. It raises
+    `daemon.Unsupported` on a 404 whose body is not JSON.
+  - `library_push(board, name, data: bytes, sha256: str, *, deadline: float) -> tuple[int,
+    dict]`.
+  - `enable(board, name, body: bytes, *, deadline: float | None = None)`.
+  - Read timeouts are `min(<existing>, deadline - now)`.
 
-- [ ] **Step 1: Write the failing tests.** Use a fake `requests.get` installed with
-  `monkeypatch.setattr(library.requests, "get", ...)`, returning objects with `status_code`,
-  `headers` and `iter_content`.
-  - `test_normalise_fixture_keeps_all_and_adds_base_url`;
-  - `test_normalise_drops_bad_entry_and_logs`, parametrised over three rule mutations;
-  - `test_normalise_drops_both_duplicates`;
-  - `test_normalise_refuses_bad_top_level`: schema 2, `designs` an object, and 2001 entries;
-  - `test_index_sends_if_none_match_and_keeps_copy_on_304`;
-  - `test_index_refuses_redirect`: a 301 raises, and the cache is untouched;
-  - `test_index_caps_size`: 4 MiB + 1 byte raises;
-  - `test_index_serves_stale_then_gives_up`: with the clock faked through `library.time` (an
-    injected `now()`), the archive down after a good fetch gives stale age 400 at 700 s, and
-    `ArchiveError` after 86400 + 300 s;
-  - `test_fetch_bin_checks_size_hash_preamble`, parametrised;
-  - `test_fetch_bin_404_message`: the message equals `archive file missing (the archive may
-    still be syncing; try again in a few minutes)`;
-  - `test_fetch_bin_never_leaves_base_host`: an entry whose `bin` was tampered with after
-    normalising to `../x` raises before any request is made;
-  - `test_library_state_old_daemon_is_unsupported`;
-  - `test_library_push_sends_meta_and_file_parts`;
-  - `test_setting_default`: `settings.TTSITE_LIBRARY_BASE_URL ==
-    "https://data.wafer.space/big-storage/tinytapeout-vga-videos/"`.
+- [ ] **Step 1: Write the failing tests.** The fake is `SESSION.get`, monkeypatched. It returns
+  objects with `status_code`, `headers`, `iter_content` and `close`. The clock is injected as
+  `library.now`.
+  - `test_normalise_fixture_keeps_all_in_order_and_adds_base_url`
+  - `test_normalise_drops_bad_entry_and_logs`
+  - `test_normalise_drops_both_duplicates`
+  - `test_normalise_drops_noncontiguous_shuttle`
+  - `test_normalise_refuses_bad_top_level`
+  - `test_index_refuses_nan`
+  - `test_index_sends_if_none_match_and_keeps_copy_on_304`
+  - `test_index_404_is_not_published_and_cached_60s`
+  - `test_index_refuses_redirect`
+  - `test_index_caps_size`
+  - `test_index_serves_stale_then_gives_up`
+  - `test_trickling_archive_hits_deadline`: one byte per 0.2 s of fake time, a 2 s deadline,
+    raises `ArchiveError("archive unreachable")`.
+  - `test_session_ignores_env_and_closes_responses`
+  - `test_fetch_bin_checks_size_hash_preamble`
+  - `test_fetch_bin_404_message`: equals the spec's text exactly.
+  - `test_fetch_bin_never_leaves_base_host`
+  - `test_library_state_old_daemon_is_unsupported`
+  - `test_library_push_sends_meta_and_file_parts`: the `meta` part is exactly `{"id",
+    "bin_sha256", "bin_bytes"}`.
+  - `test_daemon_calls_cap_read_timeout_at_deadline`
+  - `test_settings_library_base_and_ttsite_cache`: the alias LOCATION is
+    `redis://127.0.0.1:6379/1` and its KEY_PREFIX is `ttsite`.
 - [ ] **Step 2: Run them.** `uv run pytest tests/test_library.py tests/test_daemon.py
-  tests/test_settings_import.py >> tmp/t4.log 2>&1`. Expected: the new tests fail.
-- [ ] **Step 3: Implement.**
-  - Duplicate the schema rules in `library.py` from the spec; do not import from
-    tinytapeout-vga-videos.
-  - Use `requests.get(..., allow_redirects=False, stream=True, timeout=(3.05, 10.0))` and read
-    with `iter_content(65536)`, counting bytes.
-  - Cache in `django.core.cache.cache` under the key `ttsite:library:index`.
-- [ ] **Step 4: Run the full suite and ruff** (`tmp/t4.log`). Expected: all pass.
-- [ ] **Step 5: Commit** ("ttsite: VGA library archive client"), then push the branch.
+  tests/test_settings_import.py >> tmp/t5.log 2>&1`. Expected: the new tests fail.
+- [ ] **Step 3: Implement.** The schema rules are duplicated from the spec; do not import from
+  tinytapeout-vga-videos. Close every response in a `finally`.
+- [ ] **Step 4: Run the suite and ruff.** Expected: all pass.
+- [ ] **Step 5: Commit** "ttsite: VGA library archive client", then push.
 
-## Task 5: Site routes (fpgas.online-site)
+## Task 6: Site routes and the upload-name check (fpgas.online-site)
 
-**Repo:** fpgas.online-site. Branch `vga-library` (the same branch, after Task 4; one PR). Spec
-section 3, Routes.
+**Repo and branch:** fpgas.online-site, branch `vga-library-routes` off `vga-library-client`.
+**Spec:** section 3 Routes.
 
 **Files:**
-- Modify: `ttsite/src/ttsite/views.py` (add `api_library`, `api_library_load`)
-- Modify: `ttsite/src/ttsite/urls.py:14-16`
-- Test: `tests/test_views.py`
+- Modify: `ttsite/src/ttsite/views.py`. Add `api_library` and `api_library_load`. Change
+  `api_bitstream` (lines 161-177).
+- Modify: `ttsite/src/ttsite/urls.py:14-16`.
+- Test: `tests/test_views.py`.
 
 **Interfaces:**
-- Consumes: Task 4's `library.index`, `library.entry`, `library.fetch_bin`,
-  `daemon.library_state`, `daemon.library_push` and `daemon.Unsupported`, plus the existing
-  `daemon.enable`.
+- Consumes: everything Task 5 produces.
 - Produces:
-  - URL names `ttsite-api-library` (`api/board/<slug:slug>/library`) and
-    `ttsite-api-library-load` (`api/board/<slug:slug>/library/<str:name>/load`);
-  - the load response: the daemon's enable body plus `"pushed": bool`.
+  - URL names `ttsite-api-library` and `ttsite-api-library-load`.
+  - `LOAD_DEADLINE_SECONDS = 50`, `LOCK_SECONDS = 70`, `ENABLE_MIN_SECONDS = 27`,
+    `RETRY_MIN_SECONDS = 32`.
+  - The load response: the daemon's enable body, plus `pushed` and `hides_upload`.
+  - The index 404 body `{"error": "VGA library not published", "detail": ""}`.
 
-- [ ] **Step 1: Write the failing tests.** Follow the existing `boards` fixture and monkeypatch
-  `ttsite.daemon` and `ttsite.library`.
-  - `test_library_index_etag_and_304`;
-  - `test_library_index_gzip` (with `HTTP_ACCEPT_ENCODING="gzip"`, `Content-Encoding: gzip`);
-  - `test_library_index_stale_header`;
-  - `test_library_index_404_on_asic_board`;
-  - `test_index_cold_and_archive_down_is_502` (Review Focus 5);
-  - `test_library_off_when_setting_empty` (404);
-  - `test_load_cached_entry_skips_fetch` (`fetch_bin` is not called; `pushed` is false);
-  - `test_load_pushes_then_enables_with_index_values` (the enable body is exactly
-    `{"clock_hz": 25175000, "ui_in": null}` for the first fixture entry, and `{"clock_hz":
-    25175000, "ui_in": 5}` for the fourth);
-  - `test_load_old_daemon_501` (the error is exactly `board software too old`);
-  - `test_load_retries_once_after_404_enable`;
-  - `test_load_unknown_id_404`;
-  - `test_load_bad_name_404` (`Tt_UM`, 41 characters);
-  - `test_load_bin_404_says_still_syncing` (Review Focus 1; status 502, and `error` carries the
-    syncing message);
-  - `test_second_concurrent_load_gets_409` (Review Focus 2: the lock key already set gives 409,
-    and the key is removed after a normal load);
-  - `test_load_requires_csrf` (`Client(enforce_csrf_checks=True)` without a token gives 403,
-    and with the cookie and the `X-CSRFToken` header gives 200);
-  - `test_load_clears_designs_cache`;
-  - `test_load_skips_retry_after_20s` (with the clock injected).
-- [ ] **Step 2: Run them and record that they fail** (`tmp/t5.log`).
-- [ ] **Step 3: Implement both views.** `api_library` uses `@require_GET @gzip_page` and caches
-  the board check under `ttsite:library:board:<slug>` for 60 s. `api_library_load` uses
-  `@require_POST` and follows the spec's steps 1 to 7 exactly, with the lock released in
-  `finally`.
-- [ ] **Step 4: Run the full suite and ruff.** Expected: all pass.
-- [ ] **Step 5: Commit** ("ttsite: VGA library index and load routes"), then push.
+- [ ] **Step 1: Write the failing tests.** Use the existing `boards` fixture. Monkeypatch
+  `ttsite.daemon` and `ttsite.library`. Inject the clock as `views.now`.
+  - Index route:
+    - `test_library_index_etag_304_under_gzip`: `Accept-Encoding: gzip`, with `If-None-Match:
+      W/"sha256-..."`, gives 304.
+    - `test_library_index_stale_header`
+    - `test_library_index_not_published_404`
+    - `test_index_cold_and_archive_down_is_502`
+    - `test_library_index_404_on_asic_board`
+    - `test_library_off_when_setting_empty`
+  - Load route, happy paths:
+    - `test_load_cached_entry_skips_fetch`
+    - `test_load_pushes_then_enables_with_index_values`: for fixture row 1 the enable body is
+      exactly `{"clock_hz": 25175000, "ui_in": null, "ui_in_mask": 0}`; for row 0 it is
+      `{"clock_hz": 25175000, "ui_in": 1, "ui_in_mask": 1}`.
+    - `test_load_clears_designs_cache_and_passes_hides_upload`
+  - Load route, failures:
+    - `test_load_old_daemon_501`
+    - `test_load_retries_once_after_404_enable` (Review Focus 4)
+    - `test_load_no_retry_under_32s_left`
+    - `test_load_504_when_under_27s_before_enable`
+    - `test_load_bin_404_says_still_syncing` (Review Focus 1)
+    - `test_load_unknown_id_404`
+    - `test_load_bad_name_404`
+  - Lock and CSRF:
+    - `test_load_lock_uses_ttsite_cache`: a fake `caches["ttsite"]` whose `add` returns False
+      gives 409. One whose `add` raises `redis.exceptions.ConnectionError` gives 503. The key
+      is deleted after success and after failure.
+    - `test_load_requires_csrf`: with `Client(enforce_csrf_checks=True)`, a request without a
+      token gets 403; with the cookie and the header it gets 200.
+  - Upload-name check:
+    - `test_upload_refused_for_index_name`: 409 with the spec's text.
+    - `test_upload_allowed_without_index_copy`
+- [ ] **Step 2: Run them and record the failures.** `tmp/t6.log`.
+- [ ] **Step 3: Implement.**
+  - `api_library` takes `@require_GET`, then `@condition(etag_func=...)` outermost, then
+    `@gzip_page`.
+  - `api_library_load` takes `@require_POST` and follows the spec's load steps 1 to 9. The lock
+    is released in `finally`.
+- [ ] **Step 4: Run the suite and ruff.** Expected: all pass.
+- [ ] **Step 5: Commit** "ttsite: VGA library index and load routes; refuse upload names in
+  the library", then push.
 
-## Task 6: VGA library panel (fpgas.online-site)
+## Task 7: VGA library panel (fpgas.online-site)
 
-**Repo:** fpgas.online-site. Branch `vga-library` (after Task 5). Spec section 3, The VGA
-library panel, and the warnings table in section 1.
+**Repo and branch:** fpgas.online-site, branch `vga-library-panel` off `vga-library-routes`.
+**Spec:** section 3 Panel, and section 1 Warnings and Order.
 
 **Files:**
-- Create: `ttsite/src/ttsite/static/ttsite/library.js`
-- Modify: `ttsite/src/ttsite/static/ttsite/board.js:120-232`
-- Modify: `ttsite/src/ttsite/templates/ttsite/board.html:36-50`
-- Modify: `ttsite/src/ttsite/static/ttsite/ttsite.css`
-- Modify: `ttsite/src/ttsite/views.py:50-70` (`library_enabled` in the board context)
-- Create: `tests/js/library.test.mjs`, `tests/test_library_js.py` (copy the pattern of
-  `tests/test_power_button_js.py`)
-- Create: `tests/fake_library_server.py` (dev-server settings override for the manual check)
-- Modify: `tests/test_static.py`, `tests/test_views.py`
+- Create: `ttsite/src/ttsite/static/ttsite/library.js`.
+- Modify: `ttsite/src/ttsite/static/ttsite/board.js`:
+  - `render` at lines 146-172;
+  - `enable` at 173-196;
+  - the `mountCommander` options at 108-116, adding `csrfToken: csrf`;
+  - the badge at 155-156.
+- Modify: `ttsite/src/ttsite/templates/ttsite/board.html:36-50`.
+- Modify: `ttsite/src/ttsite/static/ttsite/ttsite.css`.
+- Modify: `ttsite/src/ttsite/views.py`, the board context in `board` at lines 49-70, to add
+  `library_enabled`.
+- Create: `tests/js/library.test.mjs`, and `tests/test_library_js.py`, which follows
+  `tests/test_power_button_js.py`.
+- Modify: `tests/test_static.py`, `tests/test_views.py`.
 
 **Interfaces:**
-- Consumes: Task 5's routes, and the site wire format from Task 4.
-- Produces: `library.js` exports, CommonJS and `window.ttsiteLibrary`, as `power-button.js`
-  does:
-  - `matches(entry, query: string) -> bool`;
-  - `shuttleOrder(shuttles: string[]) -> string[]`, with
-    `SHUTTLE_ORDER = ["ttsky26c","ttsky26a","ttihp26a","ttsky25b","ttsky25a","ttihp25b","ttihp25a","ttcad25a","ttgf0p3","ttgf0p2","ttgf0p1","ttihp0p4","ttihp0p2","ttihp0p1","tt10","tt09","tt08","tt07","tt06","tt05of","tt05","tt04","tt03p5","tt03"]`;
-  - `page(items: any[], pageNo: number, perPage = 24) -> {items, pageNo, pages}`;
-  - `badges(entry) -> {text: string, cls: "warn" | "info"}[]`;
-  - `assetUrl(base: string, path: string | null) -> string | null`.
+- Consumes: Task 6's routes and bodies.
+- Produces: `library.js`, exported both through CommonJS and as `window.ttsiteLibrary`.
+  - `matches(entry, query) -> bool`
+  - `shuttles(designs) -> string[]`, in order of first appearance
+  - `filter(designs, query, shuttle) -> entry[]`
+  - `page(items, pageNo, perPage = 24) -> {items, pageNo, pages}`
+  - `badges(entry) -> {text, cls}[]`, exactly the spec's table
+  - `assetUrl(base, path) -> string | null`
+  - `renderPage(container, state, doc)`, which draws one panel state with `doc.createElement`
+    and `textContent` only. `state.kind` is one of `"too-old"`, `"loading"`,
+    `"not-published"`, `"error"`, `"empty"`, `"ready"`.
 
-  The Commander (Task 8) copies `SHUTTLE_ORDER` and the badge texts verbatim.
+  The Commander (Task 9) copies the badge texts.
 
-- [ ] **Step 1: Write the failing node tests** in `tests/js/library.test.mjs`:
-  - `matches all terms over title author shuttle id macro`;
-  - `shuttle order newest first, unknown last alphabetically`;
-  - `paging clamps and resets` (Review Focus 3: `page([], 7)` gives `{items: [], pageNo: 1,
-    pages: 1}`; `page(30 items, 9)` gives `pageNo 2`, `pages 2`, and 6 items);
-  - `badges match the spec table`: the second fixture entry gives `[{text: "timing: 17.08 MHz
-    < 25.175 MHz", cls: "warn"}, {text: "not hardware-validated", cls: "warn"}]`, and the fourth
-    includes `{text: "video: barely-moving", cls: "info"}`;
-  - `assetUrl null stays null`.
-
-  Add Python tests:
-  - `test_board_html_has_library_section_when_enabled`, and its absence when the setting is
-    empty;
-  - `test_board_js_library_panel_behaviour` in `test_static.py`, grep-style like
-    `test_board_js_has_gallery_and_upload_behaviour`: it asserts `loading = 'lazy'`,
-    `/library/`, `/load`, `X-CSRFToken` and `board software too old`.
+- [ ] **Step 1: Write the failing node tests.** They use a small fake document, as the
+  power-button tests do.
+  - `matches all terms over title author shuttle id macro`
+  - `shuttles follow first appearance in the index`
+  - `paging clamps and resets` (Review Focus 5): `page([], 7)` gives `{items: [], pageNo: 1,
+    pages: 1}`; 30 items at page 9 give page 2 of 2, with 6 items.
+  - `badges match the spec table`:
+    - row 4 gives `{text: "timing: 17.08 MHz < 25.175 MHz", cls: "warn"}` and `{text: "not
+      hardware-validated", cls: "info"}`;
+    - row 0 includes `{text: "video: barely-moving", cls: "info"}` and `{text: "inputs set:
+      0x01", cls: "info"}`.
+  - `renderPage draws each state`: one assertion on the visible text of each state.
+  - `load of a vanished id reloads the index` (Review Focus 2): a fake `fetch` answers the load
+    with 404 `no such library design`; the controller function then calls the index fetch
+    again and shows "no longer in the library".
+  - In Python:
+    - `test_board_html_has_library_section_when_enabled`, plus its absence when the setting is
+      empty;
+    - `test_board_js_wires_library_and_csrf`, a grep test: `/library/`, `/load`,
+      `X-CSRFToken`, `csrfToken: csrf`, `loading = 'lazy'`.
 - [ ] **Step 2: Run them.** `uv run pytest tests/test_library_js.py tests/test_static.py
-  tests/test_views.py >> tmp/t6.log 2>&1`. Expected: the new tests fail.
+  tests/test_views.py >> tmp/t7.log 2>&1`. Expected: the new tests fail.
 - [ ] **Step 3: Implement.**
-  - Write `library.js`.
-  - In `board.js`, add a `mountLibrary(designsBody)` called from `render()`:
-    - the panel states of the spec's table;
-    - 24 cards per page;
-    - posters with `loading="lazy" decoding="async" width="160" height="120"`;
-    - the Load button posting to `api + '/library/' + encodeURIComponent(id) + '/load'` with
-      `X-CSRFToken`.
-  - The gallery list hides library entries except the enabled one.
-  - Add the CSS classes the spec lists.
-  - All text goes in with `textContent`.
-- [ ] **Step 4: Run the full suite, ruff, and `node --test tests/js/`.** Expected: all pass.
-- [ ] **Step 5: Check by hand in a browser against the Django dev server**, with
-  `ttsite.daemon` and `ttsite.library` faked by `tests/fake_library_server.py`, a small
-  `manage.py runserver` settings override that serves the fixture.
-  - Search `sea`: 1 result.
-  - Shuttle filter `tt05`: 1 result.
-  - Paging: with the fixture copied to 60 entries (ids suffixed `_1`..`_12`), 3 pages.
-  - Save a screenshot to `tmp/t6-panel.png`.
-- [ ] **Step 6: Commit** ("ttsite: VGA library panel"), then push the branch.
+  - `library.js` holds the logic and the drawing. `board.js` holds the fetches and events.
+  - The gallery shows a library entry only while it is enabled, titled from the index.
+  - CSS: `.tt-library`, `.tt-library-grid`, `.tt-badge--library`, `.tt-badge--warn`,
+    `.tt-badge--info`.
+- [ ] **Step 4: Run the suite, ruff, and `node --test tests/js/`.** Each goes to `tmp/t7.log`
+  separately. Expected: all pass.
+- [ ] **Step 5: Commit** "ttsite: VGA library panel", then push.
 
-## Task 7: Commander CSRF header (tt-commander-app)
+## Task 8: Commander CSRF header (tt-commander-app)
 
-**Repo:** `~/github/fpgas-online/tt-commander-app`. Branch `csrf-token` off
-`origin/fpgas-online`. Spec section 4, CSRF. This is its own small PR (owner question 3).
+**Repo and branch:** `~/github/fpgas-online/tt-commander-app`, branch `csrf-token` off
+`origin/fpgas-online`. It depends on nothing; the controller may run it first (spec section 8
+step 1). **Spec:** section 4, the "Its own PR" part.
 
 **Files:**
-- Modify: `src/components/EmbedApp.tsx` (`EmbedOptions.csrfToken?: () => string`)
-- Modify: `src/model/fpgaDesigns.ts:67-84` and `:129-139` (`daemonJson` gains an `opts: {
-  csrfToken?: () => string }` argument; `enableFpgaDesign(apiBase, name, clockHz?, ui_in:
-  number | null = null)` always sends `{"clock_hz": clockHz ?? null, "ui_in": ui_in}`)
-- Modify: `README.fpgas-online.md` (the options table)
-- Test: `src/model/fpgaDesigns.spec.ts`
+- Modify: `src/components/EmbedApp.tsx`, adding `EmbedOptions.csrfToken?: () => string` and
+  calling `setCsrfToken`.
+- Modify: `src/model/fpgaDesigns.ts:67-84`, in `daemonJson`.
+- Modify: `README.fpgas-online.md`, the options table.
+- Test: `src/model/fpgaDesigns.spec.ts`.
 
 **Interfaces:**
-- Produces:
-  - `setCsrfToken(fn: (() => string) | undefined): void` in `fpgaDesigns.ts`, called by
-    `EmbedApp` from `options.csrfToken`;
-  - every non-GET `daemonJson` request carries `X-CSRFToken: fn()` when `fn` is set.
+- Produces: `setCsrfToken(fn: (() => string) | undefined): void` in `fpgaDesigns.ts`. When
+  `fn` is set, every `daemonJson` request whose method is not GET sends `X-CSRFToken: fn()`.
 
-- [ ] **Step 1: Write the failing tests.**
-  - `enable sends X-CSRFToken when a token getter is set`;
-  - `GET designs sends no CSRF header`;
-  - `enable sends explicit nulls` (the body is `{"clock_hz":null,"ui_in":null}` when no clock
-    is given).
-- [ ] **Step 2: Run them.** `npx vitest run src/model/fpgaDesigns.spec.ts >> tmp/t7.log
+- [ ] **Step 1: Write the failing tests**
+  - `enable sends X-CSRFToken when a token getter is set`
+  - `GET designs sends no CSRF header`
+  - `no header when no getter is set`
+- [ ] **Step 2: Run them.** `npx vitest run src/model/fpgaDesigns.spec.ts >> tmp/t8.log
   2>&1`. Expected: they fail.
 - [ ] **Step 3: Implement.**
-- [ ] **Step 4: Run all the checks.** `npm run lint && npm run typecheck && npx vitest run >>
-  tmp/t7.log 2>&1`. Expected: all pass.
-- [ ] **Step 5: Commit** ("embed: send the host page's CSRF token on POST"), then push.
+- [ ] **Step 4: Run the checks, each logged separately:** `npm run lint >> tmp/t8.log 2>&1;
+  npm run typecheck >> tmp/t8.log 2>&1; npx vitest run >> tmp/t8.log 2>&1`. Expected: all pass.
+- [ ] **Step 5: Commit** "embed: send the host page's CSRF token on POST", then push. After
+  merge, Tim tags `embed-v0.2.1`.
 
-The `csrfToken: csrf` line in the site's `board.js` `mountCommander` options goes into Task 6's
-branch as one extra commit made by this task's implementer (`board.js:108-116`). Unknown
-options are ignored by the 0.2.0 bundle, so this is safe before the bump.
+## Task 9: Commander library source (tt-commander-app)
 
-## Task 8: Commander library source (tt-commander-app)
-
-**Repo:** tt-commander-app. Branch `library-source` off `csrf-token` (stacked). Spec section 4.
+**Repo and branch:** tt-commander-app, branch `library-source` off `csrf-token`.
+**Spec:** section 4, the "library source" part.
 
 **Files:**
-- Create: `src/model/fpgaLibrary.ts`, `src/model/fpgaLibrary.spec.ts`
-- Modify: `src/model/fpgaDesigns.ts` (the `FpgaDesign` type, and the merge after
-  `loadFpgaDesigns`)
-- Modify: `src/model/shuttle.ts:7-21` (`Project.shuttle?: string`, `Project.source?: 'demo' |
-  'upload' | 'library'`)
-- Modify: `src/components/ProjectSelect.tsx:83-90`
-- Modify: `src/components/BoardConfigPanel.tsx:58-90`, `:190-230`
-- Copy: Task 1's fixture to `src/model/testing/fpga-library.json`
-- Modify: `README.fpgas-online.md`
-- Test: `src/model/fpgaLibrary.spec.ts`, `src/components/BoardConfigPanel.spec.tsx`
+- Create: `src/model/fpgaLibrary.ts` and `src/model/fpgaLibrary.spec.ts`.
+- Create: `src/model/testing/fpga-library.json`, a copy of the Task 1 fixture.
+- Modify: `src/model/fpgaDesigns.ts`:
+  - the `FpgaDesign` type at lines 9-19;
+  - `designToProject` at 52-64;
+  - `syncSelectionToEnabled` at 98-106;
+  - `loadFpgaDesigns` at 109-127.
+- Modify: `src/model/shuttle.ts:7-21`, adding `shuttle?: string` and `source?: 'demo' |
+  'upload' | 'library'`.
+- Modify: `src/ttcontrol/TTBoardDevice.ts:130-146`, `selectFpgaDesign`, plus a
+  `designNotice` data field.
+- Modify: `src/components/ProjectSelect.tsx:83-90`.
+- Modify: `src/components/BoardConfigPanel.tsx:190-235`.
+- Modify: `README.fpgas-online.md`.
+- Test: `src/model/fpgaLibrary.spec.ts`, `src/ttcontrol/TTBoardDevice.spec.ts`,
+  `src/components/BoardConfigPanel.spec.tsx`.
 
 **Interfaces:**
-- Consumes: Task 5's routes, Task 7's `setCsrfToken` and `daemonJson`, and Task 6's
-  `SHUTTLE_ORDER` and badge texts (copied, not imported).
+- Consumes: Task 6's routes, Task 8's `setCsrfToken`, and Task 7's badge texts, copied.
 - Produces:
-  - `LibraryEntry`, the site's entry type;
-  - `loadFpgaLibrary(apiBase: string): Promise<void>`, which fills `fpgaLibrary.byId`;
-  - `loadLibraryDesign(apiBase: string, id: string): Promise<{enabled: string; clock_hz:
-    number | null; ui_in: number | null; ui_in_held: number[]; pushed: boolean}>`;
+  - the `LibraryEntry` type;
+  - `fpgaLibrary` store `{state: 'idle' | 'loading' | 'ready' | 'notPublished' | 'error',
+    byId}`;
+  - `loadFpgaLibrary(apiBase: string): Promise<void>`;
+  - `loadLibraryDesign(apiBase: string, id: string): Promise<{enabled: string; ui_in: number
+    | null; ui_in_driven: number[]; ui_in_held: number[]; released: number[]; pushed: boolean;
+    hides_upload: boolean}>`;
   - `libraryWarnings(e: LibraryEntry): {text: string; cls: 'warn' | 'info'}[]`;
+  - `mergeProjects(designs: FpgaDesign[], library: LibraryEntry[]): Project[]`, keyed by
+    (`macro`, `source`), with `address` = position in the list;
   - `PROJECT_LIMIT = 100`.
 
-- [ ] **Step 1: Write the failing tests.**
-  - `library not loaded when designs lack the library key`;
-  - `library entries follow board designs, sorted by shuttle order then title`;
-  - `entries already on the board are not duplicated`;
-  - `loadLibraryDesign posts {} with X-CSRFToken to /library/<id>/load`;
-  - `warnings match the site table` (the same two cases as Task 6);
-  - `enabled id missing from list does not throw` (Review Focus 4);
-  - in `BoardConfigPanel.spec.tsx`:
-    - `timing-fail library project shows warning icon and Alert, Load enabled`;
-    - `Load on a library project calls the site load route`;
-    - `ui_in shown after load`;
-    - `search matches shuttle and macro`;
-    - `options capped at 100 with a narrow-down line`.
-- [ ] **Step 2: Run them and record that they fail** (`tmp/t8.log`).
-- [ ] **Step 3: Implement.** Map the warnings onto `danger_level: 'medium'` and
-  `danger_reason` joined with `; `. Never set `'high'`.
-- [ ] **Step 4: Run lint, typecheck, vitest, `npm run build:embed`.** Expected: all pass, and
-  `dist/embed/tt-commander-embed.js` is built.
-- [ ] **Step 5: Commit** ("fpga: VGA library as a third design source"), then push.
+- [ ] **Step 1: Write the failing tests**
+  - `library not loaded when designs lack the library key`
+  - `merge keeps board designs first then index order, address is position`
+  - `a library entry and an upload of the same name are two projects`
+  - `selection prefers the source /designs reports for the enabled name`
+  - `enabled id missing from list does not throw`
+  - `notPublished state on 404`
+  - `warnings match the site table`
+  - In `TTBoardDevice.spec.ts`:
+    - `selectFpgaDesign routes library projects to the load route and calls syncState`
+    - `selectFpgaDesign keeps enableFpgaDesign for demos`
+    - `load error goes to designError`
+  - In `BoardConfigPanel.spec.tsx`:
+    - `timing-fail shows warning icon and Load stays enabled`
+    - `designNotice shows inputs set`
+    - `search matches shuttle and macro`
+    - `options capped at 100 with a narrow-down line`
+- [ ] **Step 2: Run them and record the failures.** `tmp/t9.log`.
+- [ ] **Step 3: Implement.** Map `warn` badges to `danger_level: 'medium'`, with
+  `danger_reason` set to the badges joined by `; `. Never set `'high'`.
+- [ ] **Step 4: Run lint, typecheck, vitest and `npm run build:embed`, each logged separately.**
+  Expected: all pass, and `dist/embed/tt-commander-embed.js` exists.
+- [ ] **Step 5: Commit** "fpga: VGA library as a third design source", then push. After
+  merge, Tim tags `embed-v0.3.0`.
 
-## Task 9: The mirror leaves the harness's files alone (tinytapeout-vga-videos)
+## Task 10: The mirror leaves the harness's files alone (tinytapeout-vga-videos)
 
-**Repo:** tinytapeout-vga-videos. Branch `fpga-library-foreign` off `fpga-library-schema`
-(stacked on Task 1). Spec section 5.
+**Repo and branch:** tinytapeout-vga-videos, branch `fpga-library-foreign` off
+`fpga-library-schema`. **Spec:** section 5.
 
 **Files:**
-- Modify: `ttvga/remote.py:283-316` (`mirror`)
-- Modify: `docs/publishing.md` (a new section, "Files the FPGA harness owns")
-- Test: `tests/test_mirror.py`
+- Modify: `ttvga/remote.py:283-316`. Extract `mirror_script` from `mirror`.
+- Modify: `docs/publishing.md`, adding a section "Files the FPGA harness owns".
+- Test: `tests/test_mirror.py`.
 
 **Interfaces:**
-- Consumes: `ttvga.fpgalibrary.FOREIGN`.
-- Produces: `remote.mirror_script(src: str, dest: str, dry_run: bool) -> str`, extracted from
-  `mirror` so the script can be tested without ssh.
+- Consumes: `fpgalibrary.FOREIGN`.
+- Produces: `remote.mirror_script(src: str, dest: str, dry_run: bool) -> str`.
 
-- [ ] **Step 1: Write the failing tests.**
-  - `test_mirror_excludes_foreign_and_never_deletes`: the script contains `--exclude
-    '/*/*/*.bin'` and `--exclude /fpga-library.json` (as `shlex.quote` renders them), and no
-    `--delete`.
-  - `test_mirror_summary_counts_bitstreams`: the script contains `bitstreams:` and
+- [ ] **Step 1: Write the failing tests**
+  - `test_mirror_excludes_foreign_and_never_deletes`: there is one `--exclude` per `FOREIGN`
+    pattern, quoted with `shlex.quote`, and there is no `--delete`.
+  - `test_mirror_summary_counts_bitstreams`: the output includes `bitstreams:` and
     `fpga-library.json:`.
-  - `test_foreign_is_the_one_list`: the excludes are built from `fpgalibrary.FOREIGN`.
-- [ ] **Step 2: Run them and record that they fail** (`tmp/t9.log`).
-- [ ] **Step 3: Implement.** In the docs, name the files, their owner (the tt-harness-fpga-vga
-  session), the spec path, and the rule that no tool here replaces an archive directory
-  wholesale.
+- [ ] **Step 2: Run them and record the failures.** `tmp/t10.log`.
+- [ ] **Step 3: Implement.** Write the docs section.
 - [ ] **Step 4: Run `uv run pytest`.** Expected: all pass.
-- [ ] **Step 5: Commit** ("mirror: never overwrite the FPGA harness's files"), then push.
-  Tell the controller that the untracked raw-traces plan in `.worktrees/pipeline-plan` (lines
-  387-389) assumes `<shuttle>/<macro>/fpga/`, and must switch to `fpgalibrary.FOREIGN`. Do not
-  edit that worktree.
+- [ ] **Step 5: Commit** "mirror: never overwrite the FPGA harness's files", then push. Report
+  to the controller that the untracked raw-traces plan in `.worktrees/pipeline-plan`, lines
+  387-389, must use `fpgalibrary.FOREIGN` rather than `<shuttle>/<macro>/fpga/`. Do not edit
+  that worktree.
 
-## Task 10: Harness publisher, an interface contract (tt-harness-fpga-vga session)
+## Task 11: Harness publisher, the interface contract (tt-harness-fpga-vga session)
 
-**Executed by the tt-harness-fpga-vga session, not by this plan's controller.** The controller
-sends the session this task and the spec, and waits for its branch. This task fixes only what
-must come out (spec section 6). The session chooses its own files and tests.
+The tt-harness-fpga-vga session executes this task. The controller sends the session this task
+and spec section 6, then waits for the pushed branch.
 
 **Contract:**
 - The command is `tthfv publish --archive <dir>`. The path is never recorded in the repo.
-- The id is `library_id` exactly as in the Global Constraints. It replaces `demo_name` on the
-  `demos-export` branch (33 + 6 characters, `tt_um_` kept). The test vectors are the four rows
-  of spec section 1, plus `ttsky25a/tt_um_rebeccargb_vga_timing_experiments` giving
-  `ttsky25a_rebeccargb_vga_timing__4638a050`.
-- The uniqueness checks are spec section 1's list, using the demo names from
-  tinytapeout-fpga-demos at a commit recorded in the output's log.
-- The output is schema 1 exactly. `title` carries no warning text.
-- Write order: every bin, skipping existing names; then `fpga-library.json.tmp`; then
-  `tt-vga fpga-library-check <tmp> --bins <archive>` (Task 1's CLI, run as a program), which
-  must exit 0; then `rename`.
-- Old bins are never deleted. Files are mode 0644 and directories 0755.
-- Done when the session's branch is pushed, and its test run plus the check's exit code 0 on a
-  dry run into a local directory are reported.
-- Nothing is written to `/srv/data.wafer.space` until Tim has approved the format (owner
-  question 2).
+- The id is `library_id` exactly as in the Global Constraints (Ruling AC). It replaces
+  `demo_name` at `tthfv/demos.py:53-59` on `demos-export`. The test vectors are the five rows of
+  the spec's id table plus the hashed row.
+- `ui_in_mask` comes from `effective_ui_in_mask` for the Welland tie profile.
+  - `ui_in` is the override value, limited to the mask.
+  - `ui_in` is null when the mask is 0.
+- `fmax_hz` is an int.
+- The JSON is written with `allow_nan=False`.
+- Entries are ordered newest shuttle first, then by title, with each shuttle contiguous.
+- No warning text goes in `title`.
+- The output passes `tt-vga fpga-library-check`.
+- The write order is:
+  1. the bins, skipping existing names;
+  2. `fpga-library.json.tmp`;
+  3. the check, which must exit 0;
+  4. `rename` into place.
+- Old bins are never deleted. Files are mode 0644, directories 0755.
+- Nothing is written to `/srv/data.wafer.space` until Tim has approved the format.
 
-- [ ] **Step 1: Send the contract** to the tt-harness-fpga-vga session, with the spec path and
-  the branch.
-- [ ] **Step 2: Receive the session's pushed branch and its dry-run log.** Run `tt-vga
-  fpga-library-check` on the dry-run output yourself and record the exit code in
-  `tmp/t10.log`.
+- [ ] **Step 1: Send the contract and the spec path** to the session.
+- [ ] **Step 2: Receive the session's pushed branch and its dry-run output** in a local
+  directory. Run `uv run tt-vga fpga-library-check <out>/fpga-library.json --bins <out> >>
+  tmp/t11.log 2>&1`. Expected: exit 0, recorded in the log.
 
-## Task 11: Hardware check on one FabricFox board
+## Task 12: Hardware check on one FabricFox board
 
-**When:** after Tim has deployed the daemon (Pi play), the site, and the Commander 0.3.0 pin,
-and after the harness has published (spec section 8, steps 1 to 5). It is read-only apart from
-the loads, and follows the spec's section 9, Hardware check.
+**When:** after spec section 8, steps 1 to 5 are deployed and published. **Spec:** section 9,
+Hardware check.
 
 **Files:**
-- Create: `tmp/t11-hardware.log` in this worktree (not committed).
+- Create: `tmp/t12-hardware.log` and screenshots. They are not committed.
 - Create: a claim at `~/github/TinyTapeout/tmp/board-claims/<board>-p<port>.json`.
 
-- [ ] **Step 1: Claim the board.** Choose it as in owner question 4. Confirm it by USB serial,
-  and check that `status.json` shows `clients == 0` and an idle display state of `loaded`.
-  Write the claim (UTC times, expiry 30 min).
-- [ ] **Step 2: Read-only checks.**
-  - `curl -s https://tinytapeout.fpgas.online/api/board/<slug>/designs >>
-    tmp/t11-hardware.log 2>&1`: the top-level `library` key is there. Record the upload names.
-  - `curl -s .../library`: the count is about 445, and `ttsky25a_vga_example` is present.
-- [ ] **Step 3: Load `ttsky25a_vga_example` from the board page** in a browser (Playwright),
-  using the panel.
-  - The response has `pushed: true`, then `/designs` shows `enabled == "ttsky25a_vga_example"`
-    with `source: "library"`.
-  - Take a camera screenshot to `tmp/t11-pattern.png`.
-- [ ] **Step 4: Press Load again.** `pushed: false`.
-- [ ] **Step 5: Load a library entry with `ui_in` not null through the Commander.** The Alert
-  shows the inputs, and `ui_in_held == []`. Note from the site's nginx access log on tweed
-  whether 0.2.0 Commander POSTs had answered 403. Read it only; do not reproduce.
-- [ ] **Step 6: Restore.** Run vgacap's `tools/board_restart.py <ws link>`, wait for the idle
-  display to read `loaded` (about 75 s), and check that the upload names equal Step 2's. Delete
-  the claim. Abort at once and restore if `clients` goes above 0 at any point.
-- [ ] **Step 7: Report** the log and the screenshots to the controller. The total time on the
-  board is under 10 minutes.
+- [ ] **Step 1: Claim the board.** Choose it per owner question 4. Confirm the USB serial.
+  `status.json` must show `clients == 0` and the idle display `loaded`. Write the claim with
+  UTC times and a 30-minute expiry.
+- [ ] **Step 2: Read-only checks.** Log each `curl` to `tmp/t12-hardware.log`.
+  - `/designs` has the top-level `library` key. Record the upload names.
+  - `/library` has about 445 designs, including `ttsky25a_vga_example`.
+- [ ] **Step 3: Load from the board page.** Load `ttsky25a_vga_example` through the board page,
+  driven by Playwright.
+  - The response shows `pushed: true`.
+  - `/designs` shows it enabled, with `source: "library"`.
+  - Save a camera screenshot to `tmp/t12-pattern.png`.
+- [ ] **Step 4: Load it again.** The response shows `pushed: false`.
+- [ ] **Step 5: Load a `ui_in` entry through the Commander and check the clock.** Use the first
+  entry with `ui_in` not null.
+  - `ui_in_driven` equals the mask's bits, and `ui_in_held` is empty.
+  - In the Commander REPL, run `print(tt.is_auto_clocking, tt.auto_clocking_freq)`. It must
+    print `True` and the entry's `clock_hz`.
+  - The camera shows a picture (`tmp/t12-ui-in.png`).
+- [ ] **Step 6: Load the `tt_um_vga_pattern` demo from the gallery.** `released` lists Step 5's
+  bits, and the clock is the demo's.
+- [ ] **Step 7: Restore.** Run vgacap `tools/board_restart.py <ws link>`. Wait for the idle
+  display to show `loaded`. The upload names must equal Step 2's. Delete the claim. If `clients`
+  ever goes above 0, stop at once and restore.
+- [ ] **Step 8: Report the log and screenshots** to the controller. Total time on the board
+  must be under 10 minutes.
