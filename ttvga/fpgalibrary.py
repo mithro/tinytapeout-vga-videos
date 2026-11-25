@@ -5,12 +5,21 @@ The index lists prebuilt iCE40UP5K bitstreams of VGA designs. The harness
 writes it, and the site, the daemon and the Commander read it. This module is
 the one executable statement of the rules; it is run as a program
 (`tt-vga fpga-library-check`) and never imported by the other repositories.
+
+Deferral: a rule that depends on other fields is skipped while those fields are
+themselves invalid, so one fault gives one violation. These fields are the
+inputs (`DEFERRING_FIELDS`): `shuttle` and `macro` (for `id`, `bin` and the
+media paths), `bin_sha256` (for `bin`) and `ui_in_mask` (for `ui_in`). An entry
+with a bad input and a bad dependent field still fails and exits 1; the
+dependent violation only shows up after the input is fixed. The CLI prints
+"dependent checks deferred" in that case.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 from collections.abc import Callable
 from pathlib import Path
@@ -166,6 +175,8 @@ ENTRY_KEYS = (
     "fmax_hz", "validation", "verdict", "qspi", "poster", "preview_gif", "video_10s_webm",
 )  # fmt: skip
 MEDIA_KEYS = ("poster", "preview_gif", "video_10s_webm")
+# Fields whose invalidity defers the checks that depend on them (see the module docstring).
+DEFERRING_FIELDS = frozenset({"shuttle", "macro", "bin_sha256", "ui_in_mask"})
 
 
 def _media_rule(v: Any, shuttle: Any, macro: Any) -> str | None:
@@ -319,14 +330,15 @@ def check_bins(doc: dict, root: Path) -> list[str]:
             continue  # validate() reports it
         path = root / rel
         try:
-            data = path.read_bytes()
+            size = path.stat().st_size
+            data = path.read_bytes() if size <= MAX_BIN_BYTES else b""
         except OSError as exc:
             out.append(f"designs[{i}].bin: cannot read {rel}: {exc.strerror}")
             continue
-        if len(data) != entry.get("bin_bytes"):
+        if size > MAX_BIN_BYTES:
+            why = f"is {size} bytes, over {MAX_BIN_BYTES}"
+        elif len(data) != entry.get("bin_bytes"):
             why = f"is {len(data)} bytes, bin_bytes says {entry.get('bin_bytes')}"
-        elif len(data) > MAX_BIN_BYTES:
-            why = f"is over {MAX_BIN_BYTES} bytes"
         elif hashlib.sha256(data).hexdigest() != entry.get("bin_sha256"):
             why = "does not match bin_sha256"
         elif PREAMBLE not in data[:PREAMBLE_WINDOW]:
@@ -341,9 +353,18 @@ def _refuse_constant(name: str) -> Any:
     raise ValueError(f"{name} is not allowed in fpga-library.json")
 
 
+def _finite_float(text: str) -> float:
+    value = float(text)
+    if not math.isfinite(value):
+        raise ValueError(f"{text} is not a finite number")
+    return value
+
+
 def load(path: Path) -> object:
-    """Read a document, refusing NaN and Infinity."""
-    return json.loads(Path(path).read_text(encoding="utf-8"), parse_constant=_refuse_constant)
+    """Read a document, refusing NaN, Infinity and numbers too large for a float."""
+    return json.loads(
+        Path(path).read_text(encoding="utf-8"), parse_constant=_refuse_constant, parse_float=_finite_float
+    )
 
 
 def add_parser(sub) -> None:
@@ -353,17 +374,28 @@ def add_parser(sub) -> None:
     p.set_defaults(func=_run)
 
 
+def _field_of(violation: str) -> str:
+    """`designs[3].ui_in_mask: ...` gives `ui_in_mask`."""
+    return violation.split(":", 1)[0].rpartition(".")[2]
+
+
 def _run(args) -> int:
     try:
         doc = load(args.file)
-    except (OSError, ValueError) as exc:
-        print(f"{args.file}: {exc}")
+    except (OSError, ValueError, RecursionError) as exc:
+        print(f"{args.file}: {type(exc).__name__}: {exc}")
         return 1
-    problems = validate(doc)
-    if args.bins is not None and isinstance(doc, dict) and isinstance(doc.get("designs"), list):
-        problems += check_bins(doc, args.bins)
+    try:
+        problems = validate(doc)
+        if args.bins is not None and isinstance(doc, dict) and isinstance(doc.get("designs"), list):
+            problems += check_bins(doc, args.bins)
+    except RecursionError as exc:
+        print(f"{args.file}: RecursionError: {exc}")
+        return 1
     for line in problems:
         print(line)
+    if any(_field_of(line) in DEFERRING_FIELDS for line in problems):
+        print("dependent checks deferred: fix the shuttle, macro, bin_sha256 and ui_in_mask violations, then recheck")
     if not problems:
         print(f"{args.file}: ok, {len(doc['designs'])} designs")
     return 1 if problems else 0

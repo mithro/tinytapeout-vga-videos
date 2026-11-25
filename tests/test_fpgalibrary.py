@@ -103,6 +103,7 @@ def _unknown_entry(d):
 
 
 D0 = ["designs", 0]
+P0 = "ttsky25b/tt_um_lukasdragoste_vga_patterns"
 CASES = [
     # (id, mutation, field prefix naming the violation)
     ("schema-2", _set(["schema"], 2), "schema"),
@@ -144,8 +145,12 @@ CASES = [
     ("ui-in-null-mask-1", _set(D0 + ["ui_in"], None), "designs[0].ui_in"),
     ("ui-in-with-mask-0", _set(["designs", 1, "ui_in"], 1), "designs[1].ui_in"),
     ("ui-in-256", _set(D0 + ["ui_in"], 256), "designs[0].ui_in"),
-    ("bin-differs", _set(D0 + ["bin"], "ttsky25b/tt_um_lukasdragoste_vga_patterns/x-0123456789ab.bin"), "designs[0].bin"),
-    ("bin-dotdot", _set(D0 + ["bin"], "ttsky25b/tt_um_lukasdragoste_vga_patterns/../x.bin"), "designs[0].bin"),
+    ("bin-differs", _set(D0 + ["bin"], f"{P0}/x-0123456789ab.bin"), "designs[0].bin"),
+    ("bin-dotdot", _set(D0 + ["bin"], f"{P0}/../x.bin"), "designs[0].bin"),
+    ("bin-bytes-bool", _set(D0 + ["bin_bytes"], True), "designs[0].bin_bytes"),
+    ("fmax-bool", _set(D0 + ["fmax_hz"], True), "designs[0].fmax_hz"),
+    ("clock-nan", _set(D0 + ["clock_hz"], float("nan")), "designs[0].clock_hz"),
+    ("fmax-inf", _set(D0 + ["fmax_hz"], float("inf")), "designs[0].fmax_hz"),
     ("bin-absolute", _set(D0 + ["bin"], "/etc/passwd"), "designs[0].bin"),
     ("bin-bytes-0", _set(D0 + ["bin_bytes"], 0), "designs[0].bin_bytes"),
     ("bin-bytes-big", _set(D0 + ["bin_bytes"], 262145), "designs[0].bin_bytes"),
@@ -159,11 +164,12 @@ CASES = [
     ("verdict-long", _set(D0 + ["verdict"], "a" * 33), "designs[0].verdict"),
     ("qspi-bad", _set(D0 + ["qspi"], "real"), "designs[0].qspi"),
     ("poster-absolute-url", _set(D0 + ["poster"], "https://example.com/p.png"), "designs[0].poster"),
-    ("poster-dotdot", _set(D0 + ["poster"], "ttsky25b/tt_um_lukasdragoste_vga_patterns/../p.png"), "designs[0].poster"),
-    ("poster-wrong-shuttle", _set(D0 + ["poster"], "ttsky25a/tt_um_lukasdragoste_vga_patterns/p.png"), "designs[0].poster"),
+    ("poster-dotdot", _set(D0 + ["poster"], f"{P0}/../p.png"), "designs[0].poster"),
+    ("poster-wrong-shuttle", _set(D0 + ["poster"], "ttsky25a/tt_um_lukasdragoste_vga_patterns/p.png"),
+     "designs[0].poster"),
     ("poster-wrong-macro", _set(D0 + ["poster"], "ttsky25b/tt_um_vga_example/p.png"), "designs[0].poster"),
     ("poster-type", _set(D0 + ["poster"], 5), "designs[0].poster"),
-    ("gif-bad-name", _set(D0 + ["preview_gif"], "ttsky25b/tt_um_lukasdragoste_vga_patterns/.hidden"), "designs[0].preview_gif"),
+    ("gif-bad-name", _set(D0 + ["preview_gif"], f"{P0}/.hidden"), "designs[0].preview_gif"),
     ("webm-two-segments", _set(D0 + ["video_10s_webm"], "ttsky25b/v.webm"), "designs[0].video_10s_webm"),
     ("entry-missing-key", _delete(D0 + ["qspi"]), "designs[0].qspi"),
 ]
@@ -244,3 +250,65 @@ def test_cli_exit_codes(tmp_path, capsys):
     assert "designs[0].clock_hz" in capsys.readouterr().out
     path.write_text('{"schema": NaN}')
     assert cli.main(["fpga-library-check", str(path)]) == 1
+
+
+def test_load_refuses_non_finite_float(tmp_path):
+    path = tmp_path / "x.json"
+    path.write_text('{"schema": 1, "x": 1e999}')
+    with pytest.raises(ValueError):
+        load(path)
+
+
+def test_check_bins_skips_traversal_bin(doc):
+    doc["designs"][0]["bin"] = f"{P0}/../x.bin"
+    assert check_bins(doc, FIXTURE) == []
+
+
+def test_check_bins_refuses_oversize_without_reading(tmp_path, doc):
+    root = _bins_doc(tmp_path, doc)
+    path = root / doc["designs"][0]["bin"]
+    path.write_bytes(bytes(262145))
+    got = check_bins(doc, root)
+    assert len(got) == 1 and "over 262144" in got[0]
+
+
+# Doubly-faulty entries: the dependent violation is deferred, but the entry still fails.
+def _doubly_shuttle(d):
+    d["designs"][0]["shuttle"] = "TT-SKY"
+    d["designs"][0]["id"] = "wrong"
+
+
+def _doubly_mask(d):
+    d["designs"][0]["ui_in_mask"] = 256
+    d["designs"][0]["ui_in"] = 3
+
+
+def _doubly_sha(d):
+    d["designs"][0]["bin_sha256"] = "A" * 64
+    d["designs"][0]["bin"] = f"{P0}/wrong-0123456789ab.bin"
+
+
+@pytest.mark.parametrize(
+    "mutate, field",
+    [(_doubly_shuttle, "shuttle"), (_doubly_mask, "ui_in_mask"), (_doubly_sha, "bin_sha256")],
+)
+def test_deferred_dependent_checks(doc, mutate, field, tmp_path, capsys):
+    mutate(doc)
+    got = validate(doc)
+    assert got and any(v.startswith(f"designs[0].{field}:") for v in got)
+    path = tmp_path / "bad.json"
+    path.write_text(json.dumps(doc))
+    assert cli.main(["fpga-library-check", str(path)]) == 1
+    out = capsys.readouterr().out
+    assert f"designs[0].{field}:" in out
+    assert "dependent checks deferred" in out
+
+
+def test_cli_reports_non_finite_and_recursion(tmp_path, capsys):
+    path = tmp_path / "x.json"
+    path.write_text('{"schema": 1e999}')
+    assert cli.main(["fpga-library-check", str(path)]) == 1
+    assert "finite" in capsys.readouterr().out
+    path.write_text("[" * 100000 + "]" * 100000)
+    assert cli.main(["fpga-library-check", str(path)]) == 1
+    assert "RecursionError" in capsys.readouterr().out
