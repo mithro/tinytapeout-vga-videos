@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import resource
 import signal
 import subprocess
 import time
@@ -105,6 +106,8 @@ def test_trace_meta(models, dev, tmp_path):
     assert op["seconds"] == "0.2"
     assert op["layout"] == "tt-um-43"
     assert op["harness"] == HARNESS
+    assert op["override"] == "none"
+    assert op["simulator"] == "verilator"
     cl = t.meta("close")
     tj = timing(tmp_path)
     assert cl["status"] == "ok" == tj["status"]
@@ -204,6 +207,39 @@ def test_ignore_sigterm_hook_works_in_test_build(models, dev, tmp_path):
     p.kill()
     p.wait()
     assert alive
+
+
+def test_trace_closed_when_ffmpeg_fails(models, dev, tmp_path):
+    """popen runs a shell, so a bad --ffmpeg shows only as failed writes: the run must still finish."""
+    p = run(models("bars640"), dev, tmp_path, "--ffmpeg", str(tmp_path / "no-such-ffmpeg"))
+    assert p.returncode == 0, p.stderr
+    assert "writing to ffmpeg failed" in p.stderr
+    tj = timing(tmp_path)
+    assert tj["status"] == "ok" and tj["frames"] > 0
+    assert tj["ffmpeg_status"] != 0
+    cl = vgch.read(tmp_path / "trace.vgch.zst", dev).meta("close")
+    assert cl["status"] == "ok"
+    assert int(cl["frames"]) == tj["frames"]
+    assert int(cl["ffmpeg_status"]) == tj["ffmpeg_status"]
+    assert len((tmp_path / "tb_frame_hashes.txt").read_text().splitlines()) == tj["frames"]
+
+
+def _limit_file_size():
+    # Files past 16 KiB fail with EFBIG instead of killing the model (SIGXFSZ).
+    signal.signal(signal.SIGXFSZ, signal.SIG_IGN)
+    resource.setrlimit(resource.RLIMIT_FSIZE, (16384, 16384))
+
+
+def test_trace_removed_when_the_writer_fails(models, dev, tmp_path):
+    """A write error (here RLIMIT_FSIZE) fails the writer: exit 4, its message, and no trace file left."""
+    out = tmp_path
+    cmd = [str(models("playground"))] + base_args(dev, out) + ["--trace", str(out / "trace.vgch.zst")]
+    cmd += meta_args("playground") + ["--seconds", "1.5"]
+    p = subprocess.run(cmd, capture_output=True, text=True, timeout=300, preexec_fn=_limit_file_size)
+    assert p.returncode == 4, p.stderr
+    assert "tb: trace" in p.stderr
+    assert not (out / "trace.vgch.zst").exists()
+    assert (out / "timing.json").exists()
 
 
 def test_no_trace_without_option(models, dev, tmp_path):

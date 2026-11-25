@@ -2,8 +2,9 @@
 //
 // Test design: 640x480@60 timing with 1,525-clock lines, run at
 // 48,000,000 Hz, so a pixel is 1.90625 clocks. A line is 183 clocks of
-// hsync, 91 of back porch, 1,220 active and 31 of front porch; the eight
-// bars are 152 clocks each.
+// hsync, 91 of back porch, 1,216 of bars (eight of 152 clocks) and 35 of
+// black (the front porch, plus 4 clocks where the 640-pixel area, 1,220
+// clocks, outlasts the bars).
 
 `default_nettype none
 
