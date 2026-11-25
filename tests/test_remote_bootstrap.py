@@ -24,7 +24,7 @@ def test_tarball_loop_skips_python_and_vgacap():
 
 def test_bootstrap_installs_python_and_builds_vgacap_at_the_pin():
     script = remote.bootstrap_script(TOOLS)
-    assert "uv python install 3.14.7" in script
+    assert "uv python install --no-bin 3.14.7" in script
     assert TOOLS["vgacap"]["commit"] in script
     assert "-DCMAKE_BUILD_TYPE=Release" in script
     assert "PINNED" in script
@@ -99,6 +99,8 @@ def test_uv_state_lives_under_ttvga_tools():
     for text in (remote.bootstrap_script(TOOLS), remote.host_python(TOOLS)):
         assert "UV_PYTHON_INSTALL_DIR=~/ttvga/tools/python" in text
         assert "UV_CACHE_DIR=~/ttvga/tools/uv-cache" in text
+        assert "UV_PYTHON_BIN_DIR=~/ttvga/tools/bin" in text
+    assert "uv python install --no-bin 3.14.7" in remote.bootstrap_script(TOOLS)
     py = remote.host_python(TOOLS)
     assert "UV_PYTHON_PREFERENCE=only-managed" in py
     assert "UV_PYTHON_DOWNLOADS=never" in py

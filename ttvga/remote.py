@@ -108,7 +108,8 @@ def uv_env(runtime: bool = False) -> str:
 
     At run time uv may only use that managed interpreter and never downloads one.
     """
-    env = f"UV_PYTHON_INSTALL_DIR=~/{REMOTE_ROOT}/tools/python UV_CACHE_DIR=~/{REMOTE_ROOT}/tools/uv-cache"
+    env = (f"UV_PYTHON_INSTALL_DIR=~/{REMOTE_ROOT}/tools/python UV_CACHE_DIR=~/{REMOTE_ROOT}/tools/uv-cache "
+           f"UV_PYTHON_BIN_DIR=~/{REMOTE_ROOT}/tools/bin")
     if runtime:
         env += " UV_PYTHON_PREFERENCE=only-managed UV_PYTHON_DOWNLOADS=never"
     return env
@@ -170,7 +171,7 @@ cd ~/{REMOTE_ROOT}/tools
 ./oss-cad-suite/bin/verilator --version
 ./ffmpeg/bin/ffmpeg -version | head -1
 ./uv/uv --version
-./uv/uv python install {py}
+./uv/uv python install --no-bin {py}
 if [ -f vgacap-build/PINNED ] && [ "$(cat vgacap-build/PINNED)" = "{vg['commit']}" ]; then
   echo "vgacap: present at {vg['commit']}"
 else
