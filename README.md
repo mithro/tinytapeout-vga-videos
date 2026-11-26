@@ -64,7 +64,7 @@ uv run tt-vga bootstrap  --host NAME    # install the pinned toolchain into the 
 uv run tt-vga sync       --host NAME    # copy harness, targets and overrides
 uv run tt-vga queue start --host NAME --jobs 40 [--only tt08,ttsky26a/tt_um_x] [--redo]
 uv run tt-vga queue status|stop|kill --host NAME
-uv run tt-vga collect    --host NAME    # pull result.json files into data/results/
+uv run tt-vga collect    --host NAME    # pull new result.json and frames/ files into data/results/
 uv run tt-vga analyze                   # verdict per project
 uv run tt-vga report                    # docs/status.md and data/status.json
 ```

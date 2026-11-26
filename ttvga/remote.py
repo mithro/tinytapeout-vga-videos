@@ -19,14 +19,15 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
-from ttvga import HARNESS_DIR, RESULTS_DIR, ROOT, TARGETS_JSON, framehashes
+from ttvga import HARNESS_DIR, RESULTS_DIR, ROOT, TARGETS_JSON
 
 CONFIG_PATH = Path.home() / ".config" / "tinytapeout-vga-videos" / "config.toml"
 FORBIDDEN_USERS = {"root", "tim", "ansible"}
@@ -385,22 +386,158 @@ def verify(args: argparse.Namespace) -> int:
 
 
 def collect(args: argparse.Namespace) -> int:
-    """Pull every result.json (and timing.json) from the host into data/results/."""
+    """Bring each new result.json and its frames/ files from the host into data/results/.
+
+    See `collect_filter` for what is taken and `remove_stale_frames` for what is removed.
+    """
     host = resolve_host(args.host)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    rsync_from(host, f"{REMOTE_ROOT}/work/", RESULTS_DIR,
-               extra=["--include", "*/", "--include", "result.json", "--exclude", "*", "--prune-empty-dirs"])
-    # The per-frame hashes move out of result.json into frame_hashes.txt beside it.
-    for path in RESULTS_DIR.glob("*/*/result.json"):
-        framehashes.export(path)
+    found = host_listing(host)
+    removed = pull_results(f"{host.ssh}:{REMOTE_ROOT}/work/", RESULTS_DIR, found, host.ssh_cmd())
+    for path in removed:
+        print(f"removed {path.relative_to(RESULTS_DIR)} (not on the host)")
     if args.images:
         dest = Path(args.images)
         rsync_from(host, f"{REMOTE_VIDEOS}/", dest,
                    extra=["--include", "*/", "--include", "poster.png", "--include", "contact.png",
                           "--exclude", "*", "--prune-empty-dirs"])
-    n = sum(1 for _ in RESULTS_DIR.glob("*/*/result.json"))
-    print(f"collected {n} results into {RESULTS_DIR}")
-    return 0
+    print(f"collected {len(found.new_results - _testpatterns(found.new_results))} new results into {RESULTS_DIR}")
+    for e in found.errors:
+        print(f"tt-vga collect: error: {e['id']}: result.json does not parse: {e['error']}", file=sys.stderr)
+    return 1 if found.errors else 0
+
+
+# ---------------------------------------------------------------------------
+# collect's pieces
+# ---------------------------------------------------------------------------
+
+LISTING_MARK = "--- results"
+TESTPATTERNS = "testpatterns"   # job.py's pseudo-shuttle, never published or committed
+_ID = re.compile(r"^[A-Za-z0-9_]+/[A-Za-z0-9_]+$")
+# The only frames/ files that come into git (WORK_FRAMES in job.py). Never
+# tb-v1/TRACE_SHA256: the trace's SHA-256 stays out of git.
+_FRAMES = (re.compile(r"^[A-Za-z0-9_]+/[A-Za-z0-9_]+/frames/(centre-v1|tb-v1)/frames\.txt$"),
+           re.compile(r"^[A-Za-z0-9_]+/[A-Za-z0-9_]+/frames/tb-v1/frame_hashes\.fnv1a64-tb2026-rgb888\.txt$"))
+_SAMPLERS = ("centre-v1", "tb-v1")
+
+
+@dataclass
+class HostListing:
+    new_results: set[str]                 # ids whose host result.json has a `harness` key
+    frames_files: dict[str, set[str]]     # id -> `<s>/<m>/frames/<sampler>/<file>` paths on the host
+    dropped: set[str]                     # ids whose host result.json has `tb_v1.dropped`
+    errors: list[dict] = field(default_factory=list)   # list_results.py's `{"id", "error"}` lines
+
+
+def listing_script(python: str, work: str, list_results: str) -> str:
+    """The one script that lists the host's frames/ files, then (after LISTING_MARK) its results."""
+    return f"""
+set -e
+find {work} -mindepth 5 -maxdepth 5 -path '*/*/*/frames/*/*' -type f -printf '%P\\n'
+echo {shlex.quote(LISTING_MARK)}
+{python} {list_results} {work}
+"""
+
+
+def parse_listing(text: str) -> HostListing:
+    """Turn `listing_script`'s output into a HostListing. A missing LISTING_MARK is an error."""
+    lines = text.splitlines()
+    if LISTING_MARK not in lines:
+        raise RuntimeError(f"tt-vga collect: host listing has no {LISTING_MARK!r} line: the results were not listed")
+    i = lines.index(LISTING_MARK)
+    frames: dict[str, set[str]] = {}
+    for path in lines[:i]:
+        if path:
+            frames.setdefault("/".join(path.split("/")[:2]), set()).add(path)
+    found = HostListing(set(), frames, set())
+    for line in lines[i + 1:]:
+        if not line:
+            continue
+        e = json.loads(line)
+        if "error" in e:
+            found.errors.append(e)
+            continue
+        if e["harness"]:
+            found.new_results.add(e["id"])
+            if e["dropped"]:
+                found.dropped.add(e["id"])
+    return found
+
+
+def host_listing(host: Host) -> HostListing:
+    """List the host's work tree in one SSH step (`listing_script`, with list_results.py sent first)."""
+    tools = tomllib.loads(TOOLS_TOML.read_text())
+    rsync(host, [str(HARNESS_DIR / "list_results.py")], f"{REMOTE_ROOT}/tools/")
+    script = listing_script(host_python(tools), f"~/{REMOTE_ROOT}/work", f"~/{REMOTE_ROOT}/tools/list_results.py")
+    p = ssh(host, script, check=False, capture=True, timeout=600)
+    sys.stderr.write(p.stderr)
+    if p.returncode != 0:
+        raise RuntimeError(f"tt-vga collect: listing the host's work tree failed (exit {p.returncode})")
+    return parse_listing(p.stdout)
+
+
+def _testpatterns(ids: set[str]) -> set[str]:
+    return {i for i in ids if i.split("/", 1)[0] == TESTPATTERNS}
+
+
+def _collected_ids(listing: HostListing) -> set[str]:
+    return {i for i in listing.new_results - _testpatterns(listing.new_results) if _ID.fullmatch(i)}
+
+
+def collect_filter(listing: HostListing) -> list[str]:
+    """The paths, relative to the host's work/, that collect copies (rsync's `--files-from`), sorted.
+
+    - `<id>/result.json` only for ids in `new_results`: a host result.json from
+      the old pipeline (full hash list, no `tb_v1`) never replaces a converted one;
+    - the frames/ files of those ids that match `_FRAMES` exactly;
+    - never testpatterns, `scratch/`, `kept/`, `repo/` or `build/`.
+    """
+    ids = _collected_ids(listing)
+    paths = {f"{i}/result.json" for i in ids}
+    for i in ids:
+        paths |= {p for p in listing.frames_files.get(i, ()) if any(r.fullmatch(p) for r in _FRAMES)}
+    return sorted(paths)
+
+
+def remove_stale_frames(results: Path, listing: HostListing) -> list[Path]:
+    """Delete the local frames/ files of new results that the host no longer has. Returns them.
+
+    centre-v1 follows the host. tb-v1 is removed only for ids in `dropped`
+    (Ruling Z): a default run has no tb-v1 on the host, and the converted file stays.
+    """
+    have = set(collect_filter(listing))
+    removed = []
+    for i in sorted(_collected_ids(listing)):
+        for sampler in _SAMPLERS:
+            if sampler == "tb-v1" and i not in listing.dropped:
+                continue
+            d = results / i / "frames" / sampler
+            if not d.is_dir():
+                continue
+            for f in sorted(d.rglob("*")):
+                if (f.is_file() or f.is_symlink()) and f.relative_to(results).as_posix() not in have:
+                    f.unlink()
+                    removed.append(f)
+            for sub in sorted((p for p in d.rglob("*") if p.is_dir()), reverse=True) + [d, d.parent]:
+                if sub.is_dir() and not any(sub.iterdir()):
+                    sub.rmdir()
+    return removed
+
+
+def pull_results(source: str, results: Path, listing: HostListing, ssh_cmd: list[str] | None) -> list[Path]:
+    """Copy `collect_filter`'s paths from `source` (`host:ttvga/work/`, or a local directory) into
+    `results`, then `remove_stale_frames`. Returns what was removed."""
+    paths = collect_filter(listing)
+    if paths:
+        cmd = ["rsync", "-a", "--files-from=-"]
+        if ssh_cmd:
+            cmd += ["-e", " ".join(shlex.quote(c) for c in ssh_cmd)]
+        cmd += [source, str(results)]
+        p = subprocess.run(cmd, input="".join(f"{x}\n" for x in paths), text=True)
+        # 24: a file vanished while copying (a job on the host replaced it); the rest came across.
+        if p.returncode not in (0, 24):
+            raise subprocess.CalledProcessError(p.returncode, cmd)
+    return remove_stale_frames(results, listing)
 
 
 # Files the published tree still holds from before the clips became
@@ -509,7 +646,7 @@ def add_parsers(sub: argparse._SubParsersAction) -> None:
     p.add_argument("--decode", type=int, default=40,
                    help="how many projects to decode in full (0 to skip)")
     p.set_defaults(func=verify)
-    p = sub.add_parser("collect", help="pull result.json files into data/results/")
+    p = sub.add_parser("collect", help="pull new result.json and frames/ files into data/results/")
     common(p)
     p.add_argument("--images", help="also pull poster and contact images into this local directory")
     p.set_defaults(func=collect)
