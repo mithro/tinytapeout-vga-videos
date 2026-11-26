@@ -1,0 +1,58 @@
+#!/bin/sh
+# data-upload-sync -- ExecStart of data-upload-wafer-space.service on
+# {{HOST}}.  Publishes everything under {{PUBLISH_ROOT}} to the public
+# download server:
+#
+#   {{PUBLISH_ROOT}}/<anything>  ->  {{PUBLIC_URL}}/<anything>
+#
+# Runs as the unprivileged `data-upload` user.  Its only credential is
+# {{STATE_DIR}}/.ssh/id_ed25519; on the VM that key is bound to the
+# account {{DEST_ACCOUNT}} with a forced
+#   command="rrsync -wo {{DEST_DIR}}"
+# i.e. WRITE-ONLY into that one directory: this host can never read anything
+# back from the server and cannot escape the directory.
+#
+# UNLIKE the {{PEER_JOB}} job there is no pattern list and no ACL step: the source is
+# a single dedicated directory that exists only to be published, and it is
+# world-readable, so `data-upload` needs no special grant.  The corollary is
+# that EVERYTHING placed there becomes public -- see {{PUBLISH_ROOT}}/README.
+#
+# {{CONF_DIR}}/exclusions is still applied at any depth as a safety net for
+# key material, and the script FAILS CLOSED if that list is unreadable.
+#
+# NEVER DELETES: no --delete* option.  Removing a file from the local publish
+# directory does NOT unpublish it -- delete it on the server too.  (The
+# write-only jail would permit --delete, so this argument list is the
+# guarantee.)
+#
+# Set DATA_UPLOAD_DRY_RUN=1 to add --dry-run (used for testing).
+set -u
+
+SRC={{PUBLISH_ROOT}}
+EXCLUDES={{CONF_DIR}}/exclusions
+DEST={{DEST_ACCOUNT}}@{{DEST_HOST}}
+RSYNC_SSH="ssh -i {{STATE_DIR}}/.ssh/id_ed25519 -o UserKnownHostsFile={{STATE_DIR}}/.ssh/known_hosts -o StrictHostKeyChecking=yes -o AddressFamily=inet6 -o BatchMode=yes -o IdentitiesOnly=yes -o ConnectTimeout=30 -o ServerAliveInterval=60 -o ServerAliveCountMax=5"
+OPTS="--archive --no-owner --no-group --partial --timeout=600 --stats --human-readable --log-file={{STATE_DIR}}/rsync.log --exclude-from=$EXCLUDES"
+[ "${DATA_UPLOAD_DRY_RUN:-0}" = 1 ] && OPTS="$OPTS --dry-run"
+
+if [ ! -d "$SRC" ]; then
+    echo "error: $SRC missing -- refusing to run" >&2
+    exit 1
+fi
+# Fail closed: without the exclusion list we would publish key material.
+if [ ! -r "$EXCLUDES" ]; then
+    echo "error: $EXCLUDES missing -- refusing to upload without the never-publish list" >&2
+    exit 1
+fi
+
+echo "sync: $SRC/ -> $DEST:/"
+rsync $OPTS --rsh="$RSYNC_SSH" "$SRC/" "$DEST:/"
+rc=$?
+case $rc in
+    0) ;;
+    # 23 = partial transfer (e.g. an unreadable file), 24 = file vanished
+    # mid-run: logged in rsync.log, not fatal for the run.
+    23|24) echo "warning: rsync exit $rc (see rsync.log)" >&2; rc=0 ;;
+    *) echo "error: rsync exit $rc" >&2 ;;
+esac
+exit $rc
