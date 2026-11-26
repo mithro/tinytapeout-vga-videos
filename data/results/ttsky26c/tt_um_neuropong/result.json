@@ -61,8 +61,7 @@
     "audio_driven": false,
     "audio_transitions": 0,
     "audio_rate": 192000,
-    "audio_samples": 0,
-    "frame_hashes_count": 3596
+    "audio_samples": 0
   },
   "videos": {
     "ttsky26c_tt_um_neuropong_10s.mp4": {
@@ -106,5 +105,10 @@
   "sim_log_tail": "\n$ /home/ttvga/ttvga/work/ttsky26c/tt_um_neuropong/build/Vtop --clock-hz 25175000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/ttsky26c/tt_um_neuropong/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (2052 distinct, 0 uniform, 5 colours, 0.127% of pixels change per frame, 99.6% ever), 1512393610 clocks in 896.6s wall (1.69 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky26c/tt_um_neuropong/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/ttsky26c/tt_um_neuropong/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_60s.webm -t 30 -c copy /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_60s.webm -t 10 -c copy /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_60s.mp4 -vf select='not(mod(n\\,224))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/ttsky26c/tt_um_neuropong/ttsky26c_tt_um_neuropong_preview.gif\n[exit 0]\n",
   "finished": "2026-09-17T02:36:51+00:00",
   "verdict": "ok",
-  "reason": "2052 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.13% of pixels change per frame, 5 colours)"
+  "reason": "2052 distinct frames of 3596 (640x480@60, 640x480, 59.9 fps, 0.13% of pixels change per frame, 5 colours)",
+  "tb_v1": {
+    "state": "stale",
+    "trace_sha": null,
+    "dropped": false
+  }
 }

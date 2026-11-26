@@ -81,13 +81,18 @@ def ssh(host: Host, script: str, check: bool = True, capture: bool = False, time
                           capture_output=capture)
 
 
-def rsync(host: Host, sources: list[str], dest: str, delete: bool = False, extra: list[str] | None = None) -> None:
+def rsync_cmd(host: Host, sources: list[str], dest: str, delete: bool = False,
+              extra: list[str] | None = None) -> list[str]:
+    """The rsync command that copies `sources` to `dest` on the host (relative to the user's home)."""
     cmd = ["rsync", "-a", "--mkpath", "-e", " ".join(shlex.quote(c) for c in host.ssh_cmd())]
     if delete:
         cmd.append("--delete")
     cmd += extra or []
-    cmd += sources + [f"{host.ssh}:{dest}"]
-    subprocess.run(cmd, check=True)
+    return cmd + sources + [f"{host.ssh}:{dest}"]
+
+
+def rsync(host: Host, sources: list[str], dest: str, delete: bool = False, extra: list[str] | None = None) -> None:
+    subprocess.run(rsync_cmd(host, sources, dest, delete, extra), check=True)
 
 
 def rsync_from(host: Host, source: str, dest: Path, extra: list[str] | None = None) -> None:

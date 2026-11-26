@@ -5,6 +5,25 @@ whenever something non-obvious is learned. This file is the resume point
 if work stops for lack of credits or tokens: read it, then `docs/status.md`,
 then the newest `data/results/` entries.
 
+## 2026-11-27: the FNV files moved to frames/tb-v1 (plan Task 17)
+
+The 408 `data/results/<s>/<m>/frame_hashes.txt` files are now
+`frames/tb-v1/frame_hashes.fnv1a64-tb2026-rgb888.txt`, in vgacap's hash-file
+format, written by `scripts/convert_frame_hashes.py` (commit e112cdb; git
+follows each as a rename). The hash lines are byte-identical and
+`hash_offset_basis` is unchanged. `clocks_per_pixel` is recomputed as tb.cpp
+does (e.g. `1.90625`, not `1.9062`). Each `result.json` dropped
+`timing.frame_hashes_count` and gained
+`"tb_v1": {"state": "stale", "trace_sha": null, "dropped": false}`: stale
+because the files predate traces. The script also seeded the same 408 files to
+the host's `~/ttvga/work/<s>/<m>/frames/tb-v1/` (converted 0, seeded 408;
+three spot-checked files match git), so a default re-run keeps them (Ruling Z).
+
+`docs/consumers.md` is the note for the FPGA and handheld harness sessions:
+what to read in git and the archive, the exact stimulus, the trace-content
+check and the hash inputs. Both sessions acknowledged it at 4b5b49a before the
+move. The archive has no `frames/` yet; it comes with the Task 23 re-run.
+
 ## 2026-11-23: per-frame hashes kept in the repository
 
 Two sessions building FPGA harnesses (iCE40 boards; Game Bub and Arty) want to
