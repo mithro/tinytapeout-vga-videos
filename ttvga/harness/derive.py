@@ -45,6 +45,8 @@ FNV = "frame_hashes.fnv1a64-tb2026-rgb888.txt"
 TRACE_SHA_FILE = "TRACE_SHA256"
 _READ = 1 << 20
 _HEADER_MAX = 256
+# The largest frame side frames-format.md allows (16 to 4096 pixels or lines).
+MAX_SIDE = 4096
 
 
 class DeriveError(RuntimeError):
@@ -120,6 +122,7 @@ class _PngSink:
         self.out = out
         self.next = {s: 0 for s in samplers}
         self.seen: dict[tuple[int, int, bytes], Path] = {}
+        self.sizes: dict[str, set[tuple[int, int]]] = {s: set() for s in samplers}
         self.written = 0
         self.linked = 0
         self.error: BaseException | None = None
@@ -138,13 +141,14 @@ class _PngSink:
             raise DeriveError(f"record for sampler {sampler!r}, which was not asked for")
         if distinct != self.next[sampler]:
             raise DeriveError(f"{sampler}: record for distinct frame {distinct}, expected {self.next[sampler]}")
-        if width < 1 or height < 1:
+        if not (1 <= width <= MAX_SIDE and 1 <= height <= MAX_SIDE):
             raise DeriveError(f"{sampler}: bad frame size {width}x{height}")
         rgb6 = self.file.read(width * height)
         if len(rgb6) != width * height:
             raise DeriveError(f"{sampler}: distinct frame {distinct} cut short "
                               f"({len(rgb6)} of {width * height} bytes)")
         self.next[sampler] += 1
+        self.sizes[sampler].add((width, height))
         dest = self.out / sampler / "png" / f"{distinct:06d}.png"
         dest.parent.mkdir(parents=True, exist_ok=True)
         key = (width, height, hashlib.sha256(rgb6).digest())
@@ -166,10 +170,12 @@ class _PngSink:
         finally:
             self.file.close()
 
-    def join(self) -> None:
+    def join(self, cause: str | None) -> None:
+        """Wait for the reader; raise its error, with vgacap-sample's own `cause` when it failed too."""
         self.thread.join()
         if self.error is not None:
-            raise DeriveError(f"PNG pipe from vgacap-sample: {self.error}") from self.error
+            why = f" (vgacap-sample: {cause})" if cause else ""
+            raise DeriveError(f"PNG pipe from vgacap-sample: {self.error}{why}") from self.error
 
 
 def _summary(ff) -> dict:
@@ -223,12 +229,19 @@ def derive(trace: Path, out: Path, stem: str, *, tb_v1: bool, centre_window: tup
         sink = _PngSink(r, out, samplers)
         try:
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, pass_fds=(w,))
+        except OSError as e:
+            raise DeriveError(f"cannot run {tools.vgacap_sample}: {e}") from e
         finally:
             os.close(w)
         stdout, stderr = p.communicate()
         _log_run(lf, cmd, p.returncode, stdout, stderr)
-        sink.join()
-        last = stderr.strip().splitlines()[-1] if stderr.strip() else f"vgacap-sample exit {p.returncode}"
+        if p.returncode < 0:
+            last = f"killed by signal {-p.returncode}"
+        elif stderr.strip():
+            last = stderr.strip().splitlines()[-1]
+        else:
+            last = f"vgacap-sample exit {p.returncode}"
+        sink.join(last if p.returncode != 0 else None)
 
         errors: list[str] = []
         summaries: dict[str, dict] = {}
@@ -254,6 +267,9 @@ def derive(trace: Path, out: Path, stem: str, *, tb_v1: bool, centre_window: tup
             if sink.next[s] != len(ff.distinct):
                 raise DeriveError(f"{s}: vgacap-sample piped {sink.next[s]} distinct frames, "
                                   f"frames.txt has {len(ff.distinct)}")
+            if sink.sizes[s] - {(ff.width, ff.height)}:
+                got = ", ".join(f"{a}x{b}" for a, b in sorted(sink.sizes[s]))
+                raise DeriveError(f"{s}: vgacap-sample piped frames of {got}, frames.txt has {ff.width}x{ff.height}")
             (out / s / "png").mkdir(parents=True, exist_ok=True)
             pages.write_sampler_page(out / s, ff, stem, s)
             summaries[s] = _summary(ff)
@@ -265,6 +281,8 @@ def derive(trace: Path, out: Path, stem: str, *, tb_v1: bool, centre_window: tup
         except (KeyError, ValueError) as e:
             raise DeriveError(f"tracetool uohash: unexpected output {uo}") from e
 
+        if tb_v1 and tb_hashes is not None and not Path(tb_hashes).is_file():
+            lf.write(f"tb-v1 check not run: tb.cpp's hashes {tb_hashes} do not exist\n")
         if not tb_v1:
             check = "off"
         elif TB_V1 not in read or tb_hashes is None or not Path(tb_hashes).is_file():

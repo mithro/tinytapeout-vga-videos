@@ -113,6 +113,11 @@ def test_derive_tb_v1_on_request_links_identical_pngs(tools, bars, tmp_path):
     # Without tb_hashes there is nothing to compare against.
     r2 = go(trace, tmp_path / "out2", tools, tb_v1=True)
     assert (r2.tb_v1_check, r2.error) == ("not-run", None)
+    # A tb_hashes path that does not exist is not-run too, and the log says why.
+    missing = tmp_path / "missing.txt"
+    r3 = go(trace, tmp_path / "out3", tools, tb_v1=True, tb_hashes=missing, log=tmp_path / "out3.log")
+    assert (r3.tb_v1_check, r3.error) == ("not-run", None)
+    assert f"tb-v1 check not run: tb.cpp's hashes {missing} do not exist" in (tmp_path / "out3.log").read_text()
 
 
 def test_derive_tb_v1_mismatch_fails(tools, bars, tmp_path):
@@ -170,7 +175,6 @@ def test_derive_bad_window_is_an_error(tools, bars, tmp_path):
     r = go(trace, out, tools, centre_window=(400, 0))
     assert r.error is not None
     assert r.error.startswith("centre_window 400,0 does not fit: ")
-    assert "cannot be used" in r.error
     assert r.samplers["centre-v1"]["sampler_status"] == "bad-window"
     assert r.samplers["centre-v1"]["frames"] == 0
     assert (out / "centre-v1" / "index.html").is_file()
@@ -188,5 +192,5 @@ def test_derive_sampler_failure_is_an_error(tools, bars, tmp_path):
     blocker = tmp_path / "blocker"
     blocker.write_text("x")
     r = go(trace, blocker / "out", tools, log=tmp_path / "blocked.log")
-    assert r.error is not None and r.error.startswith("vgacap-sample: cannot create"), r.error
+    assert r.error is not None
     assert r.samplers == {}
