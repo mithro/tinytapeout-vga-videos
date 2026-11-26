@@ -1,0 +1,51 @@
+# /etc/systemd/system/data-upload-wafer-space-frames.service
+# Source: tinytapeout-vga-videos host/data-upload/ (rendered by render.py).
+#
+# Uploads the VGA frames projects named in the pipeline's changed.log since the
+# stored offset, to the same write-only destination as
+# data-upload-wafer-space.service (which excludes the frames subtree).  See
+# docs/publishing.md "Frames upload" in that repository.
+#
+# Its timer stays DISABLED until the pipeline's full re-run has been checked:
+# enabling it is what publishes the frames.
+[Unit]
+Description=Upload the VGA frames projects the pipeline logged as changed
+Documentation=https://github.com/mithro/tinytapeout-vga-videos/blob/main/docs/publishing.md#frames-upload
+After=network-online.target
+Wants=network-online.target
+RequiresMountsFor={{MOUNTS}}
+
+[Service]
+Type=oneshot
+User=data-upload
+Group=data-upload
+UMask=0022
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=infinity
+StateDirectory=data-upload-frames
+ExecStart=/usr/local/sbin/data-upload-frames-sync
+
+# Sandboxing: copied from data-upload-wafer-space.service.  The system, the
+# publish directory and the pipeline's staging directory (changed.log) are
+# read-only to this unit; the single writable path is its own state dir
+# (offset, lock, rsync.log).
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadOnlyPaths={{PUBLISH_ROOT}}
+ReadOnlyPaths={{STAGING_DIR}}
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictRealtime=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources

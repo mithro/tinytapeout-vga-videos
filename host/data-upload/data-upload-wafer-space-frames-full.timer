@@ -1,0 +1,19 @@
+# /etc/systemd/system/data-upload-wafer-space-frames-full.timer
+# Source: tinytapeout-vga-videos host/data-upload/ (rendered by render.py).
+#
+# Weekly, Sunday 02:09: minute 4 of its 5-minute slot like the 15-minute
+# frames timer, but not one of that timer's minutes.  A 15-minute run that
+# starts while this one is still going finds the lock held, does nothing and
+# leaves the offset alone, so it catches up on its next run.
+#
+# Installed DISABLED, like data-upload-wafer-space-frames.timer.
+[Unit]
+Description=Weekly full upload of the VGA frames subtree
+
+[Timer]
+OnCalendar=Sun *-*-* 02:09:00
+Persistent=true
+Unit=data-upload-wafer-space-frames-full.service
+
+[Install]
+WantedBy=timers.target

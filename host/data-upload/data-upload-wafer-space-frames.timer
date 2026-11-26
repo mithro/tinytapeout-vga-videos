@@ -1,0 +1,19 @@
+# /etc/systemd/system/data-upload-wafer-space-frames.timer
+# Source: tinytapeout-vga-videos host/data-upload/ (rendered by render.py).
+#
+# Every 15 minutes, at minute 4 of a 5-minute slot (:04, :19, :34, :49): the
+# main upload starts at minute 3 of every slot, so the two never start
+# together.  No RandomizedDelaySec, for the same reason as the main timer.
+#
+# Installed DISABLED.  Enable it, with data-upload-wafer-space-frames-full.timer,
+# only once the pipeline's full re-run has passed its check.
+[Unit]
+Description=15-minutely upload of the changed VGA frames projects
+
+[Timer]
+OnCalendar=*-*-* *:04/15:00
+Persistent=true
+Unit=data-upload-wafer-space-frames.service
+
+[Install]
+WantedBy=timers.target

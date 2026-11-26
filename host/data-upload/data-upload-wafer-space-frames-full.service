@@ -1,0 +1,47 @@
+# /etc/systemd/system/data-upload-wafer-space-frames-full.service
+# Source: tinytapeout-vga-videos host/data-upload/ (rendered by render.py).
+#
+# The weekly full pass: uploads the whole VGA frames subtree, catching anything
+# the 15-minute runs of data-upload-wafer-space-frames.service missed.  It
+# never changes their stored offset.  See docs/publishing.md "Frames upload"
+# in that repository.
+#
+# Its timer stays DISABLED until the pipeline's full re-run has been checked.
+[Unit]
+Description=Weekly full upload of the VGA frames subtree
+Documentation=https://github.com/mithro/tinytapeout-vga-videos/blob/main/docs/publishing.md#frames-upload
+After=network-online.target
+Wants=network-online.target
+RequiresMountsFor={{MOUNTS}}
+
+[Service]
+Type=oneshot
+User=data-upload
+Group=data-upload
+UMask=0022
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=infinity
+StateDirectory=data-upload-frames
+ExecStart=/usr/local/sbin/data-upload-frames-sync --full
+
+# Sandboxing: the same as data-upload-wafer-space-frames.service.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadOnlyPaths={{PUBLISH_ROOT}}
+ReadOnlyPaths={{STAGING_DIR}}
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictRealtime=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources

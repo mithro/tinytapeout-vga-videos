@@ -20,6 +20,13 @@
 # {{CONF_DIR}}/exclusions is still applied at any depth as a safety net for
 # key material, and the script FAILS CLOSED if that list is unreadable.
 #
+# EXCEPT THE VGA FRAMES SUBTREE: FRAMES_SUBTREE in {{CONF_DIR}}/frames.conf
+# (relative to $SRC) is excluded here and published only by
+# data-upload-frames-sync (data-upload-wafer-space-frames.service), which
+# sends just the projects the pipeline logged as changed.  This script FAILS
+# CLOSED if frames.conf is unreadable or FRAMES_SUBTREE is not one plain
+# relative path.  Source: tinytapeout-vga-videos host/data-upload/.
+#
 # NEVER DELETES: no --delete* option.  Removing a file from the local publish
 # directory does NOT unpublish it -- delete it on the server too.  (The
 # write-only jail would permit --delete, so this argument list is the
@@ -30,6 +37,7 @@ set -u
 
 SRC={{PUBLISH_ROOT}}
 EXCLUDES={{CONF_DIR}}/exclusions
+FRAMES_CONF={{CONF_DIR}}/frames.conf
 DEST={{DEST_ACCOUNT}}@{{DEST_HOST}}
 RSYNC_SSH="ssh -i {{STATE_DIR}}/.ssh/id_ed25519 -o UserKnownHostsFile={{STATE_DIR}}/.ssh/known_hosts -o StrictHostKeyChecking=yes -o AddressFamily=inet6 -o BatchMode=yes -o IdentitiesOnly=yes -o ConnectTimeout=30 -o ServerAliveInterval=60 -o ServerAliveCountMax=5"
 OPTS="--archive --no-owner --no-group --partial --timeout=600 --stats --human-readable --log-file={{STATE_DIR}}/rsync.log --exclude-from=$EXCLUDES"
@@ -44,8 +52,25 @@ if [ ! -r "$EXCLUDES" ]; then
     echo "error: $EXCLUDES missing -- refusing to upload without the never-publish list" >&2
     exit 1
 fi
+# Fail closed: without the frames exclusion we would list (and publish) the
+# frames subtree every five minutes, before its own upload is turned on.
+if [ ! -r "$FRAMES_CONF" ]; then
+    echo "error: $FRAMES_CONF missing -- refusing to upload without the frames exclusion" >&2
+    exit 1
+fi
+if [ "$(grep -c '^FRAMES_SUBTREE=' "$FRAMES_CONF")" != 1 ]; then
+    echo "error: $FRAMES_CONF must set FRAMES_SUBTREE exactly once -- refusing to run" >&2
+    exit 1
+fi
+FRAMES_SUBTREE=$(sed -n 's/^FRAMES_SUBTREE=//p' "$FRAMES_CONF")
+case $FRAMES_SUBTREE in
+    ''|/*|*/|*//*|.|..|./*|../*|*/.|*/..|*/./*|*/../*|*[!A-Za-z0-9._/-]*)
+        echo "error: $FRAMES_CONF: FRAMES_SUBTREE '$FRAMES_SUBTREE' is not a plain relative path -- refusing to run" >&2
+        exit 1 ;;
+esac
+OPTS="$OPTS --exclude=/$FRAMES_SUBTREE/"
 
-echo "sync: $SRC/ -> $DEST:/"
+echo "sync: $SRC/ -> $DEST:/ (excluding /$FRAMES_SUBTREE/)"
 rsync $OPTS --rsh="$RSYNC_SSH" "$SRC/" "$DEST:/"
 rc=$?
 case $rc in

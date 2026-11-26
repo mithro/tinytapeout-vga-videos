@@ -1,0 +1,347 @@
+#!/usr/bin/python3
+"""data-upload-frames-sync [--full] -- upload the VGA frames subtree.
+
+ExecStart of data-upload-wafer-space-frames.service (every 15 minutes) and,
+with --full, of data-upload-wafer-space-frames-full.service (weekly) on
+{{HOST}}.  Source: tinytapeout-vga-videos host/data-upload/, rendered by
+render.py; docs/publishing.md "Frames upload" there describes the design.
+
+data-upload-sync excludes FRAMES_SUBTREE ({{CONF_DIR}}/frames.conf) from the
+5-minute upload of {{PUBLISH_ROOT}}.  This script sends it instead, to the
+same write-only destination with the same rsync options:
+
+  default  the projects (<shuttle>/<project>) named in STAGING_DIR/changed.log
+           since the byte offset stored in {{FRAMES_STATE_DIR}}/offset, read
+           through the last complete line only;
+  --full   the whole frames subtree.
+
+changed.log and everything under the frames subtree are written by the
+pipeline user, which builds and runs third-party Verilog, so none of it is
+trusted:
+  - a line must match LINE_RE, or it is logged and skipped;
+  - the shuttle and project directories must be real directories (lstat, not
+    symlinks) whose realpath is inside the frames subtree's realpath;
+  - a project holding any symlink (`find -P <project> -type l`) is refused,
+    with find's output logged in full;
+  - rsync gets --safe-links and --no-implied-dirs as further guards;
+  - after the transfer every project sent is checked again, and one that now
+    fails is logged as "realpath changed during transfer: <id>" for a person to
+    look at (and delete on the server by hand); the run then exits non-zero.
+
+Offset: stored after rsync exit 0 or 23 (23 cannot succeed on a retry); kept
+after 24 or any other failure, so those projects are sent again next time.
+An offset past the end of changed.log (the log was shrunk) restarts at 0.
+--full and dry runs never change the offset.
+
+NEVER DELETES: no --delete* option, as in data-upload-sync.
+
+Set DATA_UPLOAD_DRY_RUN=1 to add --dry-run; the offset is then not stored.
+Standard library only.
+"""
+
+import argparse
+import errno
+import fcntl
+import os
+import re
+import stat
+import subprocess
+import sys
+
+SRC = "{{PUBLISH_ROOT}}"
+CONF_DIR = "{{CONF_DIR}}"
+EXCLUDES = CONF_DIR + "/exclusions"
+FRAMES_CONF = CONF_DIR + "/frames.conf"
+STATE_DIR = "{{FRAMES_STATE_DIR}}"
+OFFSET_FILE = STATE_DIR + "/offset"
+LOCK_FILE = STATE_DIR + "/lock"
+DEST = "{{DEST_ACCOUNT}}@{{DEST_HOST}}"
+# The same ssh command and rsync options as data-upload-sync; only the log file
+# differs (this unit can write its own state directory only).
+RSYNC_SSH = ("ssh -i {{STATE_DIR}}/.ssh/id_ed25519 -o UserKnownHostsFile={{STATE_DIR}}/.ssh/known_hosts"
+             " -o StrictHostKeyChecking=yes -o AddressFamily=inet6 -o BatchMode=yes -o IdentitiesOnly=yes"
+             " -o ConnectTimeout=30 -o ServerAliveInterval=60 -o ServerAliveCountMax=5")
+OPTS = ["--archive", "--no-owner", "--no-group", "--partial", "--timeout=600", "--stats", "--human-readable",
+        "--log-file=" + STATE_DIR + "/rsync.log", "--exclude-from=" + EXCLUDES]
+# Added for this upload: --files-from turns off the recursion --archive implies.
+FRAMES_OPTS = ["-r", "--files-from=-", "--safe-links", "--no-implied-dirs"]
+
+CHANGED_LOG = "changed.log"
+ROOT_MARKER = ".ttvga-frames-root"
+LINE_RE = re.compile(r"^[0-9T:+-]+ [A-Za-z0-9_]+/[A-Za-z0-9_]+$")
+SUBTREE_RE = re.compile(r"^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$")
+OFFSET_RE = re.compile(r"^[0-9]+\n?$")
+CONF_KEYS = ("FRAMES_SUBTREE", "STAGING_DIR")
+# A changed.log line is about 60 bytes; one run reads at most this much of it.
+MAX_READ = 16 * 1024 * 1024
+
+
+class Fatal(Exception):
+    """A reason to stop the run without touching the offset."""
+
+
+def log(msg):
+    print("data-upload-frames-sync: " + msg, file=sys.stderr, flush=True)
+
+
+def read_conf():
+    """FRAMES_SUBTREE and STAGING_DIR from frames.conf; refuse anything else."""
+    try:
+        with open(FRAMES_CONF, encoding="ascii") as f:
+            lines = f.read().splitlines()
+    except (OSError, UnicodeDecodeError) as e:
+        raise Fatal(f"cannot read {FRAMES_CONF}: {e}") from None
+    conf = {}
+    for n, line in enumerate(lines, 1):
+        if not line or line.startswith("#"):
+            continue
+        key, sep, value = line.partition("=")
+        if not sep or key not in CONF_KEYS:
+            raise Fatal(f"{FRAMES_CONF}:{n}: not a {'/'.join(CONF_KEYS)}=VALUE line: {line!r}")
+        if key in conf:
+            raise Fatal(f"{FRAMES_CONF}:{n}: {key} is set twice")
+        conf[key] = value
+    for key in CONF_KEYS:
+        if key not in conf:
+            raise Fatal(f"{FRAMES_CONF}: {key} is missing")
+    subtree, staging = conf["FRAMES_SUBTREE"], conf["STAGING_DIR"]
+    if not SUBTREE_RE.match(subtree) or any(part in (".", "..") for part in subtree.split("/")):
+        raise Fatal(f"{FRAMES_CONF}: FRAMES_SUBTREE {subtree!r} is not a plain relative path")
+    if not os.path.isabs(staging) or os.path.normpath(staging) != staging:
+        raise Fatal(f"{FRAMES_CONF}: STAGING_DIR {staging!r} is not a normalised absolute path")
+    return subtree, staging
+
+
+def check_frames_root(subtree):
+    """The frames subtree's realpath; fatal unless it is a real, marked directory where expected."""
+    root = os.path.join(SRC, subtree)
+    try:
+        st = os.lstat(root)
+    except FileNotFoundError:
+        raise Fatal(f"frames subtree {root} does not exist") from None
+    if not stat.S_ISDIR(st.st_mode):
+        raise Fatal(f"frames subtree {root} is not a directory (or is a symlink)")
+    real = os.path.realpath(root)
+    expected = os.path.join(os.path.realpath(SRC), subtree)
+    if real != expected:
+        raise Fatal(f"frames subtree {root} resolves to {real}, not {expected}: a path component is a symlink")
+    try:
+        marker = os.lstat(os.path.join(root, ROOT_MARKER))
+    except FileNotFoundError:
+        raise Fatal(f"frames subtree {root} has no {ROOT_MARKER} marker") from None
+    if not stat.S_ISREG(marker.st_mode):
+        raise Fatal(f"{root}/{ROOT_MARKER} is not a regular file")
+    return real
+
+
+def inside(path, real_root):
+    return path.startswith(real_root + os.sep)
+
+
+def project_problem(subtree, real_root, pid):
+    """Why project `pid` (<shuttle>/<project>) may not be sent, or None if it may."""
+    shuttle, project = pid.split("/")
+    shuttle_dir = os.path.join(SRC, subtree, shuttle)
+    project_dir = os.path.join(shuttle_dir, project)
+    for label, d in (("shuttle", shuttle_dir), ("project", project_dir)):
+        try:
+            st = os.lstat(d)
+        except FileNotFoundError:
+            return f"{label} directory {d} does not exist"
+        except OSError as e:
+            return f"cannot lstat {label} directory {d}: {e}"
+        if stat.S_ISLNK(st.st_mode):
+            return f"{label} directory {d} is a symlink"
+        if not stat.S_ISDIR(st.st_mode):
+            return f"{label} directory {d} is not a directory"
+        real = os.path.realpath(d)
+        if not inside(real, real_root):
+            return f"{label} directory {d} resolves to {real}, outside {real_root}"
+    find = subprocess.run(["find", "-P", project_dir, "-type", "l"],
+                          stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    out = find.stdout.decode("utf-8", "backslashreplace")
+    if find.returncode or out:
+        return f"find -P {project_dir} -type l exited {find.returncode}; its full output:\n{out}"
+    return None
+
+
+def read_offset():
+    try:
+        with open(OFFSET_FILE, encoding="ascii") as f:
+            text = f.read()
+    except FileNotFoundError:
+        return 0
+    except (OSError, UnicodeDecodeError) as e:
+        raise Fatal(f"cannot read {OFFSET_FILE}: {e}") from None
+    if not OFFSET_RE.match(text):
+        raise Fatal(f"{OFFSET_FILE} holds {text!r}, not a byte offset")
+    return int(text)
+
+
+def store_offset(offset):
+    tmp = OFFSET_FILE + ".new"
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | os.O_NOFOLLOW | os.O_CLOEXEC, 0o644)
+    try:
+        os.write(fd, f"{offset}\n".encode())
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+    os.replace(tmp, OFFSET_FILE)
+
+
+def read_changed(staging, offset):
+    """(project ids, new offset) from changed.log at `offset`, through the last complete line."""
+    path = os.path.join(staging, CHANGED_LOG)
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
+    except FileNotFoundError:
+        log(f"{path} does not exist yet: nothing to upload")
+        return [], offset
+    except OSError as e:
+        if e.errno == errno.ELOOP:
+            raise Fatal(f"{path} is a symlink") from None
+        raise Fatal(f"cannot open {path}: {e}") from None
+    try:
+        st = os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode):
+            raise Fatal(f"{path} is not a regular file")
+        if offset > st.st_size:
+            log(f"offset {offset} is past the end of {path} ({st.st_size} bytes): the log was shrunk, "
+                f"starting from 0")
+            offset = 0
+        data = os.pread(fd, min(st.st_size - offset, MAX_READ), offset)
+    finally:
+        os.close(fd)
+    end = data.rfind(b"\n") + 1
+    if end == 0:
+        if len(data) == MAX_READ:
+            log(f"no newline in {MAX_READ} bytes at offset {offset}: skipping them")
+            return [], offset + len(data)
+        if data:
+            log(f"partial last line ({len(data)} bytes at offset {offset}) left for the next run")
+        return [], offset
+    if end < len(data):
+        log(f"partial last line ({len(data) - end} bytes at offset {offset + end}) left for the next run")
+    ids = []
+    for raw in data[:end].split(b"\n")[:-1]:
+        try:
+            line = raw.decode("ascii")
+        except UnicodeDecodeError:
+            line = None
+        if line is None or not LINE_RE.match(line):
+            log(f"skipping invalid changed.log line {raw!r}")
+            continue
+        pid = line.split(" ", 1)[1]
+        if pid not in ids:
+            ids.append(pid)
+    log(f"read {path} bytes {offset}-{offset + end}: {len(ids)} project(s) named")
+    return ids, offset + end
+
+
+def rsync(entries, dry_run):
+    cmd = ["rsync", *OPTS, *FRAMES_OPTS]
+    if dry_run:
+        cmd.append("--dry-run")
+    cmd += ["--rsh=" + RSYNC_SSH, SRC + "/", DEST + ":/"]
+    log("running: " + " ".join(cmd))
+    log("files-from: " + " ".join(entries))
+    return subprocess.run(cmd, input="".join(e + "\n" for e in entries).encode()).returncode
+
+
+def recheck(subtree, sent):
+    """Run the checks again after the transfer; log every project that now fails."""
+    try:
+        real_root = check_frames_root(subtree)
+    except Fatal as e:
+        log(f"realpath changed during transfer: the frames subtree ({e})")
+        return False
+    ok = True
+    for pid in sent:
+        problem = project_problem(subtree, real_root, pid)
+        if problem:
+            log(f"realpath changed during transfer: {pid} ({problem})")
+            ok = False
+    if ok:
+        log(f"post-transfer re-check passed for {len(sent)} project(s)")
+    return ok
+
+
+def run(full, dry_run):
+    subtree, staging = read_conf()
+    if not os.access(EXCLUDES, os.R_OK):
+        raise Fatal(f"{EXCLUDES} missing -- refusing to upload without the never-publish list")
+    real_root = check_frames_root(subtree)
+
+    if full:
+        log(f"--full: the whole frames subtree {subtree}/")
+        rc = rsync([subtree], dry_run)
+        ok = recheck(subtree, [])
+        new_offset = None
+    else:
+        offset = read_offset()
+        ids, new_offset = read_changed(staging, offset)
+        sent = []
+        for pid in ids:
+            problem = project_problem(subtree, real_root, pid)
+            if problem:
+                log(f"skipping {pid}: {problem}")
+            else:
+                sent.append(pid)
+        if not sent:
+            if new_offset != offset:
+                save(new_offset, dry_run)
+            log("no project to upload")
+            return 0
+        rc = rsync([f"{subtree}/{pid}" for pid in sent], dry_run)
+        ok = recheck(subtree, sent)
+
+    if rc in (0, 23):
+        if rc == 23:
+            log("warning: rsync exit 23 (partial transfer, see rsync.log); offset stored")
+        if new_offset is not None:
+            save(new_offset, dry_run)
+        rc = 0
+    elif rc == 24:
+        log("warning: rsync exit 24 (files vanished, see rsync.log); offset kept, retried next run")
+        rc = 0
+    else:
+        log(f"error: rsync exit {rc}; offset kept")
+    if not ok:
+        return 1
+    return rc
+
+
+def save(new_offset, dry_run):
+    if dry_run:
+        log(f"dry run: offset not stored (would be {new_offset})")
+    else:
+        store_offset(new_offset)
+        log(f"offset stored: {new_offset}")
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(prog="data-upload-frames-sync", description=__doc__.split("\n")[0])
+    parser.add_argument("--full", action="store_true", help="sync the whole frames subtree (weekly)")
+    args = parser.parse_args(argv)
+    dry_run = os.environ.get("DATA_UPLOAD_DRY_RUN", "0") == "1"
+    try:
+        lock = os.open(LOCK_FILE, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_CLOEXEC, 0o644)
+    except OSError as e:
+        log(f"error: cannot open {LOCK_FILE}: {e}")
+        return 1
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        log("another frames upload is running: nothing done, the offset is unchanged")
+        return 0
+    try:
+        return run(args.full, dry_run)
+    except Fatal as e:
+        log(f"error: {e}")
+        return 1
+    finally:
+        os.close(lock)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
