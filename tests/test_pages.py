@@ -48,8 +48,8 @@ def test_page_has_no_script_and_links_every_distinct_png(framesfile, tmp_path):
     assert not re.search(r"\son[a-z]+\s*=", html, re.I)
     assert (tmp_path / "index.html").read_bytes() == html.encode("utf-8")
     for n in range(len(ff.distinct)):
-        assert f'href="png/{n}.png"' in html
-        assert f'<img loading="lazy" src="png/{n}.png"' in html
+        assert f'href="png/{n:06d}.png"' in html
+        assert f'<img loading="lazy" src="png/{n:06d}.png"' in html
     assert html.count("<img ") == len(ff.distinct)
     # Three views by :target, pixelated.
     for view in ("1x", "2x", "4x"):
@@ -80,7 +80,7 @@ def test_page_rows_are_runs_and_cover_every_frame(framesfile, tmp_path):
             assert cells[1:] == ["-", "-"]
         else:
             assert cells[1] == str(start)
-            assert cells[2] == f'<a href="png/{d}.png">{d}</a>'
+            assert cells[2] == f'<a href="png/{d:06d}.png">{d}</a>'
     assert expect_next == len(ff.frames)
     # Every frame number is findable by its range; the page says it chose one row per run.
     assert "one row per run of identical frames" in html
