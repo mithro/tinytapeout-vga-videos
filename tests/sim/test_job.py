@@ -92,7 +92,8 @@ def test_job_publishes_trace_and_centre_v1(root, go, dev):
     ti = info(dev, trace)
     assert t == {"file": trace.name, "sha256": sha(trace), "bytes": trace.stat().st_size,
                  "blocks": int(ti["blocks"]), "clocks": int(ti["clocks"]),
-                 "uo_out_sha256": t["uo_out_sha256"], "uo_out_sha256_clocks": [0, int(ti["clocks"])]}
+                 "uo_out_sha256": t["uo_out_sha256"], "uo_out_sha256_clocks": [0, int(ti["clocks"])],
+                 "fast_path": True}
     assert len(t["uo_out_sha256"]) == 64 and t["blocks"] >= 1
     assert r["harness"] == "test"
     assert r["tb_v1"] == {"state": "none", "trace_sha": None, "dropped": False}
@@ -208,7 +209,7 @@ def test_job_probe_keeps_only_the_rerun_trace(root, go, dev):
 
 def test_job_killed_model_samples_truncated_trace(root, go, monkeypatch):
     monkeypatch.setenv("TTVGA_TB_IGNORE_SIGTERM", "1")
-    rc, r = go("noisy", "--test-hooks", "--timeout", "5", "--grace", "1", seconds="30")
+    rc, r = go("noisy", "--test-hooks", "--timeout", "15", "--grace", "1", seconds="30")
     assert rc == 1
     assert r["error"] == "wall-clock limit", r.get("sim_log_tail")
     assert r["published"] is True

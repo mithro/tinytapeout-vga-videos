@@ -309,12 +309,21 @@ def model_cmd(target: dict, ov: dict, build_dir: Path, out: Path, tools: dict, a
 def _sim_problem(out: Path, rc: int, trace: Path, after: str = "") -> str | None:
     """What is wrong with a finished model run: no timing.json, or no trace. None when nothing is."""
     timing = out / "timing.json"
-    if not timing.exists() or timing.stat().st_size == 0:
+    if not timing.exists():
+        state = "without"
+    else:
+        try:
+            json.loads(timing.read_text())
+            state = None
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            # Empty (killed while capturing) or cut short (killed mid-write): no timing either way.
+            state = "with an empty" if timing.stat().st_size == 0 else "with a truncated"
+    if state is not None:
         # Killed outright at the wall-clock limit (SIGTERM ignored, then SIGKILL after
         # the grace): timing.json is still empty, or missing if it died calibrating.
         if rc == 124:
             return "wall-clock limit"
-        return f"model exited {rc} {'without' if not timing.exists() else 'with an empty'} timing.json{after}"
+        return f"model exited {rc} {state} timing.json{after}"
     if not trace.is_file():
         return f"model exited {rc} without a trace{after}"
     return None
@@ -375,6 +384,8 @@ def _derive_child(w: int, call) -> None:
     """In the forked child: run `call`, write its result (or error) to `w` as JSON, and exit."""
     try:
         os.setpgid(0, 0)
+        # The parent's SIGTERM handler is not ours: the parent kills this group itself.
+        signal.signal(signal.SIGTERM, signal.SIG_DFL)
         try:
             payload = {"result": dataclasses.asdict(call())}
         except derive.DeriveError as e:
@@ -414,7 +425,7 @@ def run_derive(trace: Path, scratch: Path, stem: str, *, tb_v1: bool, tb_hashes:
     except OSError:
         pass
     chunks: list[bytes] = []
-    deadline, timed_out, done = time.monotonic() + timeout, False, False
+    deadline, timed_out = time.monotonic() + timeout, False
     try:
         while True:
             left = deadline - time.monotonic()
@@ -426,14 +437,14 @@ def run_derive(trace: Path, scratch: Path, stem: str, *, tb_v1: bool, tb_hashes:
                 if not chunk:
                     break
                 chunks.append(chunk)
-        done = True
     finally:
         os.close(r)
-        if timed_out or not done:
-            try:
-                os.killpg(pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
+        # Always: whatever the child left in its group (a vgacap-sample or tracetool
+        # still running after a timeout, an exception or SIGTERM here) goes with it.
+        try:
+            os.killpg(pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
         _, status = os.waitpid(pid, 0)
     if timed_out:
         with open(log, "a", encoding="utf-8") as f:
@@ -499,7 +510,10 @@ def update_work_frames(scratch: Path, frames: Path, *, tb_v1: bool, drop: bool) 
 def encode(work: Path, videos: Path, log: Path, tools: dict, stem: str) -> str | None:
     """Publish the capture as browser-playable clips, then render the previews."""
     src = work / "out" / "capture.avi"
-    timing = json.loads((work / "out" / "timing.json").read_text())
+    try:
+        timing = json.loads((work / "out" / "timing.json").read_text())
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as e:
+        return f"timing.json cannot be read: {e}"
     # When its ffmpeg fails, tb.cpp goes on without video and still exits 0.
     if timing.get("ffmpeg_status"):
         return f"the capture's ffmpeg failed (ffmpeg_status {timing['ffmpeg_status']})"
@@ -527,11 +541,23 @@ def tool_versions(tools: dict) -> dict:
     return out
 
 
+# tb.cpp's one start-up stderr line when the model's ports are not contiguous and
+# it records by the slow path (Task 3a). The coordinator names "tb: trace fallback";
+# t03a-trace-speed at 3cf378c prints the second. Keep only the one that lands.
+TRACE_FALLBACK = ("tb: trace fallback", "tb: the model's 8 port bytes are not contiguous")
+
+
+def trace_fast_path(sim_log: Path) -> bool:
+    """False when tb.cpp said, anywhere in `sim_log`, that it fell back to the slow trace path."""
+    with open(sim_log, encoding="utf-8", errors="replace") as f:
+        return not any(line.startswith(TRACE_FALLBACK) for line in f)
+
+
 def _tail(path: Path) -> str | None:
     return path.read_text(errors="replace")[-4000:] if path.exists() else None
 
 
-def main() -> int:
+def _job() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--targets", type=Path, required=True)
     ap.add_argument("--id", required=True, help="<shuttle>/<macro>")
@@ -618,8 +644,9 @@ def main() -> int:
         # Checked before hours of simulation, and again by publish.install.
         try:
             conf = hostconf.load(args.root)
-        except hostconf.ConfigError as e:
-            errors.append(str(e))
+        except (hostconf.ConfigError, OSError) as e:
+            # hostconf wraps a missing or malformed file; any other OSError (permissions, os.stat) lands here too.
+            errors.append(f"host.toml: {e}" if isinstance(e, OSError) else str(e))
             result["stage"] = "setup"
     published_dir = conf.frames_root / shuttle / macro if conf else None
 
@@ -627,6 +654,7 @@ def main() -> int:
     scratch = work / "scratch"
     trace = scratch / f"{stem}_trace.vgch.zst"
     dres: derive.DeriveResult | None = None
+    terminated = False
     try:
         if scratch.exists():
             shutil.rmtree(scratch)
@@ -642,64 +670,77 @@ def main() -> int:
             t0 = time.monotonic()
             result["stage"] = stage
             fatal = None
-            if stage == "fetch":
-                fatal = fetch(target, repo_dir, work / "build.log", patch)
-            elif stage == "build":
-                fatal = build(target, ov, repo_dir, build_dir, work / "build.log", tools, Path(tools["vgacap_src"]),
-                              Path(tools["vgacap_build"]), test_hooks=args.test_hooks)
-            elif stage == "simulate":
-                sim_error = simulate(target, ov, repo_dir, build_dir, work, work / "sim.log", tools, args, result,
-                                     trace=trace)
-                if sim_error and trace.is_file():
-                    errors.append(sim_error)   # still derived and published, then reported
-                else:
-                    fatal = sim_error
-            elif stage == "derive":
-                # A killed model never wrote tb.cpp's own hash list, so there is nothing to check against.
-                hashes = out / "tb_frame_hashes.txt" if args.tb_v1 and not sim_error else None
-                dres, fatal = run_derive(trace, scratch, stem, tb_v1=args.tb_v1, tb_hashes=hashes, tools=tools,
-                                         log=work / "derive.log", timeout=args.timeout)
-                if dres is not None:
-                    result["derive_cpu_seconds"] = round(dres.cpu_seconds, 3)
-                if fatal is None and testpatterns:
-                    _, result["tb_v1"] = tb_v1_rule(tb_v1=args.tb_v1, drop=args.drop_tb_v1, published=None,
-                                                    work_frames=work / "frames", trace_sha=dres.trace_sha)
-                    update_work_frames(scratch, work / "frames", tb_v1=args.tb_v1, drop=args.drop_tb_v1)
-            elif stage == "encode":
-                if (err := encode(work, videos, work / "sim.log", tools, stem)):
-                    errors.append(err)   # recorded; the trace and frames are still published
-            elif stage == "publish":
-                carry, tb_state = tb_v1_rule(tb_v1=args.tb_v1, drop=args.drop_tb_v1, published=published_dir,
-                                             work_frames=work / "frames", trace_sha=dres.trace_sha)
-                try:
-                    publish.install(scratch, conf, shuttle, macro, work / "publish.log", carry=carry)
-                except (publish.PublishError, OSError) as e:
-                    fatal = f"publish: {e}"
-                else:
-                    result["published"] = True
-                    result["tb_v1"] = tb_state
-                    try:
+            try:
+                if stage == "fetch":
+                    fatal = fetch(target, repo_dir, work / "build.log", patch)
+                elif stage == "build":
+                    fatal = build(target, ov, repo_dir, build_dir, work / "build.log", tools,
+                                  Path(tools["vgacap_src"]), Path(tools["vgacap_build"]), test_hooks=args.test_hooks)
+                elif stage == "simulate":
+                    sim_error = simulate(target, ov, repo_dir, build_dir, work, work / "sim.log", tools, args,
+                                         result, trace=trace)
+                    if sim_error and trace.is_file():
+                        errors.append(sim_error)   # still derived and published, then reported
+                    else:
+                        fatal = sim_error
+                elif stage == "derive":
+                    # A killed model never wrote tb.cpp's own hash list, so there is nothing to check against.
+                    hashes = out / "tb_frame_hashes.txt" if args.tb_v1 and not sim_error else None
+                    dres, fatal = run_derive(trace, scratch, stem, tb_v1=args.tb_v1, tb_hashes=hashes, tools=tools,
+                                             log=work / "derive.log", timeout=args.timeout)
+                    if dres is not None:
+                        result["derive_cpu_seconds"] = round(dres.cpu_seconds, 3)
+                    if fatal is None and testpatterns:
+                        _, result["tb_v1"] = tb_v1_rule(tb_v1=args.tb_v1, drop=args.drop_tb_v1, published=None,
+                                                        work_frames=work / "frames", trace_sha=dres.trace_sha)
                         update_work_frames(scratch, work / "frames", tb_v1=args.tb_v1, drop=args.drop_tb_v1)
-                    except OSError as e:
-                        errors.append(f"published, but work/frames was not updated: {e}")
+                elif stage == "encode":
+                    if (err := encode(work, videos, work / "sim.log", tools, stem)):
+                        errors.append(err)   # recorded; the trace and frames are still published
+                elif stage == "publish":
+                    carry, tb_state = tb_v1_rule(tb_v1=args.tb_v1, drop=args.drop_tb_v1, published=published_dir,
+                                                 work_frames=work / "frames", trace_sha=dres.trace_sha)
+                    try:
+                        publish.install(scratch, conf, shuttle, macro, work / "publish.log", carry=carry)
+                    except (publish.PublishError, OSError) as e:
+                        fatal = f"publish: {e}"
+                    else:
+                        result["published"] = True
+                        result["tb_v1"] = tb_state
+                        try:
+                            update_work_frames(scratch, work / "frames", tb_v1=args.tb_v1, drop=args.drop_tb_v1)
+                        except OSError as e:
+                            errors.append(f"published, but work/frames was not updated: {e}")
+            except Exception as e:   # a bug or an unexpected failure: recorded, and nothing (more) published
+                fatal = f"stage crashed: {stage}: {type(e).__name__}: {e}"
+                result["traceback"] = traceback.format_exc()
             result["timings"][stage] = round(time.monotonic() - t0, 1)
             if fatal:
                 errors.append(fatal)
                 break
 
-        if dres is not None:
-            result["trace"] = {
-                "file": trace.name, "sha256": dres.trace_sha, "bytes": trace.stat().st_size,
-                "blocks": int(dres.info["blocks"]), "clocks": int(dres.info["clocks"]),
-                "uo_out_sha256": dres.uo_out_sha256, "uo_out_sha256_clocks": list(dres.uo_out_sha256_clocks),
-            }
-            result["samplers"] = dres.samplers
-        result["tb_v1_check"] = dres.tb_v1_check if dres is not None else ("not-run" if args.tb_v1 else "off")
-        if result["tb_v1"] is None:
-            # Nothing was published: say what the files already there are.
-            _, result["tb_v1"] = tb_v1_rule(tb_v1=False, drop=False, published=published_dir,
-                                            work_frames=work / "frames",
-                                            trace_sha=dres.trace_sha if dres is not None else None)
+        try:
+            if dres is not None:
+                result["trace"] = {
+                    "file": trace.name, "sha256": dres.trace_sha, "bytes": trace.stat().st_size,
+                    "blocks": int(dres.info["blocks"]), "clocks": int(dres.info["clocks"]),
+                    "uo_out_sha256": dres.uo_out_sha256, "uo_out_sha256_clocks": list(dres.uo_out_sha256_clocks),
+                    "fast_path": trace_fast_path(work / "sim.log"),
+                }
+                result["samplers"] = dres.samplers
+            result["tb_v1_check"] = dres.tb_v1_check if dres is not None else ("not-run" if args.tb_v1 else "off")
+            if result["tb_v1"] is None:
+                # Nothing was published: say what the files already there are.
+                _, result["tb_v1"] = tb_v1_rule(tb_v1=False, drop=False, published=published_dir,
+                                                work_frames=work / "frames",
+                                                trace_sha=dres.trace_sha if dres is not None else None)
+        except Exception as e:
+            errors.append(f"stage crashed: result: {type(e).__name__}: {e}")
+            result["traceback"] = traceback.format_exc()
+    except Terminated:
+        # SIGTERM (a queue stop, the scope): the finally below and run_derive's clean up; result.json says so.
+        errors.append(f"terminated by SIGTERM during {result['stage']}")
+        terminated = True
     finally:
         if testpatterns and trace.is_file():
             # Never published: the trace and frames stay in the work directory.
@@ -714,7 +755,7 @@ def main() -> int:
         shutil.copy(timing_path, work / "timing.json")
         try:
             result["timing"] = json.loads(timing_path.read_text())
-        except json.JSONDecodeError:
+        except (UnicodeDecodeError, json.JSONDecodeError):
             # The model was killed before writing it (wall-clock limit): keep what we know.
             result["timing"] = {"status": "sim-timeout", "partial": True}
     result["videos"] = published_files(videos)
@@ -732,7 +773,25 @@ def main() -> int:
     tmp.rename(work / "result.json")
     print(f"job: {target['id']}: stage={result['stage']} error={error!r} "
           f"status={result.get('timing', {}).get('status')} published={result['published']}")
+    if terminated:
+        return 128 + signal.SIGTERM
     return 0 if not error else 1
+
+
+class Terminated(SystemExit):
+    """Raised by the SIGTERM handler, so every `finally` runs (scratch, the derive child's group)."""
+
+
+def _on_sigterm(signum, frame) -> None:
+    raise Terminated(128 + signum)
+
+
+def main() -> int:
+    previous = signal.signal(signal.SIGTERM, _on_sigterm)
+    try:
+        return _job()
+    finally:
+        signal.signal(signal.SIGTERM, previous)
 
 
 if __name__ == "__main__":

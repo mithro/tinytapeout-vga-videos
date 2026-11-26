@@ -114,18 +114,25 @@ def run(cmd: list[str], log: Path, cwd: Path | None = None, timeout: float | Non
         f.flush()
         p = subprocess.Popen(cmd, cwd=cwd, stdout=f, stderr=subprocess.STDOUT, env=env)
         try:
-            p.wait(timeout=timeout)
-        except subprocess.TimeoutExpired:
-            f.write(f"\n[timeout after {timeout}s]\n")
-            p.terminate()
             try:
-                p.wait(timeout=grace or 5)
-                f.write(f"[finished after SIGTERM, exit {p.returncode}]\n")
+                p.wait(timeout=timeout)
             except subprocess.TimeoutExpired:
-                p.kill()
-                p.wait()
-                f.write("[killed]\n")
-            return 124
+                f.write(f"\n[timeout after {timeout}s]\n")
+                p.terminate()
+                try:
+                    p.wait(timeout=grace or 5)
+                    f.write(f"[finished after SIGTERM, exit {p.returncode}]\n")
+                except subprocess.TimeoutExpired:
+                    p.kill()
+                    p.wait()
+                    f.write("[killed]\n")
+                return 124
+        except BaseException:
+            # Interrupted (job.py's SIGTERM handler raises): never leave the command running.
+            p.kill()
+            p.wait()
+            f.write("\n[killed: the caller was interrupted]\n")
+            raise
         f.write(f"[exit {p.returncode}]\n")
         return p.returncode
 

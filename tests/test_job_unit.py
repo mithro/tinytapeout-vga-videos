@@ -128,6 +128,7 @@ def test_job_testpatterns_not_published(tmp_path, monkeypatch):
         (work / "out").mkdir(exist_ok=True)
         (work / "out" / "timing.json").write_text(json.dumps({"status": "ok", "frames": 3}))
         trace.write_bytes(b"trace")
+        (work / "sim.log").write_text("tb: sync at clock 100\n")
         return None
 
     def derive(trace, out, stem, **kw):
@@ -151,6 +152,187 @@ def test_job_testpatterns_not_published(tmp_path, monkeypatch):
     assert r["stage"] == "derive"
     assert set(r["timings"]) == {"fetch", "build", "simulate", "derive"}
     assert r["trace"]["sha256"] == "c" * 64
+    assert r["trace"]["fast_path"] is True
     assert not (work / "scratch").exists()
     assert sorted(p.name for p in (work / "kept").iterdir()) == ["centre-v1", "testpatterns_tt_um_vgacal_bars_trace.vgch.zst"]
     assert not (tmp_path / "videos").exists()
+
+
+# ---- Hardening (review follow-up): run_derive's child, crashes, SIGTERM, timing.json, the fast path.
+
+DTOOLS = {"vgacap_sample": "/nonexistent/vgacap-sample", "tracetool": "/nonexistent/tracetool"}
+
+
+def _go_derive(tmp_path, timeout: float = 30.0):
+    return job.run_derive(tmp_path / "t.vgch.zst", tmp_path / "scratch", "s_m", tb_v1=False, tb_hashes=None,
+                          tools=DTOOLS, log=tmp_path / "derive.log", timeout=timeout)
+
+
+def _gone(pid: int) -> bool:
+    """The process no longer runs (it is reaped, or a zombie waiting for init)."""
+    try:
+        state = Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()[0]
+    except FileNotFoundError:
+        return True
+    return state in ("Z", "X")
+
+
+def test_run_derive_timeout_kills_the_group(tmp_path, monkeypatch):
+    import subprocess
+    import time
+
+    pidfile = tmp_path / "sleep.pid"
+
+    def slow(*a, **kw):
+        p = subprocess.Popen(["sleep", "60"])
+        pidfile.write_text(str(p.pid))
+        time.sleep(60)
+
+    monkeypatch.setattr(job.derive, "derive", slow)
+    t0 = time.monotonic()
+    assert _go_derive(tmp_path, timeout=1) == (None, "derive wall-clock limit")
+    assert time.monotonic() - t0 < 20
+    pid = int(pidfile.read_text())
+    deadline = time.monotonic() + 10
+    while not _gone(pid) and time.monotonic() < deadline:
+        time.sleep(0.1)
+    assert _gone(pid), f"sleep {pid} survived the derive child's group"
+    assert "wall-clock limit (1 s): killed" in (tmp_path / "derive.log").read_text()
+
+
+def test_run_derive_crash_is_reported(tmp_path, monkeypatch):
+    def boom(*a, **kw):
+        raise ValueError("boom")
+
+    monkeypatch.setattr(job.derive, "derive", boom)
+    res, error = _go_derive(tmp_path)
+    assert res is None
+    assert error.startswith("derive crashed: ") and "ValueError: boom" in error
+
+
+def test_run_derive_derive_error_and_result(tmp_path, monkeypatch):
+    def refuse(*a, **kw):
+        raise job.derive.DeriveError("not a trace")
+
+    monkeypatch.setattr(job.derive, "derive", refuse)
+    assert _go_derive(tmp_path) == (None, "not a trace")
+
+    want = job.derive.DeriveResult(
+        samplers={"centre-v1": {"frames": 2}}, trace_sha="e" * 64, uo_out_sha256="f" * 64,
+        uo_out_sha256_clocks=(0, 9), tb_v1_check="off", error="a sampler error", cpu_seconds=1.5,
+        pngs_written=1, pngs_linked=0, info={"blocks": "1", "clocks": "9"})
+    monkeypatch.setattr(job.derive, "derive", lambda *a, **kw: want)
+    assert _go_derive(tmp_path) == (want, "a sampler error")
+
+
+@pytest.mark.parametrize("text, rc, want", [
+    ("", 124, "wall-clock limit"),
+    ('{"status": "o', 124, "wall-clock limit"),
+    ("", 1, "model exited 1 with an empty timing.json"),
+    ('{"status": "o', 1, "model exited 1 with a truncated timing.json"),
+    (None, 3, "model exited 3 without timing.json"),
+    ('{"status": "ok"}', 0, "model exited 0 without a trace"),
+])
+def test_sim_problem(tmp_path, text, rc, want):
+    if text is not None:
+        (tmp_path / "timing.json").write_text(text)
+    assert job._sim_problem(tmp_path, rc, tmp_path / "trace.vgch.zst") == want
+
+
+def test_encode_refuses_truncated_timing(tmp_path):
+    (tmp_path / "out").mkdir()
+    (tmp_path / "out" / "timing.json").write_text('{"status": "ok", "fra')
+    error = job.encode(tmp_path, tmp_path / "videos", tmp_path / "sim.log", {"ffmpeg": "unused"}, "s_m")
+    assert error.startswith("timing.json cannot be read: ")
+    assert not (tmp_path / "videos").exists()
+
+
+def test_trace_fast_path(tmp_path):
+    log = tmp_path / "sim.log"
+    filler = "tb: sync at clock 1\n" * 1000          # well past the 4000-character tail
+    log.write_text("$ Vtop --trace x\n" + filler)
+    assert job.trace_fast_path(log) is True
+    for marker in job.TRACE_FALLBACK:
+        log.write_text("$ Vtop --trace x\n" + marker + " (details)\n" + filler)
+        assert job.trace_fast_path(log) is False
+    log.write_text("probe: tb: trace fallback is mentioned, not printed\n")
+    assert job.trace_fast_path(log) is True
+
+
+def _fake_job(tmp_path, monkeypatch, shuttle: str = "tst"):
+    """A root with one target whose stages are all stubs; returns (argv, work)."""
+    import types
+
+    root = tmp_path / "root"
+    (root / "harness").mkdir(parents=True)
+    (root / "harness" / "HARNESS_VERSION").write_text("test\n")
+    target = {"id": f"{shuttle}/tt_um_x", "shuttle": shuttle, "macro": "tt_um_x", "repo": "unused",
+              "commit": "unused", "top_module": "tt_um_x", "source_files": [], "clock_hz": 0, "pinout": {}}
+    (root / "targets.json").write_text(json.dumps({"targets": [target]}))
+    frames_root = tmp_path / "frames"
+    (frames_root / shuttle / "tt_um_x").mkdir(parents=True)
+    monkeypatch.setattr(job.hostconf, "load", lambda *a, **kw: types.SimpleNamespace(frames_root=frames_root))
+    monkeypatch.setattr(job, "fetch", lambda *a, **kw: None)
+    monkeypatch.setattr(job, "build", lambda *a, **kw: None)
+    monkeypatch.setattr(job, "encode", lambda *a, **kw: pytest.fail("must not encode"))
+    monkeypatch.setattr(job.publish, "install", lambda *a, **kw: pytest.fail("must not publish"))
+    monkeypatch.setattr(job.derive, "derive", lambda *a, **kw: pytest.fail("must not derive"))
+    argv = ["job.py", "--targets", str(root / "targets.json"), "--id", target["id"], "--root", str(root),
+            "--videos", str(tmp_path / "videos")]
+    monkeypatch.setattr(sys, "argv", argv)
+    return root / "work" / shuttle / "tt_um_x"
+
+
+def _result(work: Path) -> dict:
+    return json.loads((work / "result.json").read_text())
+
+
+def test_stage_crash_is_recorded_and_nothing_published(tmp_path, monkeypatch):
+    work = _fake_job(tmp_path, monkeypatch)
+
+    def crash(*a, trace, **kw):
+        trace.write_bytes(b"half a trace")
+        raise RuntimeError("kaboom")
+
+    monkeypatch.setattr(job, "simulate", crash)
+    assert job.main() == 1
+    r = _result(work)
+    assert r["error"] == "stage crashed: simulate: RuntimeError: kaboom"
+    assert r["stage"] == "simulate" and r["published"] is False
+    assert "RuntimeError: kaboom" in r["traceback"]
+    assert not (work / "scratch").exists()
+
+
+def test_hostconf_oserror_is_setup(tmp_path, monkeypatch):
+    work = _fake_job(tmp_path, monkeypatch)
+
+    def denied(*a, **kw):
+        raise PermissionError(13, "Permission denied", "host.toml")
+
+    monkeypatch.setattr(job.hostconf, "load", denied)
+    monkeypatch.setattr(job, "fetch", lambda *a, **kw: pytest.fail("must not fetch"))
+    assert job.main() == 1
+    r = _result(work)
+    assert r["stage"] == "setup" and r["error"].startswith("host.toml: ") and r["published"] is False
+
+
+def test_sigterm_records_and_cleans_up(tmp_path, monkeypatch):
+    import os
+    import signal
+    import time
+
+    work = _fake_job(tmp_path, monkeypatch)
+
+    def terminated(*a, trace, **kw):
+        trace.write_bytes(b"trace")
+        os.kill(os.getpid(), signal.SIGTERM)
+        time.sleep(30)
+        pytest.fail("SIGTERM did not interrupt the job")
+
+    monkeypatch.setattr(job, "simulate", terminated)
+    before = signal.getsignal(signal.SIGTERM)
+    assert job.main() == 128 + signal.SIGTERM
+    assert signal.getsignal(signal.SIGTERM) is before
+    r = _result(work)
+    assert r["error"] == "terminated by SIGTERM during simulate" and r["published"] is False
+    assert not (work / "scratch").exists()
