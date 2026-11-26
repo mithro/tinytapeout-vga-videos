@@ -50,7 +50,7 @@ def test_server_listing_parses_autoindex():
     assert dirs == set()
     assert "tt05of_dinogame-dc03d0ecd3a2.bin" in files
     assert "tt05of_tt_um_dinogame_60s.mp4" in files and "tt05of_tt_um_dinogame_preview.gif" in files
-    assert len(files) == 11 and ".." not in files and "../" not in files
+    assert len(files) == 10 and ".." not in files and "../" not in files
     # A directory is listed by its name, without the slash.
     dirs, files = verify.server_listing(BASE, "tt05of/", fetch=fake_fetch(
         {BASE + "tt05of/": autoindex("tt05of/", dirs=["tt_um_dinogame"], files=["x%20y.txt"])}))
@@ -73,8 +73,9 @@ def test_stale_on_server_ignores_bin_and_library(tmp_path):
     }
     fetch = fake_fetch(pages)
     stale = verify.stale_on_server(local, BASE, ["tt05of/", "frames/"], fetch=fetch)
-    # The bitstream and the library belong to the FPGA session; a stale directory is listed once.
-    assert stale == ["tt05of/tt_um_dinogame/tt05of_tt_um_dinogame_old.avi", "tt05of/tt_um_gone/"]
+    # The bitstream belongs to the FPGA session; a stale directory is listed once.
+    assert stale == ["frames/fpga-library.json", "tt05of/tt_um_dinogame/tt05of_tt_um_dinogame_old.avi",
+                     "tt05of/tt_um_gone/"]
     # The library is foreign only at the archive root.
     assert verify.stale_on_server(local, BASE, [""], fetch=fetch) == [
         "frames/fpga-library.json", "index.json",

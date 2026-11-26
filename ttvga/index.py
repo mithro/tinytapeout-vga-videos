@@ -44,6 +44,8 @@ INDEX_JSON = DATA_DIR / "index.json"
 INDEX_HTML = DATA_DIR / "index.html"
 VIDEOS_MD = ROOT / "docs" / "videos.md"
 PROJECT_URL = "https://tinytapeout.com/chips/{shuttle}/{macro}"
+# A line of `--fpga-ids`: a project with a bitstream in its archive directory.
+FPGA_ID = re.compile(r"[a-z0-9]+/tt_um_[A-Za-z0-9_]+")
 
 # The Audio Pmod listens to the top bidirectional pin; the harness captures
 # `(uio_out & uio_oe) >> 7`, so this is the pin whose name says "sound".
@@ -507,7 +509,24 @@ def write_stats_html(s: dict, entries: list[dict]) -> str:
     return "\n".join(out)
 
 
-def write_html(entries: list[dict], generated: str) -> str:
+def read_fpga_ids(path) -> set[str]:
+    """The `<shuttle>/<macro>` ids in `tt-vga mirror --fpga-ids-out`'s file. Raises ValueError on any other line.
+
+    Only the ids are read: the archive's fpga-library.json is the FPGA session's.
+    """
+    ids = set()
+    with open(path, encoding="utf-8") as f:
+        for n, line in enumerate(f, 1):
+            line = line.strip()
+            if not line:
+                continue
+            if not FPGA_ID.fullmatch(line):
+                raise ValueError(f"{path}:{n}: {line!r} is not a <shuttle>/tt_um_<macro> id")
+            ids.add(line)
+    return ids
+
+
+def write_html(entries: list[dict], generated: str, fpga_ids: set[str] = frozenset()) -> str:
     by_shuttle: dict[str, list[dict]] = {}
     for e in entries:
         by_shuttle.setdefault(e["shuttle"], []).append(e)
@@ -630,6 +649,8 @@ f"Every file is named for its shuttle and project. Generated {generated}.</p>",
                 f'<a href="{html.escape(e["page"])}">chip page</a> &middot; '
                 f'<a href="{html.escape(e["repo"])}">source</a> &middot; '
                 f'<a href="{html.escape(playground(e))}">playground</a>'
+                + (f' &middot; <a href="{html.escape(quote(e["shuttle"]))}/{html.escape(quote(e["macro"]))}/">'
+                   "FPGA bitstream</a>" if e["id"] in fpga_ids else "")
                 + (('<br><span class="alsoon">also on '
                     + " ".join(f'<a href="#{html.escape(anchor(o["id"]))}">{html.escape(o["shuttle"])}</a>'
                                for o in also[e["id"]])
@@ -710,9 +731,20 @@ def build() -> list[dict]:
 def run(args: argparse.Namespace) -> int:
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     entries = build()
+    fpga_ids: set[str] = set()
+    if args.fpga_ids:
+        try:
+            fpga_ids = read_fpga_ids(args.fpga_ids)
+        except (OSError, ValueError) as e:
+            print(f"tt-vga index: --fpga-ids: {e}", file=sys.stderr)
+            return 1
+        unknown = sorted(fpga_ids - {e["id"] for e in entries})
+        for i in unknown:
+            print(f"tt-vga index: warning: {i} has a bitstream but is not in the index", file=sys.stderr)
+        print(f"{len(fpga_ids) - len(unknown)} projects link their FPGA bitstream")
     INDEX_JSON.write_text(json.dumps({"generated": generated, "count": len(entries),
                                       "stats": stats(entries), "projects": entries}, indent=2) + "\n")
-    INDEX_HTML.write_text(write_html(entries, generated))
+    INDEX_HTML.write_text(write_html(entries, generated, fpga_ids=fpga_ids))
     VIDEOS_MD.write_text(write_markdown(entries, generated))
     with_video = sum(1 for e in entries if e["has_video"])
     print(f"{len(entries)} projects, {with_video} with video -> "
@@ -730,4 +762,6 @@ def add_parser(sub: argparse._SubParsersAction) -> None:
     p = sub.add_parser("index", help="list every project and its video (JSON, HTML and Markdown)")
     p.add_argument("--upload", action="store_true", help="copy the index next to the videos on the host")
     p.add_argument("--host", help="user@host, or a name from the local config file")
+    p.add_argument("--fpga-ids", metavar="FILE",
+                   help="<shuttle>/<macro> ids with a bitstream in the archive (tt-vga mirror --fpga-ids-out)")
     p.set_defaults(func=run)

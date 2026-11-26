@@ -29,6 +29,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ttvga import HARNESS_DIR, RESULTS_DIR, ROOT, TARGETS_JSON
+from ttvga.harness import hostconf
+from ttvga.harness import verify as harness_verify
 
 CONFIG_PATH = Path.home() / ".config" / "tinytapeout-vga-videos" / "config.toml"
 FORBIDDEN_USERS = {"root", "tim", "ansible"}
@@ -379,10 +381,16 @@ echo "started in tmux session ttvga-rerender; watch ~/{REMOTE_ROOT}/rerender.log
 
 
 def verify(args: argparse.Namespace) -> int:
-    """Check on the host that what is published is complete and playable."""
+    """Check on the host that what is published is complete and playable.
+
+    With `--server-stale URL`, list instead what the server at URL holds that the
+    host's archive no longer has (verify.py's `stale_on_server`). Nothing is deleted.
+    """
     host = resolve_host(args.host)
     cmd = (f"{host_python(tomllib.loads(TOOLS_TOML.read_text()))} ~/{REMOTE_ROOT}/harness/verify.py --videos ~/{REMOTE_VIDEOS} "
            f"--root ~/{REMOTE_ROOT} --decode {args.decode}")
+    if args.server_stale:
+        cmd += f" --server-stale {shlex.quote(args.server_stale)}"
     return ssh(host, cmd, check=False, timeout=7200).returncode
 
 
@@ -662,6 +670,90 @@ SUPERSEDED = ("60s.avi", "30s.avi", "10s.avi", "poster.png", "contact.png", "pre
               "rerender.log")
 
 
+def mirror_excludes() -> list[str]:
+    """rsync's anchored excludes: the FPGA session's files (verify.FOREIGN_PATTERNS) and the frames subtree."""
+    return ["/" + p for p in harness_verify.FOREIGN_PATTERNS] + ["/frames/"]
+
+
+def mirror_script(src: str, dest: str, dry_run: bool) -> str:
+    """The script, run on the host, that copies the published clips in `src` into the archive `dest`.
+
+    Never `--delete`: the archive is append-only downstream. It never writes over
+    the FPGA session's files or the frames subtree (`mirror_excludes`), and it
+    refuses a `dest` that holds the frames subtree's marker, `.ttvga-frames-root`.
+    """
+    excludes = "".join(f" --exclude {shlex.quote(name)}" for name in SUPERSEDED)
+    excludes += "".join(f" --exclude {shlex.quote(p)}" for p in mirror_excludes())
+    q_src, q_dest = shlex.quote(src), shlex.quote(dest)
+    marker = shlex.quote(f"{dest}/{hostconf.ROOT_MARKER}")
+    return f"""
+set -e
+if [ ! -d {q_src} ]; then echo "no published tree at {src}"; exit 1; fi
+if [ -e {marker} ] || [ -L {marker} ]; then
+  echo "refusing to mirror into {dest}: it holds {hostconf.ROOT_MARKER}, so it is the frames subtree, not the archive"
+  exit 1
+fi
+mkdir -p {q_dest}
+rsync -a --mkpath{excludes} {'--dry-run --stats' if dry_run else ''} \\
+    {q_src} {q_dest}/
+echo "---"
+echo "clips:    $(find {q_dest} -name '*.mp4' -o -name '*.webm' | wc -l)"
+echo "previews: $(find {q_dest} -name '*.png' -o -name '*.gif' | wc -l)"
+echo "index:    $(ls {q_dest}/index.html {q_dest}/index.json 2>&1 | tr '\\n' ' ')"
+du -sh {q_dest}
+"""
+
+
+# Only paths of this shape give an id; the host's file names are not trusted.
+_FPGA_BIN = re.compile(r"[a-z0-9]+/tt_um_[A-Za-z0-9_]+/[^/]+\.bin")
+
+
+def fpga_ids_script(dest: str) -> str:
+    """The script that lists the archive's bitstreams, `<shuttle>/<macro>/<file>.bin`, NUL terminated."""
+    return f"""
+set -e
+LC_ALL=C find {shlex.quote(dest)} -mindepth 3 -maxdepth 3 -name '*.bin' -printf '%P\\0'
+"""
+
+
+def parse_fpga_ids(raw: bytes) -> tuple[list[str], list[str]]:
+    """(sorted unique `<shuttle>/<macro>` ids, dropped paths) from `fpga_ids_script`'s output.
+
+    Bytes, decoded with surrogateescape: the names are not trusted to be UTF-8.
+    A path that is not exactly `_FPGA_BIN` gives no id and is returned in `dropped`.
+    """
+    ids, dropped = set(), []
+    for path in raw.decode("utf-8", errors="surrogateescape").split("\0"):
+        if not path:
+            continue
+        if _FPGA_BIN.fullmatch(path):
+            ids.add("/".join(path.split("/")[:2]))
+        else:
+            dropped.append(path)
+    return sorted(ids), dropped
+
+
+def write_fpga_ids(ssh_cmd: list[str], dest: str, out: Path) -> int:
+    """Run `fpga_ids_script` through `ssh_cmd` and write the ids to `out`, one per line. Logs every path."""
+    p = subprocess.run(ssh_cmd + ["bash", "-s"], input=fpga_ids_script(dest).encode(), capture_output=True,
+                       timeout=600)
+    sys.stderr.write(p.stderr.decode(errors="backslashreplace"))
+    if p.returncode != 0:
+        print(f"tt-vga mirror: listing the bitstreams under {dest} failed (exit {p.returncode})", file=sys.stderr)
+        return 1
+    ids, dropped = parse_fpga_ids(p.stdout)
+    for path in p.stdout.decode("utf-8", errors="surrogateescape").split("\0"):
+        if path:
+            print(f"bitstream: {_shown(path)}")
+    for path in dropped:
+        print(f"tt-vga mirror: warning: {_shown(path)} is not <shuttle>/tt_um_<macro>/<file>.bin: no id taken",
+              file=sys.stderr)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text("".join(f"{i}\n" for i in ids))
+    print(f"{len(ids)} projects with a bitstream -> {out}")
+    return 0
+
+
 def mirror(args: argparse.Namespace) -> int:
     """Copy the published clips into a directory that is itself published onwards.
 
@@ -676,26 +768,17 @@ def mirror(args: argparse.Namespace) -> int:
     ssh_host = f"{args.as_user}@{host.ssh.split('@', 1)[1]}" if args.as_user else host.ssh
     dest = args.dest.rstrip("/")
     src = f"/home/{host.user}/{REMOTE_VIDEOS}/"
-    excludes = "".join(f" --exclude {shlex.quote(name)}" for name in SUPERSEDED)
     # No --delete: a mirror of this kind is usually append-only downstream, and
     # deleting here would not unpublish there anyway.
-    script = f"""
-set -e
-if [ ! -d {shlex.quote(src)} ]; then echo "no published tree at {src}"; exit 1; fi
-mkdir -p {shlex.quote(dest)}
-rsync -a --mkpath{excludes} {'--dry-run --stats' if args.dry_run else ''} \\
-    {shlex.quote(src)} {shlex.quote(dest)}/
-echo "---"
-echo "clips:    $(find {shlex.quote(dest)} -name '*.mp4' -o -name '*.webm' | wc -l)"
-echo "previews: $(find {shlex.quote(dest)} -name '*.png' -o -name '*.gif' | wc -l)"
-echo "index:    $(ls {shlex.quote(dest)}/index.html {shlex.quote(dest)}/index.json 2>&1 | tr '\\n' ' ')"
-du -sh {shlex.quote(dest)}
-"""
+    script = mirror_script(src, dest, args.dry_run)
     ssh_cmd = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=20"]
     if args.as_user is None and host.key:
         ssh_cmd += ["-o", "IdentitiesOnly=yes", "-i", os.path.expanduser(host.key)]
     print(f"mirroring {src} to {ssh_host}:{dest}/" + (" (dry run)" if args.dry_run else ""))
-    return subprocess.run(ssh_cmd + [ssh_host, "bash", "-s"], input=script, text=True).returncode
+    rc = subprocess.run(ssh_cmd + [ssh_host, "bash", "-s"], input=script, text=True).returncode
+    if rc != 0 or not args.fpga_ids_out:
+        return rc
+    return write_fpga_ids(ssh_cmd + [ssh_host], dest, Path(args.fpga_ids_out))
 
 
 class _RefuseTestHooks(argparse.Action):
@@ -760,6 +843,8 @@ def add_parsers(sub: argparse._SubParsersAction) -> None:
     common(p)
     p.add_argument("--decode", type=int, default=40,
                    help="how many projects to decode in full (0 to skip)")
+    p.add_argument("--server-stale", metavar="URL",
+                   help="instead, list what the server at URL has that the archive no longer has (deletes nothing)")
     p.set_defaults(func=verify)
     p = sub.add_parser("collect", help="pull new result.json and frames/ files into data/results/")
     common(p)
@@ -771,4 +856,6 @@ def add_parsers(sub: argparse._SubParsersAction) -> None:
                    help="destination directory on the host (not recorded in this repository)")
     p.add_argument("--as-user", help="account on the host to run the copy as, if not the simulation user")
     p.add_argument("--dry-run", action="store_true", help="list what would be copied and stop")
+    p.add_argument("--fpga-ids-out", metavar="FILE",
+                   help="also write the <shuttle>/<macro> ids that have a bitstream in --dest (for tt-vga index --fpga-ids)")
     p.set_defaults(func=mirror)

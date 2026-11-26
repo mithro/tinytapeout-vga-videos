@@ -3,6 +3,7 @@
 """Check that what is published is actually playable. Runs on the host.
 
 Usage: verify.py --videos ~/public_html --root ~/ttvga [--decode 40]
+       verify.py --root ~/ttvga --server-stale URL [--archive DIR]
 
 Every check here exists because something got past the ones before it:
 
@@ -20,6 +21,18 @@ Every check here exists because something got past the ones before it:
   into 96 kHz AAC, which is unusual enough that some decoders refuse it, and
   the clip plays perfectly everywhere it was tested.
 
+The frames subtree (`frames_root` in host.toml) is checked too: each
+project's trace is there and not empty, each sampler directory has its
+frames.txt, index.html, store and one PNG per distinct frame, and the
+project's last result.json neither failed (its previous output is still the
+published one) nor was built with tb.cpp's test hooks. tb-v1 files left from
+another trace are a note, never a failure.
+
+`--server-stale URL` instead walks the server's public directory listings,
+the only way to see what the upload put there, and prints what the archive no
+longer has, for removal by hand. It never deletes. FOREIGN_PATTERNS are not
+this pipeline's files and are never listed.
+
 Exits non-zero if anything fails, so it can gate a publish.
 
 Standard library only: the host has no packages installed.
@@ -29,17 +42,204 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import random
+import re
 import subprocess
 import sys
+import urllib.error
+import urllib.request
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
+from html.parser import HTMLParser
+from pathlib import Path, PurePosixPath
+from urllib.parse import quote, unquote
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
+import hostconf  # noqa: E402
 from encode import AUDIO_OUT_RATE, GIF_SECONDS, LENGTHS, clip_names, preview_names, stem_for  # noqa: E402
+
+# Files in the archive that the FPGA harness session owns (Ruling AA), relative
+# to the archive root: its bitstreams `<id>-<sha256[:12]>.bin` in each
+# `<shuttle>/<macro>/`, and its library file. This is the only copy of the list:
+# `tt-vga mirror` excludes these, and nothing here reports them as stale.
+FOREIGN_PATTERNS = ("*/*/*.bin", "fpga-library.json")
+
+SAMPLERS = ("centre-v1", "tb-v1")
+
+
+def is_foreign(rel: str) -> bool:
+    """Whether a path relative to the archive root is one of FOREIGN_PATTERNS (`*` never crosses a `/`)."""
+    return any(PurePosixPath(rel).full_match(p) for p in FOREIGN_PATTERNS)
+
+
+# ---------------------------------------------------------------------------
+# What is on the server but no longer in the archive
+# ---------------------------------------------------------------------------
+
+class NotAListing(Exception):
+    """The server answered a directory with something other than an autoindex page."""
+
+
+class _Links(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.hrefs: list[str] = []
+        self.title = ""
+        self._in_title = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "a":
+            self.hrefs += [v for k, v in attrs if k == "href" and v]
+        self._in_title = tag == "title"
+
+    def handle_endtag(self, tag):
+        if tag == "title":
+            self._in_title = False
+
+    def handle_data(self, data):
+        if self._in_title:
+            self.title += data
+
+
+def server_listing(base_url: str, path: str, fetch=urllib.request.urlopen) -> tuple[set[str], set[str]]:
+    """The directory names and file names in the server's autoindex page for `path` (relative to `base_url`).
+
+    nginx's autoindex: one `<a href>` per entry, a directory's ending in `/`.
+    Only single-segment names are taken: `../`, queries, absolute links and
+    anything with a `/` inside are dropped. A page that is not an autoindex
+    listing (a directory with its own index.html) raises NotAListing.
+    """
+    url = base_url + quote(path)
+    with fetch(url, timeout=60) as r:
+        body = r.read().decode("utf-8", errors="replace")
+    parser = _Links()
+    parser.feed(body)
+    if not parser.title.startswith("Index of "):
+        raise NotAListing(f"{url} is not a directory listing (title {parser.title.strip()[:80]!r})")
+    dirs, files = set(), set()
+    for href in parser.hrefs:
+        if any(c in href for c in "?#:") or href.startswith("/"):
+            continue
+        is_dir = href.endswith("/")
+        name = unquote(href[:-1] if is_dir else href)
+        if not name or name in (".", "..") or "/" in name:
+            continue
+        (dirs if is_dir else files).add(name)
+    return dirs, files
+
+
+def stale_on_server(local: Path, base_url: str, roots, fetch=urllib.request.urlopen,
+                    unlisted: list[str] | None = None) -> list[str]:
+    """Paths on the server, under each of `roots`, that `local` (the archive) no longer has. Sorted.
+
+    `roots` are directories relative to `base_url` ("" for the top, otherwise
+    ending in `/`), walked recursively. A directory missing locally is listed
+    once, with its trailing `/`, and not walked. FOREIGN_PATTERNS are never
+    listed. A directory the server answers with its own index.html (the local
+    copy has one) cannot be listed: it is appended to `unlisted` when given.
+    A root the server does not have (404) has nothing stale. Never deletes.
+    """
+    stale: list[str] = []
+    todo = list(roots)
+    first = set(todo)
+    while todo:
+        path = todo.pop()
+        try:
+            dirs, files = server_listing(base_url, path, fetch=fetch)
+        except NotAListing:
+            if (local / path / "index.html").is_file():
+                if unlisted is not None:
+                    unlisted.append(path)
+                continue
+            raise
+        except urllib.error.HTTPError as e:
+            if e.code == 404 and path in first:
+                continue
+            raise
+        for name in files:
+            rel = path + name
+            if not is_foreign(rel) and not os.path.lexists(local / rel):
+                stale.append(rel)
+        for name in dirs:
+            rel = path + name + "/"
+            if (local / rel).is_dir():
+                todo.append(rel)
+            elif not is_foreign(rel[:-1]):
+                stale.append(rel)
+    return sorted(stale)
+
+
+# ---------------------------------------------------------------------------
+# The frames subtree: complete, and what the last run of each project says
+# ---------------------------------------------------------------------------
+
+_DISTINCT = re.compile(r"distinct_frames: ([0-9]+)")
+
+
+def _distinct_frames(frames_txt: Path) -> int | None:
+    """The `distinct_frames:` header value of a frames.txt, or None when it has none."""
+    with open(frames_txt, encoding="utf-8", errors="replace") as f:
+        for line in f:
+            if not line.strip():
+                break
+            if m := _DISTINCT.fullmatch(line.rstrip("\n")):
+                return int(m.group(1))
+    return None
+
+
+def check_frames(frames_root: Path, work: Path) -> tuple[list[str], list[str]]:
+    """(failures, notes) for every project directory `<frames_root>/<shuttle>/<macro>/`.
+
+    `work` is the host's `<root>/work`, which holds each project's result.json.
+    """
+    failures: list[str] = []
+    notes: list[str] = []
+    for d in sorted(p for p in frames_root.glob("*/*") if p.is_dir() and not p.is_symlink()):
+        pid = f"{d.parent.name}/{d.name}"
+        stem = stem_for(d.parent.name, d.name)
+        trace = d / f"{stem}_trace.vgch.zst"
+        if not trace.is_file():
+            failures.append(f"{pid}: trace {trace.name} missing")
+        elif trace.stat().st_size == 0:
+            failures.append(f"{pid}: trace {trace.name} is empty")
+        samplers = [s for s in SAMPLERS if (d / s).is_dir()]
+        if not samplers:
+            failures.append(f"{pid}: no sampler directory")
+        for s in samplers:
+            store = f"{stem}_{s}_frames.rgb6.zst"
+            missing = [n for n in ("frames.txt", "index.html", store) if not (d / s / n).is_file()]
+            for n in missing:
+                failures.append(f"{pid}: {s}: {n} missing")
+            if "frames.txt" in missing:
+                continue
+            distinct = _distinct_frames(d / s / "frames.txt")
+            pngs = len(list((d / s / "png").glob("*.png"))) if (d / s / "png").is_dir() else 0
+            if distinct is None:
+                failures.append(f"{pid}: {s}: frames.txt has no distinct_frames")
+            elif pngs != distinct:
+                failures.append(f"{pid}: {s}: {pngs} PNGs, distinct_frames is {distinct}")
+
+        result_path = work / pid / "result.json"
+        if not result_path.is_file():
+            continue
+        try:
+            result = json.loads(result_path.read_text())
+        except (json.JSONDecodeError, UnicodeDecodeError, OSError) as e:
+            failures.append(f"{pid}: result.json does not parse: {e}")
+            continue
+        if not result.get("published") and result.get("error"):
+            failures.append(f"{pid}: failed (previous output kept): {result['error']}")
+        if result.get("test_hooks"):
+            failures.append(f"{pid}: built with test hooks")
+        tb = result.get("tb_v1") or {}
+        if tb.get("state") == "stale":
+            sha = tb.get("trace_sha")
+            notes.append(f"{pid}: tb-v1 files are from trace {sha[:12] if sha else 'before traces'}, "
+                         "not the current trace")
+    return failures, notes
 
 
 def probe(ffprobe: str, path: Path, entries: str, stream: str = "v:0") -> str:
@@ -76,13 +276,45 @@ def projects(videos: Path) -> list[tuple[str, str, Path]]:
     return out
 
 
+def server_stale(args: argparse.Namespace) -> int:
+    """`--server-stale URL`: print what the server holds that the archive does not. Deletes nothing."""
+    base = args.server_stale if args.server_stale.endswith("/") else args.server_stale + "/"
+    local = args.archive
+    if local is None:
+        try:
+            local = hostconf.load(args.root).frames_root.parent
+        except (hostconf.ConfigError, OSError) as e:
+            print(f"verify: --server-stale needs the archive: {e}", file=sys.stderr)
+            return 1
+    # The archive's top is its own index.html, not a listing, so each top-level directory is a root.
+    roots = sorted(d.name + "/" for d in local.iterdir() if d.is_dir() and not d.is_symlink())
+    unlisted: list[str] = []
+    stale = stale_on_server(local, base, roots, unlisted=unlisted)
+    print(f"walked {len(roots)} top-level directories of {base} against {local}")
+    for path in sorted(unlisted):
+        print(f"  not listed (the server serves its index.html): {path}")
+    print("stale on server (remove by hand):")
+    for path in stale:
+        print(f"  {path!r}" if not path.isprintable() else f"  {path}")
+    print(f"{len(stale)} stale")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--videos", type=Path, default=Path.home() / "public_html")
     ap.add_argument("--root", type=Path, default=Path.home() / "ttvga")
     ap.add_argument("--decode", type=int, default=40, help="how many projects to decode in full (0 to skip)")
     ap.add_argument("--jobs", type=int, default=16)
+    ap.add_argument("--server-stale", metavar="URL",
+                    help="only list what the server at URL (the archive's public listings) has that the archive "
+                         "no longer has, for removal by hand")
+    ap.add_argument("--archive", type=Path,
+                    help="with --server-stale: the local archive (default: frames_root's parent, from host.toml)")
     args = ap.parse_args()
+
+    if args.server_stale:
+        return server_stale(args)
 
     bin_dir = args.root / "tools" / "ffmpeg" / "bin"
     ffmpeg, ffprobe = str(bin_dir / "ffmpeg"), str(bin_dir / "ffprobe")
@@ -181,6 +413,22 @@ def main() -> int:
                 silent += 1
                 failures.append(f"{name}: run captured audio but {'; '.join(bad)}")
         print(f"  clips with the sound their record claims: {len(claimed) - silent} of {len(claimed)}")
+
+    # 6. the frames subtree: complete, and no project failed or built with test hooks
+    notes: list[str] = []
+    try:
+        conf = hostconf.load(args.root)
+    except (hostconf.ConfigError, OSError) as e:
+        failures.append(f"frames: host.toml: {e}")
+    else:
+        frame_failures, notes = check_frames(conf.frames_root, args.root / "work")
+        n = sum(1 for p in conf.frames_root.glob("*/*") if p.is_dir())
+        print(f"  frames projects without a problem: {n - len({f.split(':', 1)[0] for f in frame_failures})} of {n}")
+        failures.extend(frame_failures)
+    if notes:
+        print(f"\nnotes:")
+        for note in notes:
+            print(f"  {note}")
 
     if failures:
         print(f"\n{len(failures)} problems:")
