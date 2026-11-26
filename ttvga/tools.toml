@@ -25,10 +25,8 @@ check = "uv/uv"
 [python]
 version = "3.14.7"
 
-# Pinned to vgacap `m10-perf` at dc3cb12 (2026-11-26, Ruling AP): the M10 stack's
-# interfaces plus vgacap_trace_repeat2/push2, the writer's per-block fflush, the
-# Python parse_header clock_hz fix and the RUNS decoder speed-ups.
-# Task 18 moves this pin to vgacap `main` once PRs #14-#22 have merged.
+# Pinned to vgacap `main` at c7176da (2026-11-27): the merged M10 stack (PRs #15-#24)
+# plus later documentation-only changes.
 [vgacap]
 git = "https://github.com/mithro/vgacap"
-commit = "dc3cb12d33f5229801ff33bdf457e9dd8afb6a29"
+commit = "c7176da10e2171a76605734d4364de85bb549280"
