@@ -1,0 +1,242 @@
+# SPDX-License-Identifier: Apache-2.0
+"""tracetool: info, slice and uohash over traces written by tb.cpp."""
+
+from __future__ import annotations
+
+import hashlib
+import shutil
+import signal
+import subprocess
+import time
+from pathlib import Path
+
+import pytest
+
+from tests.sim import vgch
+from tests.sim.test_tb_trace import base_args, meta_args, run
+
+pytestmark = pytest.mark.sim
+
+CLK = 1 << 42
+
+
+def tracetool(dev, *args, check=True) -> subprocess.CompletedProcess:
+    dev.require("tracetool")
+    p = subprocess.run([str(dev.tracetool), *map(str, args)], capture_output=True, text=True, timeout=600)
+    if check:
+        assert p.returncode == 0, (p.returncode, p.stdout, p.stderr)
+    return p
+
+
+def kv(text: str) -> dict[str, str]:
+    out = {}
+    for line in text.splitlines():
+        k, v = line.split(": ", 1)
+        assert k not in out, f"duplicate key {k}"
+        out[k] = v
+    return out
+
+
+def info(dev, path) -> dict[str, str]:
+    return kv(tracetool(dev, "info", path).stdout)
+
+
+def samples(t: vgch.Trace, lo: int, hi: int) -> list[int]:
+    """Samples [lo, hi) with their clock bits, from the run list."""
+    out = []
+    for first, v, r in t.runs:
+        a, b = max(first, lo), min(first + r, hi)
+        for n in range(a, b):
+            clk = t.header.clock_first ^ (n & 1)
+            out.append((v & ~CLK) | (clk << 42))
+    assert len(out) == hi - lo
+    return out
+
+
+@pytest.fixture(scope="module")
+def bars(models, dev, tmp_path_factory):
+    out = tmp_path_factory.mktemp("bars640")
+    p = run(models("bars640"), dev, out)
+    assert p.returncode == 0, p.stderr
+    return out / "trace.vgch.zst"
+
+
+# A model killed mid-run, shared by the two tests that need a truncated trace.
+_killed: dict[str, Path] = {}
+
+
+def killed_trace(models, dev, tmp_path_factory) -> Path:
+    if "path" in _killed:
+        return _killed["path"]
+    out = tmp_path_factory.mktemp("killed")
+    out.mkdir(exist_ok=True)
+    trace = out / "trace.vgch.zst"
+    log = (out / "poll.log").open("w")
+    cmd = [str(models("noisy"))] + base_args(dev, out) + ["--trace", str(trace)] + meta_args("noisy")
+    cmd += ["--seconds", "30"]
+    p = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    start = time.monotonic()
+    try:
+        while True:
+            time.sleep(1)
+            assert p.poll() is None, "the model exited before it was killed"
+            elapsed = time.monotonic() - start
+            if elapsed > 120:
+                pytest.fail("the trace has fewer than 2 blocks after 120 s")
+            copy = out / "copy.vgch.zst"
+            if not trace.exists():
+                print(f"{elapsed:5.1f}s: no trace file yet", file=log, flush=True)
+                continue
+            shutil.copyfile(trace, copy)
+            q = tracetool(dev, "info", copy, check=False)
+            blocks = kv(q.stdout).get("blocks", "?") if q.returncode == 0 else f"info exit {q.returncode}: {q.stderr.strip()}"
+            print(f"{elapsed:5.1f}s: copy {copy.stat().st_size} bytes, blocks {blocks}", file=log, flush=True)
+            if q.returncode == 0 and int(blocks) >= 2:
+                break
+    finally:
+        p.send_signal(signal.SIGKILL)
+        p.wait()
+        log.close()
+    _killed["path"] = trace
+    return trace
+
+
+def test_info_on_killed_trace(models, dev, tmp_path_factory):
+    trace = killed_trace(models, dev, tmp_path_factory)
+    i = info(dev, trace)
+    assert i["table_rebuilt"] == "1"
+    assert i["close.status"] == "truncated"
+    assert int(i["blocks"]) >= 1
+    assert int(i["samples"]) > 0 and i["clocks"] == str(int(i["samples"]) // 2)
+    assert i["open.project"] == "test/noisy"
+
+
+def test_info_on_finished_traces(models, dev, tmp_path):
+    """A normal and a SIGTERMed run: the seek table is intact and the close status is the run's."""
+    p = run(models("bars640"), dev, tmp_path / "ok")
+    assert p.returncode == 0, p.stderr
+    i = info(dev, tmp_path / "ok" / "trace.vgch.zst")
+    assert (i["table_rebuilt"], i["close.status"], i["open.layout"]) == ("0", "ok", "tt-um-43")
+    assert (i["version"], i["sample_bits"], i["samples_per_clock"], i["clock_bit"], i["clock_hz"]) == (
+        "2", "43", "2", "42", "25175000")
+    out = tmp_path / "term"
+    out.mkdir()
+    cmd = [str(models("bars640"))] + base_args(dev, out) + ["--trace", str(out / "trace.vgch.zst")]
+    cmd += meta_args("bars640") + ["--seconds", "30"]
+    m = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    time.sleep(2)
+    m.send_signal(signal.SIGTERM)
+    assert m.wait(timeout=60) == 3
+    i = info(dev, out / "trace.vgch.zst")
+    assert (i["table_rebuilt"], i["close.status"]) == ("0", "sim-timeout")
+
+
+def test_info_counts(models, dev, tmp_path):
+    p = run(models("uio_echo"), dev, tmp_path, "--ui-in", "0x5a", design="uio_echo")
+    assert p.returncode == 3, p.stderr
+    i = info(dev, tmp_path / "trace.vgch.zst")
+    assert i["changes.ui_in"] == "0"
+    assert i["changes.rst_n"] == "1"
+    assert i["changes.ena"] == "0"
+    assert "changes.clk" not in i
+    assert int(i["clocks"]) == int(i["samples"]) // 2 > 0
+
+
+def test_slice_round_trip(models, dev, bars, tmp_path):
+    vgch._stream(dev)      # puts vgacap's python package on sys.path
+    from vgacap import timebase
+
+    sl = tmp_path / "slice.vgch.zst"
+    tracetool(dev, "slice", bars, "--from", 1000, "--to", 2000, "--out", sl)
+    orig, cut = vgch.read(bars, dev), vgch.read(sl, dev)
+
+    # The slice's samples are the original's minus 2000.
+    assert cut.samples == 2000
+    assert samples(cut, 0, 2000) == samples(orig, 2000, 4000)
+
+    # META: open copied plus the range; close copied with the original's status.
+    o = orig.meta("open")
+    c = cut.meta("open")
+    assert c == {**o, "slice_from_clock": "1000", "slice_to_clock": "2000"}
+    assert cut.meta("close") == {"meta": "close", "status": orig.meta("close")["status"],
+                                 "capture_after_clock": "0", "frames": "0"}
+    assert (cut.header.sample_bits, cut.header.samples_per_clock, cut.header.clock_bit,
+            cut.header.clock_first) == (43, 2, 42, 0)
+
+    # The VCDs of the slice and of the same range of the original have identical
+    # value changes once each time is turned back into a sample number.
+    hz, spc = 25_175_000, 2
+    times = {timebase.sample_time_ps(n, spc, hz): n for n in range(5000)}
+    assert len(times) == 5000
+
+    def changes(vcd: Path, offset: int) -> list[tuple[int, str, str]]:
+        out, n = [], None
+        for line in vcd.read_text().splitlines():
+            if line.startswith("#"):
+                n = times[int(line[1:])] + offset
+            elif line and line[0] in "01bB" and n is not None:
+                value, _, ident = line.rpartition(" ") if line[0] in "bB" else (line[0], "", line[1:])
+                out.append((n, ident, value))
+        return out
+
+    dev.require("vgacap_export")
+    for name, trace, extra in (("slice", sl, []), ("orig", bars, ["--from", "1000", "--to", "2000"])):
+        subprocess.run([str(dev.vgacap_export), str(trace), "--format", "vcd", "--out", str(tmp_path / f"{name}.vcd"),
+                        *extra], check=True, capture_output=True, text=True)
+    a = changes(tmp_path / "slice.vcd", 0)
+    b = changes(tmp_path / "orig.vcd", -2000)
+    assert len(a) > 50
+    assert a == b
+
+
+def test_slice_range_errors(dev, bars, tmp_path):
+    out = tmp_path / "x.vgch.zst"
+    clocks = int(info(dev, bars)["clocks"])
+    for lo, hi in ((5, 5), (6, 5), (clocks - 1, clocks + 1), (clocks + 1, clocks + 2)):
+        p = tracetool(dev, "slice", bars, "--from", lo, "--to", hi, "--out", out, check=False)
+        assert p.returncode == 2, (lo, hi, p.stderr)
+        assert not out.exists()
+    # The very end is in range.
+    tracetool(dev, "slice", bars, "--from", clocks - 10, "--to", clocks, "--out", out)
+    assert int(info(dev, out)["clocks"]) == 10
+
+
+def test_slice_of_truncated_has_no_close(models, dev, tmp_path_factory, tmp_path):
+    trace = killed_trace(models, dev, tmp_path_factory)
+    sl = tmp_path / "slice.vgch.zst"
+    tracetool(dev, "slice", trace, "--from", 1000, "--to", 3000, "--out", sl)
+    i = info(dev, sl)
+    assert i["close.status"] == "truncated"
+    assert not any(k.startswith("close.") and k != "close.status" for k in i)
+    assert (i["samples"], i["clocks"], i["table_rebuilt"]) == ("4000", "2000", "1")
+    assert i["open.slice_from_clock"] == "1000" and i["open.slice_to_clock"] == "3000"
+    t = vgch.read(sl, dev)
+    assert [m["meta"] for m in t.metas] == ["open"]
+    # The killed file ends in a cut frame, which a plain zstd decoder rejects, so
+    # compare through tracetool: a slice from clock 0 hashes like the original's first clocks.
+    head = tmp_path / "head.vgch.zst"
+    tracetool(dev, "slice", trace, "--from", 0, "--to", 2000, "--out", head)
+    assert kv(tracetool(dev, "uohash", head).stdout) == kv(tracetool(dev, "uohash", trace, "--clocks", 2000).stdout)
+
+
+def test_uohash_matches_python(dev, bars):
+    M = 50_000
+    t = vgch.read(bars, dev)
+    data = bytes(s & 0xFF for s in samples(t, 0, 2 * M)[1::2])
+    assert len(data) == M
+    want = hashlib.sha256(data).hexdigest()
+    got = kv(tracetool(dev, "uohash", bars, "--clocks", M).stdout)
+    assert got == {"uo_out_sha256_clocks": f"0 {M}", "uo_out_sha256": want}
+    # Half-open: one clock fewer is a different hash, over M - 1 clocks.
+    short = kv(tracetool(dev, "uohash", bars, "--clocks", M - 1).stdout)
+    assert short["uo_out_sha256_clocks"] == f"0 {M - 1}"
+    assert short["uo_out_sha256"] == hashlib.sha256(data[:-1]).hexdigest() != want
+
+
+def test_uohash_clamps_to_the_trace(dev, bars, tmp_path):
+    sl = tmp_path / "s.vgch.zst"
+    tracetool(dev, "slice", bars, "--from", 0, "--to", 3000, "--out", sl)
+    got = kv(tracetool(dev, "uohash", sl).stdout)     # default N = 2^25 is past the end
+    assert got["uo_out_sha256_clocks"] == "0 3000"
+    t = vgch.read(sl, dev)
+    assert got["uo_out_sha256"] == hashlib.sha256(bytes(s & 0xFF for s in samples(t, 0, 6000)[1::2])).hexdigest()

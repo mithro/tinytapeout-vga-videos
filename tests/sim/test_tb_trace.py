@@ -15,36 +15,11 @@ from pathlib import Path
 import pytest
 
 from tests.sim import vgch
-from tests.sim.build import build_model
 
 pytestmark = pytest.mark.sim
 
 HARNESS = "test-harness-2026-11-26"
 CLK, RST, ENA = 1 << 42, 1 << 40, 1 << 41
-
-
-@pytest.fixture(scope="session")
-def dev():
-    from ttvga import devtools
-
-    d = devtools.paths()
-    d.require("verilator", "ffmpeg_sink")
-    return d
-
-
-@pytest.fixture(scope="session")
-def models(dev, tmp_path_factory):
-    """Each model is built once per session, on first use."""
-    root = tmp_path_factory.mktemp("models")
-    cache: dict[tuple[str, bool], Path] = {}
-
-    def get(design: str, test_hooks: bool = True) -> Path:
-        key = (design, test_hooks)
-        if key not in cache:
-            cache[key] = build_model(design, dev, root / f"{design}{'' if test_hooks else '-prod'}", test_hooks)
-        return cache[key]
-
-    return get
 
 
 def meta_args(design: str) -> list[str]:

@@ -120,3 +120,13 @@ def test_host_check_reports_a_missing_interpreter(monkeypatch):
     assert "uv python find 3.14.7" in seen["script"]
     assert "MISSING" in seen["script"]
     assert "loginctl show-user" in seen["script"] and "2>&1" in seen["script"]
+
+
+def test_tracetool_is_built_against_the_vgacap_libraries_found_in_the_build_tree():
+    cmds = "\n".join(remote.tracetool_build_commands("src", "bld", "tracetool.c"))
+    assert "cc -std=c99 -O2 -Wall -Wextra -Werror -Isrc/include -Isrc/third_party/sha256" in cmds
+    for lib in ("libvgacap_trace.a", "libvgacap_stream.a", "libvgacap_sha256.a", "libvgacap_zstd.a"):
+        assert f"find bld -name {lib}" in cmds
+    assert cmds.rstrip().endswith("-pthread -o bld/tracetool")
+    assert "building tracetool" in remote.bootstrap_script(TOOLS)
+    assert "-o vgacap-build/tracetool" in remote.bootstrap_script(TOOLS)

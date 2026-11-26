@@ -142,6 +142,22 @@ def vgacap_build_commands(src: str, build: str, commit: str, url: str | None = N
     return cmds
 
 
+def tracetool_build_commands(src: str, build: str, source: str) -> list[str]:
+    """Shell lines that compile `source` (tracetool.c) against the vgacap build into `build`/tracetool.
+
+    The static libraries are found in the build tree, not guessed.
+    """
+    cmds = ["set -e", f"rm -f {build}/tracetool"]
+    libs = []
+    for i, lib in enumerate(("libvgacap_trace.a", "libvgacap_stream.a", "libvgacap_sha256.a", "libvgacap_zstd.a")):
+        cmds += [f"L{i}=$(find {build} -name {lib} -print -quit)",
+                 f'[ -n "$L{i}" ] || {{ echo "tracetool: {lib} not found under {build}" >&2; exit 1; }}']
+        libs.append(f'"$L{i}"')
+    cmds.append(f"cc -std=c99 -O2 -Wall -Wextra -Werror -I{src}/include -I{src}/third_party/sha256 "
+                f"-I{src}/third_party/zstd/lib {source} {' '.join(libs)} -pthread -o {build}/tracetool")
+    return cmds
+
+
 def bootstrap_script(tools: dict) -> str:
     """The script that installs the pinned toolchain under ~/ttvga/tools on the host."""
     steps = []
@@ -162,6 +178,7 @@ fi""")
     py = tools["python"]["version"]
     vg = tools["vgacap"]
     build = "\n".join(vgacap_build_commands("vgacap-src", "vgacap-build", vg["commit"], vg["git"]))
+    tracetool = "\n".join(tracetool_build_commands("vgacap-src", "vgacap-build", "tracetool.c"))
     return f"""
 set -e
 export {uv_env()}
@@ -178,6 +195,8 @@ else
   echo "building vgacap {vg['commit']}"
 {build}
 fi
+echo "building tracetool"
+({tracetool})
 """
 
 
@@ -245,6 +264,7 @@ def bootstrap(args: argparse.Namespace) -> int:
     host = resolve_host(args.host)
     tools = tomllib.loads(TOOLS_TOML.read_text())
     script = bootstrap_script(tools)
+    rsync(host, [str(HARNESS_DIR / "tracetool.c")], f"{REMOTE_ROOT}/tools/")
     return ssh(host, script, check=False, timeout=3600).returncode
 
 
