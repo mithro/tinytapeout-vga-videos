@@ -180,8 +180,12 @@ def _remove(path: Path) -> None:
 
 
 def _note(log: Path, text: str) -> None:
-    with open(log, "ab") as f:
-        f.write(f"{text}\n".encode())
+    """Append a line to the job's log; never raises (stderr when the log cannot be written)."""
+    try:
+        with open(log, "ab") as f:
+            f.write(f"{text}\n".encode())
+    except OSError as e:
+        print(f"publish: cannot write {log} ({e!r}): {text}", file=sys.stderr, flush=True)
 
 
 def _run(cmd: list[str], log: Path) -> None:
@@ -204,18 +208,31 @@ def _open_regular(path: Path, flags: int) -> int:
     return fd
 
 
-def _append_changed(conf, shuttle: str, macro: str) -> None:
-    """One whole line per publish, for the upload: one os.write on an O_APPEND descriptor."""
-    path = conf.staging_dir / CHANGED_LOG
-    line = f"{datetime.now(timezone.utc).isoformat(timespec='seconds')} {shuttle}/{macro}\n".encode()
-    fd = _open_regular(path, os.O_WRONLY | os.O_APPEND)
+def _open_changed(conf) -> int:
+    """The changed.log descriptor, opened and checked before anything is copied."""
+    fd = _open_regular(conf.staging_dir / CHANGED_LOG, os.O_WRONLY | os.O_APPEND)
     try:
         os.fchmod(fd, 0o644)
-        written = os.write(fd, line)
-    finally:
+    except OSError as e:
         os.close(fd)
+        raise PublishError(f"cannot chmod {conf.staging_dir / CHANGED_LOG}: {e}") from e
+    return fd
+
+
+def _append_changed(fd: int, conf, shuttle: str, macro: str) -> None:
+    """One whole line per publish, for the upload: one os.write on the O_APPEND descriptor."""
+    line = f"{datetime.now(timezone.utc).isoformat(timespec='seconds')} {shuttle}/{macro}\n".encode()
+    written = os.write(fd, line)
     if written != len(line):
-        raise PublishError(f"short write to {path}: {written} of {len(line)} bytes")
+        raise PublishError(f"{shuttle}/{macro} is published but {conf.staging_dir / CHANGED_LOG} "
+                           f"got a short write: {written} of {len(line)} bytes")
+
+
+def _remove_leftover(path: Path) -> None:
+    try:
+        _remove(path)
+    except OSError as e:
+        raise PublishError(f"cannot remove the leftover {path}: {e}; an operator must look") from e
 
 
 def _check_name(label: str, name: str, pattern: re.Pattern) -> None:
@@ -270,19 +287,37 @@ def _install_locked(scratch, conf, shuttle, macro, log, carry, stem, shuttle_dir
             raise PublishError(f"cannot carry {name!r}: {scratch} already holds it")
         if not os.path.lexists(dest / name):
             raise PublishError(f"cannot carry {name!r}: {dest} does not hold it")
+    # changed.log is opened and checked now, so a bad one refuses the publish before
+    # anything is copied; the line itself is written only after the swap.
+    changed = _open_changed(conf)
+    try:
+        _install_checked(scratch, conf, shuttle, macro, log, carry, stem, shuttle_dir, dest, new, old, dele, changed)
+    finally:
+        os.close(changed)
 
+
+def _install_checked(scratch, conf, shuttle, macro, log, carry, stem, shuttle_dir, dest, new, old, dele, changed) -> None:
     # 2. The shuttle directory.
-    if not os.path.lexists(shuttle_dir):
+    # Installs of other projects in the shuttle (other locks) may create it at the same time.
+    try:
         shuttle_dir.mkdir()
+    except FileExistsError:
+        pass
+    else:
         os.chmod(shuttle_dir, 0o755)
+    if shuttle_dir.is_symlink() or not shuttle_dir.is_dir():
+        raise PublishError(f"{shuttle_dir} is not a directory")
 
     # 3. Leftovers of an earlier install. With dest in place, .old is a finished swap's
     # old copy; it is moved to .del before deleting, so .old never holds a partial tree.
-    _remove(new)
-    _remove(dele)
+    _remove_leftover(new)
+    _remove_leftover(dele)
     if os.path.lexists(old):
-        os.rename(old, dele)
-        _remove(dele)
+        try:
+            os.rename(old, dele)
+        except OSError as e:
+            raise PublishError(f"cannot move the leftover {old} to {dele}: {e}; an operator must look") from e
+        _remove_leftover(dele)
 
     try:
         # 4. The copy, with the marker.
@@ -316,7 +351,7 @@ def _install_locked(scratch, conf, shuttle, macro, log, carry, stem, shuttle_dir
         previous = old
 
     # 8. The upload is told at once; deleting the old copy comes after and cannot undo the publish.
-    _append_changed(conf, shuttle, macro)
+    _append_changed(changed, conf, shuttle, macro)
     if previous is not None:
         try:
             os.rename(previous, dele)

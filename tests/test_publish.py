@@ -321,15 +321,47 @@ def test_install_lock_serialises_one_project(tmp_path, monkeypatch):
     assert staging_names(conf) == STAGING_CLEAN
 
 
+@pytest.mark.parametrize("earlier", [False, True])
 @pytest.mark.parametrize("name", [f"{STEM}.lock", "changed.log"])
-def test_install_refuses_symlinked_lock_and_log(tmp_path, name):
+def test_install_refuses_symlinked_lock_and_log(tmp_path, name, earlier):
     conf = make_host(tmp_path)
+    if earlier:
+        install(tmp_path, conf, make_scratch(tmp_path / "s0", basic_files(b"0")))
+        (conf.staging_dir / name).unlink()
     target = tmp_path / "elsewhere"
     target.write_bytes(b"")
     (conf.staging_dir / name).symlink_to(target)
+    before = tree(conf.frames_root)
     with pytest.raises(publish.PublishError):
         install(tmp_path, conf, make_scratch(tmp_path / "s", basic_files(b"A")))
     assert target.read_bytes() == b""
+    # Nothing was published: absent on a first install, unchanged otherwise.
+    assert tree(conf.frames_root) == before
+    assert published(conf).exists() == earlier
+    assert not (conf.staging_dir / f"{STEM}.new").exists()
+
+
+def test_install_names_an_undeletable_del_leftover(tmp_path, monkeypatch):
+    conf = make_host(tmp_path)
+    install(tmp_path, conf, make_scratch(tmp_path / "s1", basic_files(b"A")))
+    dele = make_scratch(conf.staging_dir / f"{STEM}.del", {"stale": b"x"})
+    real_rmtree = publish.shutil.rmtree
+
+    def failing(path, *args, **kwargs):
+        if Path(path) == dele:
+            raise OSError(13, "injected")
+        return real_rmtree(path, *args, **kwargs)
+
+    monkeypatch.setattr(publish.shutil, "rmtree", failing)
+    before = tree(conf.frames_root)
+    with pytest.raises(publish.PublishError, match=re.escape(str(dele))):
+        install(tmp_path, conf, make_scratch(tmp_path / "s2", basic_files(b"B")))
+    assert tree(conf.frames_root) == before
+
+
+def test_note_never_raises(tmp_path, capsys):
+    publish._note(tmp_path / "absent-dir" / "log", "hello")
+    assert "hello" in capsys.readouterr().err
 
 
 @pytest.mark.parametrize("breakage", ["marker", "index.json", "filesystem"])
