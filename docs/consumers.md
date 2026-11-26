@@ -36,7 +36,6 @@ The re-run of all projects with traces (Task 23 of the [pipeline plan](superpowe
 In [`data/targets.json`](../data/targets.json), skip every target whose `shuttle` is `testpatterns`.
 Those are calibration designs from [`data/extra-targets.json`](../data/extra-targets.json). They are
 simulated but never published ([`ttvga/targets.py`](../ttvga/targets.py), `PUBLISHED_EXCLUDED_SHUTTLES`).
-The committed `targets.json` has none yet. They are merged in the next time it is regenerated.
 
 `<sampler>` is `centre-v1` or `tb-v1`. [`tt-vga collect`](../ttvga/remote.py) brings exactly these three kinds of file into
 git ([`ttvga/remote.py`](../ttvga/remote.py), `_FRAMES`). The other hash files are only in the archive.
@@ -69,7 +68,7 @@ The archive is <https://data.wafer.space/big-storage/tinytapeout-vga-videos/>.
 | `<s>/<m>/<id>-<sha12>.bin` | FPGA bitstreams | the FPGA session (Ruling AA) |
 | [`fpga-library.json`](https://data.wafer.space/big-storage/tinytapeout-vga-videos/fpga-library.json) | the bitstream index | the FPGA session (Ruling AA) |
 
-The FPGA session publishes 346 designs today. [`ttvga/fpgalibrary.py`](../ttvga/fpgalibrary.py) checks
+On 2026-11-27, `fpga-library.json` listed 346 designs. [`ttvga/fpgalibrary.py`](../ttvga/fpgalibrary.py) checks
 `fpga-library.json`. [`tt-vga mirror`](../ttvga/remote.py) excludes those files and [`tt-vga verify`](../ttvga/harness/verify.py) never lists them
 ([`ttvga/harness/verify.py`](../ttvga/harness/verify.py), `FOREIGN_PATTERNS`).
 
@@ -96,7 +95,7 @@ All of this is [`ttvga/harness/tb.cpp`](../ttvga/harness/tb.cpp), `tick` and the
 - `ena` is 1 from clock 0.
 - `rst_n` is 0 for clocks 0-9 and 1 from clock 10.
 - `ui_in` and `uio_in` are held from clock 0 at the override's `ui_in` and `uio_in`, else 0. When the
-  job's input probe found a bit, `ui_in` is `auto_ui_in` instead
+  job's input probe found a value, `ui_in` is `auto_ui_in` instead
   ([`ttvga/harness/job.py`](../ttvga/harness/job.py), `model_cmd`).
 - Apart from the QSPI model below, the inputs change only by:
   - an event of the override's `inputs` list ([`ttvga/overrides.py`](../ttvga/overrides.py)), applied at the start of the tick whose clock equals
@@ -105,6 +104,10 @@ All of this is [`ttvga/harness/tb.cpp`](../ttvga/harness/tb.cpp), `tick` and the
     scan line (800 clocks until the line period is measured), when the override has a `gamepad` list.
 - With the QSPI model (`qspi` in `result.json` set and not `off`), `uio_in` is the model's response.
   It is updated after each rising edge, and the design is evaluated again before the clk-high sample.
+  `result.json` records `qspi` even when the job ran with `--no-qspi`, which turns the model off.
+  Production runs never pass `--no-qspi`: the queue's job command does not have it
+  ([`ttvga/harness/runqueue.py`](../ttvga/harness/runqueue.py), `job_command`). Only this
+  repository's own tests use it.
 - Without the QSPI model, `uio_in` is not the design's own `uio_out` read back. It stays at the
   value above.
 - The initial state is [Verilator](https://verilator.org)'s `--x-initial fast`
@@ -116,7 +119,8 @@ All of this is [`ttvga/harness/tb.cpp`](../ttvga/harness/tb.cpp), `tick` and the
   ```
 
   The model the pinned Verilator (5.053) builds with it sets every variable to 0 in its
-  `_ctor_var_reset`, with no random reset. So the design starts from all-zero state.
+  `_ctor_var_reset`, with no random reset. So every variable not set by the design's own initialisers (`initial` blocks, declaration
+  initialisers, `$readmemh`) starts at 0.
 - The trace's sample `2c` is clock `c` with clk low, sample `2c + 1` with clk high
   ([trace-format.md](https://github.com/mithro/vgacap/blob/dc3cb12d33f5229801ff33bdf457e9dd8afb6a29/docs/trace-format.md),
   "Clocks and time"). Byte `i` of a `uo_out` dump is sample `2i + 1`, `uo_out` after the rising edge
@@ -158,6 +162,8 @@ and [`tbv1.py`](https://github.com/mithro/vgacap/blob/dc3cb12d33f5229801ff33bdf4
 ([`tbv1.py`](https://github.com/mithro/vgacap/blob/dc3cb12d33f5229801ff33bdf457e9dd8afb6a29/python/vgacap/tbv1.py), `sample`):
 
 - A frame starts at the end of the vsync pulse: the first clock whose clk-high sample is outside it.
+  `capture_after_clock` is in the spec's clock numbering, so consumers must not subtract 1. Frame 0
+  starts at the first vsync end at a clock strictly greater than it.
 - A line starts at the end of the hsync pulse, the same way.
 - At cpp 1 it reads column `x` of a line at clock `x` after the line start. Pixel `p` of the frame is
   column `hback + p`, and row `y` is line `vback + y` after the frame start.

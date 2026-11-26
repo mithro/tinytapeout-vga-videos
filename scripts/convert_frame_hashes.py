@@ -12,13 +12,19 @@ drops `timing.frame_hashes_count` and adds
 `"tb_v1": {"state": "stale", "trace_sha": null, "dropped": false}`.
 
 Every project is converted and checked before anything is written; one
-failure writes nothing. The checks: the hash lines are byte-identical to the
-old file's, their number is `timing.frame_hashes_count`, `capture_after_clock`
-is a number, `clocks_per_pixel` rounded to 4 decimals is timing's, the mode is
-in tb.cpp's table, and the written file reads back with `read_hash_file`.
+failed check writes nothing. The checks: the hash lines are byte-identical to
+the old file's, their number is `timing.frame_hashes_count`,
+`capture_after_clock` is a number, `clocks_per_pixel` rounded to 4 decimals is
+timing's, the mode is timing's and in tb.cpp's table, and the written file
+reads back with `read_hash_file`. The write phase itself is not atomic: if it
+stops partway (a full disk, say), `git checkout -- data/results` and
+`git clean -fd data/results` restore the tree, and the script is run again.
 
-`--seed-host HOST` then rsyncs each converted file, as the host's dedicated
-user, to `~/ttvga/work/<s>/<m>/frames/tb-v1/`, so the host's copy matches git.
+`--seed-host HOST` then rsyncs every converted file in the tree (this run's
+and any earlier run's), as the host's dedicated user, to
+`~/ttvga/work/<s>/<m>/frames/tb-v1/`, so the host's copy matches git. rsync
+`--checksum` makes it idempotent: after a failed or partial seed, run the
+script again with `--seed-host`; it converts nothing new and seeds them all.
 
 `--dry-run` copies `data/results/` to a scratch tree under `tmp/`, converts
 there, and prints the rsync commands `--seed-host` would run without running them.
@@ -43,7 +49,7 @@ from ttvga import RESULTS_DIR, devtools, remote  # noqa: E402
 from ttvga.harness import vgacap_path  # noqa: E402
 
 vgacap_path.add_src(devtools.paths().vgacap_src)
-from vgacap.framesfile import HashFile, format_hash_file, read_hash_file, write_hash_file  # noqa: E402
+from vgacap.framesfile import FormatError, HashFile, format_hash_file, read_hash_file, write_hash_file  # noqa: E402
 from vgacap.tbv1 import TB_MODES, cround  # noqa: E402
 
 OLD_NAME = "frame_hashes.txt"
@@ -107,6 +113,8 @@ def convert(old: Path, result: dict) -> HashFile:
     timing = result["timing"]
     if header["hash_offset_basis"] != OFFSET_BASIS:
         raise ConvertError(f"{old}: hash_offset_basis {header['hash_offset_basis']}, expected {OFFSET_BASIS}")
+    if header["mode"] != timing.get("mode"):
+        raise ConvertError(f"{old}: mode {header['mode']!r}, timing.mode is {timing.get('mode')!r}")
     if header["id"] != result["id"]:
         raise ConvertError(f"{old}: id {header['id']!r}, result.json has {result['id']!r}")
     capture = _uint(old, header, "capture_after_clock")
@@ -129,7 +137,10 @@ def convert(old: Path, result: dict) -> HashFile:
     hf = HashFile(METHOD, header["id"], timing["status"], SAMPLER, "ok", header["mode"],
                   _uint(old, header, "width"), _uint(old, header, "height"), _uint(old, header, "clock_hz"),
                   cpp, capture, [None if h == "-" else h for h in hashes])
-    new_text = format_hash_file(hf)
+    try:
+        new_text = format_hash_file(hf)
+    except FormatError as e:
+        raise ConvertError(f"{old}: the hash lines cannot be written byte-identically: {e}") from None
     tail = f"\nframes: {len(hashes)}\n"
     if not new_text.endswith(tail + hash_text) or new_text.count(tail) != 1:
         raise ConvertError(f"{old}: the converted hash lines are not byte-identical to the old file's")
@@ -183,14 +194,18 @@ def write(results: Path, todo: list) -> list[Path]:
     return written
 
 
+def converted_files(results: Path) -> list[Path]:
+    """Every converted file in the tree, whichever run wrote it."""
+    return sorted(results.glob("*/*/" + NEW_REL.as_posix()))
+
+
 def seed_commands(host: remote.Host, results: Path, files: list[Path]) -> list[list[str]]:
     """One rsync per converted file to the host's `~/ttvga/work/<s>/<m>/frames/tb-v1/`."""
     cmds = []
     for f in files:
         rel = f.parent.relative_to(results).as_posix()
-        dest = f"{remote.REMOTE_ROOT}/work/{rel}/"
-        cmds.append(["rsync", "-a", "--checksum", "--mkpath", "--chmod=D755,F644",
-                     "-e", " ".join(shlex.quote(c) for c in host.ssh_cmd()), str(f), f"{host.ssh}:{dest}"])
+        cmds.append(remote.rsync_cmd(host, [str(f)], f"{remote.REMOTE_ROOT}/work/{rel}/",
+                                     extra=["--checksum", "--chmod=D755,F644"]))
     return cmds
 
 
@@ -215,7 +230,7 @@ def main(argv: list[str] | None = None) -> int:
     log(f"converted {len(files)}")
 
     if host is not None:
-        cmds = seed_commands(host, results, files)
+        cmds = seed_commands(host, results, converted_files(results))
         for cmd in cmds:
             line = shlex.join(cmd)
             if args.dry_run:

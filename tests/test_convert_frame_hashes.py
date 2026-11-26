@@ -179,3 +179,53 @@ def test_seed_commands_target_work_tb_v1(conv, tmp_path):
     (cmd,) = conv.seed_commands(remote.Host(ssh="ttvga@example.org"), results, [f])
     assert cmd[0] == "rsync" and cmd[-2] == str(f)
     assert cmd[-1] == "ttvga@example.org:ttvga/work/s/m/frames/tb-v1/"
+
+
+def test_convert_refuses_mode_mismatch(conv, tmp_path):
+    old = write_old(tmp_path, old_text())
+    with pytest.raises(conv.ConvertError, match="timing.mode"):
+        conv.convert(old, result(mode="640x480@75"))
+
+
+def test_convert_refuses_hash_lines_not_byte_identical(conv, tmp_path):
+    old = write_old(tmp_path, old_text(hashes=["FED6FC9311F187DE", "fed6fc9311f187de", "0123456789abcdef"]))
+    with pytest.raises(conv.ConvertError, match="byte-identical"):
+        conv.convert(old, result())
+
+
+def test_convert_refuses_missing_final_newline(conv, tmp_path):
+    old = write_old(tmp_path, old_text()[:-1])
+    with pytest.raises(conv.ConvertError, match="newline"):
+        conv.convert(old, result())
+
+
+def test_seed_resumes_after_partial_seed(conv, tmp_path, monkeypatch):
+    import json
+    import subprocess
+
+    results = tmp_path / "results"
+    for m in ("tt_um_a", "tt_um_b"):
+        d = results / "tt_test" / m
+        d.mkdir(parents=True)
+        (d / "frame_hashes.txt").write_text(old_text().replace("tt_test/tt_um_example", f"tt_test/{m}"))
+        r = result()
+        r["id"] = f"tt_test/{m}"
+        (d / "result.json").write_text(json.dumps(r, indent=2) + "\n")
+    monkeypatch.setattr(conv.remote, "resolve_host", lambda spec: conv.remote.Host(ssh="ttvga@example.org"))
+    calls = []
+
+    def fail_second(cmd, check):
+        calls.append(cmd[-2])
+        if len(calls) == 2:
+            raise subprocess.CalledProcessError(23, cmd)
+
+    monkeypatch.setattr(conv.subprocess, "run", fail_second)
+    with pytest.raises(subprocess.CalledProcessError):
+        conv.main(["--results", str(results), "--seed-host", "x"])
+    after_first = {p: p.read_bytes() for p in results.rglob("*") if p.is_file()}
+
+    calls.clear()
+    monkeypatch.setattr(conv.subprocess, "run", lambda cmd, check: calls.append(cmd[-2]))
+    assert conv.main(["--results", str(results), "--seed-host", "x"]) == 0
+    assert calls == [str(f) for f in conv.converted_files(results)] and len(calls) == 2
+    assert {p: p.read_bytes() for p in results.rglob("*") if p.is_file()} == after_first
