@@ -690,6 +690,7 @@ The bug: `SAFE_CODE` reads `machine.mem32[0xd0000020]` as the SIO output-enable 
       hardware-validated", cls: "info"}`;
     - row 0 includes `{text: "video: barely-moving", cls: "info"}` and `{text: "inputs set:
       0x01", cls: "info"}`.
+    - a `timing-fail` entry with `fmax_hz >= clock_hz` gets `{text: "timing not met on a secondary clock or path", cls: "warn"}` and no `MHz <` text (Ruling AN).
     - an entry with `ui_in: 0` and a non-zero mask gets no `inputs set` badge (Ruling AH).
   - `renderPage draws each state`: one assertion on the visible text of each state.
   - `load of a vanished id reloads the index` (Review Focus 2): a fake `fetch` answers the load

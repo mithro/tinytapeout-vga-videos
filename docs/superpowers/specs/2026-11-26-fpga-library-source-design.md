@@ -308,7 +308,8 @@ Tim said on 2026-11-24 that designs which fail timing are listed, with a visible
 
 | Condition | Badge text | Class |
 |---|---|---|
-| `build_status == "timing-fail"` | `timing: <fmax_hz / 1e6, 2 decimals> MHz < <clock_hz / 1e6, 3 decimals> MHz`, for example `timing: 17.08 MHz < 25.175 MHz` | warn |
+| `build_status == "timing-fail"` and `fmax_hz < clock_hz` | `timing: <fmax_hz / 1e6, 2 decimals> MHz < <clock_hz / 1e6, 3 decimals> MHz`, for example `timing: 17.08 MHz < 25.175 MHz` | warn |
+| `build_status == "timing-fail"` and `fmax_hz >= clock_hz` (Ruling AN: the main clock passes, another clock or a cross-domain path fails) | `timing not met on a secondary clock or path` | warn |
 | `validation == "none"` | `not hardware-validated` | info |
 | `validation == "mcu"` | `validated at MCU speed only` | info |
 | `qspi == "emulated"` | `QSPI emulated` | info |
