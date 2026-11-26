@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 
 from tests.sim import vgch
-from tests.sim.test_tb_trace import base_args, meta_args, run
+from tests.sim.helpers import base_args, meta_args, run
 
 pytestmark = pytest.mark.sim
 
@@ -240,3 +240,20 @@ def test_uohash_clamps_to_the_trace(dev, bars, tmp_path):
     assert got["uo_out_sha256_clocks"] == "0 3000"
     t = vgch.read(sl, dev)
     assert got["uo_out_sha256"] == hashlib.sha256(bytes(s & 0xFF for s in samples(t, 0, 6000)[1::2])).hexdigest()
+
+
+def test_refuses_a_trace_whose_clock_starts_high(dev, tmp_path):
+    """tracetool reads clock bit 42 as low in sample 0; a header that says otherwise is refused."""
+    import struct
+
+    def chunk(tag: bytes, payload: bytes) -> bytes:
+        return tag + struct.pack("<I", len(payload)) + payload
+
+    vgch_payload = struct.pack("<HBBI8sBBHBBBB", 2, 43, 2, 25_175_000, bytes([7, 3, 0, 4, 1, 5, 2, 6]), 0, 0, 0, 2, 42, 1, 0)
+    meta = b"meta=open\nproject=test/x\ncalib_seconds=0.1\nseconds=0.2\nlayout=tt-um-43\n"
+    runs = struct.pack("<I", 1) + (0x100).to_bytes(6, "little") + bytes([8])
+    plain = tmp_path / "high.vgch"
+    plain.write_bytes(chunk(b"VGCH", vgch_payload) + chunk(b"META", meta) + chunk(b"BLKH", bytes(8)) + chunk(b"RUNS", runs))
+    for cmd in (["info", plain], ["uohash", plain], ["slice", plain, "--from", 0, "--to", 2, "--out", tmp_path / "o"]):
+        p = tracetool(dev, *cmd, check=False)
+        assert p.returncode == 1 and "clock" in p.stderr, (cmd, p.returncode, p.stderr)

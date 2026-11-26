@@ -62,9 +62,10 @@ static vgacap_trace_reader_t *open_trace(const char *path) {
 // A trace must be the layout this tool decodes.
 static int check_layout(const vgacap_trace_info_t *in) {
     const vgacap_header_t *h = &in->header;
-    if (h->version != 2 || h->sample_bits != 43 || h->samples_per_clock != 2 || h->clock_bit != CLK_BIT) {
-        fprintf(stderr, "tracetool: not a tt-um-43 trace (version %u, %u bits, %u samples a clock, clock bit %u)\n",
-                h->version, h->sample_bits, h->samples_per_clock, h->clock_bit);
+    if (h->version != 2 || h->sample_bits != 43 || h->samples_per_clock != 2 || h->clock_bit != CLK_BIT ||
+        h->clock_first != 0) {
+        fprintf(stderr, "tracetool: not a tt-um-43 trace (version %u, %u bits, %u samples a clock, clock bit %u, clock first %u)\n",
+                h->version, h->sample_bits, h->samples_per_clock, h->clock_bit, h->clock_first);
         return -1;
     }
     return 0;
