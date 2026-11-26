@@ -70,6 +70,7 @@ class DeriveResult:
     cpu_seconds: float
     pngs_written: int
     pngs_linked: int
+    info: dict[str, str]        # `tracetool info` of the trace (blocks, clocks, open.*, close.*)
 
 
 def sha256_file(path: Path) -> str:
@@ -302,4 +303,4 @@ def derive(trace: Path, out: Path, stem: str, *, tb_v1: bool, centre_window: tup
                  f"{sink.linked} linked, cpu {cpu:.2f} s\n")
     return DeriveResult(samplers=summaries, trace_sha=trace_sha, uo_out_sha256=uo_sha,
                         uo_out_sha256_clocks=(lo, hi), tb_v1_check=check, error=error, cpu_seconds=cpu,
-                        pngs_written=sink.written, pngs_linked=sink.linked)
+                        pngs_written=sink.written, pngs_linked=sink.linked, info=info)
