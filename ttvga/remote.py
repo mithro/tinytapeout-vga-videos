@@ -224,6 +224,20 @@ def queue_command(args: argparse.Namespace, host: Host, tools: dict) -> str:
         q += f" --limit {args.limit}"
     if args.redo:
         q += " --redo"
+    if args.redo_unless_harness:
+        q += f" --redo-unless-harness {shlex.quote(args.redo_unless_harness)}"
+    if args.rederive:
+        q += " --rederive"
+    if args.drop_tb_v1 and not args.yes_drop_tb_v1:
+        sys.exit("tt-vga: --drop-tb-v1 retires tb-v1 for every selected project: add --yes-drop-tb-v1 to confirm")
+    if args.tb_v1:
+        q += " --tb-v1"
+    if args.drop_tb_v1:
+        q += " --drop-tb-v1"
+    if args.scope_memory:
+        q += f" --scope-memory {shlex.quote(args.scope_memory)}"
+    if args.scope_cpu:
+        q += f" --scope-cpu {shlex.quote(args.scope_cpu)}"
     return q
 
 
@@ -425,6 +439,13 @@ du -sh {shlex.quote(dest)}
     return subprocess.run(ssh_cmd + [ssh_host, "bash", "-s"], input=script, text=True).returncode
 
 
+class _RefuseTestHooks(argparse.Action):
+    """`tt-vga queue --test-hooks` exits 2: only job.py's own tests build tb.cpp's test hooks."""
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        parser.error("--test-hooks is for job.py's own tests: the queue never builds tb.cpp's test hooks")
+
+
 def add_parsers(sub: argparse._SubParsersAction) -> None:
     def common(p: argparse.ArgumentParser) -> None:
         p.add_argument("--host", help="user@host, or a name from ~/.config/tinytapeout-vga-videos/config.toml")
@@ -441,7 +462,20 @@ def add_parsers(sub: argparse._SubParsersAction) -> None:
     p.add_argument("--jobs", type=int, default=0, help="parallel jobs (default from config or 8)")
     p.add_argument("--only", default="", help="comma separated shuttles or <shuttle>/<macro> ids")
     p.add_argument("--limit", type=int, default=0)
-    p.add_argument("--redo", action="store_true")
+    redo = p.add_mutually_exclusive_group()
+    redo.add_argument("--redo", action="store_true")
+    redo.add_argument("--redo-unless-harness", metavar="VERSION",
+                      help="rerun unless the project's result already comes from this HARNESS_VERSION")
+    p.add_argument("--rederive", action="store_true",
+                   help="derive the published traces again instead of simulating (job.py --rederive)")
+    tb = p.add_mutually_exclusive_group()
+    tb.add_argument("--tb-v1", action="store_true", help="also run the legacy tb-v1 sampler in every job")
+    tb.add_argument("--drop-tb-v1", action="store_true",
+                    help="retire tb-v1 in every selected project (needs --yes-drop-tb-v1)")
+    p.add_argument("--yes-drop-tb-v1", action="store_true", help="confirm --drop-tb-v1")
+    p.add_argument("--scope-memory", help="each job scope's MemoryMax (runqueue's default 6G)")
+    p.add_argument("--scope-cpu", help="each job scope's CPUQuota (runqueue's default 200%%)")
+    p.add_argument("--test-hooks", action=_RefuseTestHooks, nargs=0, help=argparse.SUPPRESS)
     p.add_argument("--seconds", type=float, default=60.0)
     p.add_argument("--timeout", type=float, default=1800.0)
     p.add_argument("--no-sync", action="store_true",
