@@ -54,7 +54,7 @@ DEFAULT_CLOCK_HZ = 25_175_000
 GAMEPAD_BUTTONS = {"b": 0, "y": 1, "select": 2, "start": 3, "up": 4, "down": 5, "left": 6, "right": 7,
                    "a": 8, "x": 9, "l": 10, "r": 11}
 PLAIN_KEYS = ("clock_hz", "seconds", "calib_seconds", "ui_in", "uio_in", "verilator_flags", "sources",
-              "top_module", "skip", "qspi")
+              "top_module", "skip", "qspi", "centre_window")
 
 
 def to_clocks(value: int | float | str, clock_hz: int) -> int:
@@ -108,10 +108,20 @@ def compile_gamepad(events: list[dict], clock_hz: int) -> str:
     return "\n".join(lines) + "\n"
 
 
+def check_centre_window(value) -> None:
+    """`centre_window` is `{dx: int, dy: int}`, nothing else (job.py hands it to derive as (dx, dy))."""
+    ok = (isinstance(value, dict) and set(value) == {"dx", "dy"}
+          and all(isinstance(v, int) and not isinstance(v, bool) for v in value.values()))
+    if not ok:
+        raise ValueError(f"centre_window must be {{dx: int, dy: int}}, got {value!r}")
+
+
 def compile_one(yaml_path: Path, target: dict | None, out_dir: Path) -> dict:
     ov = yaml.safe_load(yaml_path.read_text()) or {}
     clock_hz = int(ov.get("clock_hz") or (target or {}).get("clock_hz") or 0) or DEFAULT_CLOCK_HZ
     macro = yaml_path.stem
+    if "centre_window" in ov:
+        check_centre_window(ov["centre_window"])
     compiled = {k: ov[k] for k in PLAIN_KEYS if k in ov}
     out_dir.mkdir(parents=True, exist_ok=True)
     if ov.get("inputs"):

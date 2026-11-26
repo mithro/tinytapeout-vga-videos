@@ -46,3 +46,23 @@ def test_compile_one_writes_json_and_scripts(tmp_path):
     assert (out / "tt_um_x.inputs").read_text().splitlines()[1] == "1000 0x01 0x00"   # override clock wins
     assert (out / "tt_um_x.gamepad").read_text().splitlines()[1] == "2000 0x001"
     assert (out / "tt_um_x.diff").exists()
+
+
+def test_centre_window_passes_through(tmp_path):
+    y = tmp_path / "ov" / "tt09" / "tt_um_x.yaml"
+    y.parent.mkdir(parents=True)
+    y.write_text("centre_window: {dx: -3, dy: 2}\n")
+    compiled = compile_one(y, None, tmp_path / "out")
+    assert compiled == {"centre_window": {"dx": -3, "dy": 2}}
+    from ttvga.harness.job import centre_window
+    assert centre_window(compiled) == (-3, 2)
+
+
+@pytest.mark.parametrize("value", ["{dx: 1.5, dy: 0}", "{dx: '1', dy: 0}", "{dx: 1}", "{dx: 1, dy: 0, dz: 3}",
+                                   "{dx: true, dy: 0}", "[1, 2]", "3"])
+def test_centre_window_rejects_non_int(tmp_path, value):
+    y = tmp_path / "ov" / "tt09" / "tt_um_x.yaml"
+    y.parent.mkdir(parents=True)
+    y.write_text(f"centre_window: {value}\n")
+    with pytest.raises(ValueError, match="centre_window"):
+        compile_one(y, None, tmp_path / "out")

@@ -32,7 +32,7 @@ from ttvga.report import VERDICT_ORDER
 # so the badge on the page and the script that drives the buttons can never
 # disagree about which projects those are.
 from ttvga.stimulus import wants_gamepad
-from ttvga.targets import load_targets
+from ttvga.targets import published_targets
 
 # The harness is synced to the host on its own, so it cannot import from the
 # package; the naming of published files belongs to it, and this page has to
@@ -704,7 +704,7 @@ def write_markdown(entries: list[dict], generated: str) -> str:
 
 def build() -> list[dict]:
     results = {r["id"]: r for r in analyze_all()}
-    return [record(t, results.get(t["id"])) for t in load_targets()]
+    return [record(t, results.get(t["id"])) for t in published_targets()]
 
 
 def run(args: argparse.Namespace) -> int:

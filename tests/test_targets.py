@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -16,7 +18,18 @@ VGA_PINOUT = {
     "uo[4]": "R0", "uo[5]": "G0", "uo[6]": "B0", "uo[7]": "hsync",
 }
 PLAIN_PINOUT = {f"uo[{i}]": f"uo_out[{i}]" for i in range(8)}
-LOCAL_PROJECTS = ROOT.parent / "tinytapeout-project-search" / "data" / "projects.json"
+
+
+def _main_repo_root() -> Path:
+    """The main checkout's root even from a worktree (git's common dir is <main>/.git)."""
+    res = subprocess.run(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"], cwd=ROOT,
+                         capture_output=True, text=True)
+    return Path(res.stdout.strip()).parent if res.returncode == 0 else ROOT
+
+
+LOCAL_PROJECTS = Path(os.environ.get(
+    "TTVGA_PROJECTS_JSON",
+    _main_repo_root().parent / "tinytapeout-project-search" / "data" / "projects.json"))
 
 
 def project(shuttle: str, macro: str, address: int, **extra) -> dict:
@@ -39,7 +52,7 @@ def write_source(tmp_path: Path, projects: list[dict]) -> Path:
 def run_cli(tmp_path: Path, projects: list[dict], capsys) -> tuple[dict, str]:
     src = write_source(tmp_path, projects)
     out = tmp_path / "targets.json"
-    args = argparse.Namespace(source=str(src), commit=targets.PROJECTS_COMMIT, out=out, pmod="tiny-vga")
+    args = argparse.Namespace(source=str(src), commit=targets.PROJECTS_COMMIT, out=out, pmod="tiny-vga", extra=None)
     assert targets.run(args) == 0
     return json.loads(out.read_text()), capsys.readouterr().out
 
@@ -129,7 +142,8 @@ def test_load_targets_and_target_by_id(tmp_path, capsys):
 @pytest.mark.skipif(not LOCAL_PROJECTS.exists(), reason="local tinytapeout-project-search checkout not found")
 def test_real_projects_json(tmp_path, capsys):
     out = tmp_path / "targets.json"
-    args = argparse.Namespace(source=str(LOCAL_PROJECTS), commit=targets.PROJECTS_COMMIT, out=out, pmod="tiny-vga")
+    args = argparse.Namespace(source=str(LOCAL_PROJECTS), commit=targets.PROJECTS_COMMIT, out=out, pmod="tiny-vga",
+                              extra=None)
     assert targets.run(args) == 0
     doc = json.loads(out.read_text())
     assert doc["meta"]["count"] >= 400
@@ -139,3 +153,45 @@ def test_real_projects_json(tmp_path, capsys):
         if t["skip"] is None:
             assert t["repo"].startswith("https://github.com/")
             assert t["commit"] and t["top_module"] and t["source_files"]
+
+
+def extra_record(macro: str, shuttle: str = "testpatterns") -> dict:
+    return {"id": f"{shuttle}/{macro}", "shuttle": shuttle, "macro": macro, "skip": None, "clock_hz": 25175000}
+
+
+def run_with_extra(tmp_path: Path, capsys, extra_records: list[dict]) -> dict:
+    extra = tmp_path / "extra-targets.json"
+    extra.write_text(json.dumps({"targets": extra_records}))
+    src = write_source(tmp_path, [project("tt08", "tt_um_vga", 10)])
+    out = tmp_path / "targets.json"
+    args = argparse.Namespace(source=str(src), commit=targets.PROJECTS_COMMIT, out=out, pmod="tiny-vga",
+                              extra=extra)
+    assert targets.run(args) == 0
+    capsys.readouterr()
+    return json.loads(out.read_text())
+
+
+def test_extra_targets_merged(tmp_path, capsys):
+    doc = run_with_extra(tmp_path, capsys, [extra_record("tt_um_vgacal_bars"), extra_record("tt_um_vgacal_grid")])
+    assert [t["id"] for t in doc["targets"]] == [
+        "tt08/tt_um_vga", "testpatterns/tt_um_vgacal_bars", "testpatterns/tt_um_vgacal_grid"]
+    assert doc["meta"]["count"] == 3
+
+
+def test_extra_target_duplicate_id_fails(tmp_path, capsys):
+    with pytest.raises(ValueError, match="duplicate"):
+        run_with_extra(tmp_path, capsys, [extra_record("tt_um_vga", "tt08")])
+    with pytest.raises(ValueError, match="duplicate"):
+        run_with_extra(tmp_path, capsys, [extra_record("a"), extra_record("a")])
+
+
+def test_committed_extra_targets_are_well_formed():
+    extra = json.loads((ROOT / "data" / "extra-targets.json").read_text())["targets"]
+    assert len(extra) == 10
+    modes = {t["macro"]: t for t in extra if t["top_module"] == "tt_um_vgacal_modes"}
+    assert sorted(modes) == [f"tt_um_vgacal_modes_{m}" for m in ("m0", "m0_hneg", "m0_hvneg", "m0_vneg", "m1", "m2")]
+    for t in extra:
+        assert t["shuttle"] == "testpatterns" and t["clock_hz"] == 25175000
+        assert t["repo"] == "https://github.com/mithro/tt-vga-testpatterns"
+        assert t["src_dir"] == f"designs/{t['top_module']}/src"
+        assert len(t["commit"]) == 40 and t["skip"] is None

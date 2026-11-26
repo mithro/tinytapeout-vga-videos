@@ -177,3 +177,19 @@ def test_audio_is_found_from_the_pin_name_as_well_as_the_declaration():
     assert ">audio</span>" in write_html([e], "now")
     quiet = record(dict(TARGET, pinout={"uio[7]": "addr_out[3]"}), RESULT)
     assert not quiet["uses"]["audio"]
+
+
+def test_index_and_report_leave_out_testpatterns(monkeypatch, tmp_path):
+    from ttvga import index, report, targets
+    real = [dict(TARGET)]
+    extra = [dict(TARGET, id="testpatterns/tt_um_vgacal_bars", shuttle="testpatterns", macro="tt_um_vgacal_bars")]
+    monkeypatch.setattr(targets, "load_targets", lambda *a, **k: real + extra)
+    monkeypatch.setattr(index, "analyze_all", lambda *a, **k: [])
+    monkeypatch.setattr(report, "analyze_all", lambda *a, **k: [])
+    assert [e["id"] for e in index.build()] == ["tt08/tt_um_x"]
+    monkeypatch.setattr(report, "ROOT", tmp_path)
+    monkeypatch.setattr(report, "STATUS_MD", tmp_path / "status.md")
+    monkeypatch.setattr(report, "STATUS_JSON", tmp_path / "status.json")
+    assert report.run(None) == 0
+    assert json.loads((tmp_path / "status.json").read_text())["targets"] == 1
+    assert "testpatterns" not in (tmp_path / "status.md").read_text()
