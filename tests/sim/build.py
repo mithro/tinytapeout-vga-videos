@@ -17,11 +17,14 @@ import job  # noqa: E402
 DESIGNS = Path(__file__).resolve().parent / "designs"
 
 
-def build_model(design: str, dev: DevTools, out: Path, test_hooks: bool = True) -> Path:
+def build_model(design: str, dev: DevTools, out: Path, test_hooks: bool = True,
+                defines: tuple[str, ...] = ()) -> Path:
     """Verilate `designs/<design>.v` (top `tt_um_test_<design>`) into `out`; return the model.
 
     `test_hooks` compiles in tb.cpp's test-only hooks (`-DTTVGA_TEST_HOOKS`),
-    as the tests need; a production model is built without them.
+    as the tests need; a production model is built without them. `defines`
+    are more test-only macros (for example `TTVGA_TEST_FORCE_FALLBACK`), each
+    passed as `-D<name>`; tb.cpp refuses them without the test hooks.
     Raises RuntimeError naming the build log if Verilator fails.
     """
     out = out.resolve()   # Verilator runs in designs/
@@ -30,6 +33,8 @@ def build_model(design: str, dev: DevTools, out: Path, test_hooks: bool = True) 
     cmd += job.vgacap_link_flags(dev.vgacap_src, dev.vgacap_build)
     if test_hooks:
         cmd += ["-CFLAGS", "-DTTVGA_TEST_HOOKS"]
+    for d in defines:
+        cmd += ["-CFLAGS", f"-D{d}"]
     cmd += [str(job.TB_CPP), str(DESIGNS / f"{design}.v")]
     log = out / "build.log"
     with log.open("w") as f:

@@ -23,12 +23,13 @@ def dev():
 def models(dev, tmp_path_factory):
     """Each model is built once per session, on first use."""
     root = tmp_path_factory.mktemp("models")
-    cache: dict[tuple[str, bool], Path] = {}
+    cache: dict[tuple[str, bool, tuple[str, ...]], Path] = {}
 
-    def get(design: str, test_hooks: bool = True) -> Path:
-        key = (design, test_hooks)
+    def get(design: str, test_hooks: bool = True, defines: tuple[str, ...] = ()) -> Path:
+        key = (design, test_hooks, defines)
         if key not in cache:
-            cache[key] = build_model(design, dev, root / f"{design}{'' if test_hooks else '-prod'}", test_hooks)
+            name = design + ("" if test_hooks else "-prod") + "".join("-" + d.lower() for d in defines)
+            cache[key] = build_model(design, dev, root / name, test_hooks, defines)
         return cache[key]
 
     return get

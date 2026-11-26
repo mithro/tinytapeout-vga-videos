@@ -36,6 +36,7 @@ EXPECT = {
     "bars_cpp2": ("ok", 2),
     "frac": ("ok", 2),
     "glitch": ("unstable-sync", 2),
+    "negedge": ("ok", 2),
     "noisy": ("ok", 2),
     "nosync": ("no-sync", 0),
     "playground": ("ok", 2),
