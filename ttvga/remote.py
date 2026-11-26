@@ -228,6 +228,13 @@ def queue_command(args: argparse.Namespace, host: Host, tools: dict) -> str:
         q += f" --redo-unless-harness {shlex.quote(args.redo_unless_harness)}"
     if args.rederive:
         q += " --rederive"
+        if args.redo_unless_harness and not args.since:
+            sys.exit("tt-vga: --rederive --redo-unless-harness needs --since ISO-TIMESTAMP, the start of the "
+                     "re-derive campaign (reuse the same value when restarting it)")
+    if args.since:
+        q += f" --since {shlex.quote(args.since)}"
+    if args.allow_no_linger:
+        q += " --allow-no-linger"
     if args.drop_tb_v1 and not args.yes_drop_tb_v1:
         sys.exit("tt-vga: --drop-tb-v1 retires tb-v1 for every selected project: add --yes-drop-tb-v1 to confirm")
     if args.tb_v1:
@@ -468,6 +475,10 @@ def add_parsers(sub: argparse._SubParsersAction) -> None:
                       help="rerun unless the project's result already comes from this HARNESS_VERSION")
     p.add_argument("--rederive", action="store_true",
                    help="derive the published traces again instead of simulating (job.py --rederive)")
+    p.add_argument("--since", metavar="ISO-TIMESTAMP",
+                   help="with --rederive --redo-unless-harness: when this re-derive campaign started")
+    p.add_argument("--allow-no-linger", action="store_true",
+                   help="start the queue even though the host user has no linger")
     tb = p.add_mutually_exclusive_group()
     tb.add_argument("--tb-v1", action="store_true", help="also run the legacy tb-v1 sampler in every job")
     tb.add_argument("--drop-tb-v1", action="store_true",

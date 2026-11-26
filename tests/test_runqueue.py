@@ -38,14 +38,21 @@ def make_root(tmp_path: Path, min_free: float | None = None, ids: tuple[str, ...
     return root
 
 
-def fake_systemd_run(tmp_path: Path, monkeypatch, body: str) -> Path:
-    """Put a `systemd-run` first on PATH that appends its argv to calls.log, then runs `body`."""
+def _script(path: Path, text: str) -> None:
+    path.write_text(text)
+    path.chmod(path.stat().st_mode | stat.S_IXUSR)
+
+
+def fake_systemd_run(tmp_path: Path, monkeypatch, body: str, linger: str = "yes") -> Path:
+    """Put a `systemd-run` first on PATH that appends its argv to calls.log, then runs `body`.
+
+    A `loginctl` beside it answers `linger` for Linger.
+    """
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
     calls = tmp_path / "calls.log"
-    script = bin_dir / "systemd-run"
-    script.write_text(f'#!/bin/sh\nprintf "%s\\n" "$*" >> {calls}\n{body}\n')
-    script.chmod(script.stat().st_mode | stat.S_IXUSR)
+    _script(bin_dir / "systemd-run", f'#!/bin/sh\nprintf "%s\\n" "$*" >> {calls}\n{body}\n')
+    _script(bin_dir / "loginctl", f'#!/bin/sh\necho {linger}\n')
     monkeypatch.setenv("PATH", f"{bin_dir}{os.pathsep}{os.environ['PATH']}")
     return calls
 
@@ -106,7 +113,8 @@ def test_queue_job_command_is_a_scope():
     assert cmd[:i] == ["systemd-run", "--user", "--scope", "--quiet", "--collect",
                        "--unit", "ttvga-job-tt08-tt_um_x.y",
                        "-p", "MemoryMax=6G", "-p", "CPUQuota=200%", "-p", "TasksMax=64",
-                       "-p", f"RuntimeMaxSec={runqueue.runtime_max_sec(10800, runqueue.GRACE)}"]
+                       "-p", f"RuntimeMaxSec={runqueue.runtime_max_sec(10800, runqueue.GRACE)}",
+                       "-p", "OOMPolicy=continue"]
     assert cmd[i + 1:i + 3] == [sys.executable, str(HARNESS_DIR / "job.py")]
     rest = cmd[i + 3:]
     assert rest[rest.index("--id") + 1] == "tt08/tt_um_x.y"
@@ -168,41 +176,92 @@ def test_queue_refuses_without_systemd_run(tmp_path, monkeypatch, capsys):
 
 
 def test_queue_redo_unless_harness_skips_done(tmp_path, monkeypatch):
-    ids = ("s1/done", "s1/old", "s1/notrace", "s1/none", "s1/nomatch", "s1/notrun")
+    ids = ("s1/done", "s1/old", "s1/notrace", "s1/none", "s1/nomatch", "s1/notrun", "s1/stopped", "s1/unpublished")
     root = make_root(tmp_path, ids=ids)
     trace = {"file": "x", "sha256": "0" * 64}
-    write_result(root, "s1/done", trace=trace, harness="V2", tb_v1_check="match")
-    write_result(root, "s1/old", trace=trace, harness="V1", tb_v1_check="match")
-    write_result(root, "s1/notrace", trace=None, harness="V2", tb_v1_check="not-run")
-    write_result(root, "s1/nomatch", trace=trace, harness="V2", tb_v1_check="off")
-    write_result(root, "s1/notrun", trace=trace, harness="V2", tb_v1_check="not-run")
+    ok = {"trace": trace, "published": True, "error": None}
+    write_result(root, "s1/done", **ok, harness="V2", tb_v1_check="match")
+    write_result(root, "s1/old", **ok, harness="V1", tb_v1_check="match")
+    write_result(root, "s1/notrace", trace=None, published=False, error="verilator failed", harness="V2",
+                 tb_v1_check="not-run")
+    write_result(root, "s1/nomatch", **ok, harness="V2", tb_v1_check="off")
+    write_result(root, "s1/notrun", **ok, harness="V2", tb_v1_check="not-run")
+    # The reviewer's case: a trace from this harness, but stopped before it was published.
+    write_result(root, "s1/stopped", trace=trace, harness="V2", published=False,
+                 error="terminated by SIGTERM during encode", tb_v1_check="match")
+    # A mismatch (or any derive error) publishes nothing.
+    write_result(root, "s1/unpublished", trace=trace, harness="V2", published=False,
+                 error="tb-v1 does not match tb.cpp", tb_v1_check="mismatch")
 
     def pending(*extra):
         args = runqueue.parse_args(queue_args(root, *extra))
         targets = json.loads((root / "targets.json").read_text())["targets"]
         return [t["id"] for t in runqueue.select_pending(targets, args)]
 
-    # Without --tb-v1, a result with a trace and this harness is done.
-    assert pending("--redo-unless-harness", "V2") == ["s1/old", "s1/notrace", "s1/none"]
+    # Without --tb-v1: a published result with a trace from this harness, not stopped, is done.
+    assert pending("--redo-unless-harness", "V2") == ["s1/old", "s1/notrace", "s1/none", "s1/stopped",
+                                                      "s1/unpublished"]
     # With --tb-v1, it must also have matched tb.cpp.
     assert pending("--redo-unless-harness", "V2", "--tb-v1") == ["s1/old", "s1/notrace", "s1/none", "s1/nomatch",
-                                                                  "s1/notrun"]
+                                                                  "s1/notrun", "s1/stopped", "s1/unpublished"]
+    # A stopped run that did publish (SIGTERM after the swap) is still run again.
+    write_result(root, "s1/stopped", trace=trace, harness="V2", published=True,
+                 error="terminated by SIGTERM during publish", tb_v1_check="match")
+    assert "s1/stopped" in pending("--redo-unless-harness", "V2")
     # The plain queue runs only what has no result; --redo runs everything.
     assert pending() == ["s1/none"]
     assert pending("--redo") == list(ids)
-    # --rederive picks the projects with a trace; with the harness key, those not re-derived yet.
-    assert pending("--rederive") == ["s1/done", "s1/old", "s1/nomatch", "s1/notrun"]
-    assert pending("--rederive", "--redo-unless-harness", "V2") == ["s1/old"]
-    # A re-derive with tb-v1 cannot match (it has no tb.cpp hashes): it is done when tb-v1 is current.
-    write_result(root, "s1/notrun", trace=trace, harness="V2", tb_v1_check="not-run",
-                 tb_v1={"state": "current", "trace_sha": "0" * 64, "dropped": False})
-    assert pending("--rederive", "--tb-v1", "--redo-unless-harness", "V2") == ["s1/done", "s1/old", "s1/nomatch"]
+    # --rederive picks the projects with a trace.
+    with_trace = ["s1/done", "s1/old", "s1/nomatch", "s1/notrun", "s1/stopped", "s1/unpublished"]
+    assert pending("--rederive") == with_trace
+
+
+def test_queue_rederive_done_means_this_campaign(tmp_path):
+    """Ruling BD: under --rederive, done is re-derived since the campaign started, without an error."""
+    ids = ("s1/fresh", "s1/before", "s1/never", "s1/failed", "s1/oldharness", "s1/tbcurrent", "s1/tbstale")
+    root = make_root(tmp_path, ids=ids)
+    trace = {"file": "x", "sha256": "0" * 64}
+    base = {"trace": trace, "published": True, "error": None, "harness": "V2", "tb_v1_check": "off"}
+    write_result(root, "s1/fresh", **base, rederived_at="2026-11-28T01:00:00+00:00", rederive_error=None)
+    write_result(root, "s1/before", **base, rederived_at="2026-11-27T23:59:59+00:00", rederive_error=None)
+    write_result(root, "s1/never", **base, rederived_at=None)
+    write_result(root, "s1/failed", **base, rederived_at="2026-11-28T01:00:00+00:00",
+                 rederive_error="no published trace")
+    write_result(root, "s1/oldharness", **{**base, "harness": "V1"}, rederived_at="2026-11-28T01:00:00+00:00",
+                 rederive_error=None)
+    write_result(root, "s1/tbcurrent", **{**base, "tb_v1_check": "not-run"},
+                 tb_v1={"state": "current", "trace_sha": "0" * 64, "dropped": False},
+                 rederived_at="2026-11-28T02:00:00+00:00", rederive_error=None)
+    write_result(root, "s1/tbstale", **base, tb_v1={"state": "stale", "trace_sha": None, "dropped": False},
+                 rederived_at="2026-11-28T02:00:00+00:00", rederive_error=None)
+
+    def pending(*extra):
+        args = runqueue.parse_args(queue_args(root, *extra))
+        targets = json.loads((root / "targets.json").read_text())["targets"]
+        return [t["id"] for t in runqueue.select_pending(targets, args)]
+
+    since = ("--rederive", "--redo-unless-harness", "V2", "--since", "2026-11-28T00:00:00Z")
+    assert pending(*since) == ["s1/before", "s1/never", "s1/failed", "s1/oldharness"]
+    # With --tb-v1, tb-v1 must also be current (a re-derive's check is not-run).
+    assert pending(*since, "--tb-v1") == ["s1/fresh", "s1/before", "s1/never", "s1/failed", "s1/oldharness",
+                                          "s1/tbstale"]
+    # A timestamp without a zone is UTC.
+    assert pending("--rederive", "--redo-unless-harness", "V2", "--since", "2026-11-28T01:30:00") == \
+        ["s1/fresh", "s1/before", "s1/never", "s1/failed", "s1/oldharness"]
+
+
+@pytest.mark.parametrize("extra", [["--rederive", "--redo-unless-harness", "V2"], ["--since", "not a time"]])
+def test_queue_rederive_restart_needs_since(tmp_path, extra, capsys):
+    with pytest.raises(SystemExit) as e:
+        runqueue.parse_args(queue_args(make_root(tmp_path), *extra))
+    assert e.value.code == 2
+    assert "--since" in capsys.readouterr().err
 
 
 def test_queue_redo_unless_harness_runs_only_the_rest(tmp_path, monkeypatch):
     root = make_root(tmp_path, ids=("s1/done", "s1/old"))
-    write_result(root, "s1/done", trace={"sha256": "a"}, harness="V2")
-    write_result(root, "s1/old", trace={"sha256": "a"}, harness="V1")
+    write_result(root, "s1/done", trace={"sha256": "a"}, harness="V2", published=True, error=None)
+    write_result(root, "s1/old", trace={"sha256": "a"}, harness="V1", published=True, error=None)
     calls = fake_systemd_run(tmp_path, monkeypatch, 'echo "job: ok"')
     assert runqueue.main(queue_args(root, "--redo-unless-harness", "V2")) == 0
     jobs = calls.read_text().splitlines()[1:]
@@ -239,9 +298,10 @@ def remote_args(*argv: str) -> argparse.Namespace:
 def test_tt_vga_queue_passes_the_new_options():
     host = remote.Host(ssh="ttvga@example.invalid", jobs=4)
     cmd = remote.queue_command(remote_args("--rederive", "--tb-v1", "--redo-unless-harness", "abc123",
+                                           "--since", "2026-11-28T00:00:00Z",
                                            "--scope-memory", "8G", "--scope-cpu", "150%",
                                            "--timeout", "10800"), host, TOOLS)
-    for part in ("--rederive", "--tb-v1", "--redo-unless-harness abc123", "--scope-memory 8G",
+    for part in ("--rederive", "--since 2026-11-28T00:00:00Z", "--tb-v1", "--redo-unless-harness abc123", "--scope-memory 8G",
                  "--scope-cpu 150%", "--timeout 10800.0"):
         assert f" {part}" in cmd, part
     assert "--drop-tb-v1" not in cmd and "--test-hooks" not in cmd
@@ -261,10 +321,72 @@ def test_tt_vga_queue_drop_tb_v1_needs_yes(capsys):
 
 def test_runqueue_knows_every_option_tt_vga_passes(tmp_path):
     cmd = remote.queue_command(remote_args("--rederive", "--tb-v1", "--redo-unless-harness", "abc",
+                                           "--since", "2026-11-28T00:00:00Z", "--allow-no-linger",
                                            "--scope-memory", "8G", "--scope-cpu", "150%",
                                            "--only", "tt08", "--limit", "3", "--jobs", "5"),
                                remote.Host(ssh="ttvga@example.invalid"), TOOLS)
     argv = cmd.split("runqueue.py", 1)[1].split()
     args = runqueue.parse_args([a.strip("'") for a in argv])
-    assert (args.rederive, args.tb_v1, args.redo_unless_harness, args.scope_memory, args.scope_cpu) == \
-        (True, True, "abc", "8G", "150%")
+    assert (args.rederive, args.tb_v1, args.redo_unless_harness, args.scope_memory, args.scope_cpu,
+            args.allow_no_linger) == (True, True, "abc", "8G", "150%", True)
+    assert args.since.isoformat() == "2026-11-28T00:00:00+00:00"
+
+
+def test_tt_vga_queue_rederive_restart_needs_since():
+    with pytest.raises(SystemExit) as e:
+        remote.queue_command(remote_args("--rederive", "--redo-unless-harness", "abc"),
+                             remote.Host(ssh="ttvga@example.invalid"), TOOLS)
+    assert "--since" in str(e.value)
+
+
+def test_queue_refuses_without_linger(tmp_path, monkeypatch, capsys):
+    root = make_root(tmp_path)
+    calls = fake_systemd_run(tmp_path, monkeypatch, 'echo "job: done"', linger="no")
+    assert runqueue.main(queue_args(root)) == 1
+    err = capsys.readouterr().err
+    assert "linger is not on" in err and "--allow-no-linger" in err
+    assert calls.read_text().splitlines() == ["--user --scope --quiet --collect true"]   # no job
+    # --allow-no-linger starts anyway, and says so in the log.
+    assert runqueue.main(queue_args(root, "--allow-no-linger")) == 0
+    assert len(calls.read_text().splitlines()) == 3
+    assert "warning: linger is not on" in (root / "queue.log").read_text()
+
+
+def test_queue_stops_when_scopes_start_failing(tmp_path, monkeypatch, capsys):
+    """systemd-run failing before job.py runs, with the preflight now failing too: no more jobs."""
+    root = make_root(tmp_path, ids=("s1/a", "s1/b", "s1/c"))
+    flag = tmp_path / "preflight-ok-once"
+    flag.write_text("")
+    calls = fake_systemd_run(tmp_path, monkeypatch, f"""
+case "$*" in
+  *" true") if [ -f {flag} ]; then rm {flag}; exit 0; fi
+           echo "Failed to connect to user scope bus" >&2; exit 1;;
+  *) echo "Failed to start transient scope unit: Connection reset" >&2; exit 1;;
+esac""")
+    assert runqueue.main(queue_args(root, "--jobs", "1")) == 1
+    lines = calls.read_text().splitlines()
+    assert len([line for line in lines if "--unit " in line]) == 1
+    assert len([line for line in lines if line.endswith(" true")]) == 2
+    log = (root / "queue.log").read_text()
+    assert "scopes failing (systemd-run --user --scope true failed (exit 1)" in log
+    assert "starting no more jobs" in log
+    assert "stopped early" in capsys.readouterr().err
+
+
+def test_queue_goes_on_after_a_failed_job(tmp_path, monkeypatch):
+    """A job that ran and failed (its `job:` line), or a systemd-run failure while scopes still work, is one failure."""
+    root = make_root(tmp_path, ids=("s1/a", "s1/b"))
+    calls = fake_systemd_run(tmp_path, monkeypatch, """
+case "$*" in
+  *" true") exit 0;;
+  *s1/a*) echo "Unit ttvga-job-s1-a.scope already exists." >&2; exit 1;;
+  *) echo "job: s1/b: stage=build error='verilator failed'"; exit 1;;
+esac""")
+    assert runqueue.main(queue_args(root, "--jobs", "1")) == 0
+    assert len([line for line in calls.read_text().splitlines() if "--unit " in line]) == 2
+
+
+def test_started_job():
+    assert runqueue.started_job("job: x: stage=publish error=None\n", "")
+    assert runqueue.started_job("", "job: x: already running elsewhere, skipped\n")
+    assert not runqueue.started_job("", "Failed to start transient scope unit\n")

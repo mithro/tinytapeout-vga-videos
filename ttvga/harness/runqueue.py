@@ -9,16 +9,24 @@ Which projects run:
 - by default, those without work/<shuttle>/<macro>/result.json, so the queue can be killed and
   restarted at any time; `--redo` runs every selected project;
 - `--rederive` takes only projects whose result.json has a `trace`, and runs `job.py --rederive`;
-- `--redo-unless-harness VERSION` runs a project unless its result.json has a `trace`,
-  `harness == VERSION` and, with `--tb-v1`, `tb_v1_check == "match"` (a re-derive cannot match,
-  having no tb.cpp hashes: there `tb_v1.state == "current"` instead). A crashed re-run restarts
-  where it stopped.
+- `--redo-unless-harness VERSION` runs a project unless its result.json shows it done (`is_done`):
+  a `trace`, `harness == VERSION`, and
+  - for a run: `published` true, an `error` that is not "terminated by ..." and, with
+    `--tb-v1`, `tb_v1_check == "match"`;
+  - for `--rederive` (which then needs `--since`): re-derived in this campaign, that is
+    `rederived_at >= --since` with no `rederive_error`, and with `--tb-v1` tb-v1 `current`
+    (a re-derive has no tb.cpp hashes, so its check is `not-run`).
+  A crashed or stopped re-run restarts where it stopped.
 
 Each job runs as `systemd-run --user --scope ... -p MemoryMax -p CPUQuota -p TasksMax -p
 RuntimeMaxSec -- python job.py ...`. The scope limits resources only, not file access (the user
 account does that). A preflight checks that the user manager can make scopes; if it cannot, the
-queue stops there: there is no unconfined fallback. The user needs linger
-(`loginctl enable-linger`) for the scopes to outlive the login session that started tmux.
+queue stops there: there is no unconfined fallback. When a job's systemd-run fails before job.py
+starts, the preflight runs again, and if it fails the queue starts no more jobs and exits 1.
+A scope's OOMPolicy is `continue`: a process killed for memory fails its job, the scope is not stopped.
+
+The user needs linger (`loginctl enable-linger`) for the scopes to outlive the login session that
+started tmux; without it the queue refuses to start, unless `--allow-no-linger`.
 
 Before each job the queue waits while the root volume has less than host.toml's
 `min_free_root_gb` free. Progress goes to <root>/queue.log and <root>/queue-state.json.
@@ -90,7 +98,8 @@ def job_command(t: dict, args: argparse.Namespace) -> list[str]:
     """The job's command: job.py under the queue's own interpreter, inside a systemd user scope."""
     scope = ["systemd-run", "--user", "--scope", "--quiet", "--collect", "--unit", scope_unit(t["shuttle"], t["macro"]),
              "-p", f"MemoryMax={args.scope_memory}", "-p", f"CPUQuota={args.scope_cpu}",
-             "-p", f"TasksMax={SCOPE_TASKS}", "-p", f"RuntimeMaxSec={runtime_max_sec(args.timeout, GRACE)}"]
+             "-p", f"TasksMax={SCOPE_TASKS}", "-p", f"RuntimeMaxSec={runtime_max_sec(args.timeout, GRACE)}",
+             "-p", "OOMPolicy=continue"]
     job = [sys.executable, str(HERE / "job.py"), "--targets", str(args.targets), "--id", t["id"],
            "--root", str(args.root), "--seconds", str(args.seconds), "--timeout", str(args.timeout),
            "--grace", str(GRACE)]
@@ -113,19 +122,23 @@ def preflight() -> str | None:
     return None
 
 
-def linger_note() -> str | None:
-    """A warning when this user has no linger: its user manager, and every scope, ends with the last login."""
+def linger_problem() -> str | None:
+    """None when this user has linger; otherwise why not (its user manager, and every scope, ends with the last login)."""
     user = os.environ.get("USER") or str(os.getuid())
     try:
         p = subprocess.run(["loginctl", "show-user", user, "-p", "Linger", "--value"],
                            capture_output=True, text=True, timeout=30)
     except (OSError, subprocess.TimeoutExpired) as e:
-        return f"warning: cannot ask loginctl about linger: {e}"
+        return f"cannot ask loginctl about linger: {e}"
     if p.returncode != 0 or p.stdout.strip() != "yes":
         said = (p.stdout.strip() or p.stderr.strip() or f"exit {p.returncode}")
-        return (f"warning: linger is not on for {user} ({said}): the job scopes end when the last login "
-                f"session does")
+        return f"linger is not on for {user} ({said}): the job scopes would end when the last login session does"
     return None
+
+
+def started_job(stdout: str, stderr: str) -> bool:
+    """Whether job.py ran: it always prints a `job: ` line (its summary, or why it stopped)."""
+    return any(line.startswith("job: ") for line in (stdout + "\n" + stderr).splitlines())
 
 
 def wait_for_free_space(root: Path, need_gb: float, say, *, stop: threading.Event | None = None,
@@ -149,18 +162,36 @@ def _result(root: Path, t: dict) -> dict | None:
     except FileNotFoundError:
         return None
     except (OSError, UnicodeDecodeError, json.JSONDecodeError):
-        return {}   # unreadable: treated as not done
+        # Unreadable: the plain queue counts it as a result (and skips it), `is_done` never as done.
+        return {}
 
 
-def is_done(result: dict | None, version: str, *, tb_v1: bool, rederive: bool) -> bool:
-    """`--redo-unless-harness`: this result already comes from harness `version` (and tb-v1, if asked)."""
+def _instant(text: str) -> datetime:
+    """An ISO timestamp; one without a zone is UTC."""
+    t = datetime.fromisoformat(text)
+    return t if t.tzinfo else t.replace(tzinfo=timezone.utc)
+
+
+def is_done(result: dict | None, version: str, *, tb_v1: bool, rederive: bool,
+            since: datetime | None = None) -> bool:
+    """`--redo-unless-harness`: this project already has this campaign's result (see the module docstring)."""
     if not result or not result.get("trace") or result.get("harness") != version:
         return False
-    if not tb_v1:
-        return True
     if rederive:
-        return (result.get("tb_v1") or {}).get("state") == "current" and result.get("tb_v1_check") == "not-run"
-    return result.get("tb_v1_check") == "match"
+        if since is None:
+            raise ValueError("a re-derive campaign needs its start (--since)")
+        try:
+            when = _instant(result.get("rederived_at") or "")
+        except ValueError:
+            return False
+        if when < since or result.get("rederive_error") is not None:
+            return False
+        if tb_v1:
+            return (result.get("tb_v1") or {}).get("state") == "current" and result.get("tb_v1_check") == "not-run"
+        return True
+    if result.get("published") is not True or str(result.get("error") or "").startswith("terminated by"):
+        return False
+    return not tb_v1 or result.get("tb_v1_check") == "match"
 
 
 def select_pending(targets: list[dict], args: argparse.Namespace) -> list[dict]:
@@ -170,7 +201,7 @@ def select_pending(targets: list[dict], args: argparse.Namespace) -> list[dict]:
         if args.rederive and not (result and result.get("trace")):
             continue
         if args.redo_unless_harness is not None:
-            if is_done(result, args.redo_unless_harness, tb_v1=args.tb_v1, rederive=args.rederive):
+            if is_done(result, args.redo_unless_harness, tb_v1=args.tb_v1, rederive=args.rederive, since=args.since):
                 continue
         elif not (args.redo or args.rederive) and result is not None:
             continue
@@ -190,6 +221,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     redo.add_argument("--redo-unless-harness", metavar="VERSION",
                       help="rerun unless result.json has a trace from this HARNESS_VERSION (and, with --tb-v1, a match)")
     ap.add_argument("--rederive", action="store_true", help="job.py --rederive the projects whose result.json has a trace")
+    ap.add_argument("--since", type=_instant, metavar="ISO-TIMESTAMP",
+                    help="with --rederive --redo-unless-harness: when this re-derive campaign started")
+    ap.add_argument("--allow-no-linger", action="store_true",
+                    help="start even though this user has no linger (the jobs end with the last login session)")
     tb = ap.add_mutually_exclusive_group()
     tb.add_argument("--tb-v1", action="store_true", help="pass --tb-v1 to each job")
     tb.add_argument("--drop-tb-v1", action="store_true", help="pass --drop-tb-v1 to each job")
@@ -201,6 +236,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     args = ap.parse_args(argv)
     if args.test_hooks:
         ap.error("--test-hooks is for job.py's own tests: the queue never builds tb.cpp's test hooks")
+    if args.rederive and args.redo_unless_harness is not None and args.since is None:
+        ap.error("--rederive --redo-unless-harness needs --since ISO-TIMESTAMP, the start of the re-derive campaign")
     return args
 
 
@@ -228,8 +265,10 @@ def main(argv: list[str] | None = None) -> int:
         return refuse(f"host.toml: {e}")
     if (error := preflight()):
         return refuse(error)
-    if (note := linger_note()):
-        say(note)
+    if (problem := linger_problem()):
+        if not args.allow_no_linger:
+            return refuse(problem + " (enable linger, or pass --allow-no-linger)")
+        say(f"warning: {problem} (--allow-no-linger)")
 
     pending = select_pending(targets, args)
     if args.limit:
@@ -245,6 +284,7 @@ def main(argv: list[str] | None = None) -> int:
         tmp.rename(state_path)
 
     stop = threading.Event()
+    scope_broken: list[str] = []
 
     def on_signal(signum, frame):
         say(f"signal {signum}: finishing running jobs, starting no more")
@@ -268,6 +308,13 @@ def main(argv: list[str] | None = None) -> int:
         text = (p.stdout or p.stderr).strip()
         say(f"{t['id']}: {text.splitlines()[-1] if text else 'no output'} (exit {p.returncode}, "
             f"{time.monotonic() - t0:.0f}s)")
+        if p.returncode != 0 and not started_job(p.stdout, p.stderr):
+            # systemd-run failed before job.py ran: if scopes cannot be made any more, stop here
+            # rather than fail every remaining project the same way.
+            if (error := preflight()):
+                scope_broken.append(error)
+                say(f"scopes failing ({error}): starting no more jobs")
+                stop.set()
         return t["id"], p.returncode
 
     say(f"queue start: {len(pending)} pending of {len(targets)} selected, {args.jobs} jobs"
@@ -290,6 +337,9 @@ def main(argv: list[str] | None = None) -> int:
     state["finished"] = now()
     write_state()
     say(f"queue finished: {state['done']} done, {state['failed']} with errors")
+    if scope_broken:
+        print(f"runqueue: stopped early: {scope_broken[0]}", file=sys.stderr)
+        return 1
     return 0
 
 
