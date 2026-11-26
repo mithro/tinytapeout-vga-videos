@@ -105,3 +105,100 @@ typically append-only: deleting a file from the source does not unpublish the
 copy already on the far server. Run `--dry-run`, and regenerate the index
 (`tt-vga index --upload`) before mirroring, so the page being published points
 at files that exist.
+
+## Frames upload
+
+The raw-traces pipeline publishes each project's trace, frames, PNGs and pages
+into a frames subtree of the archive. That subtree will hold about 1.1 million
+entries, against tens of thousands in the rest of the archive, so the archive's
+onward upload is split in two:
+
+- **The main upload** keeps its five-minute interval and excludes the frames
+  subtree. It reads the subtree's path from a small root-owned configuration
+  file and refuses to run if that file is missing or the path is not one plain
+  relative path, so a lost configuration cannot publish the subtree by
+  accident.
+- **The frames upload** runs every 15 minutes and sends only the projects the
+  pipeline has logged as changed. A second timer runs it weekly with `--full`,
+  which sends the whole subtree and catches anything the incremental runs
+  missed.
+
+Neither ever deletes on the server. Removing a project locally does not
+unpublish it.
+
+Why two uploads: a longer interval for the one upload would delay the clips
+too, and a separate slow upload that lists the whole subtree would still list
+1.1 million entries on every run. The changed-project log keeps the clips at
+five minutes and the frames upload's listing to the projects that changed.
+
+The frames upload is installed before the pilot, with its timers **disabled**,
+so that nothing in the subtree reaches the server until the full re-run has
+been checked. Enabling the two timers is the act of publishing the frames.
+
+### What the upload trusts
+
+The pipeline runs as its own unprivileged user, and that user builds and runs
+third-party Verilog. Each job runs inside a systemd scope, but the scope
+confines **resources only** (memory, CPU, task count), not file access: a
+hostile design can write anything the pipeline user can.
+
+So the upload, which runs as the publishing account under the same sandboxing
+as the main upload, trusts **nothing the pipeline user writes without
+validating it**: neither the changed-project log nor anything in the frames
+subtree. The frames upload:
+
+- reads the log from the byte offset it stored last time, through the last
+  complete line only. A partial last line waits for the next run. An offset
+  past the end of the log (the log was shrunk) restarts at 0. The log must be a
+  regular file, not a symlink, and is opened without blocking;
+- accepts only lines matching `^[0-9T:+-]+ [A-Za-z0-9_]+/[A-Za-z0-9_]+$`
+  (`<timestamp> <shuttle>/<project>`, as
+  [`publish.py`](../ttvga/harness/publish.py) writes them). Every other line is
+  logged and skipped;
+- requires the frames subtree itself to be a real directory carrying the
+  `.ttvga-frames-root` marker, with no symlink between the archive root and
+  it;
+- requires the shuttle and project directories to exist, not to be symlinks
+  (`lstat`), and to have a `realpath` inside the subtree's `realpath`;
+- refuses a project that contains any symlink (`find -P <project> -type l`,
+  whose output is logged in full);
+- builds every path it sends itself, and passes them to one `rsync` with the
+  main upload's options plus `-r --files-from=- --safe-links
+  --no-implied-dirs`.
+
+After the transfer it runs the containment and symlink checks again on every
+project it sent. A project that now fails is logged as
+`realpath changed during transfer: <shuttle>/<project>`, for a person to look
+at and, if need be, delete on the server by hand, and the run exits non-zero so
+the journal shows it.
+
+The stored offset moves on after rsync exits 0 or 23 (a partial transfer that
+a retry would not fix). After 24 (files vanished, as when a project is
+re-published mid-run) or any other failure it stays where it was, so those
+projects are sent again on the next run. `--full` and dry runs never change it.
+A lock keeps the 15-minute and weekly runs apart; a run that finds it held does
+nothing.
+
+### Residual risk
+
+The checks run before rsync opens the paths. Between the check and the
+transfer the pipeline user could swap a checked shuttle or project directory
+for a symlink, and rsync would follow it while opening the path it was given.
+`--safe-links` covers only symlinks *inside* the transferred directories, not
+the path components leading to them. The window is short, the account that
+could exploit it is the pipeline's own, and the post-transfer re-check
+detects it after the fact (it cannot prevent it).
+
+### The host files
+
+[`host/data-upload/`](../host/data-upload/) holds the scripts, the
+configuration file and the systemd units as they are installed, except that
+every host-specific value (host and account names, absolute host paths) is a
+`{{NAME}}` placeholder. [`render.py`](../host/data-upload/render.py) fills
+them in from a private values file and refuses a placeholder without a value
+or a value that is never used. The first commit of
+[`data-upload-sync`](../host/data-upload/data-upload-sync) there is the live
+script before this change, so its history is the reviewable diff.
+[`tests/test_data_upload.py`](../tests/test_data_upload.py) renders the
+templates into a sandbox and runs both scripts against a local directory
+standing for the server.
