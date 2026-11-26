@@ -11,6 +11,10 @@ then appended to `<staging_dir>/changed.log`, which the root-owned upload
 reads, and only after that is the old copy deleted. A per-project lock,
 `<staging_dir>/<stem>.lock`, keeps two installs of one project apart.
 
+The caller can hold signals (`defer_signals`, job.py's SIGTERM) over the swap,
+the changed.log line and its own record of the publish (`on_published`), so a
+stop never lands between a swap that happened and the records that say so.
+
 Everything the job writes was produced by building and running third-party
 Verilog, so nothing in scratch is trusted: only the names in `ALLOWED`, as
 regular files and directories, are published (no symlinks, no devices). A
@@ -30,11 +34,13 @@ import fnmatch
 import os
 import re
 import shutil
+import signal
 import stat
 import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Callable
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
@@ -240,8 +246,14 @@ def _check_name(label: str, name: str, pattern: re.Pattern) -> None:
         raise PublishError(f"bad {label} name {name!r}")
 
 
-def install(scratch: Path, conf, shuttle: str, macro: str, log: Path, carry: list[str] = ()) -> None:
-    """Publish `scratch` as `<frames_root>/<shuttle>/<macro>`, carrying `carry` over from the published copy."""
+def install(scratch: Path, conf, shuttle: str, macro: str, log: Path, carry: list[str] = (), *,
+            defer_signals: tuple[int, ...] = (), on_published: Callable[[], None] | None = None) -> None:
+    """Publish `scratch` as `<frames_root>/<shuttle>/<macro>`, carrying `carry` over from the published copy.
+
+    `defer_signals` are blocked from just before the swap until the changed.log line is
+    written and `on_published` (the caller's record that the project is published) has
+    run; a signal that arrived meanwhile is delivered then, before the old copy is deleted.
+    """
     # A shuttle name has no "_", so <shuttle>_<macro> names exactly one project.
     _check_name("shuttle", shuttle, _SHUTTLE_NAME)
     _check_name("macro", macro, _MACRO_NAME)
@@ -259,12 +271,14 @@ def install(scratch: Path, conf, shuttle: str, macro: str, log: Path, carry: lis
     lock = _open_regular(conf.staging_dir / f"{stem}.lock", os.O_RDWR)
     try:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        _install_locked(scratch, conf, shuttle, macro, log, list(carry), stem, shuttle_dir, dest, new, old, dele)
+        _install_locked(scratch, conf, shuttle, macro, log, list(carry), stem, shuttle_dir, dest, new, old, dele,
+                        tuple(defer_signals), on_published)
     finally:
         os.close(lock)
 
 
-def _install_locked(scratch, conf, shuttle, macro, log, carry, stem, shuttle_dir, dest, new, old, dele) -> None:
+def _install_locked(scratch, conf, shuttle, macro, log, carry, stem, shuttle_dir, dest, new, old, dele,
+                    defer, on_published) -> None:
     # 1. Refuse anything unsafe before touching the filesystem.
     violations = check_allowed(scratch, stem)
     if violations:
@@ -291,12 +305,14 @@ def _install_locked(scratch, conf, shuttle, macro, log, carry, stem, shuttle_dir
     # anything is copied; the line itself is written only after the swap.
     changed = _open_changed(conf)
     try:
-        _install_checked(scratch, conf, shuttle, macro, log, carry, stem, shuttle_dir, dest, new, old, dele, changed)
+        _install_checked(scratch, conf, shuttle, macro, log, carry, stem, shuttle_dir, dest, new, old, dele, changed,
+                         defer, on_published)
     finally:
         os.close(changed)
 
 
-def _install_checked(scratch, conf, shuttle, macro, log, carry, stem, shuttle_dir, dest, new, old, dele, changed) -> None:
+def _install_checked(scratch, conf, shuttle, macro, log, carry, stem, shuttle_dir, dest, new, old, dele, changed,
+                     defer, on_published) -> None:
     # 2. The shuttle directory.
     # Installs of other projects in the shuttle (other locks) may create it at the same time.
     try:
@@ -335,26 +351,36 @@ def _install_checked(scratch, conf, shuttle, macro, log, carry, stem, shuttle_di
         _remove(new)
         raise
 
-    # 6 and 7. The swap.
-    if not os.path.lexists(dest):
-        os.rename(new, dest)
-        previous = None
-    elif exchange(new, dest):
-        previous = new
-    else:
-        os.rename(dest, old)
-        try:
-            os.rename(new, dest)
-        except OSError as e:
-            os.rename(old, dest)
-            raise PublishError(f"cannot rename {new} to {dest}: {e}; the previous copy is back in place") from e
-        previous = old
-
-    # 8. The upload is told at once; deleting the old copy comes after and cannot undo the publish.
-    _append_changed(changed, conf, shuttle, macro)
+    # 6 to 8, with `defer` held: the swap, the changed.log line, the caller's record.
+    mask = signal.pthread_sigmask(signal.SIG_BLOCK, defer) if defer else None
+    try:
+        previous = _swap(new, dest, old)
+        # The upload is told at once; deleting the old copy comes after and cannot undo the publish.
+        _append_changed(changed, conf, shuttle, macro)
+        if on_published is not None:
+            on_published()
+    finally:
+        if mask is not None:
+            signal.pthread_sigmask(signal.SIG_SETMASK, mask)   # a held signal is delivered here
     if previous is not None:
         try:
             os.rename(previous, dele)
             shutil.rmtree(dele)
         except OSError as e:
             _note(log, f"publish: could not delete the previous copy of {shuttle}/{macro}: {e!r}")
+
+
+def _swap(new: Path, dest: Path, old: Path) -> Path | None:
+    """Put `new` at `dest`; return where the previous copy now is (None when there was none)."""
+    if not os.path.lexists(dest):
+        os.rename(new, dest)
+        return None
+    if exchange(new, dest):
+        return new
+    os.rename(dest, old)
+    try:
+        os.rename(new, dest)
+    except OSError as e:
+        os.rename(old, dest)
+        raise PublishError(f"cannot rename {new} to {dest}: {e}; the previous copy is back in place") from e
+    return old

@@ -3,6 +3,7 @@
 
 import os
 import re
+import signal
 import stat
 import sys
 import threading
@@ -635,3 +636,80 @@ def test_exchange_swaps_and_reports_errors(tmp_path):
     assert (a / "x").read_bytes() == b"b" and (b / "x").read_bytes() == b"a"
     with pytest.raises(FileNotFoundError):
         publish.exchange(a, tmp_path / "absent")
+
+
+class _Stop(Exception):
+    pass
+
+
+def _sigterm_mid_swap(monkeypatch, events: list) -> None:
+    """Make the swap send this process SIGTERM, as a queue stop or the scope would."""
+    real = publish.exchange
+
+    def exchange(a, b):
+        os.kill(os.getpid(), signal.SIGTERM)
+        events.append("sigterm sent")
+        return real(a, b)
+
+    monkeypatch.setattr(publish, "exchange", exchange)
+
+
+@pytest.fixture
+def sigterm_raises():
+    """SIGTERM raises _Stop, as job.py's handler raises Terminated."""
+    events: list[str] = []
+
+    def handler(signum, frame):
+        events.append("handler")
+        raise _Stop
+
+    previous = signal.signal(signal.SIGTERM, handler)
+    try:
+        yield events
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+
+
+def test_install_defers_sigterm_over_swap_and_record(tmp_path, monkeypatch, sigterm_raises):
+    events = sigterm_raises
+    conf = make_host(tmp_path)
+    install(tmp_path, conf, make_scratch(tmp_path / "s1", basic_files(b"A")))
+    _sigterm_mid_swap(monkeypatch, events)
+    with pytest.raises(_Stop):
+        install(tmp_path, conf, make_scratch(tmp_path / "s2", basic_files(b"B")),
+                defer_signals=(signal.SIGTERM,), on_published=lambda: events.append("recorded"))
+    # The stop arrived mid-swap and was held until the swap, changed.log and the job's record were done.
+    assert events == ["sigterm sent", "recorded", "handler"]
+    assert tree(published(conf)) == {**basic_files(b"B"), ".ttvga-frames": b""}
+    assert len((conf.staging_dir / "changed.log").read_text().splitlines()) == 2
+    assert signal.SIGTERM not in signal.pthread_sigmask(signal.SIG_BLOCK, [])
+    # The previous copy was not deleted (the stop came first); the next install clears it.
+    monkeypatch.undo()
+    install(tmp_path, conf, make_scratch(tmp_path / "s3", basic_files(b"C")))
+    assert staging_names(conf) == STAGING_CLEAN
+
+
+def test_install_without_defer_can_stop_before_the_record(tmp_path, monkeypatch, sigterm_raises):
+    """The gap deferring closes: undeferred, the stop lands inside the swap step and nothing is recorded."""
+    events = sigterm_raises
+    conf = make_host(tmp_path)
+    install(tmp_path, conf, make_scratch(tmp_path / "s1", basic_files(b"A")))
+    _sigterm_mid_swap(monkeypatch, events)
+    with pytest.raises(_Stop):
+        install(tmp_path, conf, make_scratch(tmp_path / "s2", basic_files(b"B")),
+                on_published=lambda: events.append("recorded"))
+    assert "recorded" not in events
+    assert len((conf.staging_dir / "changed.log").read_text().splitlines()) == 1
+
+
+def test_install_restores_the_signal_mask_on_failure(tmp_path, monkeypatch):
+    conf = make_host(tmp_path)
+    install(tmp_path, conf, make_scratch(tmp_path / "s1", basic_files(b"A")))
+
+    def broken(a, b):
+        raise OSError(5, "I/O error")
+
+    monkeypatch.setattr(publish, "exchange", broken)
+    with pytest.raises(OSError):
+        install(tmp_path, conf, make_scratch(tmp_path / "s2", basic_files(b"B")), defer_signals=(signal.SIGTERM,))
+    assert signal.SIGTERM not in signal.pthread_sigmask(signal.SIG_BLOCK, [])
