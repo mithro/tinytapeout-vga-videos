@@ -11,7 +11,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="tt-vga", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
 
-    from ttvga import analyze, devtools, diagnose, fpgalibrary, index, remote, report, stimulus, targets
+    from ttvga import analyze, devtools, diagnose, fpgalibrary, index, remote, report, stimulus, targets, traces
 
     targets.add_parser(sub)
     remote.add_parsers(sub)
@@ -22,6 +22,7 @@ def main(argv: list[str] | None = None) -> int:
     diagnose.add_parser(sub)
     devtools.add_parser(sub)
     fpgalibrary.add_parser(sub)
+    traces.add_parser(sub)
 
     args = parser.parse_args(argv)
     return args.func(args) or 0
