@@ -16,7 +16,7 @@ import tomllib
 from dataclasses import dataclass, fields
 from pathlib import Path
 
-from ttvga import remote
+from ttvga import HARNESS_DIR, remote
 
 ROOT = Path(__file__).resolve().parent.parent
 ENV_VAR = "TTVGA_DEV_TOOLS"
@@ -74,6 +74,8 @@ def install_script(tools: dict) -> str:
     oss = tools["oss-cad-suite"]
     vg = tools["vgacap"]
     build = "\n".join(remote.vgacap_build_commands("vgacap-src", "vgacap-build", vg["commit"], vg["git"]))
+    source = shlex.quote(str(HARNESS_DIR / "tracetool.c"))
+    tracetool = "\n".join(remote.tracetool_build_commands("vgacap-src", "vgacap-build", source))
     return f"""
 set -e
 mkdir -p dl
@@ -91,6 +93,8 @@ else
   echo "building vgacap {vg['commit']}"
 {build}
 fi
+echo "building tracetool"
+({tracetool})
 """
 
 

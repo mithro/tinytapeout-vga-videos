@@ -15,60 +15,11 @@ from pathlib import Path
 import pytest
 
 from tests.sim import vgch
-from tests.sim.build import build_model
+from tests.sim.helpers import HARNESS, base_args, meta_args, run, timing
 
 pytestmark = pytest.mark.sim
 
-HARNESS = "test-harness-2026-11-26"
 CLK, RST, ENA = 1 << 42, 1 << 40, 1 << 41
-
-
-@pytest.fixture(scope="session")
-def dev():
-    from ttvga import devtools
-
-    d = devtools.paths()
-    d.require("verilator", "ffmpeg_sink")
-    return d
-
-
-@pytest.fixture(scope="session")
-def models(dev, tmp_path_factory):
-    """Each model is built once per session, on first use."""
-    root = tmp_path_factory.mktemp("models")
-    cache: dict[tuple[str, bool], Path] = {}
-
-    def get(design: str, test_hooks: bool = True) -> Path:
-        key = (design, test_hooks)
-        if key not in cache:
-            cache[key] = build_model(design, dev, root / f"{design}{'' if test_hooks else '-prod'}", test_hooks)
-        return cache[key]
-
-    return get
-
-
-def meta_args(design: str) -> list[str]:
-    return ["--meta", f"project=test/{design}", "--meta", "override=none",
-            "--meta", "simulator=verilator", "--meta", f"harness={HARNESS}"]
-
-
-def base_args(dev, out: Path) -> list[str]:
-    return ["--seconds", "0.2", "--calib-seconds", "0.1", "--no-audio", "--quiet",
-            "--ffmpeg", str(dev.ffmpeg_sink), "--out", str(out)]
-
-
-def run(model: Path, dev, out: Path, *extra: str, trace: bool = True, design: str = "bars640",
-        env: dict | None = None) -> subprocess.CompletedProcess:
-    out.mkdir(parents=True, exist_ok=True)
-    cmd = [str(model)] + base_args(dev, out)
-    if trace:
-        cmd += ["--trace", str(out / "trace.vgch.zst")] + meta_args(design)
-    cmd += list(extra)
-    return subprocess.run(cmd, capture_output=True, text=True, timeout=300, env=env)
-
-
-def timing(out: Path) -> dict:
-    return json.loads((out / "timing.json").read_text())
 
 
 def test_trace_pins_match_the_design(models, dev, tmp_path):
