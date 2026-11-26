@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import signal
 import sys
 from pathlib import Path
@@ -77,6 +78,8 @@ def test_rederive_applies_centre_window(root, go):
     assert (rc, r["rederive_error"]) == (0, None), r.get("derive_log_tail")
     assert frames_txt(pub / "centre-v1" / "frames.txt")["window_offset"] == "2 1"
     assert r["samplers"]["centre-v1"]["sampler_status"] == "ok"
+    assert r["rederive_override"].startswith(f"{jobroot.SHUTTLE}/{jobroot.macro_for('bars640')}.json sha256:")
+    assert re.fullmatch(r"[0-9a-f]{40}", r["rederive_tools"]["vgacap"])
     work_txt = jobroot.work(root, "bars640") / "frames" / "centre-v1" / "frames.txt"
     assert work_txt.read_bytes() == (pub / "centre-v1" / "frames.txt").read_bytes()
 
@@ -176,3 +179,16 @@ def test_job_sigterm_during_swap_is_recorded(root, go, monkeypatch):
     assert r["tb_v1"] == {"state": "none", "trace_sha": None, "dropped": False}
     assert r["trace"]["sha256"] == sha(jobroot.published(root, "bars640") / f"{stem('bars640')}_trace.vgch.zst")
     assert (jobroot.work(root, "bars640") / "frames" / "centre-v1" / "frames.txt").is_file()
+
+
+def test_rederive_honours_skip(root, go):
+    rc, first = go("bars640")
+    assert rc == 0
+    pub = jobroot.published(root, "bars640")
+    before = tree(pub)
+    jobroot.set_override(root, "bars640", {"skip": "broken for now"})
+    rc, r = go("bars640", "--rederive")
+    assert rc == 1
+    assert r["rederive_error"] == "broken for now"
+    assert r["rederived_at"] is None and r["samplers"] == first["samplers"]
+    assert tree(pub) == before

@@ -524,6 +524,37 @@ def update_work_frames(scratch: Path, frames: Path, *, tb_v1: bool, drop: bool) 
         shutil.rmtree(frames / derive.TB_V1)
 
 
+def install_and_record(scratch: Path, conf, target: dict, work: Path, args: argparse.Namespace, carry: list[str],
+                       errors: list[str], *, mark) -> str | None:
+    """publish.install with SIGTERM held over the swap and this job's record of it. Returns the error or None.
+
+    The record, run by publish right after the swap and changed.log: `mark()` (the
+    caller's result.json fields), then `work/frames/` refreshed for collect.
+    """
+    def record() -> None:
+        mark()
+        try:
+            update_work_frames(scratch, work / "frames", tb_v1=args.tb_v1, drop=args.drop_tb_v1)
+        except OSError as e:
+            errors.append(f"published, but work/frames was not updated: {e}")
+
+    try:
+        publish.install(scratch, conf, target["shuttle"], target["macro"], work / "publish.log", carry=carry,
+                        defer_signals=(signal.SIGTERM,), on_published=record)
+    except (publish.PublishError, OSError) as e:
+        return f"publish: {e}"
+    return None
+
+
+def derive_tool_versions(tools: dict) -> dict:
+    """The derive step's tools: the vgacap commit they were built from (`vgacap-build/PINNED`)."""
+    try:
+        pinned = (Path(tools["vgacap_build"]) / "PINNED").read_text().strip() or "unknown"
+    except OSError:
+        pinned = "unknown"
+    return {"vgacap": pinned}
+
+
 def encode(work: Path, videos: Path, log: Path, tools: dict, stem: str) -> str | None:
     """Publish the capture as browser-playable clips, then render the previews."""
     src = work / "out" / "capture.avi"
@@ -597,7 +628,8 @@ def rederive(args: argparse.Namespace, target: dict, ov: dict, work: Path, tools
 
     result.json is updated in place. A publish sets `samplers`, `trace`, `tb_v1`,
     `tb_v1_check`, `rederived_at` and `harness`; every run sets `rederive_error` (None when
-    it published), `timings.rederive` and the derive/publish log tails. Everything else,
+    it published), `rederive_override`, `rederive_tools`, `timings.rederive` and the
+    derive/publish log tails. The override's `skip` is honoured. Everything else,
     `error` included, still describes the run that made the trace. A failed re-derive
     publishes nothing and leaves the published copy and `work/frames/` as they were.
     """
@@ -624,6 +656,8 @@ def rederive(args: argparse.Namespace, target: dict, ov: dict, work: Path, tools
         nonlocal stage, dres
         if shuttle == TESTPATTERNS:
             return "testpatterns is never published: nothing to re-derive"
+        if (skip := ov.get("skip") or target.get("skip")):
+            return skip
         try:
             conf = hostconf.load(args.root)
         except (hostconf.ConfigError, OSError) as e:
@@ -645,19 +679,8 @@ def rederive(args: argparse.Namespace, target: dict, ov: dict, work: Path, tools
         carry, tb_state = tb_v1_rule(tb_v1=args.tb_v1, drop=args.drop_tb_v1, published=published,
                                      work_frames=work / "frames", trace_sha=dres.trace_sha)
 
-        def record() -> None:
-            done.update(at=now(), tb_v1=tb_state)
-            try:
-                update_work_frames(scratch, work / "frames", tb_v1=args.tb_v1, drop=args.drop_tb_v1)
-            except OSError as e:
-                errors.append(f"published, but work/frames was not updated: {e}")
-
-        try:
-            publish.install(scratch, conf, shuttle, macro, work / "publish.log", carry=carry,
-                            defer_signals=(signal.SIGTERM,), on_published=record)
-        except (publish.PublishError, OSError) as e:
-            return f"publish: {e}"
-        return None
+        return install_and_record(scratch, conf, target, work, args, carry, errors,
+                                  mark=lambda: done.update(at=now(), tb_v1=tb_state))
 
     try:
         try:
@@ -685,6 +708,9 @@ def rederive(args: argparse.Namespace, target: dict, ov: dict, work: Path, tools
 
     error = "; ".join(errors) or None
     result["rederive_error"] = error
+    # What this attempt derived with: the override and the vgacap build.
+    result["rederive_override"] = override_meta(args.overrides, shuttle, macro)
+    result["rederive_tools"] = derive_tool_versions(tools)
     result.setdefault("rederived_at", None)
     result.setdefault("timings", {})["rederive"] = round(time.monotonic() - t0, 1)
     for name in REDERIVE_LOGS:
@@ -862,20 +888,8 @@ def _job() -> int:
                     carry, tb_state = tb_v1_rule(tb_v1=args.tb_v1, drop=args.drop_tb_v1, published=published_dir,
                                                  work_frames=work / "frames", trace_sha=dres.trace_sha)
 
-                    def record(tb_state=tb_state) -> None:
-                        # Runs with SIGTERM held, right after the swap and changed.log.
-                        result["published"] = True
-                        result["tb_v1"] = tb_state
-                        try:
-                            update_work_frames(scratch, work / "frames", tb_v1=args.tb_v1, drop=args.drop_tb_v1)
-                        except OSError as e:
-                            errors.append(f"published, but work/frames was not updated: {e}")
-
-                    try:
-                        publish.install(scratch, conf, shuttle, macro, work / "publish.log", carry=carry,
-                                        defer_signals=(signal.SIGTERM,), on_published=record)
-                    except (publish.PublishError, OSError) as e:
-                        fatal = f"publish: {e}"
+                    fatal = install_and_record(scratch, conf, target, work, args, carry, errors,
+                                               mark=lambda: result.update(published=True, tb_v1=tb_state))
             except Exception as e:   # a bug or an unexpected failure: recorded, and nothing (more) published
                 fatal = f"stage crashed: {stage}: {type(e).__name__}: {e}"
                 result["traceback"] = traceback.format_exc()
