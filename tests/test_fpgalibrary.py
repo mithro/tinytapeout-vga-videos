@@ -102,6 +102,11 @@ def _unknown_entry(d):
     d["designs"][0]["future_key"] = 1
 
 
+def _no_pdk_latches(d):
+    for entry in d["designs"]:
+        entry.pop("pdk_latches", None)
+
+
 D0 = ["designs", 0]
 P0 = "ttsky25b/tt_um_lukasdragoste_vga_patterns"
 CASES = [
@@ -172,8 +177,18 @@ CASES = [
     ("gif-bad-name", _set(D0 + ["preview_gif"], f"{P0}/.hidden"), "designs[0].preview_gif"),
     ("webm-two-segments", _set(D0 + ["video_10s_webm"], "ttsky25b/v.webm"), "designs[0].video_10s_webm"),
     ("entry-missing-key", _delete(D0 + ["qspi"]), "designs[0].qspi"),
+    ("pdk-latches-int", _set(D0 + ["pdk_latches"], 1), "designs[0].pdk_latches"),
+    ("pdk-latches-string", _set(D0 + ["pdk_latches"], "true"), "designs[0].pdk_latches"),
+    ("pdk-latches-null", _set(D0 + ["pdk_latches"], None), "designs[0].pdk_latches"),
 ]
-ALLOWED = [("unknown-top-key", _unknown_top), ("unknown-entry-key", _unknown_entry)]
+ALLOWED = [
+    ("unknown-top-key", _unknown_top),
+    ("unknown-entry-key", _unknown_entry),
+    # Ruling BJ: optional for now, and missing means false.
+    ("pdk-latches-missing", _no_pdk_latches),
+    ("pdk-latches-true", _set(D0 + ["pdk_latches"], True)),
+    ("pdk-latches-false", _set(D0 + ["pdk_latches"], False)),
+]
 
 
 @pytest.mark.parametrize("mutate, prefix", [c[1:] for c in CASES], ids=[c[0] for c in CASES])
@@ -250,6 +265,23 @@ def test_cli_exit_codes(tmp_path, capsys):
     assert "designs[0].clock_hz" in capsys.readouterr().out
     path.write_text('{"schema": NaN}')
     assert cli.main(["fpga-library-check", str(path)]) == 1
+
+
+def test_fixture_omits_pdk_latches(doc):
+    """The fixture stays free of the key, so it also proves a missing key passes."""
+    assert all("pdk_latches" not in entry for entry in doc["designs"])
+
+
+def test_cli_reports_pdk_latches_type(tmp_path, capsys):
+    bad = json.loads((FIXTURE / "fpga-library.json").read_text())
+    bad["designs"][2]["pdk_latches"] = "yes"
+    path = tmp_path / "bad.json"
+    path.write_text(json.dumps(bad))
+    assert cli.main(["fpga-library-check", str(path)]) == 1
+    assert "designs[2].pdk_latches: must be a bool" in capsys.readouterr().out
+    bad["designs"][2]["pdk_latches"] = True
+    path.write_text(json.dumps(bad))
+    assert cli.main(["fpga-library-check", str(path), "--bins", str(FIXTURE)]) == 0
 
 
 def test_load_refuses_non_finite_float(tmp_path):
