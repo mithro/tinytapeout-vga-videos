@@ -406,10 +406,12 @@ def collect(args: argparse.Namespace) -> int:
         print(f"tt-vga collect: error: {_shown(e.get('id'))}: result.json does not parse: {_shown(e.get('error'))}",
               file=sys.stderr)
     for path in pulled.rejected:
-        print(f"tt-vga collect: error: {_shown(str(path.relative_to(RESULTS_DIR)))} came across as a symlink or "
-              "other non-regular file: deleted", file=sys.stderr)
+        rel = path.relative_to(RESULTS_DIR).as_posix()
+        done = "left in place (tb-v1: Ruling Z)" if _is_tb_v1(rel) else "deleted"
+        print(f"tt-vga collect: error: {_shown(rel)} is a symlink or other non-regular file: {done}",
+              file=sys.stderr)
     for x in pulled.oversized:
-        kept = "local copy kept, it is stale" if x.endswith("/result.json") else "local copy deleted"
+        kept = "local copy deleted" if _is_centre(x) else "local copy kept, it is stale"
         print(f"tt-vga collect: error: {_shown(x)} is over {MAX_SIZE} on the host: not collected, {kept}",
               file=sys.stderr)
     for x in pulled.changed:
@@ -556,6 +558,31 @@ def collect_filter(listing: HostListing) -> list[str]:
     return sorted(paths)
 
 
+def _is_tb_v1(rel: str) -> bool:
+    """Whether a path relative to data/results/ is under some `frames/tb-v1/`."""
+    parts = rel.split("/")
+    return any(a == "frames" and b == "tb-v1" for a, b in zip(parts, parts[1:]))
+
+
+def _is_centre(rel: str) -> bool:
+    return bool(_FRAMES[0].fullmatch(rel)) and rel.split("/")[3] == "centre-v1"
+
+
+def _discard(results: Path, dest: Path) -> None:
+    """Delete one collected path that is not tb-v1. The only deletion outside remove_stale_frames.
+
+    Ruling Z: nothing under `frames/tb-v1/` is ever deleted except by
+    remove_stale_frames, for an id whose parsed host result has `tb_v1.dropped`.
+    """
+    if _is_tb_v1(dest.relative_to(results).as_posix()):
+        raise RuntimeError(f"tt-vga collect: refusing to delete {dest}: tb-v1 files go only through "
+                           "remove_stale_frames (Ruling Z)")
+    if dest.is_dir() and not dest.is_symlink():
+        shutil.rmtree(dest)
+    else:
+        dest.unlink()
+
+
 def remove_stale_frames(results: Path, listing: HostListing) -> list[Path]:
     """Delete the local frames/ files of new results that the host no longer has. Returns them.
 
@@ -590,8 +617,8 @@ def pull_results(source: str, results: Path, listing: HostListing, ssh_cmd: list
     --no-D`). A file listed over MAX_BYTES is not copied and returned in
     `oversized`; rsync's `--max-size` covers one that grows after the listing,
     and any path not at its listed size afterwards is returned in `changed`.
-    A collected path that is not
-    a regular file afterwards is deleted and returned in `rejected`. A listed
+    A collected path that is not a regular file afterwards is returned in
+    `rejected`, and deleted unless it is tb-v1. A listed
     file that has gone by the time rsync looks (a job started and removed its
     result.json) is skipped with `--ignore-missing-args`; every other rsync
     error still stops collect.
@@ -601,10 +628,11 @@ def pull_results(source: str, results: Path, listing: HostListing, ssh_cmd: list
     paths = [x for x in listed if x not in oversized]
     rejected, changed = [], []
     for x in oversized:
-        # A frames/ file follows the host, so the old copy goes; a result.json is kept and reported.
+        # A centre-v1 file follows the host, so the old copy goes. A result.json or
+        # a tb-v1 file (Ruling Z, even for a dropped id) is kept and reported.
         dest = results / x
-        if not x.endswith("/result.json") and (dest.is_file() or dest.is_symlink()):
-            dest.unlink()
+        if _is_centre(x) and (dest.is_file() or dest.is_symlink()):
+            _discard(results, dest)
     if paths:
         cmd = ["rsync", "-a", "--no-links", "--no-D", f"--max-size={MAX_SIZE}", "--ignore-missing-args",
                "--from0", "--files-from=-"]
@@ -618,10 +646,8 @@ def pull_results(source: str, results: Path, listing: HostListing, ssh_cmd: list
         for x in paths:
             dest = results / x
             if dest.is_symlink() or (dest.exists() and not dest.is_file()):
-                if dest.is_dir() and not dest.is_symlink():
-                    shutil.rmtree(dest)
-                else:
-                    dest.unlink()
+                if not _is_tb_v1(x):
+                    _discard(results, dest)
                 rejected.append(dest)
             elif x in listing.sizes and not (dest.is_file() and dest.stat().st_size == listing.sizes[x]):
                 # Grown past MAX_SIZE (rsync skipped it), replaced, or gone since the listing.

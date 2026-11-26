@@ -15,6 +15,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from ttvga import HARNESS_DIR, remote
 
 LIST_RESULTS = HARNESS_DIR / "list_results.py"
@@ -300,3 +302,91 @@ def test_collect_flags_a_file_rsync_skipped_for_size(tmp_path, monkeypatch):
     put(work / "tt05/tt_um_a/frames/centre-v1/frames.txt", "now much longer\n")
     pulled = remote.pull_results(str(work) + "/", results, found, None)
     assert "tt05/tt_um_a/frames/centre-v1/frames.txt" in pulled.changed
+
+
+def run_collect(monkeypatch, work: Path, results: Path) -> int:
+    """`remote.collect` itself, with the host side pointed at the local `work` tree."""
+    import argparse
+    monkeypatch.setattr(remote, "RESULTS_DIR", results)
+    monkeypatch.setattr(remote, "resolve_host", lambda spec: remote.Host(ssh="ttvga@example.invalid"))
+    monkeypatch.setattr(remote, "host_listing", lambda host: listing(work))
+    real_pull = remote.pull_results
+    monkeypatch.setattr(remote, "pull_results", lambda source, res, found, ssh_cmd:
+                        real_pull(str(work) + "/", res, found, None))
+    return remote.collect(argparse.Namespace(host=None, images=None))
+
+
+def tb_v1_unlinks(monkeypatch) -> list[tuple[str, str]]:
+    """Record (path, calling function) for every unlink or rmtree under a frames/tb-v1/."""
+    import inspect
+    import shutil
+    seen = []
+    real_unlink, real_rmtree = Path.unlink, shutil.rmtree
+
+    def note(path) -> None:
+        if "/frames/tb-v1" in Path(path).as_posix():
+            seen.append((Path(path).name, inspect.stack()[2].function))
+
+    def unlink(self, *a, **kw):
+        note(self)
+        return real_unlink(self, *a, **kw)
+
+    def rmtree(path, *a, **kw):
+        note(path)
+        return real_rmtree(path, *a, **kw)
+
+    monkeypatch.setattr(Path, "unlink", unlink)
+    monkeypatch.setattr(shutil, "rmtree", rmtree)
+    return seen
+
+
+def test_oversized_tb_v1_without_drop_is_kept_and_fails_collect(tmp_path, monkeypatch):
+    work, results = trees(tmp_path)
+    monkeypatch.setattr(remote, "MAX_BYTES", 10)
+    put(work / "tt05/tt_um_a/result.json", json.dumps({"harness": "x"}))   # under the cap
+    put(work / "tt05/tt_um_a/frames/tb-v1/frames.txt", "far more than ten bytes\n")
+    converted = put(results / "tt05/tt_um_a/frames/tb-v1/frames.txt", "converted\n")
+    seen = tb_v1_unlinks(monkeypatch)
+    assert run_collect(monkeypatch, work, results) == 1
+    assert converted.read_text() == "converted\n"
+    assert seen == []
+
+
+def test_oversized_tb_v1_with_drop_deletes_only_through_remove_stale_frames(tmp_path, monkeypatch):
+    work, results = trees(tmp_path)
+    monkeypatch.setattr(remote, "MAX_BYTES", 30)
+    put(work / "tt05/tt_um_a/result.json", json.dumps({"harness": "x", "tb_v1": {"dropped": True}}))
+    put(work / "tt05/tt_um_a/frames/tb-v1/" / FNV, "far more than thirty bytes, on the host\n")
+    kept = put(results / "tt05/tt_um_a/frames/tb-v1/" / FNV, "converted\n")
+    gone = put(results / "tt05/tt_um_a/frames/tb-v1/frames.txt", "tb\n")
+    seen = tb_v1_unlinks(monkeypatch)
+    entered = []
+    real = remote.remove_stale_frames
+    monkeypatch.setattr(remote, "remove_stale_frames",
+                        lambda res, found: entered.append((kept.exists(), gone.exists())) or real(res, found))
+    assert run_collect(monkeypatch, work, results) == 1
+    assert entered == [(True, True)]   # nothing under tb-v1 went before remove_stale_frames
+    assert kept.read_text() == "converted\n"   # oversized on the host: kept and reported, even when dropped
+    assert not gone.exists()
+    assert seen == [("frames.txt", "remove_stale_frames")]
+
+
+def test_no_tb_v1_deletion_outside_remove_stale_frames(tmp_path, monkeypatch):
+    work, results = trees(tmp_path)
+    put(work / "tt05/tt_um_a/result.json", json.dumps(NEW))
+    put(work / "tt05/tt_um_a/frames/tb-v1/frames.txt", "a\n")
+    # A symlink where a collected tb-v1 file goes: reported, never deleted.
+    link = results / "tt05/tt_um_a/frames/tb-v1/frames.txt"
+    link.parent.mkdir(parents=True)
+    (work / "tt05/tt_um_a/frames/tb-v1/frames.txt").unlink()
+    link.symlink_to(tmp_path / "elsewhere")
+    found = listing(work)
+    found.frames_files = {"tt05/tt_um_a": {"tt05/tt_um_a/frames/tb-v1/frames.txt"}}
+    seen = tb_v1_unlinks(monkeypatch)
+    pulled = remote.pull_results(str(work) + "/", results, found, None)
+    assert pulled.rejected == [link] and link.is_symlink()
+    assert seen == []
+    # The one deleting helper outside remove_stale_frames refuses tb-v1 outright.
+    with pytest.raises(RuntimeError, match="Ruling Z"):
+        remote._discard(results, link)
+    assert link.is_symlink()
