@@ -28,7 +28,7 @@ main img { image-rendering: pixelated; display: block; width: %(w)dpx; height: a
 
 
 def write_sampler_page(dir: Path, ff, stem: str, sampler: str) -> None:
-    """Write `dir/index.html` for one sampler's `FramesFile` `ff`; the PNGs are `dir/png/<n>.png`.
+    """Write `dir/index.html` for one sampler's `FramesFile` `ff`; the PNGs are `dir/png/NNNNNN.png`.
 
     The frame table has one row per run of identical frames (the page says so), giving the
     range as `first`-`last`; the distinct frames follow as a grid of lazily loaded images.
@@ -74,10 +74,10 @@ def write_sampler_page(dir: Path, ff, stem: str, sampler: str) -> None:
             h.append(f"<tr><td>{first}-{first + count - 1}</td><td>-</td><td>-</td></tr>")
         else:
             h.append(f'<tr><td>{first}-{first + count - 1}</td><td>{start}</td>'
-                     f'<td><a href="png/{d}.png">{d}</a></td></tr>')
+                     f'<td><a href="png/{d:06d}.png">{d}</a></td></tr>')
     h += ["</table>", "<h2>Distinct frames</h2>", '<div class="grid">']
     for n in range(len(ff.distinct)):
-        h.append(f'<figure><a href="png/{n}.png"><img loading="lazy" src="png/{n}.png" '
+        h.append(f'<figure><a href="png/{n:06d}.png"><img loading="lazy" src="png/{n:06d}.png" '
                  f'width="{ff.width}" height="{ff.height}" alt="distinct frame {n}"></a>'
                  f"<figcaption>{n}</figcaption></figure>")
     h += ["</div>", "</main>", "</body>", "</html>"]
