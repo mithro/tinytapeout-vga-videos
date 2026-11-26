@@ -11,11 +11,16 @@ import sys
 from pathlib import Path
 
 
-def add(root: Path) -> None:
-    """Put the pinned vgacap Python package on sys.path."""
-    path = str(Path(root) / "tools" / "vgacap-src" / "python")
+def add_src(src: Path) -> None:
+    """Put the Python package of the vgacap clone at `src` on sys.path (local dev-tools use this)."""
+    path = str(Path(src) / "python")
     if path not in sys.path:
         sys.path.insert(0, path)
+
+
+def add(root: Path) -> None:
+    """Put the pinned vgacap Python package on sys.path."""
+    add_src(Path(root) / "tools" / "vgacap-src")
 
 
 def tools(root: Path) -> dict:
