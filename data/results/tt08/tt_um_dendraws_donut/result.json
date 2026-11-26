@@ -61,8 +61,7 @@
     "audio_driven": false,
     "audio_transitions": 0,
     "audio_rate": 192000,
-    "audio_samples": 0,
-    "frame_hashes_count": 3596
+    "audio_samples": 0
   },
   "videos": {
     "tt08_tt_um_dendraws_donut_10s.mp4": {
@@ -106,5 +105,10 @@
   "sim_log_tail": "\n$ /home/ttvga/ttvga/work/tt08/tt_um_dendraws_donut/build/Vtop --clock-hz 50350000 --seconds 60.0 --calib-seconds 1.0 --out /home/ttvga/ttvga/work/tt08/tt_um_dendraws_donut/out --ffmpeg /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg\ntb: sync at clock 3342336: line 1600 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 2.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (1 distinct, 0 uniform, 4 colours, 0.000% of pixels change per frame, 0.0% ever), 3024787210 clocks in 1697.1s wall (1.78 Mclk/s)\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/tt08/tt_um_dendraws_donut/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_60s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/ttvga/work/tt08/tt_um_dendraws_donut/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_60s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_60s.mp4 -t 30 -c copy -movflags +faststart /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_30s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_60s.webm -t 30 -c copy /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_30s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_60s.mp4 -t 10 -c copy -movflags +faststart /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_10s.mp4\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_60s.webm -t 10 -c copy /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_10s.webm\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -i /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_poster.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -i /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_60s.mp4 -vf select='not(mod(n\\,224))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_contact.png\n[exit 0]\n\n$ /home/ttvga/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -ss 5.000 -t 8.000 -i /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 /home/ttvga/public_html/tt08/tt_um_dendraws_donut/tt08_tt_um_dendraws_donut_preview.gif\n[exit 0]\n",
   "finished": "2026-09-17T00:02:05+00:00",
   "verdict": "static",
-  "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 4 colours)"
+  "reason": "1 distinct frame(s) in 3596 (640x480@60, 640x480, 4 colours)",
+  "tb_v1": {
+    "state": "stale",
+    "trace_sha": null,
+    "dropped": false
+  }
 }
