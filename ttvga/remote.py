@@ -408,8 +408,15 @@ def collect(args: argparse.Namespace) -> int:
     for path in pulled.rejected:
         print(f"tt-vga collect: error: {_shown(str(path.relative_to(RESULTS_DIR)))} came across as a symlink or "
               "other non-regular file: deleted", file=sys.stderr)
+    for x in pulled.oversized:
+        kept = "local copy kept, it is stale" if x.endswith("/result.json") else "local copy deleted"
+        print(f"tt-vga collect: error: {_shown(x)} is over {MAX_SIZE} on the host: not collected, {kept}",
+              file=sys.stderr)
+    for x in pulled.changed:
+        print(f"tt-vga collect: warning: {_shown(x)} changed or went on the host during collect: "
+              "run collect again", file=sys.stderr)
     print(f"collected {len(_collected_ids(found))} new results into {RESULTS_DIR}")
-    return 1 if found.errors or pulled.rejected else 0
+    return 1 if found.errors or pulled.rejected or pulled.oversized else 0
 
 
 # ---------------------------------------------------------------------------
@@ -422,12 +429,15 @@ TESTPATTERNS = "testpatterns"   # job.py's pseudo-shuttle, never published or co
 # 0.7 MB (7,159 frames, tt_um_spacewar's run, if every frame were distinct;
 # its FNV file is 122,166 bytes), so 16 MiB is over 20 times that.
 MAX_SIZE = "16M"
+MAX_BYTES = 16 * 1024 * 1024    # rsync's 16M, checked against the listing's sizes first
+# Every path that leaves the host is made of these bytes only (find -regex on the
+# host, and _NAME again here).
+_NAME = re.compile(r"[A-Za-z0-9_./-]+")
 _ID = re.compile(r"[A-Za-z0-9_]+/[A-Za-z0-9_]+")
 # The only frames/ files that come into git (WORK_FRAMES in job.py). Never
 # tb-v1/TRACE_SHA256: the trace's SHA-256 stays out of git.
 _FRAMES = (re.compile(r"[A-Za-z0-9_]+/[A-Za-z0-9_]+/frames/(centre-v1|tb-v1)/frames\.txt"),
            re.compile(r"[A-Za-z0-9_]+/[A-Za-z0-9_]+/frames/tb-v1/frame_hashes\.fnv1a64-tb2026-rgb888\.txt"))
-_CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 _SAMPLERS = ("centre-v1", "tb-v1")
 
 
@@ -443,33 +453,39 @@ class HostListing:
     frames_files: dict[str, set[str]]     # id -> `<s>/<m>/frames/<sampler>/<file>` paths on the host
     dropped: set[str]                     # ids whose host result.json has `tb_v1.dropped`
     errors: list[dict] = field(default_factory=list)   # list_results.py's `{"id", "error"}` lines
+    sizes: dict[str, int] = field(default_factory=dict)  # path -> bytes on the host, when listed
 
 
 @dataclass
 class Pulled:
     removed: list[Path]     # local frames/ files the host no longer has (remove_stale_frames)
     rejected: list[Path]    # collected paths that were not regular files afterwards, deleted
+    oversized: list[str] = field(default_factory=list)  # listed over MAX_BYTES: not copied
+    changed: list[str] = field(default_factory=list)    # not the listed size afterwards (changed or gone)
 
 
 def listing_script(python: str, work: str, list_results: str) -> str:
     """The one script that lists the host's results (JSON lines), then LISTING_MARK, then its frames/ files.
 
     The results come first, so a job finishing in between can add frames/ files
-    but never a result whose frames were missed. The frames/ paths are NUL
-    separated, and any with a control character is left out on the host.
+    but never a result whose frames were missed. Each frames/ entry is
+    `<size> <path>` and NUL terminated. Only paths made of `[A-Za-z0-9_./-]`
+    are listed (`-regex` in the C locale), so no other byte leaves the host.
     """
     return f"""
 set -e
 {python} {list_results} {work}
 echo {shlex.quote(LISTING_MARK)}
-find {work} -mindepth 5 -maxdepth 5 -path '*/*/*/frames/*/*' ! -path '*[[:cntrl:]]*' -type f -printf '%P\\0'
+cd {work}
+LC_ALL=C find . -mindepth 5 -maxdepth 5 -regextype posix-extended -regex '\\./[A-Za-z0-9_./-]+' \\
+    -path '*/*/*/frames/*/*' -type f -printf '%s %P\\0'
 """
 
 
 def parse_listing(text: str) -> HostListing:
     """Turn `listing_script`'s output into a HostListing. A missing LISTING_MARK is an error.
 
-    A frames/ path with a control character is dropped here too.
+    Every path is checked against `_NAME` again here, and anything else dropped.
     """
     at = ("\n" + text).find(f"\n{LISTING_MARK}\n")
     if at < 0:
@@ -483,13 +499,17 @@ def parse_listing(text: str) -> HostListing:
         if "error" in e:
             found.errors.append(e)
             continue
-        if e["harness"]:
+        if e["harness"] and _ID.fullmatch(e["id"]):
             found.new_results.add(e["id"])
             if e["dropped"]:
                 found.dropped.add(e["id"])
-    for path in tail.split("\0"):
-        if path and not _CONTROL.search(path):
+            if isinstance(e.get("size"), int):
+                found.sizes[f"{e['id']}/result.json"] = e["size"]
+    for entry in tail.split("\0"):
+        size, _, path = entry.partition(" ")
+        if size.isdigit() and _NAME.fullmatch(path):
             found.frames_files.setdefault("/".join(path.split("/")[:2]), set()).add(path)
+            found.sizes[path] = int(size)
     return found
 
 
@@ -498,11 +518,19 @@ def host_listing(host: Host) -> HostListing:
     tools = tomllib.loads(TOOLS_TOML.read_text())
     rsync(host, [str(HARNESS_DIR / "list_results.py")], f"{REMOTE_ROOT}/tools/")
     script = listing_script(host_python(tools), f"~/{REMOTE_ROOT}/work", f"~/{REMOTE_ROOT}/tools/list_results.py")
-    p = ssh(host, script, check=False, capture=True, timeout=600)
-    sys.stderr.write(p.stderr)
+    return run_listing(host.ssh_cmd() + [host.ssh, "bash", "-s"], script)
+
+
+def run_listing(cmd: list[str], script: str) -> HostListing:
+    """Run `listing_script` through `cmd` (ssh ... bash -s) and parse it.
+
+    Bytes, not text: the host's file names are not trusted to be UTF-8.
+    """
+    p = subprocess.run(cmd, input=script.encode(), capture_output=True, timeout=600)
+    sys.stderr.write(p.stderr.decode(errors="backslashreplace"))
     if p.returncode != 0:
         raise RuntimeError(f"tt-vga collect: listing the host's work tree failed (exit {p.returncode})")
-    return parse_listing(p.stdout)
+    return parse_listing(p.stdout.decode(errors="surrogateescape"))
 
 
 def _testpatterns(ids: set[str]) -> set[str]:
@@ -559,14 +587,24 @@ def pull_results(source: str, results: Path, listing: HostListing, ssh_cmd: list
     `results`, then `remove_stale_frames`.
 
     The host is not trusted: symlinks and devices are not copied (`--no-links
-    --no-D`), files over MAX_SIZE are skipped, and a collected path that is not
+    --no-D`). A file listed over MAX_BYTES is not copied and returned in
+    `oversized`; rsync's `--max-size` covers one that grows after the listing,
+    and any path not at its listed size afterwards is returned in `changed`.
+    A collected path that is not
     a regular file afterwards is deleted and returned in `rejected`. A listed
     file that has gone by the time rsync looks (a job started and removed its
     result.json) is skipped with `--ignore-missing-args`; every other rsync
     error still stops collect.
     """
-    paths = collect_filter(listing)
-    rejected = []
+    listed = collect_filter(listing)
+    oversized = [x for x in listed if listing.sizes.get(x, 0) > MAX_BYTES]
+    paths = [x for x in listed if x not in oversized]
+    rejected, changed = [], []
+    for x in oversized:
+        # A frames/ file follows the host, so the old copy goes; a result.json is kept and reported.
+        dest = results / x
+        if not x.endswith("/result.json") and (dest.is_file() or dest.is_symlink()):
+            dest.unlink()
     if paths:
         cmd = ["rsync", "-a", "--no-links", "--no-D", f"--max-size={MAX_SIZE}", "--ignore-missing-args",
                "--from0", "--files-from=-"]
@@ -585,7 +623,10 @@ def pull_results(source: str, results: Path, listing: HostListing, ssh_cmd: list
                 else:
                     dest.unlink()
                 rejected.append(dest)
-    return Pulled(remove_stale_frames(results, listing), rejected)
+            elif x in listing.sizes and not (dest.is_file() and dest.stat().st_size == listing.sizes[x]):
+                # Grown past MAX_SIZE (rsync skipped it), replaced, or gone since the listing.
+                changed.append(x)
+    return Pulled(remove_stale_frames(results, listing), rejected, oversized, changed)
 
 
 # Files the published tree still holds from before the clips became

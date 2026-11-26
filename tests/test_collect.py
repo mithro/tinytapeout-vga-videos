@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -30,14 +31,13 @@ def put(path: Path, text: str) -> Path:
 
 def listing(work: Path) -> remote.HostListing:
     script = remote.listing_script(sys.executable, str(work), str(LIST_RESULTS))
-    p = subprocess.run(["bash", "-s"], input=script, text=True, capture_output=True, check=True)
-    return remote.parse_listing(p.stdout)
+    return remote.run_listing(["bash", "-s"], script)
 
 
 def collect(work: Path, results: Path) -> tuple[remote.HostListing, list[Path]]:
     found = listing(work)
     pulled = remote.pull_results(str(work) + "/", results, found, None)
-    assert pulled.rejected == []
+    assert pulled.rejected == [] and pulled.oversized == [] and pulled.changed == []
     return found, pulled.removed
 
 
@@ -137,11 +137,12 @@ def test_list_results_parses_json(tmp_path):
     put(work / "tt05/tt_um_c/result.json", '{"harness": "cut off')
     p = subprocess.run([sys.executable, str(LIST_RESULTS), str(work)], text=True, capture_output=True)
     lines = [json.loads(line) for line in p.stdout.splitlines()]
+    assert all(isinstance(x.pop("size", 0), int) for x in lines[:2])
     assert lines[:2] == [{"id": "tt05/tt_um_a", "harness": False, "dropped": False},
                          {"id": "tt05/tt_um_b", "harness": True, "dropped": False}]
     assert lines[2]["id"] == "tt05/tt_um_c" and "error" in lines[2]
     assert "tt05/tt_um_c" in p.stderr
-    found = remote.parse_listing(p.stdout + remote.LISTING_MARK + "\n")
+    found = remote.parse_listing("".join(json.dumps(x) + "\n" for x in lines) + remote.LISTING_MARK + "\n")
     assert found.new_results == {"tt05/tt_um_b"}
     assert found.errors == [lines[2]]
 
@@ -171,7 +172,7 @@ def test_collect_newline_named_directory_injects_nothing(tmp_path):
     assert (results / "tt05/tt_um_b/frames/centre-v1/frames.txt").read_text() == "b\n"
     # parse_listing drops such a path as well, should one reach it.
     text = json.dumps({"id": "tt05/tt_um_a", "harness": True, "dropped": False}) + "\n" + remote.LISTING_MARK + \
-        "\nzz\ntt05/tt_um_a/frames/tb-v1/frames.txt\0tt05/tt_um_a/frames/centre-v1/frames.txt\0"
+        "\n5 zz\ntt05/tt_um_a/frames/tb-v1/frames.txt\0" + "2 tt05/tt_um_a/frames/centre-v1/frames.txt\0"
     assert remote.parse_listing(text).frames_files == {"tt05/tt_um_a": {"tt05/tt_um_a/frames/centre-v1/frames.txt"}}
 
 
@@ -182,7 +183,8 @@ def test_collect_missing_listed_file_is_not_fatal(tmp_path):
     found = listing(work)
     (work / "tt05/tt_um_a/result.json").unlink()   # a job started on the host after the listing
     pulled = remote.pull_results(str(work) + "/", results, found, None)
-    assert pulled.rejected == []
+    assert pulled.rejected == [] and pulled.oversized == []
+    assert pulled.changed == ["tt05/tt_um_a/result.json"]   # reported, so collect is run again
     assert (results / "tt05/tt_um_b/result.json").exists()
 
 
@@ -241,3 +243,60 @@ def test_remove_stale_frames_skips_a_symlinked_sampler_directory(tmp_path):
     found, removed = collect(work, results)
     assert removed == []
     assert outside.read_text() == "keep\n"
+
+
+def test_collect_non_utf8_file_name_is_left_on_the_host(tmp_path):
+    work, results = trees(tmp_path)
+    put(work / "tt05/tt_um_a/result.json", json.dumps(NEW))
+    put(work / "tt05/tt_um_a/frames/centre-v1/frames.txt", "a\n")
+    put(work / "tt05/tt_um_b/result.json", json.dumps(NEW | {"id": "tt05/tt_um_b"}))
+    root = bytes(work)
+    for name in (b"/tt05/tt_um_a/frames/centre-v1/\xff.txt", b"/tt05/tt_um_\xff/frames/centre-v1/frames.txt",
+                 b"/tt05/tt_um_a/frames/tb-v1/fr\xc3\xa9mes.txt"):
+        d, _, f = (root + name).rpartition(b"/")
+        os.makedirs(d, exist_ok=True)
+        with open(d + b"/" + f, "wb") as out:
+            out.write(b"x\n")
+    os.makedirs(root + b"/tt05/tt_um_\xff", exist_ok=True)
+    with open(root + b"/tt05/tt_um_\xff/result.json", "wb") as out:
+        out.write(json.dumps(NEW).encode())
+    script = remote.listing_script(sys.executable, str(work), str(LIST_RESULTS))
+    raw = subprocess.run(["bash", "-s"], input=script.encode(), capture_output=True, check=True).stdout
+    frames_part = raw.split(remote.LISTING_MARK.encode() + b"\n", 1)[1]
+    assert all(b < 0x80 for b in frames_part)   # nothing but the allow-listed bytes leave the find
+    found, _ = collect(work, results)
+    assert found.new_results == {"tt05/tt_um_a", "tt05/tt_um_b"}
+    assert remote.collect_filter(found) == ["tt05/tt_um_a/frames/centre-v1/frames.txt", "tt05/tt_um_a/result.json",
+                                            "tt05/tt_um_b/result.json"]
+    assert sorted(bytes(p.relative_to(results)) for p in results.rglob("*") if p.is_file()) == [
+        b"tt05/tt_um_a/frames/centre-v1/frames.txt", b"tt05/tt_um_a/result.json", b"tt05/tt_um_b/result.json"]
+    # parse_listing drops a name outside the allow-list too.
+    text = remote.LISTING_MARK + "\n" + "2 tt05/tt_um_a/frames/centre-v1/\udcff.txt\0"
+    assert remote.parse_listing(text).frames_files == {}
+
+
+def test_collect_reports_an_oversized_file_and_drops_the_stale_copy(tmp_path, monkeypatch):
+    work, results = trees(tmp_path)
+    monkeypatch.setattr(remote, "MAX_BYTES", 10)
+    put(work / "tt05/tt_um_a/result.json", json.dumps(NEW))
+    put(work / "tt05/tt_um_a/frames/centre-v1/frames.txt", "far more than ten bytes\n")
+    stale = put(results / "tt05/tt_um_a/frames/centre-v1/frames.txt", "old\n")
+    local = put(results / "tt05/tt_um_a/result.json", "{}")
+    found = listing(work)
+    pulled = remote.pull_results(str(work) + "/", results, found, None)
+    assert pulled.oversized == ["tt05/tt_um_a/frames/centre-v1/frames.txt", "tt05/tt_um_a/result.json"]
+    assert not stale.exists()
+    assert local.read_text() == "{}"   # a result.json over the cap is kept, and reported
+
+
+def test_collect_flags_a_file_rsync_skipped_for_size(tmp_path, monkeypatch):
+    work, results = trees(tmp_path)
+    put(work / "tt05/tt_um_a/result.json", json.dumps(NEW))
+    put(work / "tt05/tt_um_a/frames/centre-v1/frames.txt", "a\n")
+    found = listing(work)
+    # It grows past rsync's cap after the listing: rsync skips it, and the size check reports it.
+    monkeypatch.setattr(remote, "MAX_SIZE", "4")
+    put(results / "tt05/tt_um_a/frames/centre-v1/frames.txt", "old\n")
+    put(work / "tt05/tt_um_a/frames/centre-v1/frames.txt", "now much longer\n")
+    pulled = remote.pull_results(str(work) + "/", results, found, None)
+    assert "tt05/tt_um_a/frames/centre-v1/frames.txt" in pulled.changed

@@ -6,14 +6,18 @@ Usage: list_results.py WORK   (WORK is ~/ttvga/work)
 
 For every WORK/<shuttle>/<macro>/result.json, one JSON line on stdout:
 
-    {"id": "<shuttle>/<macro>", "harness": bool, "dropped": bool}
+    {"id": "<shuttle>/<macro>", "harness": bool, "dropped": bool, "size": int}
 
-`harness` is whether the parsed object has a `harness` key (only results
-written by the raw-traces job.py do), and `dropped` is its `tb_v1.dropped`.
+- `harness` is whether the parsed object has a `harness` key (only results
+  written by the raw-traces job.py do).
+- `dropped` is its `tb_v1.dropped`.
+- `size` is the file's size in bytes, which collect checks against its cap
+  and against what arrived.
+
 The file is parsed, never searched as text: a log tail inside it can hold the
 word "harness". A file that does not parse gives `{"id", "error"}` instead,
-and the error is also written to stderr. So does a
-result.json that is not a regular file (a symlink, a FIFO): it is never opened.
+and the error is also written to stderr. So does a result.json that is not a
+regular file (a symlink, a FIFO): it is never opened.
 
 Standard library only: the host has no packages installed.
 """
@@ -30,7 +34,8 @@ from pathlib import Path
 def entry(path: Path, rid: str) -> dict:
     try:
         # Never follow a symlink or open a FIFO: the project's code runs as this user.
-        if not stat.S_ISREG(os.lstat(path).st_mode):
+        st = os.lstat(path)
+        if not stat.S_ISREG(st.st_mode):
             return {"id": rid, "error": f"{path}: not a regular file"}
         fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
         with open(fd, encoding="utf-8") as f:
@@ -41,7 +46,7 @@ def entry(path: Path, rid: str) -> dict:
         return {"id": rid, "error": f"{path}: not a JSON object"}
     tb_v1 = result.get("tb_v1")
     return {"id": rid, "harness": "harness" in result,
-            "dropped": isinstance(tb_v1, dict) and tb_v1.get("dropped") is True}
+            "dropped": isinstance(tb_v1, dict) and tb_v1.get("dropped") is True, "size": st.st_size}
 
 
 def main(argv: list[str]) -> int:
