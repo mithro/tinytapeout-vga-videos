@@ -10,6 +10,7 @@ import json
 import shutil
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 from ttvga.devtools import DevTools
@@ -28,6 +29,46 @@ EXIT = {"ok": 0, "no-sync": 3, "unstable-sync": 3}
 # 1.9062, 5e-5 off. The 1e-12 keeps that bound inclusive against the doubles' rounding.
 CPP_TOLERANCE = 5e-5
 CPP_ROUNDING = 1e-12
+# Each design's expected timing.json status and fewest captured frames: a design
+# that silently stops producing a picture must fail, not compare two empty lists.
+EXPECT = {
+    "bars640": ("ok", 2),
+    "bars_cpp2": ("ok", 2),
+    "frac": ("ok", 2),
+    "glitch": ("unstable-sync", 2),
+    "noisy": ("ok", 2),
+    "nosync": ("no-sync", 0),
+    "playground": ("ok", 2),
+    "uio_echo": ("no-sync", 0),
+}
+
+
+def vgacap_pin() -> str:
+    """The vgacap commit `ttvga/tools.toml` pins."""
+    return tomllib.loads((REPO_ROOT / "ttvga" / "tools.toml").read_text())["vgacap"]["commit"]
+
+
+def check_pin(dev: DevTools) -> str:
+    """Refuse dev-tools whose vgacap build is not the pinned commit; return the pin."""
+    pin = vgacap_pin()
+    built = (dev.vgacap_build / "PINNED").read_text().strip()
+    if built != pin:
+        raise RuntimeError(f"dev-tools vgacap is {built}, the pin is {pin}: run tt-vga dev-tools")
+    return pin
+
+
+def expectation_problems(design: str, tj: dict) -> list[str]:
+    """How timing.json misses the design's expected status and frame count (EXPECT)."""
+    status, min_frames = EXPECT[design]
+    frames = tj.get("frames", 0)
+    problems = []
+    if tj["status"] != status:
+        problems.append(f"{design}: status {tj['status']}, expected {status}")
+    if min_frames == 0 and frames != 0:
+        problems.append(f"{design}: {frames} frames, expected 0")
+    elif frames < min_frames:
+        problems.append(f"{design}: {frames} frames, expected at least {min_frames}")
+    return problems
 
 
 def framesfile(dev: DevTools):
@@ -53,6 +94,7 @@ def simulate(model: Path, dev: DevTools, out: Path, design: str, *extra: str) ->
 def sample(dev: DevTools, trace: Path, out: Path, name: str) -> Path:
     """`vgacap-sample TRACE --out OUT --name NAME --sampler tb-v1`; return OUT/tb-v1."""
     dev.require("vgacap_sample")
+    check_pin(dev)
     cmd = [str(dev.vgacap_sample), str(trace), "--out", str(out), "--name", name, "--sampler", "tb-v1"]
     p = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
     (out.parent / f"{out.name}.log").write_text("$ " + " ".join(cmd) + f"\nexit {p.returncode}\n" + p.stdout + p.stderr)

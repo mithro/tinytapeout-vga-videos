@@ -25,7 +25,6 @@ import shutil
 import subprocess
 import sys
 import time
-import tomllib
 from compression import zstd
 from pathlib import Path
 
@@ -46,9 +45,7 @@ CASES = {
     "nosync": "0.2",
     "playground": "0.1",
 }
-NO_PICTURE = {"nosync"}
 MAX_TRACE_BYTES = 1 << 20
-MIN_FRAMES = 2
 FILES = ("trace.vgch", "frames.txt", tbv1.FNV)
 
 
@@ -79,11 +76,9 @@ def export_case(case: str, seconds: str, dev, work: Path, out: Path) -> None:
         kept = tbv1.keep_mismatch(case, run_dir, diffs)
         raise SystemExit(f"{case}: tb-v1 differs from tb.cpp (kept in {kept}):\n" + "\n".join(diffs))
     frames = tj.get("frames", 0)
-    if case in NO_PICTURE:
-        if tj["status"] != "no-sync":
-            raise SystemExit(f"{case}: status {tj['status']}, expected no-sync")
-    elif frames < MIN_FRAMES:
-        raise SystemExit(f"{case}: {frames} frames captured, fewer than {MIN_FRAMES}")
+    problems = tbv1.expectation_problems(case, tj)
+    if problems:
+        raise SystemExit("\n".join(problems) + "\n(never shorten a case below 2 captured frames)")
     for name in FILES[1:]:
         shutil.copyfile(tbv1_dir / name, dest / name)
     log(f"{case}: --seconds {seconds}, status {tj['status']}, {frames} frames, trace.vgch {size} bytes")
@@ -96,16 +91,17 @@ def main() -> int:
     args = ap.parse_args()
     out = args.out.resolve()
 
+    # Untracked files are left out on purpose: tmp/ (these vectors, the logs, the
+    # models) and other scratch files are untracked and cannot change what this
+    # script runs, while an edit to any tracked file (code, designs, tools.toml)
+    # could, and would make the manifest's commit a lie.
     dirty = git("status", "--porcelain", "--untracked-files=no")
     if dirty:
         raise SystemExit(f"the work tree has uncommitted changes:\n{dirty}")
     commit = git("rev-parse", "HEAD").strip()
-    pin = tomllib.loads((ROOT / "ttvga" / "tools.toml").read_text())["vgacap"]["commit"]
     dev = devtools.paths()
     dev.require("verilator", "ffmpeg_sink", "vgacap_sample")
-    built = (dev.vgacap_build / "PINNED").read_text().strip()
-    if built != pin:
-        raise SystemExit(f"dev-tools vgacap is {built}, the pin is {pin}: run tt-vga dev-tools")
+    pin = tbv1.check_pin(dev)
 
     if out.exists():
         if any(out.iterdir()) and not (out / "MANIFEST.txt").exists():
