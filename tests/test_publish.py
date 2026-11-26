@@ -6,6 +6,7 @@ import re
 import stat
 import sys
 import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -54,6 +55,19 @@ def tree(path: Path) -> dict[str, bytes]:
 
 def published(conf: hostconf.HostConfig) -> Path:
     return conf.frames_root / SHUTTLE / MACRO
+
+
+STAGING_CLEAN = ["changed.log", f"{STEM}.lock"]
+
+
+def staging_names(conf: hostconf.HostConfig) -> list[str]:
+    return sorted(p.name for p in conf.staging_dir.iterdir())
+
+
+def state(conf: hostconf.HostConfig) -> dict:
+    """Everything under frames_root and staging (contents by name), to check that nothing changed."""
+    return {"frames": tree(conf.frames_root), "staging": tree(conf.staging_dir),
+            "staging_names": staging_names(conf)}
 
 
 def install(tmp_path: Path, conf: hostconf.HostConfig, scratch: Path, **kw) -> None:
@@ -117,6 +131,17 @@ def test_load_refuses_staging_inside_root(tmp_path):
         hostconf.load(tmp_path)
 
 
+def test_load_refuses_root_inside_staging(tmp_path):
+    conf = make_host(tmp_path)
+    inner = conf.staging_dir / "frames"
+    inner.mkdir()
+    (inner / ".ttvga-frames-root").write_bytes(b"")
+    text = (tmp_path / "host.toml").read_text()
+    (tmp_path / "host.toml").write_text(text.replace(str(conf.frames_root), str(inner)))
+    with pytest.raises(hostconf.ConfigError, match="frames_root .* is inside staging_dir"):
+        hostconf.load(tmp_path)
+
+
 def test_load_refuses_two_filesystems(tmp_path, monkeypatch):
     conf = make_host(tmp_path)
     real_stat = os.stat
@@ -143,7 +168,7 @@ def test_install_new_project(tmp_path):
     install(tmp_path, conf, scratch)
     dest = published(conf)
     assert tree(dest) == {**basic_files(b"A"), ".ttvga-frames": b""}
-    assert sorted(p.name for p in conf.staging_dir.iterdir()) == ["changed.log"]
+    assert staging_names(conf) == STAGING_CLEAN
 
 
 def test_install_replaces_with_exchange(tmp_path, monkeypatch):
@@ -160,7 +185,7 @@ def test_install_replaces_with_exchange(tmp_path, monkeypatch):
     install(tmp_path, conf, make_scratch(tmp_path / "s2", basic_files(b"B")))
     assert len(calls) == 1
     assert tree(published(conf)) == {**basic_files(b"B"), ".ttvga-frames": b""}
-    assert sorted(p.name for p in conf.staging_dir.iterdir()) == ["changed.log"]
+    assert staging_names(conf) == STAGING_CLEAN
 
 
 def test_install_keeps_hard_links(tmp_path):
@@ -176,27 +201,171 @@ def test_install_fallback_two_renames(tmp_path, monkeypatch):
     conf = make_host(tmp_path)
     install(tmp_path, conf, make_scratch(tmp_path / "s1", basic_files(b"A")))
     monkeypatch.setattr(publish, "exchange", lambda a, b: False)
+    renames = []
+    real_rename = os.rename
+
+    def spy(a, b):
+        renames.append((Path(a), Path(b)))
+        return real_rename(a, b)
+
+    monkeypatch.setattr(os, "rename", spy)
     install(tmp_path, conf, make_scratch(tmp_path / "s2", basic_files(b"B")))
+    sd = conf.staging_dir
+    assert renames == [
+        (published(conf), sd / f"{STEM}.old"),
+        (sd / f"{STEM}.new", published(conf)),
+        (sd / f"{STEM}.old", sd / f"{STEM}.del"),
+    ]
     assert tree(published(conf)) == {**basic_files(b"B"), ".ttvga-frames": b""}
-    assert sorted(p.name for p in conf.staging_dir.iterdir()) == ["changed.log"]
+    assert staging_names(conf) == STAGING_CLEAN
 
 
-def test_install_recovers_leftover_old(tmp_path):
+def test_install_fallback_rolls_back_a_failed_second_rename(tmp_path, monkeypatch):
+    conf = make_host(tmp_path)
+    install(tmp_path, conf, make_scratch(tmp_path / "s1", basic_files(b"A")))
+    log_before = (conf.staging_dir / "changed.log").read_bytes()
+    monkeypatch.setattr(publish, "exchange", lambda a, b: False)
+    real_rename = os.rename
+
+    def failing(a, b):
+        if Path(a) == conf.staging_dir / f"{STEM}.new":
+            raise OSError(5, "injected")
+        return real_rename(a, b)
+
+    monkeypatch.setattr(os, "rename", failing)
+    with pytest.raises(publish.PublishError, match="back in place"):
+        install(tmp_path, conf, make_scratch(tmp_path / "s2", basic_files(b"B")))
+    assert tree(published(conf)) == {**basic_files(b"A"), ".ttvga-frames": b""}
+    assert (conf.staging_dir / "changed.log").read_bytes() == log_before
+    assert not (conf.staging_dir / f"{STEM}.old").exists()
+
+
+def test_install_refuses_missing_dest_with_leftover_old(tmp_path):
     conf = make_host(tmp_path)
     install(tmp_path, conf, make_scratch(tmp_path / "s1", basic_files(b"A") | {"tb-v1/frames.txt": b"tb"}))
-    # A crash between the fallback's two renames: the published copy sits at .old,
-    # and a half-made .new is left beside it.
+    # A crash between the fallback's two renames: the published copy sits at .old.
     old = conf.staging_dir / f"{STEM}.old"
     os.rename(published(conf), old)
     make_scratch(conf.staging_dir / f"{STEM}.new", {"partial": b"x"})
-    install(tmp_path, conf, make_scratch(tmp_path / "s2", basic_files(b"B")), carry=["tb-v1"])
-    assert tree(published(conf)) == {**basic_files(b"B"), "tb-v1/frames.txt": b"tb", ".ttvga-frames": b""}
-    assert sorted(p.name for p in conf.staging_dir.iterdir()) == ["changed.log"]
-    # With the published copy in place, a leftover .old is only removed.
-    make_scratch(old, {"stale": b"x"})
+    before = state(conf)
+    with pytest.raises(publish.PublishError, match="operator") as info:
+        install(tmp_path, conf, make_scratch(tmp_path / "s2", basic_files(b"B")))
+    assert str(published(conf)) in str(info.value) and str(old) in str(info.value)
+    assert state(conf) == before
+
+
+def test_install_removes_leftovers_when_published(tmp_path):
+    conf = make_host(tmp_path)
+    install(tmp_path, conf, make_scratch(tmp_path / "s1", basic_files(b"A")))
+    for suffix in ("old", "new", "del"):
+        make_scratch(conf.staging_dir / f"{STEM}.{suffix}", {"stale": b"x"})
+    install(tmp_path, conf, make_scratch(tmp_path / "s2", basic_files(b"B")))
+    assert tree(published(conf)) == {**basic_files(b"B"), ".ttvga-frames": b""}
+    assert staging_names(conf) == STAGING_CLEAN
+
+
+def test_install_logs_a_failed_delete_and_publishes(tmp_path, monkeypatch):
+    conf = make_host(tmp_path)
+    install(tmp_path, conf, make_scratch(tmp_path / "s1", basic_files(b"A")))
+    real_rmtree = publish.shutil.rmtree
+
+    def failing(path, *args, **kwargs):
+        if Path(path).name == f"{STEM}.del":
+            raise OSError(5, "injected")
+        return real_rmtree(path, *args, **kwargs)
+
+    monkeypatch.setattr(publish.shutil, "rmtree", failing)
+    install(tmp_path, conf, make_scratch(tmp_path / "s2", basic_files(b"B")))
+    monkeypatch.setattr(publish.shutil, "rmtree", real_rmtree)
+    assert tree(published(conf)) == {**basic_files(b"B"), ".ttvga-frames": b""}
+    assert len((conf.staging_dir / "changed.log").read_text().splitlines()) == 2
+    assert "could not delete the previous copy" in (tmp_path / "publish.log").read_text()
+    # The next install clears the .del leftover.
     install(tmp_path, conf, make_scratch(tmp_path / "s3", basic_files(b"C")))
-    assert tree(published(conf)) == {**basic_files(b"C"), ".ttvga-frames": b""}
-    assert sorted(p.name for p in conf.staging_dir.iterdir()) == ["changed.log"]
+    assert staging_names(conf) == STAGING_CLEAN
+
+
+def test_install_lock_serialises_one_project(tmp_path, monkeypatch):
+    conf = make_host(tmp_path)
+    install(tmp_path, conf, make_scratch(tmp_path / "s0", basic_files(b"0")))
+    spans, errors = [], []
+    real_run = publish._run
+
+    def slow_run(cmd, log):
+        start = time.monotonic()
+        real_run(cmd, log)
+        time.sleep(0.2)
+        spans.append((threading.current_thread().name, start, time.monotonic()))
+
+    monkeypatch.setattr(publish, "_run", slow_run)
+    scratches = {tag: make_scratch(tmp_path / f"s{tag}", basic_files(tag.encode())) for tag in "AB"}
+    barrier = threading.Barrier(2)
+
+    def run(tag):
+        try:
+            barrier.wait()
+            install(tmp_path, conf, scratches[tag])
+        except Exception as e:  # reported below
+            errors.append(repr(e))
+
+    threads = [threading.Thread(target=run, args=(tag,), name=tag) for tag in "AB"]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert errors == []
+    (a,), (b,) = ([s for s in spans if s[0] == tag] for tag in "AB")
+    assert a[2] <= b[1] or b[2] <= a[1], spans
+    assert tree(published(conf)) in [{**basic_files(t.encode()), ".ttvga-frames": b""} for t in "AB"]
+    assert len((conf.staging_dir / "changed.log").read_text().splitlines()) == 3
+    assert staging_names(conf) == STAGING_CLEAN
+
+
+@pytest.mark.parametrize("name", [f"{STEM}.lock", "changed.log"])
+def test_install_refuses_symlinked_lock_and_log(tmp_path, name):
+    conf = make_host(tmp_path)
+    target = tmp_path / "elsewhere"
+    target.write_bytes(b"")
+    (conf.staging_dir / name).symlink_to(target)
+    with pytest.raises(publish.PublishError):
+        install(tmp_path, conf, make_scratch(tmp_path / "s", basic_files(b"A")))
+    assert target.read_bytes() == b""
+
+
+@pytest.mark.parametrize("breakage", ["marker", "index.json", "filesystem"])
+def test_install_rechecks_frames_root(tmp_path, monkeypatch, breakage):
+    conf = make_host(tmp_path)
+    install(tmp_path, conf, make_scratch(tmp_path / "s1", basic_files(b"A")))
+    if breakage == "marker":
+        (conf.frames_root / ".ttvga-frames-root").unlink()
+    elif breakage == "index.json":
+        (conf.frames_root / "index.json").write_text("{}")
+    before = state(conf)
+    if breakage == "filesystem":
+        real_stat = os.stat
+
+        def fake_stat(path, *args, **kwargs):
+            st = real_stat(path, *args, **kwargs)
+            if Path(path) == conf.staging_dir:
+                fields = list(st)
+                fields[stat.ST_DEV] += 1
+                return os.stat_result(fields)
+            return st
+
+        monkeypatch.setattr(os, "stat", fake_stat)
+    with pytest.raises(publish.PublishError):
+        install(tmp_path, conf, make_scratch(tmp_path / "s2", basic_files(b"B")))
+    monkeypatch.undo()
+    assert state(conf) == before
+
+
+def test_install_requires_trace(tmp_path):
+    conf = make_host(tmp_path)
+    files = basic_files(b"A")
+    del files[f"{STEM}_trace.vgch.zst"]
+    with pytest.raises(publish.PublishError, match="_trace.vgch.zst"):
+        install(tmp_path, conf, make_scratch(tmp_path / "s", files))
+    assert not published(conf).exists()
 
 
 def test_install_carries_tb_v1(tmp_path):
@@ -217,9 +386,15 @@ def test_install_carries_tb_v1(tmp_path):
         with pytest.raises(publish.PublishError):
             install(tmp_path, conf, make_scratch(tmp_path / f"refused-{n}", scratch_files), carry=carry)
         assert tree(published(conf)) == {**basic_files(b"B"), **tb, ".ttvga-frames": b""}
+    # Carried files pass the same mode check as copied ones.
+    (published(conf) / "tb-v1" / "frames.txt").chmod(0o600)
+    before = state(conf)
+    with pytest.raises(publish.PublishError, match="0644"):
+        install(tmp_path, conf, make_scratch(tmp_path / "s-mode", basic_files(b"D")), carry=["tb-v1"])
+    assert state(conf) == before
 
 
-def test_swap_never_exposes_partial_directory(tmp_path):
+def test_swap_never_exposes_partial_directory(tmp_path, monkeypatch):
     conf = make_host(tmp_path)
     sets = []
     scratches = []
@@ -229,6 +404,15 @@ def test_swap_never_exposes_partial_directory(tmp_path):
         scratches.append(make_scratch(tmp_path / f"s{k}", files))
         sets.append(frozenset(f"{k * 200 + i:06d}.png" for i in range(200)))
     install(tmp_path, conf, scratches[0])
+    exchanges, listings = [], []
+    real_exchange = publish.exchange
+
+    def timed_exchange(a, b):
+        start = time.monotonic_ns()
+        result = real_exchange(a, b)
+        exchanges.append((start, time.monotonic_ns()))
+        return result
+
     dest = published(conf)
     top = {".ttvga-frames", "centre-v1", f"{STEM}_trace.vgch.zst"}
     stop = threading.Event()
@@ -241,6 +425,7 @@ def test_swap_never_exposes_partial_directory(tmp_path):
         # being deleted; only listings of the directory published throughout count.
         nonlocal swapped_out
         while not stop.is_set():
+            began = time.monotonic_ns()
             try:
                 fd = os.open(dest, os.O_RDONLY | os.O_DIRECTORY)
             except OSError as e:
@@ -263,6 +448,7 @@ def test_swap_never_exposes_partial_directory(tmp_path):
                 continue
             finally:
                 os.close(fd)
+            listings.append((began, time.monotonic_ns()))
             if not still:
                 swapped_out += 1
                 continue
@@ -275,6 +461,7 @@ def test_swap_never_exposes_partial_directory(tmp_path):
             if top_listing != top:
                 bad.append(f"top listing {sorted(top_listing)}")
 
+    monkeypatch.setattr(publish, "exchange", timed_exchange)
     thread = threading.Thread(target=watch)
     thread.start()
     try:
@@ -285,7 +472,9 @@ def test_swap_never_exposes_partial_directory(tmp_path):
         thread.join()
     assert bad == []
     assert set(seen) == set(sets)
-    assert len(seen) > 50 * 2, (len(seen), swapped_out)
+    assert len(exchanges) == 50
+    overlapped = sum(any(ls <= xe and xs <= le for ls, le in listings) for xs, xe in exchanges)
+    assert overlapped >= 10, (overlapped, len(listings), swapped_out)
 
 
 def test_modes_are_0644_0755(tmp_path):
@@ -336,17 +525,23 @@ def test_install_refuses_symlinked_published_directory(tmp_path):
     assert published(conf).is_symlink()
 
 
-@pytest.mark.parametrize("shuttle, macro", [("..", MACRO), (SHUTTLE, "a/b"), (SHUTTLE, "x\ny"), ("", MACRO)])
+@pytest.mark.parametrize("shuttle, macro", [("..", MACRO), (SHUTTLE, "a/b"), (SHUTTLE, "x\ny"), ("", MACRO), ("tt_06", "um_x"), (".tt06", MACRO)])
 def test_install_refuses_bad_project_names(tmp_path, shuttle, macro):
     conf = make_host(tmp_path)
-    with pytest.raises(publish.PublishError):
-        publish.install(make_scratch(tmp_path / "s", basic_files(b"A")), conf, shuttle, macro, tmp_path / "log")
+    # The scratch is otherwise valid for this stem, so only the name check can refuse it.
+    scratch = tmp_path / "s"
+    scratch.mkdir()
+    if "/" not in f"{shuttle}_{macro}":
+        (scratch / f"{shuttle}_{macro}_trace.vgch.zst").write_bytes(b"t")
+    with pytest.raises(publish.PublishError, match="bad (shuttle|macro) name"):
+        publish.install(scratch, conf, shuttle, macro, tmp_path / "log")
+    assert sorted(p.name for p in conf.frames_root.iterdir()) == [".ttvga-frames-root"]
 
 
 def test_install_refuses_disallowed_file(tmp_path):
     conf = make_host(tmp_path)
     cases = {
-        "dotdot": lambda s: (s / "..x").write_bytes(b""),
+        "hidden": lambda s: (s / ".hidden").write_bytes(b""),
         "notes": lambda s: (s / "notes.txt").write_bytes(b""),
         "symlink": lambda s: (s / "centre-v1" / "png" / "000001.png").symlink_to(s / "centre-v1" / "png" / "000000.png"),
         "dirlink": lambda s: (s / "tb-v1").symlink_to(s / "centre-v1"),

@@ -6,9 +6,10 @@ allow-list, copies it to `<staging_dir>/<shuttle>_<macro>.new` on the bulk
 volume (the same filesystem as `<frames_root>`), carries named entries over
 from the published copy by hard link, and swaps the result into
 `<frames_root>/<shuttle>/<macro>` with one `renameat2(RENAME_EXCHANGE)`: at no
-instant is the published directory missing or half-copied, and the old one is
-deleted only after the swap. Each publish is appended to
-`<staging_dir>/changed.log`, which the root-owned upload reads.
+instant is the published directory missing or half-copied. Each publish is
+then appended to `<staging_dir>/changed.log`, which the root-owned upload
+reads, and only after that is the old copy deleted. A per-project lock,
+`<staging_dir>/<stem>.lock`, keeps two installs of one project apart.
 
 Everything the job writes was produced by building and running third-party
 Verilog, so nothing in scratch is trusted: only the names in `ALLOWED`, as
@@ -24,6 +25,7 @@ from __future__ import annotations
 
 import ctypes
 import errno
+import fcntl
 import fnmatch
 import os
 import re
@@ -37,6 +39,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
+import hostconf  # noqa: E402
 from encode import stem_for  # noqa: E402
 
 SAMPLERS = ("tb-v1", "centre-v1")
@@ -61,7 +64,8 @@ _PLACEHOLDERS = {
     "method": r"[a-z0-9]+(?:-[a-z0-9]+)*",
     "NNNNNN": r"[0-9]{6}",
 }
-_PROJECT_NAME = re.compile(r"[A-Za-z0-9_][A-Za-z0-9_.-]*")
+_SHUTTLE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9.-]*")
+_MACRO_NAME = re.compile(r"[A-Za-z0-9_][A-Za-z0-9_.-]*")
 
 AT_FDCWD = -100
 RENAME_EXCHANGE = 1 << 1
@@ -94,7 +98,8 @@ def _rules(stem: str) -> tuple[list[re.Pattern], set[str]]:
     return files, dirs
 
 
-def _violations(top: Path, stem: str, extra_files: tuple[str, ...] = ()) -> list[str]:
+def _violations(top: Path, stem: str, extra_files: tuple[str, ...] = (), modes: bool = False) -> list[str]:
+    """Entries of `top` outside the allow-list; with `modes`, also any file not 0644 or directory not 0755."""
     files, dirs = _rules(stem)
     out = []
     try:
@@ -103,6 +108,8 @@ def _violations(top: Path, stem: str, extra_files: tuple[str, ...] = ()) -> list
         return [f"{top}: missing"]
     if not stat.S_ISDIR(st.st_mode):
         return [f"{top}: not a directory"]
+    if modes and stat.S_IMODE(st.st_mode) != 0o755:
+        out.append(f"{str(top)!r}: mode {stat.S_IMODE(st.st_mode):04o}, not 0755")
 
     def walk(path: Path, rel: str) -> None:
         with os.scandir(path) as it:
@@ -113,14 +120,18 @@ def _violations(top: Path, stem: str, extra_files: tuple[str, ...] = ()) -> list
             if stat.S_ISLNK(mode):
                 out.append(f"{name!r}: symlink")
             elif stat.S_ISDIR(mode):
-                if name in dirs:
-                    walk(Path(entry.path), name + "/")
-                else:
+                if name not in dirs:
                     out.append(f"{name!r}: directory not allowed")
+                    continue
+                if modes and stat.S_IMODE(mode) != 0o755:
+                    out.append(f"{name!r}: mode {stat.S_IMODE(mode):04o}, not 0755")
+                walk(Path(entry.path), name + "/")
             elif not stat.S_ISREG(mode):
                 out.append(f"{name!r}: not a regular file")
             elif name not in extra_files and not any(r.fullmatch(name) for r in files):
                 out.append(f"{name!r}: name not allowed")
+            elif modes and stat.S_IMODE(mode) != 0o644:
+                out.append(f"{name!r}: mode {stat.S_IMODE(mode):04o}, not 0644")
 
     walk(top, "")
     return out
@@ -168,91 +179,147 @@ def _remove(path: Path) -> None:
         shutil.rmtree(path)
 
 
-def _run(cmd: list[str], log: Path) -> None:
+def _note(log: Path, text: str) -> None:
     with open(log, "ab") as f:
-        f.write(f"$ {' '.join(cmd)}\n".encode())
-        f.flush()
+        f.write(f"{text}\n".encode())
+
+
+def _run(cmd: list[str], log: Path) -> None:
+    _note(log, f"$ {' '.join(cmd)}")
+    with open(log, "ab") as f:
         result = subprocess.run(cmd, stdout=f, stderr=subprocess.STDOUT)
     if result.returncode:
         raise PublishError(f"{cmd[0]} exited {result.returncode}; see {log}")
 
 
+def _open_regular(path: Path, flags: int) -> int:
+    """Open a regular file that is not a symlink, creating it 0644 if missing."""
+    try:
+        fd = os.open(path, flags | os.O_CREAT | os.O_NOFOLLOW | os.O_CLOEXEC, 0o644)
+    except OSError as e:
+        raise PublishError(f"cannot open {path}: {e}") from e
+    if not stat.S_ISREG(os.fstat(fd).st_mode):
+        os.close(fd)
+        raise PublishError(f"{path} is not a regular file")
+    return fd
+
+
+def _append_changed(conf, shuttle: str, macro: str) -> None:
+    """One whole line per publish, for the upload: one os.write on an O_APPEND descriptor."""
+    path = conf.staging_dir / CHANGED_LOG
+    line = f"{datetime.now(timezone.utc).isoformat(timespec='seconds')} {shuttle}/{macro}\n".encode()
+    fd = _open_regular(path, os.O_WRONLY | os.O_APPEND)
+    try:
+        os.fchmod(fd, 0o644)
+        written = os.write(fd, line)
+    finally:
+        os.close(fd)
+    if written != len(line):
+        raise PublishError(f"short write to {path}: {written} of {len(line)} bytes")
+
+
+def _check_name(label: str, name: str, pattern: re.Pattern) -> None:
+    if not pattern.fullmatch(name):
+        raise PublishError(f"bad {label} name {name!r}")
+
+
 def install(scratch: Path, conf, shuttle: str, macro: str, log: Path, carry: list[str] = ()) -> None:
     """Publish `scratch` as `<frames_root>/<shuttle>/<macro>`, carrying `carry` over from the published copy."""
-    for label, name in (("shuttle", shuttle), ("macro", macro)):
-        if not _PROJECT_NAME.fullmatch(name):
-            raise PublishError(f"bad {label} name {name!r}")
+    # A shuttle name has no "_", so <shuttle>_<macro> names exactly one project.
+    _check_name("shuttle", shuttle, _SHUTTLE_NAME)
+    _check_name("macro", macro, _MACRO_NAME)
     scratch, log = Path(scratch), Path(log)
+    try:
+        hostconf.check_paths(conf.frames_root, conf.staging_dir)
+    except hostconf.ConfigError as e:
+        raise PublishError(str(e)) from e
     stem = stem_for(shuttle, macro)
     shuttle_dir = conf.frames_root / shuttle
     dest = shuttle_dir / macro
-    new = conf.staging_dir / f"{stem}.new"
-    old = conf.staging_dir / f"{stem}.old"
+    new, old, dele = (conf.staging_dir / f"{stem}.{suffix}" for suffix in ("new", "old", "del"))
 
+    # Two installs of one project never overlap: the lock is held to the end.
+    lock = _open_regular(conf.staging_dir / f"{stem}.lock", os.O_RDWR)
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        _install_locked(scratch, conf, shuttle, macro, log, list(carry), stem, shuttle_dir, dest, new, old, dele)
+    finally:
+        os.close(lock)
+
+
+def _install_locked(scratch, conf, shuttle, macro, log, carry, stem, shuttle_dir, dest, new, old, dele) -> None:
     # 1. Refuse anything unsafe before touching the filesystem.
     violations = check_allowed(scratch, stem)
     if violations:
         raise PublishError(f"{scratch} holds entries that may not be published: {'; '.join(violations)}")
+    trace = f"{stem}_trace.vgch.zst"
+    if not (scratch / trace).is_file():
+        raise PublishError(f"{scratch} has no {trace}")
     if os.path.lexists(shuttle_dir) and (shuttle_dir.is_symlink() or not shuttle_dir.is_dir()):
         raise PublishError(f"{shuttle_dir} is not a directory")
     _check_published(dest)
-    # A crash between the fallback's two renames leaves the published copy at .old.
-    restore = not os.path.lexists(dest) and os.path.lexists(old)
-    if restore:
-        _check_published(old)
-    source = old if restore else dest
-    top_names = {f"{stem}_trace.vgch.zst", *SAMPLERS}
-    carry = list(carry)
+    if not os.path.lexists(dest) and os.path.lexists(old):
+        # Only a crash between the fallback's two renames leaves this: .old may be
+        # the only copy of what was published, so it is neither restored nor deleted.
+        raise PublishError(f"{dest} is missing and {old} exists: an install was interrupted mid-swap; an operator must look")
+    top_names = {trace, *SAMPLERS}
     for name in carry:
         if name not in top_names:
             raise PublishError(f"cannot carry {name!r}: only {sorted(top_names)}")
         if os.path.lexists(scratch / name):
             raise PublishError(f"cannot carry {name!r}: {scratch} already holds it")
-        if not os.path.lexists(source / name):
+        if not os.path.lexists(dest / name):
             raise PublishError(f"cannot carry {name!r}: {dest} does not hold it")
 
-    # 2. Permissions, and the shuttle directory.
-    os.umask(0o022)
-    shuttle_dir.mkdir(mode=0o755, exist_ok=True)
+    # 2. The shuttle directory.
+    if not os.path.lexists(shuttle_dir):
+        shuttle_dir.mkdir()
+        os.chmod(shuttle_dir, 0o755)
 
-    # 3. Leftovers of an earlier, interrupted install.
+    # 3. Leftovers of an earlier install. With dest in place, .old is a finished swap's
+    # old copy; it is moved to .del before deleting, so .old never holds a partial tree.
     _remove(new)
-    if restore:
-        os.rename(old, dest)
-    else:
-        _remove(old)
+    _remove(dele)
+    if os.path.lexists(old):
+        os.rename(old, dele)
+        _remove(dele)
 
     try:
         # 4. The copy, with the marker.
         _run(["rsync", "-aH", "--delete", "--chmod=D0755,F0644", f"{scratch}/", f"{new}/"], log)
         (new / PROJECT_MARKER).write_bytes(b"")
+        os.chmod(new / PROJECT_MARKER, 0o644)
         # 5. Carry-over by hard link: staging and frames_root are one filesystem.
         for name in carry:
             _run(["cp", "-al", str(dest / name), str(new / name)], log)
-        # The whole new tree, as it will be published, is checked once more.
-        violations = _violations(new, stem, extra_files=(PROJECT_MARKER,))
+        # The whole new tree, as it will be published, names and modes.
+        violations = _violations(new, stem, extra_files=(PROJECT_MARKER,), modes=True)
         if violations:
-            raise PublishError(f"{new} holds entries that may not be published: {'; '.join(violations)}")
+            raise PublishError(f"{new} may not be published: {'; '.join(violations)}")
     except BaseException:
         _remove(new)
         raise
 
-    # 6 and 7. The swap; the old copy is deleted only once the new one is in place.
+    # 6 and 7. The swap.
     if not os.path.lexists(dest):
         os.rename(new, dest)
+        previous = None
     elif exchange(new, dest):
-        shutil.rmtree(new)
+        previous = new
     else:
         os.rename(dest, old)
-        os.rename(new, dest)
-        shutil.rmtree(old)
+        try:
+            os.rename(new, dest)
+        except OSError as e:
+            os.rename(old, dest)
+            raise PublishError(f"cannot rename {new} to {dest}: {e}; the previous copy is back in place") from e
+        previous = old
 
-    # 8. One whole line per publish, for the upload.
-    line = f"{datetime.now(timezone.utc).isoformat(timespec='seconds')} {shuttle}/{macro}\n".encode()
-    fd = os.open(conf.staging_dir / CHANGED_LOG, os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_CLOEXEC, 0o644)
-    try:
-        written = os.write(fd, line)
-    finally:
-        os.close(fd)
-    if written != len(line):
-        raise PublishError(f"short write to {conf.staging_dir / CHANGED_LOG}: {written} of {len(line)} bytes")
+    # 8. The upload is told at once; deleting the old copy comes after and cannot undo the publish.
+    _append_changed(conf, shuttle, macro)
+    if previous is not None:
+        try:
+            os.rename(previous, dele)
+            shutil.rmtree(dele)
+        except OSError as e:
+            _note(log, f"publish: could not delete the previous copy of {shuttle}/{macro}: {e!r}")

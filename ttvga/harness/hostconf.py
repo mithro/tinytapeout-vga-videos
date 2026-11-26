@@ -11,7 +11,7 @@ A wrong `frames_root` would let a publish replace a directory of the archive
 itself, so `load` refuses anything that does not look like the frames subtree
 made by the host setup: it must carry the marker `.ttvga-frames-root`, it must
 not be the archive (no `index.html` or `index.json`), the staging directory
-must not be inside it, and the two must be on one filesystem so the final
+must not be inside it nor it inside the staging directory, and the two must be on one filesystem so the final
 swap is a rename.
 
 Standard library only: the host has no packages installed.
@@ -54,6 +54,22 @@ def _path(data: dict, key: str, source: Path) -> Path:
     return path
 
 
+def check_paths(frames_root: Path, staging_dir: Path, source: Path | str = "host.toml") -> None:
+    """The frames_root and staging_dir checks; `publish.install` runs them again before each publish."""
+    if not (frames_root / ROOT_MARKER).is_file():
+        raise ConfigError(f"{source}: frames_root {frames_root} has no {ROOT_MARKER} marker (made by the host setup)")
+    for name in ARCHIVE_FILES:
+        if os.path.lexists(frames_root / name):
+            raise ConfigError(f"{source}: frames_root {frames_root} holds {name}: it is the archive, not its frames subtree")
+    real_root, real_staging = frames_root.resolve(), staging_dir.resolve()
+    if real_staging.is_relative_to(real_root):
+        raise ConfigError(f"{source}: staging_dir {staging_dir} is inside frames_root {frames_root}")
+    if real_root.is_relative_to(real_staging):
+        raise ConfigError(f"{source}: frames_root {frames_root} is inside staging_dir {staging_dir}")
+    if os.stat(frames_root).st_dev != os.stat(staging_dir).st_dev:
+        raise ConfigError(f"{source}: frames_root and staging_dir are on different filesystems")
+
+
 def load(root: Path) -> HostConfig:
     """Read `<root>/host.toml` and check it; raise ConfigError naming the key or the reason."""
     source = Path(root) / "host.toml"
@@ -71,14 +87,5 @@ def load(root: Path) -> HostConfig:
     if isinstance(min_free, bool) or not isinstance(min_free, (int, float)) or min_free < 0:
         raise ConfigError(f"{source}: min_free_root_gb must be a non-negative number, not {min_free!r}")
 
-    if not (frames_root / ROOT_MARKER).is_file():
-        raise ConfigError(f"{source}: frames_root {frames_root} has no {ROOT_MARKER} marker (made by the host setup)")
-    for name in ARCHIVE_FILES:
-        if os.path.lexists(frames_root / name):
-            raise ConfigError(f"{source}: frames_root {frames_root} holds {name}: it is the archive, not its frames subtree")
-    real_root, real_staging = frames_root.resolve(), staging_dir.resolve()
-    if real_staging.is_relative_to(real_root):
-        raise ConfigError(f"{source}: staging_dir {staging_dir} is inside frames_root {frames_root}")
-    if os.stat(frames_root).st_dev != os.stat(staging_dir).st_dev:
-        raise ConfigError(f"{source}: frames_root and staging_dir are on different filesystems")
+    check_paths(frames_root, staging_dir, source)
     return HostConfig(frames_root, staging_dir, float(min_free))
