@@ -15,6 +15,7 @@ from pathlib import Path
 import pytest
 
 from tests.sim import vgch
+from tests.sim.build import build_model
 from tests.sim.helpers import HARNESS, base_args, meta_args, run, timing
 
 pytestmark = pytest.mark.sim
@@ -199,3 +200,33 @@ def test_no_trace_without_option(models, dev, tmp_path):
     assert p.returncode == 0, p.stderr
     assert timing(out)["status"] == "ok"
     assert sorted(f.name for f in out.iterdir()) == ["tb_frame_hashes.txt", "timing.json"]
+
+
+FALLBACK = ("TTVGA_TEST_FORCE_FALLBACK",)
+FALLBACK_LINE = "tb: the model's 8 port bytes are not contiguous"
+
+
+@pytest.mark.parametrize("design", ["bars640", "playground", "glitch", "frac", "nosync"])
+def test_trace_identical_fast_and_fallback(models, dev, tmp_path, design):
+    """The raw-compare fast path (vgacap_trace_repeat2) writes exactly the trace the per-sample pushes do."""
+    traces, results = {}, {}
+    for kind, defines in (("fast", ()), ("fallback", FALLBACK)):
+        out = tmp_path / kind
+        p = run(models(design, defines=defines), dev, out, design=design)
+        assert p.returncode in (0, 3), p.stderr
+        assert (FALLBACK_LINE in p.stderr) == (kind == "fallback"), p.stderr
+        traces[kind] = out / "trace.vgch.zst"
+        results[kind] = (p.returncode, timing(out)["status"], (out / "tb_frame_hashes.txt").read_text())
+    assert results["fast"] == results["fallback"]
+    cmp = subprocess.run(["cmp", str(traces["fast"]), str(traces["fallback"])], capture_output=True, text=True)
+    assert cmp.returncode == 0, cmp.stdout + cmp.stderr
+    t = vgch.read(traces["fast"], dev)
+    assert t.samples == 2 * timing(tmp_path / "fast")["clocks_simulated"]
+    assert t.meta("close")["status"] == results["fast"][1]
+
+
+def test_force_fallback_refused_without_test_hooks(dev, tmp_path):
+    """TTVGA_TEST_FORCE_FALLBACK is a test hook: a build without TTVGA_TEST_HOOKS fails."""
+    with pytest.raises(RuntimeError, match="building bars640 failed"):
+        build_model("bars640", dev, tmp_path / "m", test_hooks=False, defines=FALLBACK)
+    assert "TTVGA_TEST_FORCE_FALLBACK" in (tmp_path / "m" / "build.log").read_text()
