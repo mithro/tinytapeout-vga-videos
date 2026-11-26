@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 
 from ttvga import DATA_DIR, ROOT
 from ttvga.analyze import SUCCESS, analyze_all
-from ttvga.targets import load_targets
+from ttvga.targets import published_targets
 
 STATUS_MD = ROOT / "docs" / "status.md"
 STATUS_JSON = DATA_DIR / "status.json"
@@ -20,7 +20,7 @@ VERDICT_ORDER = ["ok", "static", "barely-moving", "partial", "blank", "no-sync",
 
 
 def run(args: argparse.Namespace) -> int:
-    targets = load_targets()
+    targets = published_targets()
     results = {r["id"]: r for r in analyze_all()}
     shuttles = list(dict.fromkeys(t["shuttle"] for t in targets))
     per_shuttle: dict[str, collections.Counter] = {s: collections.Counter() for s in shuttles}

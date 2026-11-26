@@ -28,6 +28,10 @@ from ttsearch.pmods import detect_pmods
 
 from ttvga import DATA_DIR, TARGETS_JSON
 
+EXTRA_TARGETS_JSON = DATA_DIR / "extra-targets.json"
+# Shuttles whose targets are simulated for calibration but never published: index and report skip them.
+PUBLISHED_EXCLUDED_SHUTTLES = ("testpatterns",)
+
 PROJECTS_COMMIT = "be8587d67ec064ab1acd63d21cc0f9a593eb9897"
 PROJECTS_URL = "https://raw.githubusercontent.com/mithro/tinytapeout-project-search/{commit}/data/projects.json"
 CACHE_DIR = DATA_DIR / "cache"
@@ -133,7 +137,27 @@ def select_targets(projects: list[Project], pmod: str = "tiny-vga") -> list[Proj
     return [make_target(p, pmods) for p, pmods in matches]
 
 
-def write_targets(targets: list[Project], out: Path, source: str, commit: str | None, pmod: str) -> dict[str, Any]:
+def load_extra_targets(path: Path | None) -> list[Project]:
+    """The hand-written targets of `data/extra-targets.json`, in `data/targets.json`'s record format."""
+    if path is None:
+        return []
+    with Path(path).open(encoding="utf-8") as f:
+        return json.load(f)["targets"]
+
+
+def merge_extra(targets: list[Project], extra: list[Project]) -> list[Project]:
+    """Append the extra targets; an id that is already present is an error."""
+    seen = {t["id"] for t in targets}
+    for t in extra:
+        if t["id"] in seen:
+            raise ValueError(f"duplicate target id {t['id']!r} in the extra targets")
+        seen.add(t["id"])
+    return targets + extra
+
+
+def write_targets(targets: list[Project], out: Path, source: str, commit: str | None, pmod: str,
+                  extra: Path | None = None) -> dict[str, Any]:
+    targets = merge_extra(targets, load_extra_targets(extra))
     doc = {
         "meta": {
             "source": source,
@@ -168,6 +192,11 @@ def load_targets(path: Path = TARGETS_JSON) -> list[Project]:
         return json.load(f)["targets"]
 
 
+def published_targets(path: Path = TARGETS_JSON) -> list[Project]:
+    """The targets that index and report cover: everything but the excluded shuttles."""
+    return [t for t in load_targets(path) if t["shuttle"] not in PUBLISHED_EXCLUDED_SHUTTLES]
+
+
 def target_by_id(targets: list[Project], id: str) -> Project:
     for target in targets:
         if target["id"] == id:
@@ -179,7 +208,8 @@ def run(args: argparse.Namespace) -> int:
     source = args.source or PROJECTS_URL.format(commit=args.commit)
     path = fetch_projects(source, args.commit)
     targets = select_targets(load_projects(path), args.pmod)
-    doc = write_targets(targets, Path(args.out), source, args.commit if is_url(source) else None, args.pmod)
+    doc = write_targets(targets, Path(args.out), source, args.commit if is_url(source) else None, args.pmod,
+                         args.extra)
     print(summary(doc))
     print(f"wrote {args.out}", file=sys.stderr)
     return 0
@@ -191,5 +221,7 @@ def add_parser(sub: argparse._SubParsersAction) -> argparse.ArgumentParser:
     p.add_argument("--commit", default=PROJECTS_COMMIT, help="tinytapeout-project-search commit to fetch")
     p.add_argument("--out", type=Path, default=TARGETS_JSON, help=f"output file (default: {TARGETS_JSON})")
     p.add_argument("--pmod", default="tiny-vga", help="Pmod id from ttsearch.pmods (default: tiny-vga)")
+    p.add_argument("--extra", type=Path, default=EXTRA_TARGETS_JSON,
+                   help=f"extra targets merged in (default: {EXTRA_TARGETS_JSON})")
     p.set_defaults(func=run)
     return p
