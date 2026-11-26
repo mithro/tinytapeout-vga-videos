@@ -295,3 +295,15 @@ def test_job_encode_failure_still_publishes(root, go):
     assert (pub / "centre-v1" / "frames.txt").is_file()
     assert r["samplers"]["centre-v1"]["frames"] > 0
     assert os.listdir(pub / "centre-v1" / "png")
+
+
+def test_job_trace_fast_path_false_on_forced_fallback(root, go):
+    """With tb.cpp's forced fallback compiled in (a test hook), result.json says trace.fast_path false."""
+    jobroot.set_override(root, "bars640", {"verilator_flags": ["-CFLAGS", "-DTTVGA_TEST_FORCE_FALLBACK"]})
+    rc, r = go("bars640", "--test-hooks")
+    assert (rc, r["error"]) == (0, None), r.get("build_log_tail")
+    assert r["test_hooks"] is True
+    assert r["trace"]["fast_path"] is False
+    # The line comes early; encode output pushes it out of the 4000-character tail.
+    assert job.TRACE_FALLBACK in (jobroot.work(root, "bars640") / "sim.log").read_text()
+    assert r["published"] is True

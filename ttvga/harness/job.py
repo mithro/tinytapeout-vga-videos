@@ -542,9 +542,8 @@ def tool_versions(tools: dict) -> dict:
 
 
 # tb.cpp's one start-up stderr line when the model's ports are not contiguous and
-# it records by the slow path (Task 3a). The coordinator names "tb: trace fallback";
-# t03a-trace-speed at 3cf378c prints the second. Keep only the one that lands.
-TRACE_FALLBACK = ("tb: trace fallback", "tb: the model's 8 port bytes are not contiguous")
+# it records every sample by the slow path (Task 3a, tb.cpp's RawPorts).
+TRACE_FALLBACK = "tb: the model's 8 port bytes are not contiguous; the trace packs every sample"
 
 
 def trace_fast_path(sim_log: Path) -> bool:

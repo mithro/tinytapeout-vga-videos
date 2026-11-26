@@ -252,10 +252,9 @@ def test_trace_fast_path(tmp_path):
     filler = "tb: sync at clock 1\n" * 1000          # well past the 4000-character tail
     log.write_text("$ Vtop --trace x\n" + filler)
     assert job.trace_fast_path(log) is True
-    for marker in job.TRACE_FALLBACK:
-        log.write_text("$ Vtop --trace x\n" + marker + " (details)\n" + filler)
-        assert job.trace_fast_path(log) is False
-    log.write_text("probe: tb: trace fallback is mentioned, not printed\n")
+    log.write_text("$ Vtop --trace x\n" + job.TRACE_FALLBACK + "\n" + filler)
+    assert job.trace_fast_path(log) is False
+    log.write_text(f"note: {job.TRACE_FALLBACK}, quoted, not printed by tb.cpp\n")
     assert job.trace_fast_path(log) is True
 
 
