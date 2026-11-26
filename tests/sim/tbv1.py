@@ -35,6 +35,7 @@ EXPECT = {
     "bars640": ("ok", 2),
     "bars_cpp2": ("ok", 2),
     "frac": ("ok", 2),
+    "needs_ui2": ("no-sync", 0),
     "glitch": ("unstable-sync", 2),
     "noisy": ("ok", 2),
     "nosync": ("no-sync", 0),
