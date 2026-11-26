@@ -702,10 +702,15 @@ carries `/bitstream`.
 
 ### Settings
 
-- **`TTSITE_LIBRARY_BASE_URL`**, in `pib/settings.py`, defaults to
-  `"https://data.wafer.space/big-storage/tinytapeout-vga-videos/"`. It must be `https://` and end
-  in `/`. When it is empty, the panel is not rendered and the routes answer 404. No request can
-  change it.
+- **`TTSITE_LIBRARY_BASE_URL`**, in `pib/settings.py`, defaults to `""` (Ruling BB, after the
+  pre-merge review: the site play installs main's tip, so a default-on would change the live site
+  before the daemon is on the Pis). fpgas.online-infra sets it to
+  `"https://data.wafer.space/big-storage/tinytapeout-vga-videos/"` once the daemon with the library
+  store is deployed. It must be `https://` and end in `/`. When it is empty, the panel is not
+  rendered, the routes answer 404 and the upload check does nothing. No request can change it.
+- **`api_enable` forwards only `clock_hz`** (Ruling BA): a body with `ui_in` or `ui_in_mask` is
+  a 400, so only the library load route can send the index's values; the daemon also refuses them
+  for any design that is not in the library store.
 - **A new cache alias, `ttsite`**, for the lock (finding I1). It is redis
   `redis://127.0.0.1:6379/2` with `KEY_PREFIX: "ttsite"`: its own database (finding r5).
   Django's `RedisCache.clear()` is a `FLUSHDB`, so sharing database 1 with `poe` would let
