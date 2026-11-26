@@ -20,6 +20,7 @@ These rulings bind this spec.
 | AC | The id rule in section 1 stands. It replaces Ruling X's draft wording (`<shuttle>_<macro>`, cut to 40 characters plus a 6-hex hash) and the `demo_name` function on the harness's `demos-export` branch. Two independent checks found it collision-free: the harness session ran it over its 445 designs, and the reviewer ran it over the 440 targets in this repo. |
 | AD | The daemon never changes `tt.mode` and never uses the SDK's "MCU controls inputs" mode. It drives the `ui_in` pins directly, as `safe.py` intends. It drives only the bits in the entry's `ui_in_mask`, which the harness publishes using its `effective_ui_in_mask` rule. Every library load makes the bits outside its mask inputs with the pull-down, released as described in section 2, including when the mask is 0, so a mask of 0 makes all eight bits inputs (controller ruling on m-a). "A mask of 0 drives nothing" still holds: no bit is driven. Every enable, whatever the source, first releases the pins the daemon drove before, so a later demo or upload never inherits a library design's inputs. |
 | AF | Only pins in `_fo_ui_driven` get the 1 ms output-low discharge. Every other released pin goes straight to `Pin.IN` with the pull-down and is never made an output. The E9 input-enable workaround (PADS_BANK0 `GPIOn.IE = 0`) is used only if the hardware check shows the discharge alone is not enough. |
+| BJ | Entries carry a bool `pdk_latches`: true when the design uses PDK latch or clock-gate cells. The publisher writes it on every entry. Readers accept it missing for now and treat that as false; a later task makes it required. When true, both UIs show the warn badge `PDK latch cells: may not behave as on silicon`, which never disables Load. The owner asked, via the FPGA session, for latch designs to be listed with a warning, 2026-11-27. |
 | AG | `safe.py:99` reads `0xd0000020` as the SIO output-enable register. That is `GPIO_OE` on the RP2040, but on the RP2350 it is the write-only `GPIO_OUT_CLR`; the RP2350's `GPIO_OE` is `0xd0000030`. A separate fpgas.online-tt PR, before the daemon's library work, picks the register by chip, with a test, and keeps `SAFE_CODE`'s structure. |
 
 ## Why
@@ -175,7 +176,8 @@ Every key is required.
 
 ### Entry keys
 
-Every key is required. A key whose type allows null is still present.
+Every key is required, except `pdk_latches` for now (Ruling BJ): readers accept it missing and
+treat that as false. A key whose type allows null is still present.
 
 | Key | Type | Rule |
 |---|---|---|
@@ -200,6 +202,7 @@ Every key is required. A key whose type allows null is still present.
 | `validation` | string | `none`, `mcu` or `full-speed` (from the harness spec's Validate section) |
 | `verdict` | string | `^[a-z-]{1,32}$`: the videos pipeline's render verdict |
 | `qspi` | string | `none` or `emulated` |
+| `pdk_latches` | bool | true when the design uses PDK latch or clock-gate cells (Ruling BJ); missing means false for now |
 | `poster` | string or null | relative path; see The archive path rule |
 | `preview_gif` | string or null | relative path; same rule |
 | `video_10s_webm` | string or null | relative path; same rule |
@@ -310,6 +313,7 @@ Tim said on 2026-11-24 that designs which fail timing are listed, with a visible
 |---|---|---|
 | `build_status == "timing-fail"` and `fmax_hz < clock_hz` | `timing: <fmax_hz / 1e6, 2 decimals> MHz < <clock_hz / 1e6, 3 decimals> MHz`, for example `timing: 17.08 MHz < 25.175 MHz` | warn |
 | `build_status == "timing-fail"` and `fmax_hz >= clock_hz` (Ruling AN: the main clock passes, another clock or a cross-domain path fails) | `timing not met on a secondary clock or path` | warn |
+| `pdk_latches == true` (Ruling BJ) | `PDK latch cells: may not behave as on silicon` | warn |
 | `validation == "none"` | `not hardware-validated` | info |
 | `validation == "mcu"` | `validated at MCU speed only` | info |
 | `qspi == "emulated"` | `QSPI emulated` | info |
@@ -318,7 +322,9 @@ Tim said on 2026-11-24 that designs which fail timing are listed, with a visible
 
 `not hardware-validated` is an info badge, not a warning. Every entry has it in the first pass,
 and a warning icon on all 445 entries would teach visitors to ignore warnings (finding m16).
-The warn class, and the Commander's warning icon, mean only "this missed timing".
+The warn class, and the Commander's warning icon, mean a doubt about how the design behaves on
+the FPGA: missed timing, or PDK latch cells (Ruling BJ: the owner asked, via the FPGA session, for
+latch designs to be listed with a warning, 2026-11-27).
 
 ### Reference checker and fixture (this repo)
 
@@ -1085,6 +1091,7 @@ daemon, file names come only from ids that pass `NAME_RE`, and the metadata is t
 - one test per rule;
 - NaN and Infinity are refused;
 - `ui_in` with bits outside the mask is refused;
+- `pdk_latches` may be missing, and when present must be a bool (Ruling BJ);
 - non-contiguous shuttles are refused;
 - `--bins` mismatches are reported.
 
