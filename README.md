@@ -81,14 +81,16 @@ syncs (recorded as `auto_ui_in` in the result).
 
 Beside each `result.json`, `frames/tb-v1/frame_hashes.fnv1a64-tb2026-rgb888.txt`
 lists a hash of every captured frame, frame 0 first, in vgacap's hash-file
-format (`docs/frames-format.md` in vgacap at the pin in `ttvga/tools.toml`).
+format ([`docs/frames-format.md`](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/docs/frames-format.md) in
+[vgacap](https://github.com/mithro/vgacap) at the pin in [`ttvga/tools.toml`](ttvga/tools.toml)).
 The clips are lossy, so this is what to compare against when checking another
 implementation (an FPGA build, say) pixel for pixel. The hash is FNV-1a 64 over
 the frame as native-resolution RGB888, but its offset basis is
 `0x14650fb0739d0383` rather than the standard `0xcbf29ce484222325` (a digit was
-lost from the constant in `ttvga/harness/tb.cpp`), so a standard FNV library
+lost from the constant in [`ttvga/harness/tb.cpp`](ttvga/harness/tb.cpp)), so a standard FNV library
 will not match; the file states it as `hash_offset_basis`. These files were
-converted from the old `frame_hashes.txt` by `scripts/convert_frame_hashes.py`
+converted from the old `frame_hashes.txt` by
+[`scripts/convert_frame_hashes.py`](scripts/convert_frame_hashes.py)
 with the hash lines unchanged; `result.json`'s `tb_v1` says whether they come
 from the current trace. What other tools should read, and the exact stimulus,
 is in [docs/consumers.md](docs/consumers.md).

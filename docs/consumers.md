@@ -6,10 +6,10 @@ read, what stimulus made them, and how to compare against them.
 
 vgacap's format documents are the authority for every byte of the trace, of `frames.txt` and of the
 hash files. This note links to them at the pinned commit
-([`ttvga/tools.toml`](../ttvga/tools.toml), `[vgacap]`, `dc3cb12`) and never restates them:
+([`ttvga/tools.toml`](../ttvga/tools.toml), `[vgacap]`, `c7176da`) and never restates them:
 
-- [trace-format.md](https://github.com/mithro/vgacap/blob/dc3cb12d33f5229801ff33bdf457e9dd8afb6a29/docs/trace-format.md)
-- [frames-format.md](https://github.com/mithro/vgacap/blob/dc3cb12d33f5229801ff33bdf457e9dd8afb6a29/docs/frames-format.md)
+- [trace-format.md](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/docs/trace-format.md)
+- [frames-format.md](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/docs/frames-format.md)
 
 ## What exists today, and what is still to come
 
@@ -20,9 +20,9 @@ The re-run of all projects with traces (Task 23 of the [pipeline plan](superpowe
 - No committed `result.json` has `trace`, `samplers`, `tb_v1_check` or `published`. Those come with
   the re-run.
 - No committed `frames.txt` exists yet. Those come with the re-run.
-- The FNV files move from `data/results/<s>/<m>/frame_hashes.txt` to the tb-v1 path below in one
-  commit (plan Task 17). The hash lines do not change, and neither does `hash_offset_basis`. Each
-  converted `result.json` gets `tb_v1` with state `stale` and `trace_sha` null.
+- The FNV files moved from `data/results/<s>/<m>/frame_hashes.txt` to the tb-v1 path below in
+  commit `e112cdb` (plan Task 17). The hash lines did not change, and neither did `hash_offset_basis`.
+  Each converted `result.json` has `tb_v1` with state `stale` and `trace_sha` null.
 
 ## What to read, in git
 
@@ -122,7 +122,7 @@ All of this is [`ttvga/harness/tb.cpp`](../ttvga/harness/tb.cpp), `tick` and the
   `_ctor_var_reset`, with no random reset. So every variable not set by the design's own initialisers (`initial` blocks, declaration
   initialisers, `$readmemh`) starts at 0.
 - The trace's sample `2c` is clock `c` with clk low, sample `2c + 1` with clk high
-  ([trace-format.md](https://github.com/mithro/vgacap/blob/dc3cb12d33f5229801ff33bdf457e9dd8afb6a29/docs/trace-format.md),
+  ([trace-format.md](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/docs/trace-format.md),
   "Clocks and time"). Byte `i` of a `uo_out` dump is sample `2i + 1`, `uo_out` after the rising edge
   of clock `i`.
 
@@ -153,13 +153,13 @@ To check another simulation's dump against a trace, hash its first `M` bytes and
   `0xcbf29ce484222325`. The FPGA harness's own hash uses the standard basis
   ([frame-definition.md](https://github.com/mithro/tt-harness-fpga-vga/blob/e5b96b2edbb43ee9ed916091b61fcc5c9fdf76ae/docs/frame-definition.md), "Hash").
 
-Sources: [`hashes.py`](https://github.com/mithro/vgacap/blob/dc3cb12d33f5229801ff33bdf457e9dd8afb6a29/python/vgacap/hashes.py)
-and [`tbv1.py`](https://github.com/mithro/vgacap/blob/dc3cb12d33f5229801ff33bdf457e9dd8afb6a29/python/vgacap/tbv1.py) (`_rgb6`).
+Sources: [`hashes.py`](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/python/vgacap/hashes.py)
+and [`tbv1.py`](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/python/vgacap/tbv1.py) (`_rgb6`).
 
 ## Frame starts, and cpp = 1
 
 **tb-v1**
-([`tbv1.py`](https://github.com/mithro/vgacap/blob/dc3cb12d33f5229801ff33bdf457e9dd8afb6a29/python/vgacap/tbv1.py), `sample`):
+([`tbv1.py`](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/python/vgacap/tbv1.py), `sample`):
 
 - A frame starts at the end of the vsync pulse: the first clock whose clk-high sample is outside it.
   `capture_after_clock` is in the spec's clock numbering, so consumers must not subtract 1. Frame 0
@@ -186,7 +186,7 @@ replay timed or gamepad scripts (frame-definition.md, "Stimulus and initial stat
 neither of those, so a design that reads its own `uio` outputs back, or has such a script, can differ.
 
 **centre-v1**
-([`centre.py`](https://github.com/mithro/vgacap/blob/dc3cb12d33f5229801ff33bdf457e9dd8afb6a29/python/vgacap/centre.py)):
+([`centre.py`](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/python/vgacap/centre.py)):
 
 - A frame starts at the hsync leading edge that begins the first line of the vsync pulse.
 - Rows count from the start of the vsync pulse: row `y` is line `vsync + vback' + y`.
