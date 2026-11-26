@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -16,7 +18,18 @@ VGA_PINOUT = {
     "uo[4]": "R0", "uo[5]": "G0", "uo[6]": "B0", "uo[7]": "hsync",
 }
 PLAIN_PINOUT = {f"uo[{i}]": f"uo_out[{i}]" for i in range(8)}
-LOCAL_PROJECTS = ROOT.parent / "tinytapeout-project-search" / "data" / "projects.json"
+
+
+def _main_repo_root() -> Path:
+    """The main checkout's root even from a worktree (git's common dir is <main>/.git)."""
+    res = subprocess.run(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"], cwd=ROOT,
+                         capture_output=True, text=True)
+    return Path(res.stdout.strip()).parent if res.returncode == 0 else ROOT
+
+
+LOCAL_PROJECTS = Path(os.environ.get(
+    "TTVGA_PROJECTS_JSON",
+    _main_repo_root().parent / "tinytapeout-project-search" / "data" / "projects.json"))
 
 
 def project(shuttle: str, macro: str, address: int, **extra) -> dict:
@@ -129,7 +142,8 @@ def test_load_targets_and_target_by_id(tmp_path, capsys):
 @pytest.mark.skipif(not LOCAL_PROJECTS.exists(), reason="local tinytapeout-project-search checkout not found")
 def test_real_projects_json(tmp_path, capsys):
     out = tmp_path / "targets.json"
-    args = argparse.Namespace(source=str(LOCAL_PROJECTS), commit=targets.PROJECTS_COMMIT, out=out, pmod="tiny-vga")
+    args = argparse.Namespace(source=str(LOCAL_PROJECTS), commit=targets.PROJECTS_COMMIT, out=out, pmod="tiny-vga",
+                              extra=None)
     assert targets.run(args) == 0
     doc = json.loads(out.read_text())
     assert doc["meta"]["count"] >= 400
