@@ -12,9 +12,12 @@
 //
 // With --trace PATH it also records every pin at both halves of every clock
 // through vgacap's trace writer (vgacap docs/trace-format.md, layout
-// tt-um-43). The build then needs job.vgacap_link_flags.
+// tt-um-43). The build then needs job.vgacap_link_flags. A clock whose pins
+// are the last clock's is recorded from one raw compare of the model's port
+// bytes (RawPorts below), without packing them.
 
 #include "Vtop.h"
+#include "Vtop___024root.h"
 #include "qspi.h"
 #include "verilated.h"
 #include "vgacap/stream.h"
@@ -25,6 +28,7 @@
 #include <chrono>
 #include <csignal>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -32,6 +36,10 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+
+#if defined(TTVGA_TEST_FORCE_FALLBACK) && !defined(TTVGA_TEST_HOOKS)
+#error "TTVGA_TEST_FORCE_FALLBACK is a test hook: it needs TTVGA_TEST_HOOKS"
+#endif
 
 namespace {
 
@@ -266,6 +274,62 @@ void on_signal(int) { g_stop = 1; }
 // means re-simulating everything, or the published hashes and new ones stop
 // being comparable. tb.cpp writes its own list to tb_frame_hashes.txt, which
 // the job checks against vgacap's tb-v1 sampler.
+// ---- The trace's fast path. Verilator keeps the 8 ports as bytes in the
+// model's root. When they are 8 contiguous bytes, one 8-byte load holds every
+// pin, and a clock whose two loads equal the current run's raw image is
+// recorded with vgacap_trace_repeat2, with nothing packed. The layout is
+// Verilator's choice, not a promise, so init() checks it at run time; when
+// it does not hold, tb.cpp packs and pushes every sample instead.
+struct RawPorts {
+    const uint8_t* base = nullptr;   // the lowest of the 8 port bytes; nullptr: not contiguous
+    int off[8] = {};                 // byte offset of uo_out, uio_out, uio_oe, ui_in, uio_in, rst_n, ena, clk
+    uint64_t clk_raw = 0;            // the clk byte's bit 0, in the raw word
+
+    bool init(const Vtop___024root* r) {
+        const uint8_t* p[8] = {&r->uo_out, &r->uio_out, &r->uio_oe, &r->ui_in,
+                               &r->uio_in, &r->rst_n,   &r->ena,    &r->clk};
+        const uint8_t* lo = *std::min_element(p, p + 8);
+        unsigned seen = 0;
+        for (int i = 0; i < 8; i++) {
+            const std::ptrdiff_t d = p[i] - lo;
+            if (d < 0 || d > 7 || (seen & (1u << d))) return false;
+            seen |= 1u << d;
+            off[i] = static_cast<int>(d);
+        }
+        uint8_t b[8] = {};
+        b[off[7]] = 1;
+        std::memcpy(&clk_raw, b, 8);
+        base = lo;
+        return true;
+    }
+};
+
+inline uint64_t load_raw(const uint8_t* b) {
+    uint64_t x;
+    std::memcpy(&x, b, 8);
+    return x;
+}
+
+// A raw image as a tt-um-43 sample: the same packing as record() in main.
+uint64_t pack_raw(uint64_t raw, const RawPorts& rp) {
+    uint8_t b[8];
+    std::memcpy(b, &raw, 8);
+    const int* o = rp.off;
+    return static_cast<uint64_t>(b[o[0]]) | static_cast<uint64_t>(b[o[1]]) << 8 |
+           static_cast<uint64_t>(b[o[2]]) << 16 | static_cast<uint64_t>(b[o[3]]) << 24 |
+           static_cast<uint64_t>(b[o[4]]) << 32 | static_cast<uint64_t>(b[o[5]] & 1) << 40 |
+           static_cast<uint64_t>(b[o[6]] & 1) << 41 | static_cast<uint64_t>(b[o[7]] & 1) << 42;
+}
+
+// A clock that differs from the run's raw image (or the first clock): pack
+// and push both samples, and make the clk-high image, clock bit cleared, the
+// new image to compare against. Out of line, so the fast path stays short.
+__attribute__((noinline)) int raw_slow(vgacap_trace_writer_t* t, const RawPorts& rp, uint64_t r0, uint64_t r1,
+                                       uint64_t* want_raw) {
+    *want_raw = r1 & ~rp.clk_raw;
+    return vgacap_trace_push2(t, pack_raw(r0, rp), pack_raw(r1, rp));
+}
+
 uint64_t fnv1a(const uint8_t* p, size_t n) {
     uint64_t h = 1469598103934665603ULL;
     for (size_t i = 0; i < n; i++) { h ^= p[i]; h *= 1099511628211ULL; }
@@ -408,6 +472,25 @@ int main(int argc, char** argv) {
         tw = vgacap_trace_create(opt.trace.c_str(), &h, open_meta.c_str(), kTraceZstdLevel, err, sizeof err);
         if (!tw) { std::fprintf(stderr, "tb: cannot start the trace %s: %s\n", opt.trace.c_str(), err); return 2; }
     }
+    // The fast path, when the ports allow it (RawPorts). want_raw is the
+    // current run's raw image at clk low. It starts as ~0, which no clk-low
+    // image can be (its clk byte is 0), so the first clock takes the slow
+    // path: vgacap_trace_repeat2 is valid only after a sample is pushed.
+    RawPorts raw;
+    uint64_t want_raw = ~0ull;
+    if (tw) {
+#if defined(TTVGA_TEST_HOOKS) && defined(TTVGA_TEST_FORCE_FALLBACK)
+        // Test only (tests/sim/test_tb_trace.py): the fallback on any model,
+        // to check that both paths write the same trace.
+        const bool contiguous = false;
+#else
+        const bool contiguous = raw.init(top.rootp);
+#endif
+        if (!contiguous)
+            std::fprintf(stderr, "tb: the model's 8 port bytes are not contiguous; the trace packs every sample\n");
+    }
+    const uint8_t* const raw_base = raw.base;
+    const uint64_t clk_raw = raw.clk_raw;
     // The exits that write no timing.json leave no trace either.
     auto abandon_trace = [&]() {
         if (!tw) return;
@@ -435,9 +518,9 @@ int main(int argc, char** argv) {
         }
         return true;
     };
-    // One sample of every pin, in the tt-um-43 layout, as the ports hold them
-    // now. The inline push: no call, allocation or syscall in the common case.
-    // A failed writer stops the run, which then exits 4.
+    // The fallback: one sample of every pin, in the tt-um-43 layout, as the
+    // ports hold them now. The inline push: no call, allocation or syscall in
+    // the common case. A failed writer stops the run, which then exits 4.
     auto record = [&]() {
         const uint64_t v = static_cast<uint64_t>(top.uo_out) | static_cast<uint64_t>(top.uio_out) << 8 |
                            static_cast<uint64_t>(top.uio_oe) << 16 | static_cast<uint64_t>(top.ui_in) << 24 |
@@ -447,7 +530,7 @@ int main(int argc, char** argv) {
     };
 
     uint64_t clock = 0;
-    auto tick = [&]() {
+    auto tick = [&, raw_base, clk_raw]() {
         while (next_event < events.size() && events[next_event].clock <= clock) {
             ui_in_base = events[next_event].ui_in & 0xff;
             top.ui_in = ui_in_base;
@@ -464,7 +547,9 @@ int main(int argc, char** argv) {
             }
         }
         top.clk = 0; top.eval(); ctx.timeInc(1);
-        if (tw) record();
+        uint64_t r0 = 0;
+        if (raw_base) r0 = load_raw(raw_base);
+        else if (tw) record();
         top.clk = 1; top.eval(); ctx.timeInc(1);
         if (use_qspi) {
             // Answer the design's memory bus. Re-evaluating only when the
@@ -472,7 +557,17 @@ int main(int argc, char** argv) {
             const uint8_t v = qspi.step(top.uio_out, top.uio_oe, top.uio_in);
             if (v != top.uio_in) { top.uio_in = v; top.eval(); }
         }
-        if (tw) record();
+        if (raw_base) {
+            // Both samples equal the run's: the run grows by one clock.
+            const uint64_t r1 = load_raw(raw_base);
+            if (__builtin_expect(((r0 ^ want_raw) | (r1 ^ want_raw ^ clk_raw)) != 0, 0)) {
+                if (raw_slow(tw, raw, r0, r1, &want_raw)) g_stop = 1;
+            } else if (vgacap_trace_repeat2(tw)) {
+                g_stop = 1;
+            }
+        } else if (tw) {
+            record();
+        }
         clock++;
     };
 
