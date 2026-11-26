@@ -12,7 +12,8 @@ For every WORK/<shuttle>/<macro>/result.json, one JSON line on stdout:
 written by the raw-traces job.py do), and `dropped` is its `tb_v1.dropped`.
 The file is parsed, never searched as text: a log tail inside it can hold the
 word "harness". A file that does not parse gives `{"id", "error"}` instead,
-and the error is also written to stderr.
+and the error is also written to stderr. So does a
+result.json that is not a regular file (a symlink, a FIFO): it is never opened.
 
 Standard library only: the host has no packages installed.
 """
@@ -20,13 +21,19 @@ Standard library only: the host has no packages installed.
 from __future__ import annotations
 
 import json
+import os
+import stat
 import sys
 from pathlib import Path
 
 
 def entry(path: Path, rid: str) -> dict:
     try:
-        with path.open(encoding="utf-8") as f:
+        # Never follow a symlink or open a FIFO: the project's code runs as this user.
+        if not stat.S_ISREG(os.lstat(path).st_mode):
+            return {"id": rid, "error": f"{path}: not a regular file"}
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with open(fd, encoding="utf-8") as f:
             result = json.load(f)
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as e:
         return {"id": rid, "error": f"{path}: {e}"}
@@ -45,7 +52,8 @@ def main(argv: list[str]) -> int:
     for path in sorted(work.glob("*/*/result.json")):
         e = entry(path, f"{path.parent.parent.name}/{path.parent.name}")
         if "error" in e:
-            print(f"list_results: error: {e['error']}", file=sys.stderr)
+            shown = repr(e["error"])
+            print(f"list_results: error: {shown[:200]}", file=sys.stderr)
         print(json.dumps(e), flush=True)
     return 0
 

@@ -21,6 +21,7 @@ import json
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import tomllib
@@ -393,32 +394,47 @@ def collect(args: argparse.Namespace) -> int:
     host = resolve_host(args.host)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     found = host_listing(host)
-    removed = pull_results(f"{host.ssh}:{REMOTE_ROOT}/work/", RESULTS_DIR, found, host.ssh_cmd())
-    for path in removed:
+    pulled = pull_results(f"{host.ssh}:{REMOTE_ROOT}/work/", RESULTS_DIR, found, host.ssh_cmd())
+    for path in pulled.removed:
         print(f"removed {path.relative_to(RESULTS_DIR)} (not on the host)")
     if args.images:
         dest = Path(args.images)
         rsync_from(host, f"{REMOTE_VIDEOS}/", dest,
                    extra=["--include", "*/", "--include", "poster.png", "--include", "contact.png",
                           "--exclude", "*", "--prune-empty-dirs"])
-    print(f"collected {len(found.new_results - _testpatterns(found.new_results))} new results into {RESULTS_DIR}")
     for e in found.errors:
-        print(f"tt-vga collect: error: {e['id']}: result.json does not parse: {e['error']}", file=sys.stderr)
-    return 1 if found.errors else 0
+        print(f"tt-vga collect: error: {_shown(e.get('id'))}: result.json does not parse: {_shown(e.get('error'))}",
+              file=sys.stderr)
+    for path in pulled.rejected:
+        print(f"tt-vga collect: error: {_shown(str(path.relative_to(RESULTS_DIR)))} came across as a symlink or "
+              "other non-regular file: deleted", file=sys.stderr)
+    print(f"collected {len(_collected_ids(found))} new results into {RESULTS_DIR}")
+    return 1 if found.errors or pulled.rejected else 0
 
 
 # ---------------------------------------------------------------------------
 # collect's pieces
 # ---------------------------------------------------------------------------
 
-LISTING_MARK = "--- results"
+LISTING_MARK = "--- frames"
 TESTPATTERNS = "testpatterns"   # job.py's pseudo-shuttle, never published or committed
-_ID = re.compile(r"^[A-Za-z0-9_]+/[A-Za-z0-9_]+$")
+# The largest frames/ file collect takes. The largest real one is about
+# 0.7 MB (7,159 frames, tt_um_spacewar's run, if every frame were distinct;
+# its FNV file is 122,166 bytes), so 16 MiB is over 20 times that.
+MAX_SIZE = "16M"
+_ID = re.compile(r"[A-Za-z0-9_]+/[A-Za-z0-9_]+")
 # The only frames/ files that come into git (WORK_FRAMES in job.py). Never
 # tb-v1/TRACE_SHA256: the trace's SHA-256 stays out of git.
-_FRAMES = (re.compile(r"^[A-Za-z0-9_]+/[A-Za-z0-9_]+/frames/(centre-v1|tb-v1)/frames\.txt$"),
-           re.compile(r"^[A-Za-z0-9_]+/[A-Za-z0-9_]+/frames/tb-v1/frame_hashes\.fnv1a64-tb2026-rgb888\.txt$"))
+_FRAMES = (re.compile(r"[A-Za-z0-9_]+/[A-Za-z0-9_]+/frames/(centre-v1|tb-v1)/frames\.txt"),
+           re.compile(r"[A-Za-z0-9_]+/[A-Za-z0-9_]+/frames/tb-v1/frame_hashes\.fnv1a64-tb2026-rgb888\.txt"))
+_CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 _SAMPLERS = ("centre-v1", "tb-v1")
+
+
+def _shown(text, limit: int = 200) -> str:
+    """Host-supplied text for a message: repr, so control characters show, and cut to `limit`."""
+    r = repr(text)
+    return r if len(r) <= limit else r[:limit] + "..."
 
 
 @dataclass
@@ -429,28 +445,38 @@ class HostListing:
     errors: list[dict] = field(default_factory=list)   # list_results.py's `{"id", "error"}` lines
 
 
+@dataclass
+class Pulled:
+    removed: list[Path]     # local frames/ files the host no longer has (remove_stale_frames)
+    rejected: list[Path]    # collected paths that were not regular files afterwards, deleted
+
+
 def listing_script(python: str, work: str, list_results: str) -> str:
-    """The one script that lists the host's frames/ files, then (after LISTING_MARK) its results."""
+    """The one script that lists the host's results (JSON lines), then LISTING_MARK, then its frames/ files.
+
+    The results come first, so a job finishing in between can add frames/ files
+    but never a result whose frames were missed. The frames/ paths are NUL
+    separated, and any with a control character is left out on the host.
+    """
     return f"""
 set -e
-find {work} -mindepth 5 -maxdepth 5 -path '*/*/*/frames/*/*' -type f -printf '%P\\n'
-echo {shlex.quote(LISTING_MARK)}
 {python} {list_results} {work}
+echo {shlex.quote(LISTING_MARK)}
+find {work} -mindepth 5 -maxdepth 5 -path '*/*/*/frames/*/*' ! -path '*[[:cntrl:]]*' -type f -printf '%P\\0'
 """
 
 
 def parse_listing(text: str) -> HostListing:
-    """Turn `listing_script`'s output into a HostListing. A missing LISTING_MARK is an error."""
-    lines = text.splitlines()
-    if LISTING_MARK not in lines:
-        raise RuntimeError(f"tt-vga collect: host listing has no {LISTING_MARK!r} line: the results were not listed")
-    i = lines.index(LISTING_MARK)
-    frames: dict[str, set[str]] = {}
-    for path in lines[:i]:
-        if path:
-            frames.setdefault("/".join(path.split("/")[:2]), set()).add(path)
-    found = HostListing(set(), frames, set())
-    for line in lines[i + 1:]:
+    """Turn `listing_script`'s output into a HostListing. A missing LISTING_MARK is an error.
+
+    A frames/ path with a control character is dropped here too.
+    """
+    at = ("\n" + text).find(f"\n{LISTING_MARK}\n")
+    if at < 0:
+        raise RuntimeError(f"tt-vga collect: host listing has no {LISTING_MARK!r} line: the frames were not listed")
+    head, tail = text[:at], text[at + len(LISTING_MARK) + 1:]
+    found = HostListing(set(), {}, set())
+    for line in head.splitlines():
         if not line:
             continue
         e = json.loads(line)
@@ -461,6 +487,9 @@ def parse_listing(text: str) -> HostListing:
             found.new_results.add(e["id"])
             if e["dropped"]:
                 found.dropped.add(e["id"])
+    for path in tail.split("\0"):
+        if path and not _CONTROL.search(path):
+            found.frames_files.setdefault("/".join(path.split("/")[:2]), set()).add(path)
     return found
 
 
@@ -504,6 +533,7 @@ def remove_stale_frames(results: Path, listing: HostListing) -> list[Path]:
 
     centre-v1 follows the host. tb-v1 is removed only for ids in `dropped`
     (Ruling Z): a default run has no tb-v1 on the host, and the converted file stays.
+    A symlinked directory on the way is never followed.
     """
     have = set(collect_filter(listing))
     removed = []
@@ -512,32 +542,50 @@ def remove_stale_frames(results: Path, listing: HostListing) -> list[Path]:
             if sampler == "tb-v1" and i not in listing.dropped:
                 continue
             d = results / i / "frames" / sampler
-            if not d.is_dir():
+            if any(x.is_symlink() for x in (results / i, d.parent, d)) or not d.is_dir():
                 continue
             for f in sorted(d.rglob("*")):
                 if (f.is_file() or f.is_symlink()) and f.relative_to(results).as_posix() not in have:
                     f.unlink()
                     removed.append(f)
-            for sub in sorted((p for p in d.rglob("*") if p.is_dir()), reverse=True) + [d, d.parent]:
+            for sub in sorted((p for p in d.rglob("*") if p.is_dir() and not p.is_symlink()), reverse=True) + [d, d.parent]:
                 if sub.is_dir() and not any(sub.iterdir()):
                     sub.rmdir()
     return removed
 
 
-def pull_results(source: str, results: Path, listing: HostListing, ssh_cmd: list[str] | None) -> list[Path]:
+def pull_results(source: str, results: Path, listing: HostListing, ssh_cmd: list[str] | None) -> Pulled:
     """Copy `collect_filter`'s paths from `source` (`host:ttvga/work/`, or a local directory) into
-    `results`, then `remove_stale_frames`. Returns what was removed."""
+    `results`, then `remove_stale_frames`.
+
+    The host is not trusted: symlinks and devices are not copied (`--no-links
+    --no-D`), files over MAX_SIZE are skipped, and a collected path that is not
+    a regular file afterwards is deleted and returned in `rejected`. A listed
+    file that has gone by the time rsync looks (a job started and removed its
+    result.json) is skipped with `--ignore-missing-args`; every other rsync
+    error still stops collect.
+    """
     paths = collect_filter(listing)
+    rejected = []
     if paths:
-        cmd = ["rsync", "-a", "--files-from=-"]
+        cmd = ["rsync", "-a", "--no-links", "--no-D", f"--max-size={MAX_SIZE}", "--ignore-missing-args",
+               "--from0", "--files-from=-"]
         if ssh_cmd:
             cmd += ["-e", " ".join(shlex.quote(c) for c in ssh_cmd)]
         cmd += [source, str(results)]
-        p = subprocess.run(cmd, input="".join(f"{x}\n" for x in paths), text=True)
+        p = subprocess.run(cmd, input="".join(f"{x}\0" for x in paths), text=True)
         # 24: a file vanished while copying (a job on the host replaced it); the rest came across.
         if p.returncode not in (0, 24):
             raise subprocess.CalledProcessError(p.returncode, cmd)
-    return remove_stale_frames(results, listing)
+        for x in paths:
+            dest = results / x
+            if dest.is_symlink() or (dest.exists() and not dest.is_file()):
+                if dest.is_dir() and not dest.is_symlink():
+                    shutil.rmtree(dest)
+                else:
+                    dest.unlink()
+                rejected.append(dest)
+    return Pulled(remove_stale_frames(results, listing), rejected)
 
 
 # Files the published tree still holds from before the clips became

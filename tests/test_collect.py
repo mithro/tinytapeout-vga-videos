@@ -36,8 +36,9 @@ def listing(work: Path) -> remote.HostListing:
 
 def collect(work: Path, results: Path) -> tuple[remote.HostListing, list[Path]]:
     found = listing(work)
-    removed = remote.pull_results(str(work) + "/", results, found, None)
-    return found, removed
+    pulled = remote.pull_results(str(work) + "/", results, found, None)
+    assert pulled.rejected == []
+    return found, pulled.removed
 
 
 def trees(tmp_path: Path) -> tuple[Path, Path]:
@@ -140,7 +141,7 @@ def test_list_results_parses_json(tmp_path):
                          {"id": "tt05/tt_um_b", "harness": True, "dropped": False}]
     assert lines[2]["id"] == "tt05/tt_um_c" and "error" in lines[2]
     assert "tt05/tt_um_c" in p.stderr
-    found = remote.parse_listing("--- results\n" + p.stdout)
+    found = remote.parse_listing(p.stdout + remote.LISTING_MARK + "\n")
     assert found.new_results == {"tt05/tt_um_b"}
     assert found.errors == [lines[2]]
 
@@ -149,3 +150,94 @@ def test_collect_no_longer_imports_framehashes():
     assert importlib.util.find_spec("ttvga.framehashes") is None
     assert "framehashes" not in Path(remote.__file__).read_text()
     assert not hasattr(remote, "framehashes")
+
+
+def test_collect_newline_named_directory_injects_nothing(tmp_path):
+    work, results = trees(tmp_path)
+    put(work / "tt05/tt_um_a/result.json", json.dumps(NEW))
+    put(work / "tt05/tt_um_a/frames/centre-v1/frames.txt", "a\n")
+    put(work / "tt05/tt_um_b/result.json", json.dumps(NEW | {"id": "tt05/tt_um_b"}))
+    put(work / "tt05/tt_um_b/frames/centre-v1/frames.txt", "b\n")
+    # With newline-separated output this would list tt05/tt_um_a/frames/tb-v1/frames.txt.
+    put(work / "zz\ntt05/tt_um_a/frames/tb-v1/frames.txt", "fake\n")
+    script = remote.listing_script(sys.executable, str(work), str(LIST_RESULTS))
+    raw = subprocess.run(["bash", "-s"], input=script, text=True, capture_output=True, check=True).stdout
+    assert "zz" not in raw   # the host's find leaves it out
+    found, _ = collect(work, results)
+    assert remote.collect_filter(found) == [
+        "tt05/tt_um_a/frames/centre-v1/frames.txt", "tt05/tt_um_a/result.json",
+        "tt05/tt_um_b/frames/centre-v1/frames.txt", "tt05/tt_um_b/result.json"]
+    assert not (results / "tt05/tt_um_a/frames/tb-v1").exists()
+    assert (results / "tt05/tt_um_b/frames/centre-v1/frames.txt").read_text() == "b\n"
+    # parse_listing drops such a path as well, should one reach it.
+    text = json.dumps({"id": "tt05/tt_um_a", "harness": True, "dropped": False}) + "\n" + remote.LISTING_MARK + \
+        "\nzz\ntt05/tt_um_a/frames/tb-v1/frames.txt\0tt05/tt_um_a/frames/centre-v1/frames.txt\0"
+    assert remote.parse_listing(text).frames_files == {"tt05/tt_um_a": {"tt05/tt_um_a/frames/centre-v1/frames.txt"}}
+
+
+def test_collect_missing_listed_file_is_not_fatal(tmp_path):
+    work, results = trees(tmp_path)
+    put(work / "tt05/tt_um_a/result.json", json.dumps(NEW))
+    put(work / "tt05/tt_um_b/result.json", json.dumps(NEW | {"id": "tt05/tt_um_b"}))
+    found = listing(work)
+    (work / "tt05/tt_um_a/result.json").unlink()   # a job started on the host after the listing
+    pulled = remote.pull_results(str(work) + "/", results, found, None)
+    assert pulled.rejected == []
+    assert (results / "tt05/tt_um_b/result.json").exists()
+
+
+def test_collect_never_copies_symlinks(tmp_path):
+    work, results = trees(tmp_path)
+    secret = put(tmp_path / "host" / "secret.txt", "secret\n")
+    put(work / "tt05/tt_um_a/result.json", json.dumps(NEW))
+    link = work / "tt05/tt_um_a/frames/centre-v1/frames.txt"
+    link.parent.mkdir(parents=True)
+    link.symlink_to(secret)
+    # find -type f leaves the symlink out of the listing; a forged listing still gets nothing across.
+    found = listing(work)
+    assert found.frames_files == {}
+    found.frames_files = {"tt05/tt_um_a": {"tt05/tt_um_a/frames/centre-v1/frames.txt"}}
+    pulled = remote.pull_results(str(work) + "/", results, found, None)
+    dest = results / "tt05/tt_um_a/frames/centre-v1/frames.txt"
+    assert not dest.is_symlink() and not dest.exists()
+    assert pulled.rejected == []
+
+
+def test_pull_rejects_a_non_regular_destination(tmp_path):
+    work, results = trees(tmp_path)
+    put(work / "tt05/tt_um_a/result.json", json.dumps(NEW))
+    put(work / "tt05/tt_um_a/frames/centre-v1/frames.txt", "a\n")
+    found = listing(work)
+    # A symlink already in the local tree where a collected file goes is deleted and reported.
+    dest = results / "tt05/tt_um_a/frames/centre-v1/frames.txt"
+    dest.parent.mkdir(parents=True)
+    (work / "tt05/tt_um_a/frames/centre-v1/frames.txt").unlink()
+    dest.symlink_to(tmp_path / "elsewhere")
+    pulled = remote.pull_results(str(work) + "/", results, found, None)
+    assert pulled.rejected == [dest]
+    assert not dest.is_symlink()
+
+
+def test_list_results_never_opens_a_symlink_or_fifo(tmp_path):
+    import os
+    work, _ = trees(tmp_path)
+    target = put(tmp_path / "other.json", json.dumps(NEW))
+    (work / "tt05/tt_um_a").mkdir(parents=True)
+    (work / "tt05/tt_um_a/result.json").symlink_to(target)
+    (work / "tt05/tt_um_b").mkdir(parents=True)
+    os.mkfifo(work / "tt05/tt_um_b/result.json")
+    p = subprocess.run([sys.executable, str(LIST_RESULTS), str(work)], text=True, capture_output=True, timeout=30)
+    lines = [json.loads(line) for line in p.stdout.splitlines()]
+    assert [x["id"] for x in lines] == ["tt05/tt_um_a", "tt05/tt_um_b"]
+    assert all("not a regular file" in x["error"] for x in lines)
+
+
+def test_remove_stale_frames_skips_a_symlinked_sampler_directory(tmp_path):
+    work, results = trees(tmp_path)
+    put(work / "tt05/tt_um_a/result.json", json.dumps(NEW))
+    outside = put(tmp_path / "outside" / "keep.txt", "keep\n")
+    (results / "tt05/tt_um_a/frames").mkdir(parents=True)
+    (results / "tt05/tt_um_a/frames/centre-v1").symlink_to(outside.parent)
+    found, removed = collect(work, results)
+    assert removed == []
+    assert outside.read_text() == "keep\n"
