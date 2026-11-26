@@ -49,13 +49,12 @@ def read(path: Path, dev: DevTools) -> Trace:
     stream = _stream(dev)
     data = zstd.decompress(Path(path).read_bytes())
     header, items = stream.read_stream(data)
-    # vgacap.stream.parse_header at the pin (d8df216) reuses the name `clock`
-    # for "has a clock bit", so a v2 header's clock_hz comes back as a bool.
-    # Take clock_hz from the VGCH payload itself (u32 at offset 4,
-    # docs/trace-format.md) until vgacap fixes it.
+    # parse_header's clock_hz must be the VGCH payload's u32 at offset 4
+    # (docs/trace-format.md). Before vgacap dc3cb12 it came back as a bool.
     tag, payload = next(stream.read_chunks(data))
     assert tag == "VGCH"
-    header.clock_hz = int.from_bytes(payload[4:8], "little")
+    assert header.clock_hz == int.from_bytes(payload[4:8], "little"), header.clock_hz
+    assert type(header.clock_hz) is int
     runs, metas, n = [], [], 0
     for item in items:
         if item[0] == "run":

@@ -206,7 +206,7 @@ FALLBACK = ("TTVGA_TEST_FORCE_FALLBACK",)
 FALLBACK_LINE = "tb: the model's 8 port bytes are not contiguous"
 
 
-@pytest.mark.parametrize("design", ["bars640", "playground", "glitch", "frac", "nosync"])
+@pytest.mark.parametrize("design", ["bars640", "playground", "glitch", "frac", "nosync", "negedge"])
 def test_trace_identical_fast_and_fallback(models, dev, tmp_path, design):
     """The raw-compare fast path (vgacap_trace_repeat2) writes exactly the trace the per-sample pushes do."""
     traces, results = {}, {}
@@ -223,6 +223,10 @@ def test_trace_identical_fast_and_fallback(models, dev, tmp_path, design):
     t = vgch.read(traces["fast"], dev)
     assert t.samples == 2 * timing(tmp_path / "fast")["clocks_simulated"]
     assert t.meta("close")["status"] == results["fast"][1]
+    if design == "negedge":
+        # The case the test is for: a clock whose clk-low sample changes while
+        # its clk-high sample repeats the last clock's (a 1-sample run at 2c).
+        assert any(first % 2 == 0 and r == 1 for first, _, r in t.runs)
 
 
 def test_force_fallback_refused_without_test_hooks(dev, tmp_path):
