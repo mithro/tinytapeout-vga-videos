@@ -34,6 +34,14 @@ error, a publish refusal) publishes nothing: the published copy and `frames/`
 stay as they were. A run with no picture, a model killed with a trace left,
 and an encode failure still publish the trace and the frames.
 
+`--rederive` derives the published trace again (with the override's current
+`centre_window` and the tb-v1 flags) and publishes it, without fetching,
+building or simulating; result.json is updated in place (see `rederive`).
+
+SIGTERM (a queue stop, the job's scope) is recorded in result.json and exits
+143. It is held over the publish swap and its records, so a stop never lands
+between a swap that happened and the result.json that says so.
+
 Standard library only: the host has no packages installed.
 """
 
@@ -399,8 +407,17 @@ def _derive_child(w: int, call) -> None:
         os._exit(0)
 
 
+def centre_window(ov: dict) -> tuple[int, int] | None:
+    """The override's `centre_window` (`{"dx": int, "dy": int}`, checked by ttvga/overrides.py) as (dx, dy)."""
+    cw = ov.get("centre_window")
+    if cw is None:
+        return None
+    return int(cw["dx"]), int(cw["dy"])
+
+
 def run_derive(trace: Path, scratch: Path, stem: str, *, tb_v1: bool, tb_hashes: Path | None, tools: dict,
-               log: Path, timeout: float) -> tuple[derive.DeriveResult | None, str | None]:
+               log: Path, timeout: float,
+               window: tuple[int, int] | None = None) -> tuple[derive.DeriveResult | None, str | None]:
     """derive.derive() in a forked child, in its own process group, killed after `timeout` seconds.
 
     derive has no timeouts of its own (vgacap-sample, tracetool), so this is
@@ -409,7 +426,7 @@ def run_derive(trace: Path, scratch: Path, stem: str, *, tb_v1: bool, tb_hashes:
     dtools = derive.Tools(vgacap_sample=Path(tools["vgacap_sample"]), tracetool=Path(tools["tracetool"]))
 
     def call() -> derive.DeriveResult:
-        return derive.derive(trace, scratch, stem, tb_v1=tb_v1, centre_window=None, store_level=None,
+        return derive.derive(trace, scratch, stem, tb_v1=tb_v1, centre_window=window, store_level=None,
                              tools=dtools, log=log, tb_hashes=tb_hashes)
 
     sys.stdout.flush()
@@ -507,6 +524,37 @@ def update_work_frames(scratch: Path, frames: Path, *, tb_v1: bool, drop: bool) 
         shutil.rmtree(frames / derive.TB_V1)
 
 
+def install_and_record(scratch: Path, conf, target: dict, work: Path, args: argparse.Namespace, carry: list[str],
+                       errors: list[str], *, mark) -> str | None:
+    """publish.install with SIGTERM held over the swap and this job's record of it. Returns the error or None.
+
+    The record, run by publish right after the swap and changed.log: `mark()` (the
+    caller's result.json fields), then `work/frames/` refreshed for collect.
+    """
+    def record() -> None:
+        mark()
+        try:
+            update_work_frames(scratch, work / "frames", tb_v1=args.tb_v1, drop=args.drop_tb_v1)
+        except OSError as e:
+            errors.append(f"published, but work/frames was not updated: {e}")
+
+    try:
+        publish.install(scratch, conf, target["shuttle"], target["macro"], work / "publish.log", carry=carry,
+                        defer_signals=(signal.SIGTERM,), on_published=record)
+    except (publish.PublishError, OSError) as e:
+        return f"publish: {e}"
+    return None
+
+
+def derive_tool_versions(tools: dict) -> dict:
+    """The derive step's tools: the vgacap commit they were built from (`vgacap-build/PINNED`)."""
+    try:
+        pinned = (Path(tools["vgacap_build"]) / "PINNED").read_text().strip() or "unknown"
+    except OSError:
+        pinned = "unknown"
+    return {"vgacap": pinned}
+
+
 def encode(work: Path, videos: Path, log: Path, tools: dict, stem: str) -> str | None:
     """Publish the capture as browser-playable clips, then render the previews."""
     src = work / "out" / "capture.avi"
@@ -552,8 +600,128 @@ def trace_fast_path(sim_log: Path) -> bool:
         return not any(line.startswith(TRACE_FALLBACK) for line in f)
 
 
+def trace_summary(dres: derive.DeriveResult, trace: Path, fast_path: bool | None) -> dict:
+    """result.json's `trace`."""
+    return {
+        "file": trace.name, "sha256": dres.trace_sha, "bytes": trace.stat().st_size,
+        "blocks": int(dres.info["blocks"]), "clocks": int(dres.info["clocks"]),
+        "uo_out_sha256": dres.uo_out_sha256, "uo_out_sha256_clocks": list(dres.uo_out_sha256_clocks),
+        "fast_path": fast_path,
+    }
+
+
 def _tail(path: Path) -> str | None:
     return path.read_text(errors="replace")[-4000:] if path.exists() else None
+
+
+# --rederive removes only its own logs: build.log, sim.log and result.json describe the run that made the trace.
+REDERIVE_LOGS = ("derive.log", "publish.log")
+
+
+def rederive(args: argparse.Namespace, target: dict, ov: dict, work: Path, tools: dict, harness: str) -> int:
+    """job.py --rederive: derive the published trace again and publish the result.
+
+    No fetch, build or simulation. The published `<stem>_trace.vgch.zst` is copied into
+    scratch and derived with the override's current `centre_window` and the tb-v1 flags
+    (no tb.cpp hashes, so `--tb-v1` gives `tb_v1_check: not-run`); Task 9's carry and
+    `tb_v1` rules apply, and `work/frames/` is refreshed as after a run.
+
+    result.json is updated in place. A publish sets `samplers`, `trace`, `tb_v1`,
+    `tb_v1_check`, `rederived_at` and `harness`; every run sets `rederive_error` (None when
+    it published), `rederive_override`, `rederive_tools`, `timings.rederive` and the
+    derive/publish log tails. The override's `skip` is honoured. Everything else,
+    `error` included, still describes the run that made the trace. A failed re-derive
+    publishes nothing and leaves the published copy and `work/frames/` as they were.
+    """
+    shuttle, macro = target["shuttle"], target["macro"]
+    stem = stem_for(shuttle, macro)
+    path = work / "result.json"
+    try:
+        result = json.loads(path.read_text())
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as e:
+        print(f"job: --rederive needs {path}, the record of the run that made the trace: {e}", file=sys.stderr)
+        return 2
+    for old in REDERIVE_LOGS:
+        (work / old).unlink(missing_ok=True)
+    scratch = work / "scratch"
+    trace = scratch / f"{stem}_trace.vgch.zst"
+    t0 = time.monotonic()
+    stage = "setup"
+    errors: list[str] = []
+    done: dict = {}   # filled by record(), with SIGTERM held, once the publish has happened
+    dres: derive.DeriveResult | None = None
+    terminated = False
+
+    def steps() -> str | None:
+        nonlocal stage, dres
+        if shuttle == TESTPATTERNS:
+            return "testpatterns is never published: nothing to re-derive"
+        if (skip := ov.get("skip") or target.get("skip")):
+            return skip
+        try:
+            conf = hostconf.load(args.root)
+        except (hostconf.ConfigError, OSError) as e:
+            return f"host.toml: {e}" if isinstance(e, OSError) else str(e)
+        published = conf.frames_root / shuttle / macro
+        source = published / trace.name
+        if not source.is_file():
+            return "no published trace"
+        if scratch.exists():
+            shutil.rmtree(scratch)
+        scratch.mkdir()
+        shutil.copyfile(source, trace)
+        stage = "derive"
+        dres, error = run_derive(trace, scratch, stem, tb_v1=args.tb_v1, tb_hashes=None, tools=tools,
+                                 log=work / "derive.log", timeout=args.timeout, window=centre_window(ov))
+        if error:
+            return error
+        stage = "publish"
+        carry, tb_state = tb_v1_rule(tb_v1=args.tb_v1, drop=args.drop_tb_v1, published=published,
+                                     work_frames=work / "frames", trace_sha=dres.trace_sha)
+
+        return install_and_record(scratch, conf, target, work, args, carry, errors,
+                                  mark=lambda: done.update(at=now(), tb_v1=tb_state))
+
+    try:
+        try:
+            try:
+                if (error := steps()):
+                    errors.insert(0, error)
+            except Exception as e:   # a bug or an unexpected failure: recorded, nothing (more) published
+                errors.insert(0, f"stage crashed: {stage}: {type(e).__name__}: {e}")
+                result["traceback"] = traceback.format_exc()
+        except Terminated:
+            errors.append(f"terminated by SIGTERM during {stage}")
+            terminated = True
+        if done:
+            # The same trace as the run's own: its fast_path still holds; a different one is not known.
+            before = result.get("trace") or {}
+            fast = before.get("fast_path") if before.get("sha256") == dres.trace_sha else None
+            result.update(samplers=dres.samplers, trace=trace_summary(dres, trace, fast), tb_v1=done["tb_v1"],
+                          tb_v1_check=dres.tb_v1_check, rederived_at=done["at"], harness=harness)
+    except Exception as e:
+        errors.append(f"stage crashed: result: {type(e).__name__}: {e}")
+        result["traceback"] = traceback.format_exc()
+    finally:
+        if scratch.exists():
+            shutil.rmtree(scratch)
+
+    error = "; ".join(errors) or None
+    result["rederive_error"] = error
+    # What this attempt derived with: the override and the vgacap build.
+    result["rederive_override"] = override_meta(args.overrides, shuttle, macro)
+    result["rederive_tools"] = derive_tool_versions(tools)
+    result.setdefault("rederived_at", None)
+    result.setdefault("timings", {})["rederive"] = round(time.monotonic() - t0, 1)
+    for name in REDERIVE_LOGS:
+        result[name.replace(".log", "_log_tail")] = _tail(work / name)
+    tmp = work / "result.json.tmp"
+    tmp.write_text(json.dumps(result, indent=2) + "\n")
+    tmp.rename(path)
+    print(f"job: {target['id']}: rederive stage={stage} error={error!r} published={bool(done)}")
+    if terminated:
+        return 128 + signal.SIGTERM
+    return 0 if not error else 1
 
 
 def _job() -> int:
@@ -579,6 +747,8 @@ def _job() -> int:
                     help="retire tb-v1: publish without it and remove work/.../frames/tb-v1/")
     ap.add_argument("--test-hooks", action="store_true",
                     help="tests only: compile in tb.cpp's TTVGA_TEST_HOOKS; result.json records it")
+    ap.add_argument("--rederive", action="store_true",
+                    help="derive and publish the published trace again; no fetch, build or simulation")
     args = ap.parse_args()
     args.overrides = args.overrides or args.root / "overrides"
     # Everything the published tree gets is 0644/0755, whatever the caller's umask.
@@ -620,6 +790,8 @@ def _job() -> int:
     except BlockingIOError:
         print(f"job: {target['id']}: already running elsewhere, skipped", file=sys.stderr)
         return 0
+    if args.rederive:
+        return rederive(args, target, ov, work, tools, harness)
     for old in ("build.log", "sim.log", "derive.log", "publish.log", "result.json"):
         (work / old).unlink(missing_ok=True)
     result = {
@@ -654,6 +826,22 @@ def _job() -> int:
     trace = scratch / f"{stem}_trace.vgch.zst"
     dres: derive.DeriveResult | None = None
     terminated = False
+
+    def summarise() -> None:
+        try:
+            if dres is not None:
+                result["trace"] = trace_summary(dres, trace, trace_fast_path(work / "sim.log"))
+                result["samplers"] = dres.samplers
+            result["tb_v1_check"] = dres.tb_v1_check if dres is not None else ("not-run" if args.tb_v1 else "off")
+            if result["tb_v1"] is None:
+                # Nothing was published: say what the files already there are.
+                _, result["tb_v1"] = tb_v1_rule(tb_v1=False, drop=False, published=published_dir,
+                                                work_frames=work / "frames",
+                                                trace_sha=dres.trace_sha if dres is not None else None)
+        except Exception as e:
+            errors.append(f"stage crashed: result: {type(e).__name__}: {e}")
+            result["traceback"] = traceback.format_exc()
+
     try:
         if scratch.exists():
             shutil.rmtree(scratch)
@@ -686,7 +874,7 @@ def _job() -> int:
                     # A killed model never wrote tb.cpp's own hash list, so there is nothing to check against.
                     hashes = out / "tb_frame_hashes.txt" if args.tb_v1 and not sim_error else None
                     dres, fatal = run_derive(trace, scratch, stem, tb_v1=args.tb_v1, tb_hashes=hashes, tools=tools,
-                                             log=work / "derive.log", timeout=args.timeout)
+                                             log=work / "derive.log", timeout=args.timeout, window=centre_window(ov))
                     if dres is not None:
                         result["derive_cpu_seconds"] = round(dres.cpu_seconds, 3)
                     if fatal is None and testpatterns:
@@ -699,17 +887,9 @@ def _job() -> int:
                 elif stage == "publish":
                     carry, tb_state = tb_v1_rule(tb_v1=args.tb_v1, drop=args.drop_tb_v1, published=published_dir,
                                                  work_frames=work / "frames", trace_sha=dres.trace_sha)
-                    try:
-                        publish.install(scratch, conf, shuttle, macro, work / "publish.log", carry=carry)
-                    except (publish.PublishError, OSError) as e:
-                        fatal = f"publish: {e}"
-                    else:
-                        result["published"] = True
-                        result["tb_v1"] = tb_state
-                        try:
-                            update_work_frames(scratch, work / "frames", tb_v1=args.tb_v1, drop=args.drop_tb_v1)
-                        except OSError as e:
-                            errors.append(f"published, but work/frames was not updated: {e}")
+
+                    fatal = install_and_record(scratch, conf, target, work, args, carry, errors,
+                                               mark=lambda: result.update(published=True, tb_v1=tb_state))
             except Exception as e:   # a bug or an unexpected failure: recorded, and nothing (more) published
                 fatal = f"stage crashed: {stage}: {type(e).__name__}: {e}"
                 result["traceback"] = traceback.format_exc()
@@ -718,28 +898,12 @@ def _job() -> int:
                 errors.append(fatal)
                 break
 
-        try:
-            if dres is not None:
-                result["trace"] = {
-                    "file": trace.name, "sha256": dres.trace_sha, "bytes": trace.stat().st_size,
-                    "blocks": int(dres.info["blocks"]), "clocks": int(dres.info["clocks"]),
-                    "uo_out_sha256": dres.uo_out_sha256, "uo_out_sha256_clocks": list(dres.uo_out_sha256_clocks),
-                    "fast_path": trace_fast_path(work / "sim.log"),
-                }
-                result["samplers"] = dres.samplers
-            result["tb_v1_check"] = dres.tb_v1_check if dres is not None else ("not-run" if args.tb_v1 else "off")
-            if result["tb_v1"] is None:
-                # Nothing was published: say what the files already there are.
-                _, result["tb_v1"] = tb_v1_rule(tb_v1=False, drop=False, published=published_dir,
-                                                work_frames=work / "frames",
-                                                trace_sha=dres.trace_sha if dres is not None else None)
-        except Exception as e:
-            errors.append(f"stage crashed: result: {type(e).__name__}: {e}")
-            result["traceback"] = traceback.format_exc()
+        summarise()
     except Terminated:
         # SIGTERM (a queue stop, the scope): the finally below and run_derive's clean up; result.json says so.
         errors.append(f"terminated by SIGTERM during {result['stage']}")
         terminated = True
+        summarise()   # scratch is still there: a publish that happened is described in full
     finally:
         if testpatterns and trace.is_file():
             # Never published: the trace and frames stay in the work directory.

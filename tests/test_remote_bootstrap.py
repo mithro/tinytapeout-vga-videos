@@ -32,7 +32,10 @@ def test_bootstrap_installs_python_and_builds_vgacap_at_the_pin():
 
 
 def test_host_scripts_run_under_the_pinned_python():
-    args = argparse.Namespace(jobs=4, seconds=60.0, timeout=1800.0, only="", limit=0, redo=False)
+    args = argparse.Namespace(jobs=4, seconds=60.0, timeout=1800.0, only="", limit=0, redo=False,
+                              redo_unless_harness=None, rederive=False, tb_v1=False, drop_tb_v1=False,
+                              yes_drop_tb_v1=False, scope_memory=None, scope_cpu=None,
+                              since=None, allow_no_linger=False)
     host = remote.Host(ssh="ttvga@example.invalid", jobs=4)
     cmd = remote.queue_command(args, host, TOOLS)
     assert cmd.startswith(remote.host_python(TOOLS))
