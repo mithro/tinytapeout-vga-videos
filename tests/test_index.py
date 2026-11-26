@@ -193,3 +193,23 @@ def test_index_and_report_leave_out_testpatterns(monkeypatch, tmp_path):
     assert report.run(None) == 0
     assert json.loads((tmp_path / "status.json").read_text())["targets"] == 1
     assert "testpatterns" not in (tmp_path / "status.md").read_text()
+
+
+def test_index_links_fpga_when_listed(tmp_path):
+    from ttvga.index import read_fpga_ids
+
+    other = {**TARGET, "id": "tt09/tt_um_y", "shuttle": "tt09", "macro": "tt_um_y"}
+    ids = tmp_path / "fpga-ids.txt"
+    ids.write_text("tt08/tt_um_x\n\n")
+    listed = read_fpga_ids(ids)
+    assert listed == {"tt08/tt_um_x"}
+    page = write_html([record(TARGET, RESULT), record(other, None)], "now", fpga_ids=listed)
+    assert page.count(">FPGA bitstream</a>") == 1
+    assert '<a href="tt08/tt_um_x/">FPGA bitstream</a>' in page
+    # Without the list, no row links one.
+    assert "FPGA bitstream" not in write_html([record(TARGET, RESULT)], "now")
+    # A line that is not a <shuttle>/<macro> id is refused, not skipped.
+    ids.write_text("tt08/tt_um_x\n../etc/passwd\n")
+    import pytest
+    with pytest.raises(ValueError, match="passwd"):
+        read_fpga_ids(ids)
