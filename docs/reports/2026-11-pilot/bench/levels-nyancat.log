@@ -1,0 +1,18 @@
+level -1: built
+level -3: built
+level -5: built
+round=1 notrace rc=0 wall=111.98 cpu=128.8 trace_bytes=-
+round=1 L1 rc=0 wall=137.15 cpu=153.16 trace_bytes=139329744
+round=1 Lm1 rc=0 wall=136.93 cpu=153.16 trace_bytes=198514689
+round=1 Lm3 rc=0 wall=136.67 cpu=152.22 trace_bytes=178290033
+round=1 Lm5 rc=0 wall=134.31 cpu=148.27 trace_bytes=223866179
+round=2 notrace rc=0 wall=113.88 cpu=135.09 trace_bytes=-
+round=2 L1 rc=0 wall=127.36 cpu=154.45 trace_bytes=139329744
+round=2 Lm1 rc=0 wall=128.04 cpu=156.07 trace_bytes=198514689
+round=2 Lm3 rc=0 wall=128.47 cpu=155.45 trace_bytes=178290033
+round=2 Lm5 rc=0 wall=130.7 cpu=156.2 trace_bytes=223866179
+round=3 notrace rc=0 wall=114.69 cpu=133.85 trace_bytes=-
+round=3 L1 rc=0 wall=134.9 cpu=157.2 trace_bytes=139329744
+round=3 Lm1 rc=0 wall=133.78 cpu=156.87 trace_bytes=198514689
+round=3 Lm3 rc=0 wall=134.27 cpu=155.93 trace_bytes=178290033
+round=3 Lm5 rc=0 wall=134.16 cpu=156.17 trace_bytes=223866179

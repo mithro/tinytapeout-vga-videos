@@ -1,0 +1,15 @@
+round=1 notrace rc=0 wall=99.03 cpu=107.9 trace_bytes=-
+round=1 L1 rc=0 wall=98.09 cpu=106.72 trace_bytes=180815
+round=1 Lm1 rc=0 wall=98.48 cpu=107.1 trace_bytes=285809
+round=1 Lm3 rc=0 wall=102.5 cpu=111.59 trace_bytes=166808
+round=1 Lm5 rc=0 wall=106.31 cpu=115.1 trace_bytes=210785
+round=2 notrace rc=0 wall=96.38 cpu=104.73 trace_bytes=-
+round=2 L1 rc=0 wall=99.28 cpu=107.82 trace_bytes=180815
+round=2 Lm1 rc=0 wall=102.86 cpu=111.4 trace_bytes=285809
+round=2 Lm3 rc=0 wall=107.15 cpu=112.88 trace_bytes=166808
+round=2 Lm5 rc=0 wall=107.13 cpu=113.17 trace_bytes=210785
+round=3 notrace rc=0 wall=97.74 cpu=105.28 trace_bytes=-
+round=3 L1 rc=0 wall=105.08 cpu=113.3 trace_bytes=180815
+round=3 Lm1 rc=0 wall=105.86 cpu=113.84 trace_bytes=285809
+round=3 Lm3 rc=0 wall=104.01 cpu=111.99 trace_bytes=166808
+round=3 Lm5 rc=0 wall=105.11 cpu=112.26 trace_bytes=210785
