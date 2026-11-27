@@ -102,12 +102,12 @@ def _fail(message: str) -> int:
 def to_png(args: argparse.Namespace) -> int:
     txt = Path(args.frames_txt)
     ff = _read_frames_txt(txt)
-    frames = _distinct_frames(ff, _read_store(ff, txt.parent))
+    distinct = _distinct_frames(ff, _read_store(ff, txt.parent))
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    for k, rgb6 in enumerate(frames):
+    for k, rgb6 in enumerate(distinct):
         pngio.write_rgb6(out / f"{k:06d}.png", ff.width, ff.height, rgb6)
-    print(f"{len(frames)} PNGs of {ff.width}x{ff.height} in {out}")
+    print(f"{len(distinct)} PNGs of {ff.width}x{ff.height} in {out}")
     return 0
 
 
@@ -120,7 +120,10 @@ def from_png(args: argparse.Namespace) -> int:
                      f"({len(files)} found)")
     parts = []
     for p in files:
-        w, h, rgb6 = pngio.read_rgb6(p)
+        try:
+            w, h, rgb6 = pngio.read_rgb6(p)
+        except ValueError as e:
+            return _fail(str(e))
         if (w, h) != (ff.width, ff.height):
             return _fail(f"{p} is {w}x{h}, frames.txt has {ff.width}x{ff.height}")
         parts.append(rgb6)
@@ -136,11 +139,11 @@ def hash_frames(args: argparse.Namespace) -> int:
     framesfile, hashes = _vgacap()
     txt = Path(args.frames_txt)
     ff = _read_frames_txt(txt)
-    frames = _distinct_frames(ff, _read_store(ff, txt.parent))
+    distinct = _distinct_frames(ff, _read_store(ff, txt.parent))
     if args.method == "xxh3-128-rgb6":
-        per = [hashes.xxh3_128_rgb6(f) for f in frames]
+        per = [hashes.xxh3_128_rgb6(f) for f in distinct]
     else:
-        per = [f"{hashes.fnv1a64_tb2026_rgb888(f):016x}" for f in frames]
+        per = [f"{hashes.fnv1a64_tb2026_rgb888(f):016x}" for f in distinct]
     framesfile.write_hash_file(args.out, framesfile.HashFile.from_frames(ff, args.method, per))
     return 0
 
@@ -341,11 +344,14 @@ def compare_cmd(args: argparse.Namespace) -> int:
 
 
 def _run(func):
+    """`func` with a FramesError or an OSError (a file that cannot be read or written) as exit 1 and a message."""
     def wrapper(args: argparse.Namespace) -> int:
         try:
             return func(args)
         except FramesError as e:
             return _fail(str(e))
+        except OSError as e:
+            return _fail(f"{e.filename}: {e.strerror}" if e.filename else str(e))
     return wrapper
 
 
