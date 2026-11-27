@@ -1,5 +1,6 @@
-# Pinned toolchain installed into the ttvga user's home on the simulation host.
-# Everything is a plain tarball; nothing is installed system-wide.
+# The toolchain pinned for the simulation host, installed into the ttvga user's home by
+# `tt-vga bootstrap`: release tarballs, a Python through uv, vgacap built from a git commit and
+# xxhash through uv. Nothing is installed system-wide.
 
 [oss-cad-suite]
 version = "2026-09-14"
