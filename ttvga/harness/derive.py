@@ -280,7 +280,7 @@ def derive(trace: Path, out: Path, stem: str, *, tb_v1: bool, centre_window: tup
         uo = _tracetool(tools, lf, "uohash", str(trace))
         try:
             lo, hi = (int(x) for x in uo["uo_out_xxh3_128_clocks"].split())
-            uo_sha = uo["uo_out_xxh3_128"]
+            uo_digest = uo["uo_out_xxh3_128"]
         except (KeyError, ValueError) as e:
             raise DeriveError(f"tracetool uohash: unexpected output {uo}") from e
 
@@ -303,6 +303,6 @@ def derive(trace: Path, out: Path, stem: str, *, tb_v1: bool, centre_window: tup
         error = "; ".join(errors) or None
         lf.write(f"derive done: error {error}, tb_v1_check {check}, pngs {sink.written} written, "
                  f"{sink.linked} linked, cpu {cpu:.2f} s\n")
-    return DeriveResult(samplers=summaries, trace_sha=trace_sha, uo_out_xxh3_128=uo_sha,
+    return DeriveResult(samplers=summaries, trace_sha=trace_sha, uo_out_xxh3_128=uo_digest,
                         uo_out_xxh3_128_clocks=(lo, hi), tb_v1_check=check, error=error, cpu_seconds=cpu,
                         pngs_written=sink.written, pngs_linked=sink.linked, info=info)

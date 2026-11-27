@@ -17,14 +17,14 @@ vgacap [PR 62](https://github.com/mithro/vgacap/pull/62) replaced SHA-256 with X
 identity and store integrity ("There is no need for secure hashes here"). This repository follows it.
 The pin in [`ttvga/tools.toml`](../ttvga/tools.toml) is temporary, at the PR's head, until the PR merges.
 
-| before | after |
-|---|---|
-| `store_sha256:` (64 hex digits) | `store_xxh3_128:` (32 hex digits) |
-| `distinct:` lines of 64 hex digits | `distinct:` lines of 32 hex digits |
-| method `sha256-rgb6` | method `xxh3-128-rgb6` |
-| `frame_hashes.sha256-rgb6.txt` | `frame_hashes.xxh3-128-rgb6.txt` |
-| `trace.uo_out_sha256` | `trace.uo_out_xxh3_128` |
-| `trace.uo_out_sha256_clocks` | `trace.uo_out_xxh3_128_clocks` |
+| what | before | after | digits before | digits after |
+|---|---|---|---|---|
+| store key in `frames.txt` | `store_sha256` | `store_xxh3_128` | 64 | 32 |
+| `distinct:` lines in `frames.txt` | SHA-256 | XXH3-128 | 64 | 32 |
+| hash method | `sha256-rgb6` | `xxh3-128-rgb6` | 64 | 32 |
+| hash file | `frame_hashes.sha256-rgb6.txt` | `frame_hashes.xxh3-128-rgb6.txt` | 64 | 32 |
+| trace-content digest in `result.json` | `trace.uo_out_sha256` | `trace.uo_out_xxh3_128` | 64 | 32 |
+| trace-content clock range in `result.json` | `trace.uo_out_sha256_clocks` | `trace.uo_out_xxh3_128_clocks` | n/a | n/a |
 
 - The readers refuse the old key and the old method. There is no reader for both.
 - The FNV files (`fnv1a64-tb2026-rgb888`) are byte-identical, so readers of only those need no change.
@@ -162,7 +162,7 @@ To check another simulation's dump against a trace, hash its first `M` bytes and
 | `xxh3-128-rgb6` | rgb6 | 1 |
 | `fnv1a64-tb2026-rgb888` | RGB888 | 3 |
 
-- **`xxh3-128-rgb6`** is XXH3-128 (seed 0, canonical big-endian hex, 32 digits; `xxhsum -H2` prints the same) over the frame as rgb6, one byte per pixel: `R<<4 | G<<2 | B`.
+- **`xxh3-128-rgb6`** is XXH3-128 (seed 0, canonical big-endian hex, 32 digits; [`xxhsum -H2`](https://github.com/Cyan4973/xxHash) prints the same) over the frame as rgb6, one byte per pixel: `R<<4 | G<<2 | B`.
   - R is `uo_out[0]`, `uo_out[4]`; G is `uo_out[1]`, `uo_out[5]`; B is `uo_out[2]`, `uo_out[6]`.
     The first bit is the more significant.
   - The bytes are row-major, `width * height` of them, from the sampler's first active pixel of its

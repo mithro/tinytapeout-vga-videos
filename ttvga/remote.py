@@ -198,7 +198,8 @@ cd ~/{REMOTE_ROOT}/tools
 ./ffmpeg/bin/ffmpeg -version | head -1
 ./uv/uv --version
 ./uv/uv python install --no-bin {py}
-# Fill the uv cache with xxhash now, so the host scripts need no network later.
+# Fill the uv cache with the pinned xxhash now. The host scripts still ask uv at run time, so
+# the first run after a cache expiry may reach the index.
 ./uv/uv run --no-project --python {py} --with xxhash=={tools['xxhash']['version']} python --version
 if [ -f vgacap-build/PINNED ] && [ "$(cat vgacap-build/PINNED)" = "{vg['commit']}" ]; then
   echo "vgacap: present at {vg['commit']}"

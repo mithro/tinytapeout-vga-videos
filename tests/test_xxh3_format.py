@@ -6,15 +6,20 @@ from __future__ import annotations
 import pytest
 import xxhash
 
+from tests.frames_txt import to_pre_xxh3
 from ttvga import devtools
 from ttvga.cli import main
 from ttvga.harness import vgacap_path
 
 FIXTURE = devtools.ROOT / "tests" / "fixtures" / "frames" / "bars640" / "frames.txt"
 
-# rgb6 frames and their XXH3-128 (seed 0, canonical big-endian: `xxhsum -H2`). The same vectors are
-# in vgacap's python/tests/test_hashes.py and tests/test_hashes.c, where upstream xxhsum confirms them.
+# rgb6 frames and their XXH3-128 (seed 0, canonical big-endian: `xxhsum -H2`). The constants are
+# copied from vgacap at 80f6aa3 (python/tests/test_hashes.py, VECTORS; tests/test_hashes.c), where
+# upstream `xxhsum -H2` confirms them. Calling the xxhash package alone would be circular (vgacap's
+# reference wraps it), so these literals are the independent evidence. The empty-input value is
+# XXH3-128's published check value, from the same vgacap test (test_xxh3_128_of_nothing_is_xxhash_s).
 VECTORS = [
+    (b"", "99aa06d3014798d86001c324468d497f"),
     (bytes(range(8)), "e1e4432a62217fe4cfd50c61c8bb98c1"),
     (bytes(640 * 480), "f356f76a71c18f05221f2123042fb5ce"),
     (bytes(i % 64 for i in range(640 * 480)), "e1ca6fb5c48a9634f4c39e84aaa74f6a"),
@@ -48,7 +53,7 @@ def test_the_committed_fixture_digests_are_32_hex(vgacap):
 
 def test_frames_txt_with_the_sha256_key_is_refused(vgacap, tmp_path, capsys):
     old = tmp_path / "frames.txt"
-    old.write_text(FIXTURE.read_text().replace("store_xxh3_128: ", "store_sha256: ", 1))
+    old.write_text(to_pre_xxh3(FIXTURE.read_text()))
     assert main(["frames", "compare", str(old), str(FIXTURE)]) != 0
     err = capsys.readouterr().err
     # vgacap's wording is still moving: the pin's message names the keys, the fix round's says "pre-XXH3".

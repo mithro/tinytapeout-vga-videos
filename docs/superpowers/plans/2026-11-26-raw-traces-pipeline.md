@@ -1,7 +1,7 @@
 # Raw traces in the pipeline: implementation plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-> **Amended 2026-11-27:** the frame hash is XXH3-128 (method `xxh3-128-rgb6`, `store_xxh3_128`), replacing SHA-256, per vgacap PR 62. The trace-content digest is `uo_out_xxh3_128`. The trace file hash (`trace.sha256`) stays SHA-256. See [consumers.md](../../consumers.md).
+> **Amended 2026-11-27:** the frame hash is XXH3-128 (method `xxh3-128-rgb6`, `store_xxh3_128`), replacing SHA-256, per [vgacap PR 62](https://github.com/mithro/vgacap/pull/62). The trace-content digest is `uo_out_xxh3_128`. The trace file hash (`trace.sha256`) stays SHA-256. See [consumers.md](../../consumers.md).
 
 **Goal:** Make every simulation keep a raw pin trace and derive its frames, hashes, PNGs and pages from that trace through vgacap, cheaply enough to sit beside the simulation. Then re-run all 408 projects, check them, and publish the new data so other tooling (the FPGA and handheld harnesses) can compare against it properly.
 
@@ -266,7 +266,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
 **Files:**
 - Create: `ttvga/harness/tracetool.c` (C99, `-Wall -Wextra -Werror`).
 - Modify: `ttvga/remote.py` (bootstrap builds it after vgacap), `ttvga/devtools.py`, `ttvga/harness/vgacap_path.py`.
-  - The build is `cc -std=c99 -O2 -I<src>/include -I<src>/third_party/sha256 tracetool.c`, then the trace, stream, sha256 and zstd static libraries of the vgacap build, then `-pthread -o <build>/tracetool`.
+  - The build is `cc -std=c99 -O2 -I<src>/include -I<src>/third_party/xxhash tracetool.c`, then the trace, stream, xxhash and zstd static libraries of the vgacap build, then `-pthread -o <build>/tracetool`.
   - The library paths are found in the build tree, not guessed.
 - Test: `tests/sim/test_tracetool.py`.
 
@@ -422,7 +422,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - `derive.derive(trace: Path, out: Path, stem: str, *, tb_v1: bool, centre_window: tuple[int, int] | None, store_level: int | None, tools: Tools, log: Path, tb_hashes: Path | None) -> DeriveResult`. In order, it:
     1. refuses a trace whose `tracetool info` has `open.slice_from_clock` (`DeriveError`);
     2. computes `trace_sha` (`hashlib.sha256`, 1 MiB reads);
-    3. runs `vgacap-sample <trace> --out <out> --name <stem> --sampler centre-v1 [--sampler tb-v1] [--centre-window DX,DY] [--store-level N] --png-fd <w>`. A reader thread parses each record (`"<sampler> <distinct> <width> <height>\n"` + `w*h` bytes) and writes `<out>/<sampler>/png/<distinct:06d>.png`. A frame with the same `(width, height, sha256(rgb6))` as an earlier PNG is hard-linked to it instead of encoded again;
+    3. runs `vgacap-sample <trace> --out <out> --name <stem> --sampler centre-v1 [--sampler tb-v1] [--centre-window DX,DY] [--store-level N] --png-fd <w>`. A reader thread parses each record (`"<sampler> <distinct> <width> <height>\n"` + `w*h` bytes) and writes `<out>/<sampler>/png/<distinct:06d>.png`. A frame with the same `(width, height, XXH3-128 of rgb6)` as an earlier PNG is hard-linked to it instead of encoded again;
     4. writes `pages.write_sampler_page` for each sampler;
     5. runs `tracetool uohash`;
     6. with tb-v1, writes `<out>/tb-v1/TRACE_SHA256` (the hex and a newline);

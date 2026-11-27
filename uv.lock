@@ -116,7 +116,7 @@ dev = [
 requires-dist = [
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "tinytapeout-project-search", git = "https://github.com/mithro/tinytapeout-project-search?rev=be8587d" },
-    { name = "xxhash", specifier = ">=3.4" },
+    { name = "xxhash", specifier = "==4.1.0" },
 ]
 
 [package.metadata.requires-dev]

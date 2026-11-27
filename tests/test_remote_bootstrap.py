@@ -134,3 +134,9 @@ def test_tracetool_is_built_against_the_vgacap_libraries_found_in_the_build_tree
     assert cmds.rstrip().endswith("-pthread -o bld/tracetool")
     assert "building tracetool" in remote.bootstrap_script(TOOLS)
     assert "-o vgacap-build/tracetool" in remote.bootstrap_script(TOOLS)
+
+
+def test_the_host_xxhash_pin_is_the_project_pin():
+    """One xxhash version: tools.toml (the host) and pyproject.toml (local, uv.lock) must agree."""
+    deps = tomllib.loads((remote.ROOT / "pyproject.toml").read_text())["project"]["dependencies"]
+    assert f"xxhash=={TOOLS['xxhash']['version']}" in deps

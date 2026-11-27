@@ -1,7 +1,7 @@
 # Raw signal traces, pluggable samplers and pluggable frame hashes
 
 Status: approved by the owner on 2026-11-25, seventeenth revision, amended
-2026-11-25 (`tb-v1` is legacy and runs only on request; see below), and amended 2026-11-27 (the frame hash is XXH3-128, method `xxh3-128-rgb6`, replacing SHA-256 on the owner's ruling that no secure hash is needed; vgacap PR 62). The
+2026-11-25 (`tb-v1` is legacy and runs only on request; see below), and amended 2026-11-27 (the frame hash is XXH3-128, method `xxh3-128-rgb6`, replacing SHA-256 on the owner's ruling that no secure hash is needed; [vgacap PR 62](https://github.com/mithro/vgacap/pull/62)). The
 sixteenth independent review found no blocking and no medium problems.
 
 ## Why
