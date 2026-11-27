@@ -1,0 +1,7 @@
+frames_a: 3596
+frames_b: 3596
+gaps_a: 0
+gaps_b: 0
+first_mismatch: none
+offset: 0
+start_clock_delta: -944 x3596
