@@ -22,8 +22,8 @@ Host load during the run: 45 to 109 on 88 CPUs (0.5 to 1.24 a CPU), from the pil
 | --- | --- | --- | --- | --- | --- |
 | W | default sampler set | centre-v1 | owner | 2026-11-25 | [spec, decision 3](../../superpowers/specs/2026-11-24-raw-frames-and-hash-methods-design.md#decisions-for-the-owner) |
 | W | tb-v1 | on request (`--tb-v1`) | owner | 2026-11-25 | [spec, decision 3](../../superpowers/specs/2026-11-24-raw-frames-and-hash-methods-design.md#decisions-for-the-owner) |
-| BK | upload split | none | owner | 2026-11-27 | [spec, decision 4](../../superpowers/specs/2026-11-24-raw-frames-and-hash-methods-design.md#decisions-for-the-owner) |
-| BK | upload listing | measured | owner | 2026-11-27 | [spec, decision 4](../../superpowers/specs/2026-11-24-raw-frames-and-hash-methods-design.md#decisions-for-the-owner) |
+| BK | upload split | none | owner | 2026-11-27 | [plan, Task 19](../../superpowers/plans/2026-11-26-raw-traces-pipeline.md#task-19-the-upload-split-decision-4-with-the-frames-upload-left-off) |
+| BK | upload listing | measured | owner | 2026-11-27 | [plan, Task 19](../../superpowers/plans/2026-11-26-raw-traces-pipeline.md#task-19-the-upload-split-decision-4-with-the-frames-upload-left-off) |
 | BK | plan Task 19 | reduced | owner | 2026-11-27 | [plan, Task 19](../../superpowers/plans/2026-11-26-raw-traces-pipeline.md#task-19-the-upload-split-decision-4-with-the-frames-upload-left-off) |
 | BN | `FFMPEG_CPUS` | 2 | controller | 2026-11-27 | [3e52502](https://github.com/mithro/tinytapeout-vga-videos/commit/3e52502) |
 | BN | TasksMax | 64 | controller | 2026-11-27 | [`runqueue.py`](../../../ttvga/harness/runqueue.py) |
