@@ -18,29 +18,39 @@ Host load during the run: 45 to 109 on 88 CPUs (0.5 to 1.24 a CPU), from the pil
 
 ## Rulings used here
 
-| ruling | what | where |
-| --- | --- | --- |
-| W | centre-v1 only by default; tb-v1 on request | [plan, header](../../superpowers/plans/2026-11-26-raw-traces-pipeline.md) |
-| BK | no upload split: the frames go up with the normal 5-minute upload; measure its listing | owner, 2026-11-27 |
-| BN | `FFMPEG_CPUS = 2`, the scope's CPUQuota; TasksMax stays 64 | controller, 2026-11-27 |
+| ruling | setting | value | from | date | source |
+| --- | --- | --- | --- | --- | --- |
+| W | default sampler set | centre-v1 | owner | 2026-11-25 | [spec, decision 3](../../superpowers/specs/2026-11-24-raw-frames-and-hash-methods-design.md#decisions-for-the-owner) |
+| W | tb-v1 | on request (`--tb-v1`) | owner | 2026-11-25 | [spec, decision 3](../../superpowers/specs/2026-11-24-raw-frames-and-hash-methods-design.md#decisions-for-the-owner) |
+| BK | upload split | none | owner | 2026-11-27 | [spec, decision 4](../../superpowers/specs/2026-11-24-raw-frames-and-hash-methods-design.md#decisions-for-the-owner) |
+| BK | upload listing | measured | owner | 2026-11-27 | [spec, decision 4](../../superpowers/specs/2026-11-24-raw-frames-and-hash-methods-design.md#decisions-for-the-owner) |
+| BK | plan Task 19 | reduced | owner | 2026-11-27 | [plan, Task 19](../../superpowers/plans/2026-11-26-raw-traces-pipeline.md#task-19-the-upload-split-decision-4-with-the-frames-upload-left-off) |
+| BN | `FFMPEG_CPUS` | 2 | controller | 2026-11-27 | [3e52502](https://github.com/mithro/tinytapeout-vga-videos/commit/3e52502) |
+| BN | TasksMax | 64 | controller | 2026-11-27 | [`runqueue.py`](../../../ttvga/harness/runqueue.py) |
 
 ## Starts that failed
 
 Two earlier starts failed and are not in these tables:
 
-| attempt | started | failure | fix |
-| --- | --- | --- | --- |
-| 1 | 01:16 | every model aborted: `std::system_error` EAGAIN | [cb0f232](https://github.com/mithro/tinytapeout-vga-videos/commit/cb0f232) `ctx.threads(1)` in [`tb.cpp`](../../../ttvga/harness/tb.cpp) |
-| 2 | 01:26 | the capture's MJPEG encoder did not open: EAGAIN | [f64607a](https://github.com/mithro/tinytapeout-vga-videos/commit/f64607a) `-cpucount` in [`tb.cpp`](../../../ttvga/harness/tb.cpp) and [`encode.py`](../../../ttvga/harness/encode.py) |
-| 3 | 01:34 | none | - |
+| attempt | started | failed in | error | threads from | threads | stopped |
+| --- | --- | --- | --- | --- | ---: | --- |
+| 1 | 01:16 | every model | `std::system_error` EAGAIN | Verilator context pool | 87 | itself |
+| 2 | 01:26 | capture's MJPEG encoder | EAGAIN | ffmpeg, by host CPUs | 88 | by hand, 50 s |
+| 3 | 01:34 | - | - | - | - | - |
 
-- Attempt 1: Verilator's context starts 87 idle pool threads on this host.
-- Attempt 2: ffmpeg sizes its encoder threads by the host's 88 CPUs.
-- Both exceed the scope's TasksMax of 64. Attempt 2 was stopped by hand after 50 s.
+| attempt | fix commit | change | file |
+| --- | --- | --- | --- |
+| 1 | [cb0f232](https://github.com/mithro/tinytapeout-vga-videos/commit/cb0f232) | `ctx.threads(1)` | [`tb.cpp`](../../../ttvga/harness/tb.cpp) |
+| 2 | [f64607a](https://github.com/mithro/tinytapeout-vga-videos/commit/f64607a) | `-cpucount` | [`tb.cpp`](../../../ttvga/harness/tb.cpp) |
+| 2 | [f64607a](https://github.com/mithro/tinytapeout-vga-videos/commit/f64607a) | `-cpucount` | [`encode.py`](../../../ttvga/harness/encode.py) |
+
+Both thread counts exceed the scope's TasksMax of 64.
 
 ## The upload's listing (Ruling BK)
 
 > **At all 408 projects with both samplers (the step 4 re-run) the steady listing is projected at about 189 s (161 to 216 s) of the 5-minute interval, and runs that also transfer new frames already took up to 247 s during the pilot.**
+>
+> The projection extrapolates linearly from 63,000 to 103,000 files measured to 1.09 million, about 10 times the largest count measured: the listing's real cost at that size is not measured.
 
 From the upload's `/var/lib/data-upload/rsync.log` on the host, read-only:
 - files: `Number of files:`;
@@ -205,21 +215,24 @@ On the published trace, VGACAP_SAMPLE_DEBUG=1; and the job's derive from result.
 
 ## Against the targets
 
-| target | limit | within | over | worst project | worst value |
-| --- | --- | ---: | ---: | --- | --- |
-| recording, side by side | 5% of wall | 1 | 7 | rle_vga | +20.7% |
-| recording, pilot runs only (indicative) | 5% of wall | 3 | 0 | dvd_screensaver | +3.9% |
-| post-simulation CPU | 5% of simulation CPU | 1 | 10 | nyancat | 67% |
-| memory | MemoryMax 6 GiB | 11 | 0 | atari2600 | 3,814 MiB |
-| tasks, `FFMPEG_CPUS` 4 | TasksMax 64 | 11 | 0 | six projects | 61 |
-| tasks, `FFMPEG_CPUS` 2 | TasksMax 64 | 1 | 0 | atari2600 | 53 |
-| root volume | `min_free_root_gb` | - | - | atari2600 | 1.98 GB |
+| target | limit | within | over | inconclusive | worst project | worst value |
+| --- | --- | ---: | ---: | ---: | --- | --- |
+| recording, side by side | 5% of wall | 0 | 3 | 5 | rle_vga | +20.7% |
+| recording, pilot runs only (indicative) | 5% of wall | 3 | 0 | 0 | dvd_screensaver | +3.9% |
+| post-simulation CPU | 5% of simulation CPU | 1 | 10 | 0 | nyancat | 67% |
+| memory | MemoryMax 6 GiB | 11 | 0 | 0 | atari2600 | 3,814 MiB |
+| tasks, `FFMPEG_CPUS` 4 | TasksMax 64 | 11 | 0 | 0 | six projects | 61 |
+| tasks, `FFMPEG_CPUS` 2 | TasksMax 64 | 1 | 0 | 0 | atari2600 | 53 |
+| root volume | `min_free_root_gb` | - | - | - | atari2600 | 1.98 GB |
 
-- **Recording:** the verdicts come from the side-by-side bench below. The pilot's own runs, one after another, are indicative only: the same untraced model differed by up to 26.6% between its two runs (rle_vga: 484.1 s and 382.4 s; dvd_screensaver 18.7%).
+- **Recording:** the verdicts come from the side-by-side bench below: over for nyancat, rle_vga and vgadonut; inconclusive (pairs span 5%) for colorbars, nyan, cfib_demo, metaballs and tomkeddie_a. dvd_screensaver, mandelbrot and atari2600 have only the pilot's runs. The pilot's own runs, one after another, are indicative only: the same untraced model differed by up to 26.6% between its two runs (rle_vga: 484.1 s and 382.4 s; dvd_screensaver 18.7%).
 - **Root volume:**
   - the rule gives `min_free_root_gb = 100`, the value host.toml already had; it was written again;
   - the lowest free space on the root volume during the pilot was 772 GB.
-- **Tasks (Ruling BN):** with `FFMPEG_CPUS = 4` six projects reached 61 of 64 tasks while job.py encoded. Commit [3e52502](https://github.com/mithro/tinytapeout-vga-videos/commit/3e52502) sets it to 2. One encode-heavy project, atari2600 (945 s of encode in the pilot), was run again with it: the peak was 53 tasks, during derive; encode peaked at 46. Its encode took 1,352 s against 945 s in the pilot (other load differed).
+- **Tasks (Ruling BN):** with `FFMPEG_CPUS = 4` six projects reached 61 of 64 tasks while job.py encoded. Commit [3e52502](https://github.com/mithro/tinytapeout-vga-videos/commit/3e52502) sets it to 2. One encode-heavy project, atari2600 (945 s of encode in the pilot), was run again with it: the peak was 53 tasks, during derive; encode peaked at 46.
+  - The cost of Ruling BN: atari2600's encode took 1,352 s against 945 s in the pilot, +43%.
+  - Measured on one project only; the other five that reached 61 tasks were not re-run.
+  - The re-run ran alone, under different host load from the pilot's, so the +43% is one sample, not a measured rate.
 - **Memory:** the largest single process is x264 at 1,789 MiB. MemoryPeak counts the scope's page cache too.
 - **dvd_screensaver:** post-simulation CPU 131.3 s against its 17.8 s budget (5% of 356.9 s), with both samplers.
 
@@ -227,66 +240,77 @@ On the published trace, VGACAP_SAMPLE_DEBUG=1; and the job's derive from result.
 
 ### Side by side
 
-The logs are in [`bench/`](bench/), summarised by [`bench_summary.py`](bench_summary.py). Each round runs 2 models without the trace and 2 with it at the same moment, in queue-sized scopes, for 20 s of simulated time. A pair is one without and one with, started together. colorbars and nyancat ran alone. The other six ran together, 24 models at once. nyancat's pairs come from the level bench below (level 1 against no trace).
+The logs are in [`bench/`](bench/), summarised by [`bench_summary.py`](bench_summary.py), whose output the two tables below are. 20 s of simulated time per model, in queue-sized scopes. A pair is one without and one with, started together.
 
-| project | round | pair | without (s) | with (s) | overhead (%) |
-| --- | ---: | --- | ---: | ---: | ---: |
-| colorbars | 1 | A | 101.8 | 107.2 | +5.3 |
-| colorbars | 1 | B | 101.2 | 104.3 | +3.0 |
-| colorbars | 2 | A | 99.2 | 105.9 | +6.7 |
-| colorbars | 2 | B | 96.1 | 104.8 | +9.0 |
-| colorbars | 3 | A | 99.5 | 104.8 | +5.3 |
-| colorbars | 3 | B | 96.7 | 103.1 | +6.6 |
-| nyancat | 1 | - | 112.0 | 137.2 | +22.5 |
-| nyancat | 2 | - | 113.9 | 127.4 | +11.8 |
-| nyancat | 3 | - | 114.7 | 134.9 | +17.6 |
-| rle_vga | 1 | A | 140.3 | 175.7 | +25.2 |
-| rle_vga | 1 | B | 140.0 | 162.8 | +16.3 |
-| rle_vga | 2 | A | 161.6 | 175.9 | +8.8 |
-| rle_vga | 2 | B | 157.7 | 178.2 | +13.0 |
-| rle_vga | 3 | A | 144.3 | 191.4 | +32.7 |
-| rle_vga | 3 | B | 148.6 | 190.8 | +28.4 |
-| nyan | 1 | A | 102.8 | 111.7 | +8.7 |
-| nyan | 1 | B | 108.6 | 110.7 | +1.9 |
-| nyan | 2 | A | 110.7 | 110.9 | +0.1 |
-| nyan | 2 | B | 111.5 | 111.7 | +0.2 |
-| nyan | 3 | A | 115.7 | 123.6 | +6.8 |
-| nyan | 3 | B | 115.0 | 124.6 | +8.3 |
-| cfib_demo | 1 | A | 215.3 | 253.7 | +17.8 |
-| cfib_demo | 1 | B | 221.9 | 252.0 | +13.5 |
-| cfib_demo | 2 | A | 226.6 | 233.0 | +2.9 |
-| cfib_demo | 2 | B | 217.6 | 240.2 | +10.4 |
-| cfib_demo | 3 | A | 215.0 | 233.6 | +8.7 |
-| cfib_demo | 3 | B | 213.8 | 232.6 | +8.8 |
-| metaballs | 1 | A | 247.3 | 272.0 | +10.0 |
-| metaballs | 1 | B | 257.2 | 269.0 | +4.6 |
-| metaballs | 2 | A | 227.3 | 253.8 | +11.7 |
-| metaballs | 2 | B | 238.8 | 257.8 | +7.9 |
-| metaballs | 3 | A | 219.0 | 235.7 | +7.6 |
-| metaballs | 3 | B | 224.3 | 234.0 | +4.3 |
-| tomkeddie_a | 1 | A | 120.8 | 128.8 | +6.6 |
-| tomkeddie_a | 1 | B | 121.0 | 129.8 | +7.3 |
-| tomkeddie_a | 2 | A | 132.9 | 130.7 | -1.7 |
-| tomkeddie_a | 2 | B | 135.2 | 131.8 | -2.6 |
-| tomkeddie_a | 3 | A | 116.8 | 126.4 | +8.2 |
-| tomkeddie_a | 3 | B | 115.1 | 125.8 | +9.2 |
-| vgadonut | 1 | A | 273.0 | 288.6 | +5.7 |
-| vgadonut | 1 | B | 284.2 | 305.1 | +7.4 |
-| vgadonut | 2 | A | 282.3 | 304.3 | +7.8 |
-| vgadonut | 2 | B | 284.1 | 302.5 | +6.5 |
-| vgadonut | 3 | A | 246.8 | 270.2 | +9.5 |
-| vgadonut | 3 | B | 249.2 | 266.9 | +7.1 |
+| bench | models at once | pairs a round | rounds | projects |
+| --- | ---: | ---: | ---: | --- |
+| 2 + 2 | 4 | 2 | 3 | colorbars |
+| 2 + 2 | 24 | 2 | 3 | rle_vga, nyan, cfib_demo, metaballs, tomkeddie_a, vgadonut |
+| level bench | 5 | 1 | 3 | nyancat |
 
-| project | pairs | median overhead (%) | lowest (%) | highest (%) | pairs span 5% | verdict |
-| --- | ---: | ---: | ---: | ---: | --- | --- |
-| colorbars | 6 | +6.0 | +3.0 | +9.0 | yes | over |
-| nyancat | 3 | +17.6 | +11.8 | +22.5 | no | over |
-| rle_vga | 6 | +20.7 | +8.8 | +32.7 | no | over |
-| nyan | 6 | +4.4 | +0.1 | +8.7 | yes | within |
-| cfib_demo | 6 | +9.6 | +2.9 | +17.8 | yes | over |
-| metaballs | 6 | +7.8 | +4.3 | +11.7 | yes | over |
-| tomkeddie_a | 6 | +6.9 | -2.6 | +9.2 | yes | over |
-| vgadonut | 6 | +7.2 | +5.7 | +9.5 | no | over |
+| project | bench | round | pair | without (s) | with (s) | overhead (%) |
+| --- | --- | ---: | --- | ---: | ---: | ---: |
+| colorbars | 2 + 2 | 1 | A | 101.8 | 107.2 | +5.3 |
+| colorbars | 2 + 2 | 1 | B | 101.2 | 104.3 | +3.0 |
+| colorbars | 2 + 2 | 2 | A | 99.2 | 105.9 | +6.7 |
+| colorbars | 2 + 2 | 2 | B | 96.1 | 104.8 | +9.0 |
+| colorbars | 2 + 2 | 3 | A | 99.5 | 104.8 | +5.3 |
+| colorbars | 2 + 2 | 3 | B | 96.7 | 103.1 | +6.6 |
+| rle_vga | 2 + 2 | 1 | A | 140.3 | 175.7 | +25.2 |
+| rle_vga | 2 + 2 | 1 | B | 140.0 | 162.8 | +16.3 |
+| rle_vga | 2 + 2 | 2 | A | 161.6 | 175.9 | +8.8 |
+| rle_vga | 2 + 2 | 2 | B | 157.7 | 178.2 | +13.0 |
+| rle_vga | 2 + 2 | 3 | A | 144.3 | 191.4 | +32.7 |
+| rle_vga | 2 + 2 | 3 | B | 148.6 | 190.8 | +28.4 |
+| nyan | 2 + 2 | 1 | A | 102.8 | 111.7 | +8.7 |
+| nyan | 2 + 2 | 1 | B | 108.6 | 110.7 | +1.9 |
+| nyan | 2 + 2 | 2 | A | 110.7 | 110.9 | +0.1 |
+| nyan | 2 + 2 | 2 | B | 111.5 | 111.7 | +0.2 |
+| nyan | 2 + 2 | 3 | A | 115.7 | 123.6 | +6.8 |
+| nyan | 2 + 2 | 3 | B | 115.0 | 124.6 | +8.3 |
+| cfib_demo | 2 + 2 | 1 | A | 215.3 | 253.7 | +17.8 |
+| cfib_demo | 2 + 2 | 1 | B | 221.9 | 252.0 | +13.5 |
+| cfib_demo | 2 + 2 | 2 | A | 226.6 | 233.0 | +2.9 |
+| cfib_demo | 2 + 2 | 2 | B | 217.6 | 240.2 | +10.4 |
+| cfib_demo | 2 + 2 | 3 | A | 215.0 | 233.6 | +8.7 |
+| cfib_demo | 2 + 2 | 3 | B | 213.8 | 232.6 | +8.8 |
+| metaballs | 2 + 2 | 1 | A | 247.3 | 272.0 | +10.0 |
+| metaballs | 2 + 2 | 1 | B | 257.2 | 269.0 | +4.6 |
+| metaballs | 2 + 2 | 2 | A | 227.3 | 253.8 | +11.7 |
+| metaballs | 2 + 2 | 2 | B | 238.8 | 257.8 | +7.9 |
+| metaballs | 2 + 2 | 3 | A | 219.0 | 235.7 | +7.6 |
+| metaballs | 2 + 2 | 3 | B | 224.3 | 234.0 | +4.3 |
+| tomkeddie_a | 2 + 2 | 1 | A | 120.8 | 128.8 | +6.6 |
+| tomkeddie_a | 2 + 2 | 1 | B | 121.0 | 129.8 | +7.3 |
+| tomkeddie_a | 2 + 2 | 2 | A | 132.9 | 130.7 | -1.7 |
+| tomkeddie_a | 2 + 2 | 2 | B | 135.2 | 131.8 | -2.6 |
+| tomkeddie_a | 2 + 2 | 3 | A | 116.8 | 126.4 | +8.2 |
+| tomkeddie_a | 2 + 2 | 3 | B | 115.1 | 125.8 | +9.2 |
+| vgadonut | 2 + 2 | 1 | A | 273.0 | 288.6 | +5.7 |
+| vgadonut | 2 + 2 | 1 | B | 284.2 | 305.1 | +7.4 |
+| vgadonut | 2 + 2 | 2 | A | 282.3 | 304.3 | +7.8 |
+| vgadonut | 2 + 2 | 2 | B | 284.1 | 302.5 | +6.5 |
+| vgadonut | 2 + 2 | 3 | A | 246.8 | 270.2 | +9.5 |
+| vgadonut | 2 + 2 | 3 | B | 249.2 | 266.9 | +7.1 |
+| nyancat | level bench | 1 | - | 112.0 | 137.2 | +22.5 |
+| nyancat | level bench | 2 | - | 113.9 | 127.4 | +11.8 |
+| nyancat | level bench | 3 | - | 114.7 | 134.9 | +17.6 |
+
+| project | bench | pairs | median overhead (%) | lowest (%) | highest (%) | pairs span 5% | verdict |
+| --- | --- | ---: | ---: | ---: | ---: | --- | --- |
+| colorbars | 2 + 2 | 6 | +6.0 | +3.0 | +9.0 | yes | inconclusive |
+| rle_vga | 2 + 2 | 6 | +20.7 | +8.8 | +32.7 | no | over |
+| nyan | 2 + 2 | 6 | +4.4 | +0.1 | +8.7 | yes | inconclusive |
+| cfib_demo | 2 + 2 | 6 | +9.6 | +2.9 | +17.8 | yes | inconclusive |
+| metaballs | 2 + 2 | 6 | +7.8 | +4.3 | +11.7 | yes | inconclusive |
+| tomkeddie_a | 2 + 2 | 6 | +6.9 | -2.6 | +9.2 | yes | inconclusive |
+| vgadonut | 2 + 2 | 6 | +7.2 | +5.7 | +9.5 | no | over |
+| nyancat | level bench | 3 | +17.6 | +11.8 | +22.5 | no | over |
+
+- **Verdict:** inconclusive when the pairs span 5% (lowest at or below 5%, highest above), however the median falls.
+- **Over:** rle_vga, vgadonut (lowest pair +5.7%) and nyancat.
+- **Inconclusive:** colorbars, nyan, cfib_demo, metaballs, tomkeddie_a. Pairs in the same round differ by up to 8.9 points (rle_vga round 1: +25.2% and +16.3%; nyan round 1: +8.7% and +1.9%). colorbars' level 1 against no trace in the level bench below is +1.6%, against its +6.0% median here.
+- **nyancat** (bench "level bench") comes from a different shape: 5 models at once, one without the trace and four at different levels, so one pair a round.
 
 ### kTraceZstdLevel
 
@@ -337,9 +361,10 @@ The fast paths are inlined. What remains is the slow path, taken on every pin ch
 | nyancat | 3,024,787,222 | 995,902,445 | 496,828,096 | 416,434,073 | +17.6 |
 | rle_vga | 2,883,211,220 | 3,611,225 | 2,883,206,512 | 18,388,738 | +20.7 |
 
-- nyancat changes `uo_out` on a third of its samples. It is the one project clearly over, and the slow path is where its time goes (no zstd level helps).
+- nyancat changes `uo_out` on a third of its samples. It is over, and the slow path is where its time goes (no zstd level helps).
 - rle_vga's QSPI clock changes `uio_out` on every sample, yet side by side it is the worst at +20.7% (+8.8 to +32.7%): the slow path on every sample. The pilot's indicative +10.6% understated it.
-- Quiet designs are over too (metaballs +7.8% with a change on 0.1% of samples, tomkeddie_a +6.9%). Under this load (24 models at once on a host already at about 0.6 a CPU) the per-sample compare and push cost more than the 1.5-2.6% the trace-speed work measured on a quieter host.
+- vgadonut, over with every pair above 5% (+5.7 to +9.5%), changes `uo_out` on 7.9% of its samples.
+- The quiet designs are inconclusive: metaballs (+7.8% median, a change on 0.1% of samples) and tomkeddie_a (+6.9%) have pairs on both sides of 5%. Their medians, under this load (24 models at once on a host already at about 0.6 a CPU), sit above the 1.5-2.6% the trace-speed work measured on a quieter host.
 - The scope's CPUQuota of 200% is shared by the simulation thread, the trace compressor thread and the capture's ffmpeg. On a busy design the compressor's CPU therefore also shows up as wall time.
 - The next fix in the plan is the [format note](https://github.com/mithro/vgacap/blob/m10-format-note/docs/design/2026-11-25-format-v2-runs.md)'s planar alternative: `uo_out` as plain bytes per sample, the other pins as 64-bit change events. That is vgacap work, and goes to the controller with this profile.
 
