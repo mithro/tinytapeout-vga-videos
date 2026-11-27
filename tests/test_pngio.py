@@ -96,3 +96,12 @@ def _write(tmp_path, name, content):
     p = tmp_path / name
     p.write_bytes(content)
     return p
+
+
+@pytest.mark.parametrize("bad", [64, 255])
+def test_write_rgb6_refuses_a_byte_above_63(tmp_path, bad):
+    px = bytearray(16 * 16)
+    px[200] = bad
+    with pytest.raises(ValueError, match="not an rgb6 value"):
+        pngio.write_rgb6(tmp_path / "x.png", 16, 16, bytes(px))
+    assert not (tmp_path / "x.png").exists()
