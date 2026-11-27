@@ -1,0 +1,530 @@
+{
+  "id": "ttihp25a/tt_um_MichaelBell_rle_vga",
+  "started": "2026-11-27T01:34:58+00:00",
+  "host_load_start": [
+    72.32763671875,
+    69.31005859375,
+    71.14599609375
+  ],
+  "nproc": 88,
+  "runs": [
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/build/Vtop",
+        "--clock-hz",
+        "24000000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--qspi",
+        "cs0=0,sck=3,sd0=1,sd1=2,sd2=4,sd3=5",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_MichaelBell_rle_vga/run0"
+      ],
+      "time": {
+        "wall_s": 484.08,
+        "user_s": 497.28,
+        "sys_s": 4.13,
+        "cpu_s": 501.41,
+        "max_rss_kb": 73568,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": false,
+      "index": 0,
+      "trace_bytes": null,
+      "capture_bytes": 13786486,
+      "timing": {
+        "status": "ok",
+        "frames": 3600,
+        "wall_seconds": 484.1,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/build/Vtop",
+        "--clock-hz",
+        "24000000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--qspi",
+        "cs0=0,sck=3,sd0=1,sd1=2,sd2=4,sd3=5",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_MichaelBell_rle_vga/run1",
+        "--trace",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_MichaelBell_rle_vga/run1/ttihp25a_tt_um_MichaelBell_rle_vga_trace.vgch.zst",
+        "--meta",
+        "project=ttihp25a/tt_um_MichaelBell_rle_vga",
+        "--meta",
+        "override=none",
+        "--meta",
+        "simulator=Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+        "--meta",
+        "harness=0b581aeab69291a9"
+      ],
+      "time": {
+        "wall_s": 470.91,
+        "user_s": 497.03,
+        "sys_s": 5.1,
+        "cpu_s": 502.13,
+        "max_rss_kb": 108760,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": true,
+      "index": 1,
+      "trace_bytes": 18388738,
+      "capture_bytes": 13786486,
+      "timing": {
+        "status": "ok",
+        "frames": 3600,
+        "wall_seconds": 470.9,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/build/Vtop",
+        "--clock-hz",
+        "24000000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--qspi",
+        "cs0=0,sck=3,sd0=1,sd1=2,sd2=4,sd3=5",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_MichaelBell_rle_vga/run2"
+      ],
+      "time": {
+        "wall_s": 382.41,
+        "user_s": 400.53,
+        "sys_s": 4.14,
+        "cpu_s": 404.67,
+        "max_rss_kb": 78884,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": false,
+      "index": 2,
+      "trace_bytes": null,
+      "capture_bytes": 13786486,
+      "timing": {
+        "status": "ok",
+        "frames": 3600,
+        "wall_seconds": 382.4,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/build/Vtop",
+        "--clock-hz",
+        "24000000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--qspi",
+        "cs0=0,sck=3,sd0=1,sd1=2,sd2=4,sd3=5",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_MichaelBell_rle_vga/run3",
+        "--trace",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_MichaelBell_rle_vga/run3/ttihp25a_tt_um_MichaelBell_rle_vga_trace.vgch.zst",
+        "--meta",
+        "project=ttihp25a/tt_um_MichaelBell_rle_vga",
+        "--meta",
+        "override=none",
+        "--meta",
+        "simulator=Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+        "--meta",
+        "harness=0b581aeab69291a9"
+      ],
+      "time": {
+        "wall_s": 487.31,
+        "user_s": 502.47,
+        "sys_s": 4.37,
+        "cpu_s": 506.84,
+        "max_rss_kb": 109248,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": true,
+      "index": 3,
+      "trace_bytes": 18388738,
+      "capture_bytes": 13786486,
+      "timing": {
+        "status": "ok",
+        "frames": 3600,
+        "wall_seconds": 487.3,
+        "width": 640,
+        "height": 480
+      }
+    }
+  ],
+  "samples": [
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "10800.0",
+        "~/ttvga/tools/vgacap-build/vgacap-sample",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_trace.vgch.zst",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_MichaelBell_rle_vga/sample-default",
+        "--name",
+        "ttihp25a_tt_um_MichaelBell_rle_vga"
+      ],
+      "time": {
+        "wall_s": 51.24,
+        "user_s": 51.17,
+        "sys_s": 0.05,
+        "cpu_s": 51.22,
+        "max_rss_kb": 57120,
+        "exit_status": 0,
+        "signal": null
+      },
+      "variant": "default",
+      "debug": "trace_passes=1 blocks_decoded=1208",
+      "stores": {
+        "centre-v1": 29
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "10800.0",
+        "~/ttvga/tools/vgacap-build/vgacap-sample",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_trace.vgch.zst",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_MichaelBell_rle_vga/sample-both",
+        "--name",
+        "ttihp25a_tt_um_MichaelBell_rle_vga",
+        "--sampler",
+        "centre-v1",
+        "--sampler",
+        "tb-v1"
+      ],
+      "time": {
+        "wall_s": 64.08,
+        "user_s": 63.96,
+        "sys_s": 0.08,
+        "cpu_s": 64.04,
+        "max_rss_kb": 66976,
+        "exit_status": 0,
+        "signal": null
+      },
+      "variant": "both",
+      "debug": "trace_passes=1 blocks_decoded=1208",
+      "stores": {
+        "centre-v1": 29,
+        "tb-v1": 29
+      }
+    }
+  ],
+  "errors": [],
+  "job": {
+    "rc": 0,
+    "cmd": [
+      "~/ttvga/tools/python/cpython-3.14.7-linux-x86_64-gnu/bin/python3.14",
+      "~/ttvga/harness/job.py",
+      "--targets",
+      "~/ttvga/harness/targets.json",
+      "--id",
+      "ttihp25a/tt_um_MichaelBell_rle_vga",
+      "--root",
+      "~/ttvga",
+      "--seconds",
+      "60",
+      "--timeout",
+      "10800.0",
+      "--grace",
+      "120",
+      "--tb-v1",
+      "--keep-build"
+    ],
+    "time": {
+      "wall_s": 872.21,
+      "user_s": 1040.55,
+      "sys_s": 21.18,
+      "cpu_s": 1061.73,
+      "max_rss_kb": 660408,
+      "exit_status": 0,
+      "signal": null
+    }
+  },
+  "result": {
+    "id": "ttihp25a/tt_um_MichaelBell_rle_vga",
+    "shuttle": "ttihp25a",
+    "macro": "tt_um_MichaelBell_rle_vga",
+    "started": "2026-11-27T01:34:58+00:00",
+    "host": "<host>",
+    "harness": "0b581aeab69291a9",
+    "test_hooks": false,
+    "override": null,
+    "stage": "publish",
+    "error": null,
+    "timings": {
+      "fetch": 1.5,
+      "build": 13.5,
+      "simulate": 549.4,
+      "derive": 139.1,
+      "encode": 168.2,
+      "publish": 0.1
+    },
+    "tools": {
+      "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+      "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+    },
+    "auto_ui_in": null,
+    "qspi": "cs0=0,sck=3,sd0=1,sd1=2,sd2=4,sd3=5",
+    "trace": {
+      "file": "ttihp25a_tt_um_MichaelBell_rle_vga_trace.vgch.zst",
+      "sha256": "c479a6593ca2a6c474ebe272b4e7b6578a1e6b7b9b9f9a1c98dfd62082609f3e",
+      "bytes": 18388738,
+      "blocks": 1208,
+      "clocks": 1441605610,
+      "uo_out_sha256": "0e12e7214f9ca9b46360246b1292b3c81e98c22386eff83f6977e8c223d8cd8e",
+      "uo_out_sha256_clocks": [
+        0,
+        33554432
+      ],
+      "fast_path": true
+    },
+    "samplers": {
+      "centre-v1": {
+        "sampler_status": "ok",
+        "frames": 3600,
+        "distinct_frames": 1,
+        "mode": "640x480@75",
+        "width": 640,
+        "height": 480,
+        "clocks_per_pixel": 1.0
+      },
+      "tb-v1": {
+        "sampler_status": "ok",
+        "frames": 3600,
+        "distinct_frames": 1,
+        "mode": "640x480@75",
+        "width": 640,
+        "height": 480,
+        "clocks_per_pixel": 0.9523809523809523
+      }
+    },
+    "tb_v1": {
+      "state": "current",
+      "trace_sha": "c479a6593ca2a6c474ebe272b4e7b6578a1e6b7b9b9f9a1c98dfd62082609f3e",
+      "dropped": false
+    },
+    "tb_v1_check": "match",
+    "derive_cpu_seconds": 139.038,
+    "published": true,
+    "timing": {
+      "status": "ok",
+      "clock_hz": 24000000,
+      "first_sync_clock": 2410,
+      "capture_after_clock": 1245184,
+      "hsync_active_low": true,
+      "vsync_active_low": false,
+      "line_clocks": 800,
+      "lines": 500,
+      "hsync_pulse_clocks": 64,
+      "vsync_pulse_clocks": 3200,
+      "line_clocks_range": [
+        800,
+        800
+      ],
+      "frame_clocks_range": [
+        400000,
+        400000
+      ],
+      "mode": "640x480@75",
+      "clocks_per_pixel": 0.9524,
+      "width": 640,
+      "height": 480,
+      "fps": 60.0,
+      "frames": 3600,
+      "target_frames": 3600,
+      "distinct_frames": 1,
+      "uniform_frames": 3600,
+      "black_frames": 3600,
+      "colours": 1,
+      "mean_frame_delta": 0.0,
+      "pixels_ever_changed": 0.0,
+      "lines_seen": 1800449,
+      "short_lines": 0,
+      "long_lines": 0,
+      "clocks_simulated": 1441605610,
+      "sim_seconds": 60.067,
+      "wall_seconds": 549.3,
+      "clocks_per_wall_second": 2624405,
+      "ffmpeg_status": 0,
+      "audio_driven": true,
+      "audio_transitions": 0,
+      "audio_rate": 192000,
+      "audio_samples": 0
+    },
+    "videos": {
+      "ttihp25a_tt_um_MichaelBell_rle_vga_10s.mp4": {
+        "bytes": 39043,
+        "sha256": "6ca1a182ebfe775be3a7c42714b98c65e95da73f44a92297eb573f7e39c5ceed"
+      },
+      "ttihp25a_tt_um_MichaelBell_rle_vga_10s.webm": {
+        "bytes": 27645,
+        "sha256": "d152fc3de0beff685b4da49a6620094564f8770a9b33d506ee4129ef43c04556"
+      },
+      "ttihp25a_tt_um_MichaelBell_rle_vga_30s.mp4": {
+        "bytes": 113012,
+        "sha256": "257f3dcbf77a9f48808a4940c8ca756e6b50bb76bd8cff80e658bd5de09a6542"
+      },
+      "ttihp25a_tt_um_MichaelBell_rle_vga_30s.webm": {
+        "bytes": 81917,
+        "sha256": "e1c65965d0333c823d0460270db26346a414f859f64f8957f127cf76af24df03"
+      },
+      "ttihp25a_tt_um_MichaelBell_rle_vga_60s.mp4": {
+        "bytes": 223734,
+        "sha256": "95e2032b39cae011f497573f4ccb809eef8dd6eb66daeb31338a7e2af0c96f81"
+      },
+      "ttihp25a_tt_um_MichaelBell_rle_vga_60s.webm": {
+        "bytes": 163353,
+        "sha256": "45c71f4f707fcbac32325239b391ed43ee0e68ddf944f5627e24eb591939e618"
+      },
+      "ttihp25a_tt_um_MichaelBell_rle_vga_contact.png": {
+        "bytes": 6090,
+        "sha256": "97a24f753386400bca97c1107a84c0e0b99568d2a8f8f538e9d7e5f4060b439c"
+      },
+      "ttihp25a_tt_um_MichaelBell_rle_vga_poster.png": {
+        "bytes": 1966,
+        "sha256": "724319c36b0ea551aa309b59afed2e46bb1255b254b235f4dcfc77d96f1c6931"
+      },
+      "ttihp25a_tt_um_MichaelBell_rle_vga_preview.gif": {
+        "bytes": 3659,
+        "sha256": "0988a6295af454f1f426ebff4643afe389950c66b6b4f8fa26ef5be29ac4e176"
+      }
+    },
+    "build_log_tail": "a/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/repo/src/spi_buffer.sv ~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/repo/src/pwm.v\nmake: Entering directory '~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/build'\ng++  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -O2  -c -o tb.o ~/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o verilated.o ~/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o verilated_threads.o ~/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 ~/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a   ~/ttvga/tools/vgacap-build/libvgacap_trace.a ~/ttvga/tools/vgacap-build/libvgacap_stream.a ~/ttvga/tools/vgacap-build/third_party/libvgacap_zstd.a -pthread  -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.370 MB sources in 575 modules, into 0.107 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 13.419 s (elab=0.032, cvt=0.037, bld=13.316); cpu 0.103 s on 1 threads; allocated 27.738 MB\n[exit 0]\n",
+    "sim_log_tail": "0faca (mod) --meta harness=0b581aeab69291a9\ntb: QSPI model on uio: cs0=0 sd0=1 sd1=2 sck=3 sd2=4 sd3=5 cs1=6 cs2=7 (flash: test pattern)\ntb: sync at clock 1245184: line 800 clocks, 500 lines, hsync active-low, vsync active-high, mode 640x480@75, 0.952 clk/px, 640x480 @ 60.000 fps\ntb: ok: 3600 frames (1 distinct, 3600 uniform, 1 colours, 0.000% of pixels change per frame, 0.0% ever), 1441605610 clocks in 549.3s wall (2.62 Mclk/s)\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_60s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_60s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_60s.mp4 -t 30 -c copy -movflags +faststart <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_30s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_60s.webm -t 30 -c copy <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_30s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_60s.mp4 -t 10 -c copy -movflags +faststart <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_10s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_60s.webm -t 10 -c copy <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_10s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -ss 5.000 -i <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_poster.png\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_60s.mp4 -vf select='not(mod(n\\,225))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_contact.png\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -ss 5.000 -t 8.000 -i <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 <videos>/ttihp25a/tt_um_MichaelBell_rle_vga/ttihp25a_tt_um_MichaelBell_rle_vga_preview.gif\n[exit 0]\n",
+    "derive_log_tail": "derive ~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/scratch/ttihp25a_tt_um_MichaelBell_rle_vga_trace.vgch.zst -> ~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/scratch (stem ttihp25a_tt_um_MichaelBell_rle_vga, samplers centre-v1 tb-v1)\n$ ~/ttvga/tools/vgacap-build/tracetool info ~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/scratch/ttihp25a_tt_um_MichaelBell_rle_vga_trace.vgch.zst\nexit 0\n--- stdout\nversion: 2\nsample_bits: 43\nmode: 2\nclock_hz: 24000000\nsamples_per_clock: 2\nclock_bit: 42\nclock_first: 0\nsamples: 2883211220\nclocks: 1441605610\nblocks: 1208\ntable_rebuilt: 0\nopen.project: ttihp25a/tt_um_MichaelBell_rle_vga\nopen.override: none\nopen.simulator: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\nopen.harness: 0b581aeab69291a9\nopen.calib_seconds: 1.0\nopen.seconds: 60.0\nopen.layout: tt-um-43\nclose.capture_after_clock: 1245184\nclose.status: ok\nclose.frames: 3600\nclose.ffmpeg_status: 0\nchanges.uo_out: 3611225\nchanges.uio_out: 2883206512\nchanges.uio_oe: 3\nchanges.ui_in: 0\nchanges.uio_in: 0\nchanges.rst_n: 1\nchanges.ena: 0\n$ ~/ttvga/tools/vgacap-build/vgacap-sample ~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/scratch/ttihp25a_tt_um_MichaelBell_rle_vga_trace.vgch.zst --out ~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/scratch --name ttihp25a_tt_um_MichaelBell_rle_vga --sampler centre-v1 --sampler tb-v1 --png-fd 9\nexit 0\n$ ~/ttvga/tools/vgacap-build/tracetool uohash ~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/scratch/ttihp25a_tt_um_MichaelBell_rle_vga_trace.vgch.zst\nexit 0\n--- stdout\nuo_out_sha256_clocks: 0 33554432\nuo_out_sha256: 0e12e7214f9ca9b46360246b1292b3c81e98c22386eff83f6977e8c223d8cd8e\nderive done: error None, tb_v1_check match, pngs 1 written, 1 linked, cpu 139.04 s\n",
+    "publish_log_tail": "$ rsync -aH --delete --chmod=D0755,F0644 ~/ttvga/work/ttihp25a/tt_um_MichaelBell_rle_vga/scratch/ <staging_dir>/ttihp25a_tt_um_MichaelBell_rle_vga.new/\n",
+    "finished": "2026-11-27T01:49:30+00:00"
+  },
+  "sizes": {
+    "total": 18925690,
+    "samplers": {
+      "centre-v1": {
+        "dir": 238419,
+        "store": 29,
+        "png_bytes": 1626,
+        "png_files": 1,
+        "png_inodes": 1
+      },
+      "tb-v1": {
+        "dir": 300159,
+        "store": 29,
+        "png_bytes": 1626,
+        "png_files": 1,
+        "png_inodes": 1
+      }
+    },
+    "trace": 18388738
+  },
+  "finished": "2026-11-27T02:21:51+00:00",
+  "host_load_end": [
+    66.77001953125,
+    81.0009765625,
+    83.76123046875
+  ],
+  "poll": {
+    "job": {
+      "work_bytes_peak": 35276886,
+      "scratch_bytes_peak": 18925690,
+      "pilot_bytes_peak": 371,
+      "memory_current_peak": 737046528,
+      "tasks_peak": 53
+    },
+    "rerun0-notrace": {
+      "work_bytes_peak": 2519439,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 13371475,
+      "memory_current_peak": 142397440,
+      "tasks_peak": 17
+    },
+    "rerun1-trace": {
+      "work_bytes_peak": 2519439,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 31560458,
+      "memory_current_peak": 191082496,
+      "tasks_peak": 18
+    },
+    "rerun2-notrace": {
+      "work_bytes_peak": 2519439,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 13375748,
+      "memory_current_peak": 138797056,
+      "tasks_peak": 17
+    },
+    "rerun3-trace": {
+      "work_bytes_peak": 2519439,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 31598563,
+      "memory_current_peak": 191504384,
+      "tasks_peak": 18
+    },
+    "samples": {
+      "work_bytes_peak": 2519439,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 18400621,
+      "memory_current_peak": 103575552,
+      "tasks_peak": 4
+    },
+    "done": {
+      "work_bytes_peak": 2519439,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 13012,
+      "memory_current_peak": 0,
+      "tasks_peak": 0
+    }
+  },
+  "scope": {
+    "memory_peak": 738004992,
+    "tasks_peak": 53,
+    "unit": "ttvga-pilot-ttihp25a-tt_um_MichaelBell_rle_vga.scope",
+    "exit": 0,
+    "runtime_max_sec": 130320,
+    "memory_max": "6G",
+    "cpu_quota": "200%",
+    "tasks_max": 64
+  }
+}

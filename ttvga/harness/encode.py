@@ -99,7 +99,12 @@ AUDIO_OUT_RATE = "48000"
 AUDIO_MP4 = ["-c:a", "aac", "-b:a", "128k", "-ar", AUDIO_OUT_RATE]
 AUDIO_WEBM = ["-c:a", "libopus", "-b:a", "128k", "-ar", AUDIO_OUT_RATE]
 
-QUIET = ["-hide_banner", "-loglevel", "error", "-y"]
+# ffmpeg sizes its automatic thread counts (decoders, encoders, filters, x264) by the
+# host's CPUs: 88 threads and more, which the queue scope's TasksMax (64) refuses with
+# EAGAIN, so encoders fail to open. `-cpucount` caps them all, at the scope's CPUQuota of
+# 200% (Ruling BN; with 4 the encode reached 61 of TasksMax 64).
+FFMPEG_CPUS = 2
+QUIET = ["-hide_banner", "-loglevel", "error", "-y", "-cpucount", str(FFMPEG_CPUS)]
 
 
 def run(cmd: list[str], log: Path, cwd: Path | None = None, timeout: float | None = None,

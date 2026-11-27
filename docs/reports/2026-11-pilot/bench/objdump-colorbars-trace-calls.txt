@@ -1,0 +1,19 @@
+    9cda:	call   27a70 <vgacap_trace_create>
+    cb4f:	call   28440 <vgacap_trace_abandon>
+    cf4b:	call   27f30 <vgacap_trace_finish>
+    ff80:	call   278b0 <vgacap_trace_repeat2_slow>
+    ffd0:	call   cb80 <(anonymous namespace)::raw_slow(vgacap_trace_writer*, (anonymous namespace)::RawPorts const&, unsigned long, unsigned long, unsigned long*)>
+    ffdf:	call   27460 <vgacap_trace_slow>
+    ffed:	call   27460 <vgacap_trace_slow>
+   26a7e:	call   285a0 <vgacap_trace_block_end_runs>
+   26a9a:	call   28540 <vgacap_trace_block_begin>
+   271f3:	call   285a0 <vgacap_trace_block_end_runs>
+   27217:	call   28540 <vgacap_trace_block_begin>
+   27246:	call   285a0 <vgacap_trace_block_end_runs>
+   27266:	call   28540 <vgacap_trace_block_begin>
+   2795b:	call   27460 <vgacap_trace_slow>
+   27a33:	call   27460 <vgacap_trace_slow>
+   27ab1:	call   285e0 <vgacap_trace_check>
+   27d1b:	call   28540 <vgacap_trace_block_begin>
+   27fb2:	call   285e0 <vgacap_trace_check>
+   27fe6:	call   285a0 <vgacap_trace_block_end_runs>

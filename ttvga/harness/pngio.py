@@ -14,6 +14,12 @@ from pathlib import Path
 
 PALETTE: bytes = bytes(c for i in range(64) for c in (((i >> 4) & 3) * 85, ((i >> 2) & 3) * 85, (i & 3) * 85))
 _SIGNATURE = b"\x89PNG\r\n\x1a\n"
+_RGB6 = bytes(range(64))
+
+
+def _is_rgb6(data: bytes | bytearray) -> bool:
+    """Every byte is 0..63. `translate` runs in C; `max()` walks Python ints (5 ms a 640x480 frame)."""
+    return not data.translate(None, _RGB6)
 
 
 def _chunk(kind: bytes, body: bytes) -> bytes:
@@ -26,7 +32,7 @@ def write_rgb6(path: str | Path, width: int, height: int, rgb6: bytes, level: in
         raise ValueError(f"bad size {width}x{height}")
     if len(rgb6) != width * height:
         raise ValueError(f"{len(rgb6)} bytes for {width}x{height}")
-    if max(rgb6) > 63:
+    if not _is_rgb6(rgb6):
         raise ValueError("a byte is not an rgb6 value (0..63)")
     rows = b"".join(b"\x00" + rgb6[y * width:(y + 1) * width] for y in range(height))
     data = (_SIGNATURE
@@ -75,6 +81,6 @@ def _read(data: bytes) -> tuple[int, int, bytes]:
         if row[0] != 0:
             raise ValueError(f"row {y}: filter {row[0]}, expected 0")
         out += row[1:]
-    if max(out) > 63:
+    if not _is_rgb6(out):
         raise ValueError("a pixel is not an rgb6 value")
     return width, height, bytes(out)

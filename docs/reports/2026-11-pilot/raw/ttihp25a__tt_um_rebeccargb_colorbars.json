@@ -1,0 +1,522 @@
+{
+  "id": "ttihp25a/tt_um_rebeccargb_colorbars",
+  "started": "2026-11-27T01:34:58+00:00",
+  "host_load_start": [
+    72.32763671875,
+    69.31005859375,
+    71.14599609375
+  ],
+  "nproc": 88,
+  "runs": [
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/build/Vtop",
+        "--clock-hz",
+        "25175000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_rebeccargb_colorbars/run0"
+      ],
+      "time": {
+        "wall_s": 364.6,
+        "user_s": 368.26,
+        "sys_s": 4.3,
+        "cpu_s": 372.56,
+        "max_rss_kb": 61680,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": false,
+      "index": 0,
+      "trace_bytes": null,
+      "capture_bytes": 66927246,
+      "timing": {
+        "status": "ok",
+        "frames": 3596,
+        "wall_seconds": 364.6,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/build/Vtop",
+        "--clock-hz",
+        "25175000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_rebeccargb_colorbars/run1",
+        "--trace",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_rebeccargb_colorbars/run1/ttihp25a_tt_um_rebeccargb_colorbars_trace.vgch.zst",
+        "--meta",
+        "project=ttihp25a/tt_um_rebeccargb_colorbars",
+        "--meta",
+        "override=none",
+        "--meta",
+        "simulator=Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+        "--meta",
+        "harness=0b581aeab69291a9"
+      ],
+      "time": {
+        "wall_s": 407.35,
+        "user_s": 417.12,
+        "sys_s": 4.39,
+        "cpu_s": 421.51,
+        "max_rss_kb": 68128,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": true,
+      "index": 1,
+      "trace_bytes": 556030,
+      "capture_bytes": 66927246,
+      "timing": {
+        "status": "ok",
+        "frames": 3596,
+        "wall_seconds": 407.3,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/build/Vtop",
+        "--clock-hz",
+        "25175000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_rebeccargb_colorbars/run2"
+      ],
+      "time": {
+        "wall_s": 314.58,
+        "user_s": 334.87,
+        "sys_s": 4.71,
+        "cpu_s": 339.58,
+        "max_rss_kb": 63512,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": false,
+      "index": 2,
+      "trace_bytes": null,
+      "capture_bytes": 66927246,
+      "timing": {
+        "status": "ok",
+        "frames": 3596,
+        "wall_seconds": 314.6,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/build/Vtop",
+        "--clock-hz",
+        "25175000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_rebeccargb_colorbars/run3",
+        "--trace",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_rebeccargb_colorbars/run3/ttihp25a_tt_um_rebeccargb_colorbars_trace.vgch.zst",
+        "--meta",
+        "project=ttihp25a/tt_um_rebeccargb_colorbars",
+        "--meta",
+        "override=none",
+        "--meta",
+        "simulator=Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+        "--meta",
+        "harness=0b581aeab69291a9"
+      ],
+      "time": {
+        "wall_s": 321.64,
+        "user_s": 340.82,
+        "sys_s": 4.13,
+        "cpu_s": 344.95,
+        "max_rss_kb": 74568,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": true,
+      "index": 3,
+      "trace_bytes": 556030,
+      "capture_bytes": 66927246,
+      "timing": {
+        "status": "ok",
+        "frames": 3596,
+        "wall_seconds": 321.6,
+        "width": 640,
+        "height": 480
+      }
+    }
+  ],
+  "samples": [
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "10800.0",
+        "~/ttvga/tools/vgacap-build/vgacap-sample",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_trace.vgch.zst",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_rebeccargb_colorbars/sample-default",
+        "--name",
+        "ttihp25a_tt_um_rebeccargb_colorbars"
+      ],
+      "time": {
+        "wall_s": 4.76,
+        "user_s": 4.72,
+        "sys_s": 0.03,
+        "cpu_s": 4.75,
+        "max_rss_kb": 27936,
+        "exit_status": 0,
+        "signal": null
+      },
+      "variant": "default",
+      "debug": "trace_passes=1 blocks_decoded=91",
+      "stores": {
+        "centre-v1": 134
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "10800.0",
+        "~/ttvga/tools/vgacap-build/vgacap-sample",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_trace.vgch.zst",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_rebeccargb_colorbars/sample-both",
+        "--name",
+        "ttihp25a_tt_um_rebeccargb_colorbars",
+        "--sampler",
+        "centre-v1",
+        "--sampler",
+        "tb-v1"
+      ],
+      "time": {
+        "wall_s": 9.83,
+        "user_s": 9.8,
+        "sys_s": 0.02,
+        "cpu_s": 9.82,
+        "max_rss_kb": 37428,
+        "exit_status": 0,
+        "signal": null
+      },
+      "variant": "both",
+      "debug": "trace_passes=1 blocks_decoded=91",
+      "stores": {
+        "centre-v1": 134,
+        "tb-v1": 134
+      }
+    }
+  ],
+  "errors": [],
+  "job": {
+    "rc": 0,
+    "cmd": [
+      "~/ttvga/tools/python/cpython-3.14.7-linux-x86_64-gnu/bin/python3.14",
+      "~/ttvga/harness/job.py",
+      "--targets",
+      "~/ttvga/harness/targets.json",
+      "--id",
+      "ttihp25a/tt_um_rebeccargb_colorbars",
+      "--root",
+      "~/ttvga",
+      "--seconds",
+      "60",
+      "--timeout",
+      "10800.0",
+      "--grace",
+      "120",
+      "--tb-v1",
+      "--keep-build"
+    ],
+    "time": {
+      "wall_s": 543.95,
+      "user_s": 708.65,
+      "sys_s": 27.96,
+      "cpu_s": 736.61,
+      "max_rss_kb": 1791616,
+      "exit_status": 0,
+      "signal": null
+    }
+  },
+  "result": {
+    "id": "ttihp25a/tt_um_rebeccargb_colorbars",
+    "shuttle": "ttihp25a",
+    "macro": "tt_um_rebeccargb_colorbars",
+    "started": "2026-11-27T01:34:58+00:00",
+    "host": "<host>",
+    "harness": "0b581aeab69291a9",
+    "test_hooks": false,
+    "override": null,
+    "stage": "publish",
+    "error": null,
+    "timings": {
+      "fetch": 1.2,
+      "build": 13.4,
+      "simulate": 336.6,
+      "derive": 12.7,
+      "encode": 179.4,
+      "publish": 0.2
+    },
+    "tools": {
+      "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+      "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+    },
+    "auto_ui_in": null,
+    "qspi": null,
+    "trace": {
+      "file": "ttihp25a_tt_um_rebeccargb_colorbars_trace.vgch.zst",
+      "sha256": "5a90c891dba4ab5378f44c4a1b8c7274b38b6fc1b5929dadd3a23cab62aff576",
+      "bytes": 556030,
+      "blocks": 91,
+      "clocks": 1512393611,
+      "uo_out_sha256": "b34254b174138ae58febee334bde8aa48bf15f531489b0c85fb5051a409c2765",
+      "uo_out_sha256_clocks": [
+        0,
+        33554432
+      ],
+      "fast_path": true
+    },
+    "samplers": {
+      "centre-v1": {
+        "sampler_status": "ok",
+        "frames": 3596,
+        "distinct_frames": 1,
+        "mode": "640x480@60",
+        "width": 640,
+        "height": 480,
+        "clocks_per_pixel": 1.0
+      },
+      "tb-v1": {
+        "sampler_status": "ok",
+        "frames": 3596,
+        "distinct_frames": 1,
+        "mode": "640x480@60",
+        "width": 640,
+        "height": 480,
+        "clocks_per_pixel": 1.0
+      }
+    },
+    "tb_v1": {
+      "state": "current",
+      "trace_sha": "5a90c891dba4ab5378f44c4a1b8c7274b38b6fc1b5929dadd3a23cab62aff576",
+      "dropped": false
+    },
+    "tb_v1_check": "match",
+    "derive_cpu_seconds": 12.665,
+    "published": true,
+    "timing": {
+      "status": "ok",
+      "clock_hz": 25175000,
+      "first_sync_clock": 392011,
+      "capture_after_clock": 1703936,
+      "hsync_active_low": false,
+      "vsync_active_low": false,
+      "line_clocks": 800,
+      "lines": 525,
+      "hsync_pulse_clocks": 96,
+      "vsync_pulse_clocks": 1600,
+      "line_clocks_range": [
+        800,
+        800
+      ],
+      "frame_clocks_range": [
+        420000,
+        420000
+      ],
+      "mode": "640x480@60",
+      "clocks_per_pixel": 1.0,
+      "width": 640,
+      "height": 480,
+      "fps": 59.9405,
+      "frames": 3596,
+      "target_frames": 3596,
+      "distinct_frames": 1,
+      "uniform_frames": 0,
+      "black_frames": 0,
+      "colours": 11,
+      "mean_frame_delta": 0.0,
+      "pixels_ever_changed": 0.0,
+      "lines_seen": 1888362,
+      "short_lines": 0,
+      "long_lines": 0,
+      "clocks_simulated": 1512393611,
+      "sim_seconds": 60.075,
+      "wall_seconds": 336.6,
+      "clocks_per_wall_second": 4493621,
+      "ffmpeg_status": 0,
+      "audio_driven": true,
+      "audio_transitions": 50344,
+      "audio_rate": 192000,
+      "audio_samples": 11518627
+    },
+    "videos": {
+      "ttihp25a_tt_um_rebeccargb_colorbars_10s.mp4": {
+        "bytes": 217573,
+        "sha256": "a45a14c2db2ddc302a475021014f513e4ccc1cf753f65449862ce086585ac74c"
+      },
+      "ttihp25a_tt_um_rebeccargb_colorbars_10s.webm": {
+        "bytes": 219944,
+        "sha256": "17aa06d4f98e48e800c6a0dc76570ebc89e706bd444217ede49a61fe3b294f01"
+      },
+      "ttihp25a_tt_um_rebeccargb_colorbars_30s.mp4": {
+        "bytes": 643507,
+        "sha256": "faa679b71bd2bde1b5080f816af4d09c79f2aaf4b55f808ba0953ac0657ec272"
+      },
+      "ttihp25a_tt_um_rebeccargb_colorbars_30s.webm": {
+        "bytes": 632771,
+        "sha256": "44e451860f6a182fe1e6c27a448a66f66d6b39a33745d5be9673fb5e4f5b2c25"
+      },
+      "ttihp25a_tt_um_rebeccargb_colorbars_60s.mp4": {
+        "bytes": 1280230,
+        "sha256": "6ad94b6488833a0d8aa16bee029419ba83b32c84feb18ca1ad842f3bbd4ddf53"
+      },
+      "ttihp25a_tt_um_rebeccargb_colorbars_60s.webm": {
+        "bytes": 1245623,
+        "sha256": "ac4ee2cd8181cd04a3d5f4b4abaf1204bf4cdfa8e61f646464cab820d19f437c"
+      },
+      "ttihp25a_tt_um_rebeccargb_colorbars_contact.png": {
+        "bytes": 17274,
+        "sha256": "5a908f1da8d638f3e39ba29bdbf411bc64c60d7af6663db916135e13523f306c"
+      },
+      "ttihp25a_tt_um_rebeccargb_colorbars_poster.png": {
+        "bytes": 5769,
+        "sha256": "9ff1d0d1ace0a2078d0a3bfffe3635618782d17da71918014aefb10da066a37c"
+      },
+      "ttihp25a_tt_um_rebeccargb_colorbars_preview.gif": {
+        "bytes": 7898,
+        "sha256": "8a2322dff2e3a59a45611cc14a2890a9d9060b70bf93e81388f03fb4700a7a08"
+      }
+    },
+    "build_log_tail": "/ttihp25a/tt_um_rebeccargb_colorbars/repo/src/id_rom.v ~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/repo/src/hvsync_generator.v\nmake: Entering directory '~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/build'\ng++  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -O2  -c -o tb.o ~/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o verilated.o ~/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o verilated_threads.o ~/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 ~/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a   ~/ttvga/tools/vgacap-build/libvgacap_trace.a ~/ttvga/tools/vgacap-build/libvgacap_stream.a ~/ttvga/tools/vgacap-build/third_party/libvgacap_zstd.a -pthread  -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.210 MB sources in 572 modules, into 0.098 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 13.313 s (elab=0.030, cvt=0.062, bld=13.180); cpu 0.134 s on 1 threads; allocated 27.543 MB\n[exit 0]\n",
+    "sim_log_tail": "els change per frame, 0.0% ever), 1512393611 clocks in 336.6s wall (4.49 Mclk/s)\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/out/capture.avi -f f32le -ar 192000 -ac 1 -i ~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/out/capture.f32 -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -c:a aac -b:a 128k -ar 48000 -af highpass=f=20 -shortest -force_key_frames 30,10 -movflags +faststart <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_60s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/out/capture.avi -f f32le -ar 192000 -ac 1 -i ~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/out/capture.f32 -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -c:a libopus -b:a 128k -ar 48000 -af highpass=f=20 -shortest -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_60s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_60s.mp4 -t 30 -c copy -movflags +faststart <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_30s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_60s.webm -t 30 -c copy <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_30s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_60s.mp4 -t 10 -c copy -movflags +faststart <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_10s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_60s.webm -t 10 -c copy <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_10s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -ss 5.000 -i <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_poster.png\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_60s.mp4 -vf select='not(mod(n\\,224))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_contact.png\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -ss 5.000 -t 8.000 -i <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 <videos>/ttihp25a/tt_um_rebeccargb_colorbars/ttihp25a_tt_um_rebeccargb_colorbars_preview.gif\n[exit 0]\n",
+    "derive_log_tail": "derive ~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/scratch/ttihp25a_tt_um_rebeccargb_colorbars_trace.vgch.zst -> ~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/scratch (stem ttihp25a_tt_um_rebeccargb_colorbars, samplers centre-v1 tb-v1)\n$ ~/ttvga/tools/vgacap-build/tracetool info ~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/scratch/ttihp25a_tt_um_rebeccargb_colorbars_trace.vgch.zst\nexit 0\n--- stdout\nversion: 2\nsample_bits: 43\nmode: 2\nclock_hz: 25175000\nsamples_per_clock: 2\nclock_bit: 42\nclock_first: 0\nsamples: 3024787222\nclocks: 1512393611\nblocks: 91\ntable_rebuilt: 0\nopen.project: ttihp25a/tt_um_rebeccargb_colorbars\nopen.override: none\nopen.simulator: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\nopen.harness: 0b581aeab69291a9\nopen.calib_seconds: 1.0\nopen.seconds: 60.0\nopen.layout: tt-um-43\nclose.capture_after_clock: 1703936\nclose.status: ok\nclose.frames: 3596\nclose.ffmpeg_status: 0\nchanges.uo_out: 15887545\nchanges.uio_out: 37809840\nchanges.uio_oe: 0\nchanges.ui_in: 0\nchanges.uio_in: 0\nchanges.rst_n: 1\nchanges.ena: 0\n$ ~/ttvga/tools/vgacap-build/vgacap-sample ~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/scratch/ttihp25a_tt_um_rebeccargb_colorbars_trace.vgch.zst --out ~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/scratch --name ttihp25a_tt_um_rebeccargb_colorbars --sampler centre-v1 --sampler tb-v1 --png-fd 9\nexit 0\n$ ~/ttvga/tools/vgacap-build/tracetool uohash ~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/scratch/ttihp25a_tt_um_rebeccargb_colorbars_trace.vgch.zst\nexit 0\n--- stdout\nuo_out_sha256_clocks: 0 33554432\nuo_out_sha256: b34254b174138ae58febee334bde8aa48bf15f531489b0c85fb5051a409c2765\nderive done: error None, tb_v1_check match, pngs 1 written, 1 linked, cpu 12.67 s\n",
+    "publish_log_tail": "$ rsync -aH --delete --chmod=D0755,F0644 ~/ttvga/work/ttihp25a/tt_um_rebeccargb_colorbars/scratch/ <staging_dir>/ttihp25a_tt_um_rebeccargb_colorbars.new/\n",
+    "finished": "2026-11-27T01:44:02+00:00"
+  },
+  "sizes": {
+    "total": 1095544,
+    "samplers": {
+      "centre-v1": {
+        "dir": 241248,
+        "store": 134,
+        "png_bytes": 4592,
+        "png_files": 1,
+        "png_inodes": 1
+      },
+      "tb-v1": {
+        "dir": 302858,
+        "store": 134,
+        "png_bytes": 4592,
+        "png_files": 1,
+        "png_inodes": 1
+      }
+    },
+    "trace": 556030
+  },
+  "finished": "2026-11-27T02:07:45+00:00",
+  "host_load_end": [
+    72.15185546875,
+    67.1923828125,
+    79.4345703125
+  ],
+  "poll": {
+    "job": {
+      "work_bytes_peak": 115803394,
+      "scratch_bytes_peak": 1095544,
+      "pilot_bytes_peak": 372,
+      "memory_current_peak": 1983053824,
+      "tasks_peak": 61
+    },
+    "rerun0-notrace": {
+      "work_bytes_peak": 1661348,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 65537998,
+      "memory_current_peak": 165822464,
+      "tasks_peak": 17
+    },
+    "rerun1-trace": {
+      "work_bytes_peak": 1661348,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 66867846,
+      "memory_current_peak": 178679808,
+      "tasks_peak": 18
+    },
+    "rerun2-notrace": {
+      "work_bytes_peak": 1661348,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 66590501,
+      "memory_current_peak": 171147264,
+      "tasks_peak": 17
+    },
+    "rerun3-trace": {
+      "work_bytes_peak": 1661348,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 67133917,
+      "memory_current_peak": 175468544,
+      "tasks_peak": 18
+    },
+    "samples": {
+      "work_bytes_peak": 1661348,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 567226,
+      "memory_current_peak": 58789888,
+      "tasks_peak": 4
+    },
+    "done": {
+      "work_bytes_peak": 1661348,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 12324,
+      "memory_current_peak": 23216128,
+      "tasks_peak": 1
+    }
+  },
+  "scope": {
+    "memory_peak": 1983942656,
+    "tasks_peak": 61,
+    "unit": "ttvga-pilot-ttihp25a-tt_um_rebeccargb_colorbars.scope",
+    "exit": 0,
+    "runtime_max_sec": 130320,
+    "memory_max": "6G",
+    "cpu_quota": "200%",
+    "tasks_max": 64
+  }
+}

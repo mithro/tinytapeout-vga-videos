@@ -1,0 +1,12 @@
+round=1 notraceA rc=0 wall=101.77 cpu=108.05 trace_bytes=-
+round=1 traceA rc=0 wall=107.2 cpu=114.27 trace_bytes=180815
+round=1 notraceB rc=0 wall=101.21 cpu=108.03 trace_bytes=-
+round=1 traceB rc=0 wall=104.27 cpu=111.22 trace_bytes=180815
+round=2 notraceA rc=0 wall=99.25 cpu=108.15 trace_bytes=-
+round=2 traceA rc=0 wall=105.86 cpu=114.76 trace_bytes=180815
+round=2 notraceB rc=0 wall=96.13 cpu=104.82 trace_bytes=-
+round=2 traceB rc=0 wall=104.78 cpu=113.59 trace_bytes=180815
+round=3 notraceA rc=0 wall=99.47 cpu=108.0 trace_bytes=-
+round=3 traceA rc=0 wall=104.79 cpu=113.42 trace_bytes=180815
+round=3 notraceB rc=0 wall=96.69 cpu=105.3 trace_bytes=-
+round=3 traceB rc=0 wall=103.09 cpu=111.79 trace_bytes=180815

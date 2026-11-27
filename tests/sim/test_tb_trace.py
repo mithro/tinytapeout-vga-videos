@@ -234,3 +234,44 @@ def test_force_fallback_refused_without_test_hooks(dev, tmp_path):
     with pytest.raises(RuntimeError, match="building bars640 failed"):
         build_model("bars640", dev, tmp_path / "m", test_hooks=False, defines=FALLBACK)
     assert "TTVGA_TEST_FORCE_FALLBACK" in (tmp_path / "m" / "build.log").read_text()
+
+
+def test_model_starts_no_verilator_thread_pool(models, dev, tmp_path):
+    """The model is Verilated single-threaded; tb.cpp sets ctx.threads(1), so Verilator makes no pool.
+
+    Without it VerilatedContext defaults to the process's parallelism and starts that many
+    minus one idle workers (87 on an 88-CPU host), which fails at the queue scope's TasksMax.
+    """
+    model = models("bars640")
+    out = tmp_path / "out"
+    out.mkdir()
+    cmd = [str(model), "--seconds", "5", "--calib-seconds", "0.1", "--no-audio", "--quiet",
+           "--ffmpeg", str(dev.ffmpeg_sink), "--out", str(out), "--trace", str(out / "trace.vgch.zst"),
+           *meta_args("bars640")]
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        most = 0
+        deadline = time.monotonic() + 3
+        while time.monotonic() < deadline and p.poll() is None:
+            try:
+                most = max(most, len(os.listdir(f"/proc/{p.pid}/task")))
+            except FileNotFoundError:
+                break
+            time.sleep(0.05)
+    finally:
+        p.kill()
+        p.wait()
+    assert 1 <= most <= 4, most
+
+
+def test_capture_ffmpeg_caps_its_cpu_count(models, dev, tmp_path):
+    """tb.cpp's capture ffmpeg gets `-cpucount 2`: its MJPEG encoder's automatic frame threads,
+    sized for the host's 88 CPUs, fail to start inside the queue scope's TasksMax."""
+    sink = tmp_path / "ffmpeg_args"
+    sink.write_text(f'#!/bin/sh\necho "$@" > {tmp_path}/args.txt\nexec cat > /dev/null\n')
+    sink.chmod(0o755)
+    out = tmp_path / "out"
+    p = run(models("bars640"), dev, out, "--ffmpeg", str(sink))
+    assert p.returncode == 0, p.stderr
+    args = (tmp_path / "args.txt").read_text().split()
+    assert args[args.index("-cpucount") + 1] == "2", args

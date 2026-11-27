@@ -1,0 +1,522 @@
+{
+  "id": "tt07/tt_um_tinytapeout_dvd_screensaver",
+  "started": "2026-11-27T01:34:58+00:00",
+  "host_load_start": [
+    72.32763671875,
+    69.31005859375,
+    71.14599609375
+  ],
+  "nproc": 88,
+  "runs": [
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/build/Vtop",
+        "--clock-hz",
+        "25175000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/tt07/tt_um_tinytapeout_dvd_screensaver/run0"
+      ],
+      "time": {
+        "wall_s": 371.92,
+        "user_s": 374.51,
+        "sys_s": 4.54,
+        "cpu_s": 379.05,
+        "max_rss_kb": 57248,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": false,
+      "index": 0,
+      "trace_bytes": null,
+      "capture_bytes": 33043776,
+      "timing": {
+        "status": "ok",
+        "frames": 3596,
+        "wall_seconds": 371.9,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/build/Vtop",
+        "--clock-hz",
+        "25175000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/tt07/tt_um_tinytapeout_dvd_screensaver/run1",
+        "--trace",
+        "~/ttvga/work/pilot/tt07/tt_um_tinytapeout_dvd_screensaver/run1/tt07_tt_um_tinytapeout_dvd_screensaver_trace.vgch.zst",
+        "--meta",
+        "project=tt07/tt_um_tinytapeout_dvd_screensaver",
+        "--meta",
+        "override=none",
+        "--meta",
+        "simulator=Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+        "--meta",
+        "harness=0b581aeab69291a9"
+      ],
+      "time": {
+        "wall_s": 393.67,
+        "user_s": 403.88,
+        "sys_s": 4.19,
+        "cpu_s": 408.07,
+        "max_rss_kb": 57072,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": true,
+      "index": 1,
+      "trace_bytes": 1306540,
+      "capture_bytes": 33043776,
+      "timing": {
+        "status": "ok",
+        "frames": 3596,
+        "wall_seconds": 393.7,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/build/Vtop",
+        "--clock-hz",
+        "25175000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/tt07/tt_um_tinytapeout_dvd_screensaver/run2"
+      ],
+      "time": {
+        "wall_s": 313.23,
+        "user_s": 331.09,
+        "sys_s": 3.61,
+        "cpu_s": 334.7,
+        "max_rss_kb": 66724,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": false,
+      "index": 2,
+      "trace_bytes": null,
+      "capture_bytes": 33043776,
+      "timing": {
+        "status": "ok",
+        "frames": 3596,
+        "wall_seconds": 313.2,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/build/Vtop",
+        "--clock-hz",
+        "25175000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/tt07/tt_um_tinytapeout_dvd_screensaver/run3",
+        "--trace",
+        "~/ttvga/work/pilot/tt07/tt_um_tinytapeout_dvd_screensaver/run3/tt07_tt_um_tinytapeout_dvd_screensaver_trace.vgch.zst",
+        "--meta",
+        "project=tt07/tt_um_tinytapeout_dvd_screensaver",
+        "--meta",
+        "override=none",
+        "--meta",
+        "simulator=Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+        "--meta",
+        "harness=0b581aeab69291a9"
+      ],
+      "time": {
+        "wall_s": 317.94,
+        "user_s": 336.92,
+        "sys_s": 4.03,
+        "cpu_s": 340.95,
+        "max_rss_kb": 65952,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": true,
+      "index": 3,
+      "trace_bytes": 1306540,
+      "capture_bytes": 33043776,
+      "timing": {
+        "status": "ok",
+        "frames": 3596,
+        "wall_seconds": 317.9,
+        "width": 640,
+        "height": 480
+      }
+    }
+  ],
+  "samples": [
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "10800.0",
+        "~/ttvga/tools/vgacap-build/vgacap-sample",
+        "~/ttvga/work/pilot/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_trace.vgch.zst",
+        "--out",
+        "~/ttvga/work/pilot/tt07/tt_um_tinytapeout_dvd_screensaver/sample-default",
+        "--name",
+        "tt07_tt_um_tinytapeout_dvd_screensaver"
+      ],
+      "time": {
+        "wall_s": 23.12,
+        "user_s": 22.81,
+        "sys_s": 0.3,
+        "cpu_s": 23.11,
+        "max_rss_kb": 155296,
+        "exit_status": 0,
+        "signal": null
+      },
+      "variant": "default",
+      "debug": "trace_passes=1 blocks_decoded=91",
+      "stores": {
+        "centre-v1": 139780
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "10800.0",
+        "~/ttvga/tools/vgacap-build/vgacap-sample",
+        "~/ttvga/work/pilot/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_trace.vgch.zst",
+        "--out",
+        "~/ttvga/work/pilot/tt07/tt_um_tinytapeout_dvd_screensaver/sample-both",
+        "--name",
+        "tt07_tt_um_tinytapeout_dvd_screensaver",
+        "--sampler",
+        "centre-v1",
+        "--sampler",
+        "tb-v1"
+      ],
+      "time": {
+        "wall_s": 51.92,
+        "user_s": 50.49,
+        "sys_s": 0.29,
+        "cpu_s": 50.78,
+        "max_rss_kb": 297892,
+        "exit_status": 0,
+        "signal": null
+      },
+      "variant": "both",
+      "debug": "trace_passes=1 blocks_decoded=91",
+      "stores": {
+        "centre-v1": 139780,
+        "tb-v1": 139780
+      }
+    }
+  ],
+  "errors": [],
+  "job": {
+    "rc": 0,
+    "cmd": [
+      "~/ttvga/tools/python/cpython-3.14.7-linux-x86_64-gnu/bin/python3.14",
+      "~/ttvga/harness/job.py",
+      "--targets",
+      "~/ttvga/harness/targets.json",
+      "--id",
+      "tt07/tt_um_tinytapeout_dvd_screensaver",
+      "--root",
+      "~/ttvga",
+      "--seconds",
+      "60",
+      "--timeout",
+      "10800.0",
+      "--grace",
+      "120",
+      "--tb-v1",
+      "--keep-build"
+    ],
+    "time": {
+      "wall_s": 650.72,
+      "user_s": 864.01,
+      "sys_s": 31.32,
+      "cpu_s": 895.33,
+      "max_rss_kb": 674664,
+      "exit_status": 0,
+      "signal": null
+    }
+  },
+  "result": {
+    "id": "tt07/tt_um_tinytapeout_dvd_screensaver",
+    "shuttle": "tt07",
+    "macro": "tt_um_tinytapeout_dvd_screensaver",
+    "started": "2026-11-27T01:34:58+00:00",
+    "host": "<host>",
+    "harness": "0b581aeab69291a9",
+    "test_hooks": false,
+    "override": null,
+    "stage": "publish",
+    "error": null,
+    "timings": {
+      "fetch": 1.3,
+      "build": 14.8,
+      "simulate": 345.3,
+      "derive": 85.8,
+      "encode": 202.5,
+      "publish": 0.7
+    },
+    "tools": {
+      "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+      "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+    },
+    "auto_ui_in": null,
+    "qspi": null,
+    "trace": {
+      "file": "tt07_tt_um_tinytapeout_dvd_screensaver_trace.vgch.zst",
+      "sha256": "1cbb79bd0abd36dc5f9bd24f1a447de6c9060eb1bc52b55213b048060e6474c6",
+      "bytes": 1306540,
+      "blocks": 91,
+      "clocks": 1512393611,
+      "uo_out_sha256": "bd9331d23e83408faafac40b077cfc6cc1526b3aa39e5ff785c586c45e3d0165",
+      "uo_out_sha256_clocks": [
+        0,
+        33554432
+      ],
+      "fast_path": true
+    },
+    "samplers": {
+      "centre-v1": {
+        "sampler_status": "ok",
+        "frames": 3596,
+        "distinct_frames": 3568,
+        "mode": "640x480@60",
+        "width": 640,
+        "height": 480,
+        "clocks_per_pixel": 1.0
+      },
+      "tb-v1": {
+        "sampler_status": "ok",
+        "frames": 3596,
+        "distinct_frames": 3568,
+        "mode": "640x480@60",
+        "width": 640,
+        "height": 480,
+        "clocks_per_pixel": 1.0
+      }
+    },
+    "tb_v1": {
+      "state": "current",
+      "trace_sha": "1cbb79bd0abd36dc5f9bd24f1a447de6c9060eb1bc52b55213b048060e6474c6",
+      "dropped": false
+    },
+    "tb_v1_check": "match",
+    "derive_cpu_seconds": 113.656,
+    "published": true,
+    "timing": {
+      "status": "ok",
+      "clock_hz": 25175000,
+      "first_sync_clock": 392011,
+      "capture_after_clock": 1703936,
+      "hsync_active_low": false,
+      "vsync_active_low": false,
+      "line_clocks": 800,
+      "lines": 525,
+      "hsync_pulse_clocks": 96,
+      "vsync_pulse_clocks": 1600,
+      "line_clocks_range": [
+        800,
+        800
+      ],
+      "frame_clocks_range": [
+        420000,
+        420000
+      ],
+      "mode": "640x480@60",
+      "clocks_per_pixel": 1.0,
+      "width": 640,
+      "height": 480,
+      "fps": 59.9405,
+      "frames": 3596,
+      "target_frames": 3596,
+      "distinct_frames": 3568,
+      "uniform_frames": 0,
+      "black_frames": 0,
+      "colours": 2,
+      "mean_frame_delta": 0.003232,
+      "pixels_ever_changed": 0.876621,
+      "lines_seen": 1888362,
+      "short_lines": 0,
+      "long_lines": 0,
+      "clocks_simulated": 1512393611,
+      "sim_seconds": 60.075,
+      "wall_seconds": 345.3,
+      "clocks_per_wall_second": 4380501,
+      "ffmpeg_status": 0,
+      "audio_driven": false,
+      "audio_transitions": 0,
+      "audio_rate": 192000,
+      "audio_samples": 0
+    },
+    "videos": {
+      "tt07_tt_um_tinytapeout_dvd_screensaver_10s.mp4": {
+        "bytes": 126331,
+        "sha256": "e784db4bf252e73ca554e6018628b7df25ec99d17f391085aee5abb94c185dd4"
+      },
+      "tt07_tt_um_tinytapeout_dvd_screensaver_10s.webm": {
+        "bytes": 546166,
+        "sha256": "5daf268204b387809f3ecbc936623f654fa6fabab5294e9a434ad5cf1b91d317"
+      },
+      "tt07_tt_um_tinytapeout_dvd_screensaver_30s.mp4": {
+        "bytes": 358761,
+        "sha256": "e609d084ba967712bc5a00cb2d8bd6c1f772eceba61214cbabf0b9311ed7c425"
+      },
+      "tt07_tt_um_tinytapeout_dvd_screensaver_30s.webm": {
+        "bytes": 1638806,
+        "sha256": "f990167c310788c3baf6c6d33231dd6c9ac5a76991353ec8bec1e14ca76e53d8"
+      },
+      "tt07_tt_um_tinytapeout_dvd_screensaver_60s.mp4": {
+        "bytes": 702495,
+        "sha256": "8947cee3afe11eea8c69a85c8b6e9940b518bfb6eee8c20434d62ffc3c3d8247"
+      },
+      "tt07_tt_um_tinytapeout_dvd_screensaver_60s.webm": {
+        "bytes": 3277497,
+        "sha256": "fd1bf6f7f66057faadd30c54699282f7c14c023e259e634f6c5301c52bac5ffb"
+      },
+      "tt07_tt_um_tinytapeout_dvd_screensaver_contact.png": {
+        "bytes": 56433,
+        "sha256": "43fdcc09a4da01a5ab83b3596e857709acaba9f3d0a8ab1eec925cf34dc17f79"
+      },
+      "tt07_tt_um_tinytapeout_dvd_screensaver_poster.png": {
+        "bytes": 7392,
+        "sha256": "3fdc9c3b0c6c766baf097b54816108c810fad1f9222f254b3926f8de641ad46c"
+      },
+      "tt07_tt_um_tinytapeout_dvd_screensaver_preview.gif": {
+        "bytes": 93994,
+        "sha256": "0f5a0dd8133f9713ab6798ce1c396a325a4774b38b872782dd38543f12a27dc2"
+      }
+    },
+    "build_log_tail": "ytapeout_dvd_screensaver/repo/src/vga_sync_generator.v ~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/repo/src/palette.v\nmake: Entering directory '~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/build'\ng++  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -O2  -c -o tb.o ~/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o verilated.o ~/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o verilated_threads.o ~/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 ~/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a   ~/ttvga/tools/vgacap-build/libvgacap_trace.a ~/ttvga/tools/vgacap-build/libvgacap_stream.a ~/ttvga/tools/vgacap-build/third_party/libvgacap_zstd.a -pthread  -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.371 MB sources in 572 modules, into 0.216 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 14.613 s (elab=0.040, cvt=0.041, bld=14.486); cpu 0.127 s on 1 threads; allocated 30.879 MB\n[exit 0]\n",
+    "sim_log_tail": "b: sync at clock 1703936: line 800 clocks, 525 lines, hsync active-high, vsync active-high, mode 640x480@60, 1.000 clk/px, 640x480 @ 59.940 fps\ntb: ok: 3596 frames (3568 distinct, 0 uniform, 2 colours, 0.323% of pixels change per frame, 87.7% ever), 1512393611 clocks in 345.3s wall (4.38 Mclk/s)\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_60s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_60s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_60s.mp4 -t 30 -c copy -movflags +faststart <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_30s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_60s.webm -t 30 -c copy <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_30s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_60s.mp4 -t 10 -c copy -movflags +faststart <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_10s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_60s.webm -t 10 -c copy <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_10s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -ss 5.000 -i <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_poster.png\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_60s.mp4 -vf select='not(mod(n\\,224))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_contact.png\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -ss 5.000 -t 8.000 -i <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 <videos>/tt07/tt_um_tinytapeout_dvd_screensaver/tt07_tt_um_tinytapeout_dvd_screensaver_preview.gif\n[exit 0]\n",
+    "derive_log_tail": "derive ~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/scratch/tt07_tt_um_tinytapeout_dvd_screensaver_trace.vgch.zst -> ~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/scratch (stem tt07_tt_um_tinytapeout_dvd_screensaver, samplers centre-v1 tb-v1)\n$ ~/ttvga/tools/vgacap-build/tracetool info ~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/scratch/tt07_tt_um_tinytapeout_dvd_screensaver_trace.vgch.zst\nexit 0\n--- stdout\nversion: 2\nsample_bits: 43\nmode: 2\nclock_hz: 25175000\nsamples_per_clock: 2\nclock_bit: 42\nclock_first: 0\nsamples: 3024787222\nclocks: 1512393611\nblocks: 91\ntable_rebuilt: 0\nopen.project: tt07/tt_um_tinytapeout_dvd_screensaver\nopen.override: none\nopen.simulator: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\nopen.harness: 0b581aeab69291a9\nopen.calib_seconds: 1.0\nopen.seconds: 60.0\nopen.layout: tt-um-43\nclose.capture_after_clock: 1703936\nclose.status: ok\nclose.frames: 3596\nclose.ffmpeg_status: 0\nchanges.uo_out: 6042412\nchanges.uio_out: 0\nchanges.uio_oe: 0\nchanges.ui_in: 0\nchanges.uio_in: 0\nchanges.rst_n: 1\nchanges.ena: 0\n$ ~/ttvga/tools/vgacap-build/vgacap-sample ~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/scratch/tt07_tt_um_tinytapeout_dvd_screensaver_trace.vgch.zst --out ~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/scratch --name tt07_tt_um_tinytapeout_dvd_screensaver --sampler centre-v1 --sampler tb-v1 --png-fd 9\nexit 0\n$ ~/ttvga/tools/vgacap-build/tracetool uohash ~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/scratch/tt07_tt_um_tinytapeout_dvd_screensaver_trace.vgch.zst\nexit 0\n--- stdout\nuo_out_sha256_clocks: 0 33554432\nuo_out_sha256: bd9331d23e83408faafac40b077cfc6cc1526b3aa39e5ff785c586c45e3d0165\nderive done: error None, tb_v1_check match, pngs 3568 written, 3568 linked, cpu 113.66 s\n",
+    "publish_log_tail": "$ rsync -aH --delete --chmod=D0755,F0644 ~/ttvga/work/tt07/tt_um_tinytapeout_dvd_screensaver/scratch/ <staging_dir>/tt07_tt_um_tinytapeout_dvd_screensaver.new/\n",
+    "finished": "2026-11-27T01:45:49+00:00"
+  },
+  "sizes": {
+    "total": 15882194,
+    "samplers": {
+      "centre-v1": {
+        "dir": 12909813,
+        "store": 139780,
+        "png_bytes": 11305591,
+        "png_files": 3568,
+        "png_inodes": 3568
+      },
+      "tb-v1": {
+        "dir": 12971432,
+        "store": 139780,
+        "png_bytes": 11305591,
+        "png_files": 3568,
+        "png_inodes": 3568
+      }
+    },
+    "trace": 1306540
+  },
+  "finished": "2026-11-27T02:10:21+00:00",
+  "host_load_end": [
+    60.94482421875,
+    68.384765625,
+    78.30029296875
+  ],
+  "poll": {
+    "job": {
+      "work_bytes_peak": 50862146,
+      "scratch_bytes_peak": 15882194,
+      "pilot_bytes_peak": 374,
+      "memory_current_peak": 777678848,
+      "tasks_peak": 53
+    },
+    "rerun0-notrace": {
+      "work_bytes_peak": 2525296,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 32507867,
+      "memory_current_peak": 162443264,
+      "tasks_peak": 17
+    },
+    "rerun1-trace": {
+      "work_bytes_peak": 2525296,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 34074573,
+      "memory_current_peak": 163143680,
+      "tasks_peak": 18
+    },
+    "rerun2-notrace": {
+      "work_bytes_peak": 2525296,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 32511841,
+      "memory_current_peak": 160714752,
+      "tasks_peak": 17
+    },
+    "rerun3-trace": {
+      "work_bytes_peak": 2525296,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 34063635,
+      "memory_current_peak": 158765056,
+      "tasks_peak": 18
+    },
+    "samples": {
+      "work_bytes_peak": 2525296,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 1571830,
+      "memory_current_peak": 355237888,
+      "tasks_peak": 4
+    },
+    "done": {
+      "work_bytes_peak": 2525296,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 12482,
+      "memory_current_peak": 0,
+      "tasks_peak": 0
+    }
+  },
+  "scope": {
+    "memory_peak": 779186176,
+    "tasks_peak": 53,
+    "unit": "ttvga-pilot-tt07-tt_um_tinytapeout_dvd_screensaver.scope",
+    "exit": 0,
+    "runtime_max_sec": 130320,
+    "memory_max": "6G",
+    "cpu_quota": "200%",
+    "tasks_max": 64
+  }
+}
