@@ -64,6 +64,30 @@ def now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+class ScopeStopper:
+    """Stops the scopes still running, once (a pilot stopped part way leaves none behind).
+
+    The signal handler and atexit both call it; only the first call issues
+    `systemctl stop`. SIGKILL of the coordinator runs neither, so it leaves the
+    scopes running: stop them by hand (`systemctl --user stop 'ttvga-pilot-*'`).
+    """
+
+    def __init__(self, alive_units, say, run=subprocess.run):
+        self._alive_units = alive_units
+        self._say = say
+        self._run = run
+        self.done = False
+
+    def __call__(self) -> None:
+        if self.done:
+            return
+        self.done = True
+        alive = self._alive_units()
+        if alive:
+            self._say(f"stopping {len(alive)} scopes: {' '.join(alive)}")
+            self._run(["systemctl", "--user", "stop", *alive])
+
+
 # ---------------------------------------------------------------------------
 # Parsing (tested)
 # ---------------------------------------------------------------------------
@@ -582,12 +606,8 @@ def on_host(args: argparse.Namespace) -> int:
         say(f"{pid}: finished, scope exit {rc}, MemoryPeak {scope_peaks[pid]['memory_peak']}, "
             f"peak tasks {scope_peaks[pid]['tasks_peak']}")
 
-    def stop_scopes() -> None:
-        """Stop every scope still running (a pilot stopped part way leaves none behind)."""
-        alive = [units[pid] for pid, proc in procs.items() if proc.poll() is None]
-        if alive:
-            say(f"stopping {len(alive)} scopes: {' '.join(alive)}")
-            subprocess.run(["systemctl", "--user", "stop", *alive])
+    stop_scopes = ScopeStopper(
+        lambda: [units[pid] for pid, proc in procs.items() if proc.poll() is None], say)
 
     def on_signal(signum, frame):
         say(f"signal {signum}: stopping the scopes")

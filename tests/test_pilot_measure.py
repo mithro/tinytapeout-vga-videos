@@ -163,3 +163,21 @@ def test_redact_replaces_host_paths(pm):
     text = '{"a": "/backups/st/x.new/\\n", "b": "/srv/frames/tt08/x", "c": "/home/u/ttvga/work"}'
     out = pm.redact(text, {"/backups/st": "<staging_dir>", "/srv/frames": "<frames_root>", "/home/u": "~"})
     assert out == '{"a": "<staging_dir>/x.new/\\n", "b": "<frames_root>/tt08/x", "c": "~/ttvga/work"}'
+
+
+def test_scope_stopper_stops_once(pm):
+    """The signal handler and atexit both call it: systemctl stop is issued once."""
+    calls, said = [], []
+    stop = pm.ScopeStopper(lambda: ["ttvga-pilot-a", "ttvga-pilot-b"], said.append, calls.append)
+    stop()
+    stop()
+    assert calls == [["systemctl", "--user", "stop", "ttvga-pilot-a", "ttvga-pilot-b"]]
+    assert len(said) == 1
+
+
+def test_scope_stopper_nothing_alive(pm):
+    calls = []
+    stop = pm.ScopeStopper(lambda: [], lambda _msg: None, calls.append)
+    stop()
+    stop()
+    assert calls == []
