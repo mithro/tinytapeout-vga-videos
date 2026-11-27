@@ -51,7 +51,7 @@ def test_parse_time_v_missing_field_raises(pm):
 
 
 SIM_LOG = """
-$ /w/build/Vtop --clock-hz 25000000 --seconds 60.0 --calib-seconds 1.0 --out /w/out --ffmpeg /t/ffmpeg --ui-in 4 --trace /w/scratch/x_trace.vgch.zst --meta project=tt08/x --meta harness=abc
+$ /w/build/Vtop --clock-hz 25000000 --seconds 60.0 --calib-seconds 1.0 --out /w/out --ffmpeg /t/ffmpeg --ui-in 4 --trace /w/scratch/x_trace.vgch.zst --meta project=tt08/x --meta override=tt08/x.json sha256:0123 --meta simulator=Verilator 5.053 devel (mod) --meta harness=abc
 tb: something
 [exit 0]
 
@@ -81,8 +81,9 @@ def test_rerun_argv_replaces_out_and_trace(pm):
     assert plain == ["/w/build/Vtop", "--clock-hz", "25000000", "--seconds", "60.0", "--calib-seconds", "1.0",
                      "--ffmpeg", "/t/ffmpeg", "--ui-in", "4", "--out", "/p/run0"]
     traced = pm.rerun_argv(argv, "/p/run1", trace="/p/run1/t.vgch.zst")
-    assert traced[-8:] == ["--out", "/p/run1", "--trace", "/p/run1/t.vgch.zst",
-                           "--meta", "project=tt08/x", "--meta", "harness=abc"]
+    assert traced[-12:] == ["--out", "/p/run1", "--trace", "/p/run1/t.vgch.zst",
+                            "--meta", "project=tt08/x", "--meta", "override=tt08/x.json sha256:0123",
+                            "--meta", "simulator=Verilator 5.053 devel (mod)", "--meta", "harness=abc"]
 
 
 RSYNC_LOG = """2026/11/27 11:33:04 [100] building file list

@@ -119,8 +119,13 @@ def rerun_argv(argv: list[str], out: str, trace: str | None) -> list[str]:
             i += 2
             continue
         if a == "--meta":
-            metas += argv[i:i + 2]
-            i += 2
+            # sim.log joins the command with spaces, and META values have spaces
+            # ("simulator=Verilator 5.053 ..."): a value runs to the next option.
+            j = i + 1
+            while j < len(argv) and (j == i + 1 or not argv[j].startswith("--")):
+                j += 1
+            metas += ["--meta", " ".join(argv[i + 1:j])]
+            i = j
             continue
         base.append(a)
         i += 1
