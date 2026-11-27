@@ -32,6 +32,8 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+import xxhash
+
 HERE = Path(__file__).resolve().parent
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
@@ -63,8 +65,8 @@ class Tools:
 class DeriveResult:
     samplers: dict[str, dict]
     trace_sha: str
-    uo_out_sha256: str
-    uo_out_sha256_clocks: tuple[int, int]
+    uo_out_xxh3_128: str
+    uo_out_xxh3_128_clocks: tuple[int, int]
     tb_v1_check: str            # match | mismatch | not-run | off
     error: str | None
     cpu_seconds: float
@@ -114,7 +116,7 @@ class _PngSink:
     """Reads vgacap-sample's `--png-fd` records on a thread and writes `<out>/<sampler>/png/NNNNNN.png`.
 
     A record is `"<sampler> <distinct> <width> <height>\\n"` and width * height rgb6 bytes.
-    A frame whose (width, height, sha256) was already written is hard-linked to that PNG.
+    A frame whose (width, height, XXH3-128) was already written is hard-linked to that PNG.
     Any malformed record stops the reader (closing the pipe, so vgacap-sample fails too).
     """
 
@@ -152,7 +154,7 @@ class _PngSink:
         self.sizes[sampler].add((width, height))
         dest = self.out / sampler / "png" / f"{distinct:06d}.png"
         dest.parent.mkdir(parents=True, exist_ok=True)
-        key = (width, height, hashlib.sha256(rgb6).digest())
+        key = (width, height, xxhash.xxh3_128_digest(rgb6))
         same = self.seen.get(key)
         if same is not None:
             os.link(same, dest)
@@ -277,8 +279,8 @@ def derive(trace: Path, out: Path, stem: str, *, tb_v1: bool, centre_window: tup
 
         uo = _tracetool(tools, lf, "uohash", str(trace))
         try:
-            lo, hi = (int(x) for x in uo["uo_out_sha256_clocks"].split())
-            uo_sha = uo["uo_out_sha256"]
+            lo, hi = (int(x) for x in uo["uo_out_xxh3_128_clocks"].split())
+            uo_digest = uo["uo_out_xxh3_128"]
         except (KeyError, ValueError) as e:
             raise DeriveError(f"tracetool uohash: unexpected output {uo}") from e
 
@@ -301,6 +303,6 @@ def derive(trace: Path, out: Path, stem: str, *, tb_v1: bool, centre_window: tup
         error = "; ".join(errors) or None
         lf.write(f"derive done: error {error}, tb_v1_check {check}, pngs {sink.written} written, "
                  f"{sink.linked} linked, cpu {cpu:.2f} s\n")
-    return DeriveResult(samplers=summaries, trace_sha=trace_sha, uo_out_sha256=uo_sha,
-                        uo_out_sha256_clocks=(lo, hi), tb_v1_check=check, error=error, cpu_seconds=cpu,
+    return DeriveResult(samplers=summaries, trace_sha=trace_sha, uo_out_xxh3_128=uo_digest,
+                        uo_out_xxh3_128_clocks=(lo, hi), tb_v1_check=check, error=error, cpu_seconds=cpu,
                         pngs_written=sink.written, pngs_linked=sink.linked, info=info)

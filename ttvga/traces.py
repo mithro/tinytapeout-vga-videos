@@ -90,7 +90,7 @@ def sample(args: argparse.Namespace) -> int:
     for s, summary in res.samplers.items():
         print(f"{s}: {summary['sampler_status']}, {summary['frames']} frames, "
               f"{summary['distinct_frames']} distinct, {summary['mode']}")
-    print(f"uo_out_sha256: {res.uo_out_sha256}")
+    print(f"uo_out_xxh3_128: {res.uo_out_xxh3_128}")
     if res.error:
         return _fail(res.error)
     return 0

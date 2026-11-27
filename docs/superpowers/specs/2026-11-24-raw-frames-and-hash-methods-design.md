@@ -1,7 +1,7 @@
 # Raw signal traces, pluggable samplers and pluggable frame hashes
 
 Status: approved by the owner on 2026-11-25, seventeenth revision, amended
-2026-11-25 (`tb-v1` is legacy and runs only on request; see below). The
+2026-11-25 (`tb-v1` is legacy and runs only on request; see below), and amended 2026-11-27 (the frame hash is XXH3-128, method `xxh3-128-rgb6`, replacing SHA-256 on the owner's ruling that no secure hash is needed; [vgacap PR 62](https://github.com/mithro/vgacap/pull/62)). The
 sixteenth independent review found no blocking and no medium problems.
 
 ## Why
@@ -554,7 +554,7 @@ additionally stops at `tb.cpp`'s frame target, as `tb.cpp` does, so it
 reproduces the published frame counts. Frames before `capture_after_clock`
 (reset and calibration) are in the trace but are not frames of the run.
 
-A sampler emits every such frame. Each frame's SHA-256 is computed
+A sampler emits every such frame. Each frame's XXH3-128 is computed
 (that is the frame's identity) and frames are deduplicated by it; storing,
 PNG encoding and the page work once per distinct frame.
 For each sampler, per project, under `<project>/<sampler>/`:
@@ -570,9 +570,9 @@ For each sampler, per project, under `<project>/<sampler>/`:
 - `frames.txt`: header (`id`, `status`, `sampler`, `pixel_format: rgb6`,
   `width`, `height`, `mode`, `clock_hz`, `clocks_per_pixel`,
   `capture_after_clock`, `frame_clocks`, `frames`, `distinct_frames`, and the
-  store's file name, uncompressed length, and the SHA-256 of its
+  store's file name, uncompressed length, and the XXH3-128 of its
   uncompressed contents; nothing in it depends on the zstd version, so
-  re-running with a newer zstd changes nothing in git); one SHA-256 per distinct frame, in
+  re-running with a newer zstd changes nothing in git); one XXH3-128 per distinct frame, in
   store order; then the sequence as runs, `<first frame> <count> <distinct
   number> <start clock> <missing>` (`missing`, the frame's missing pixels,
   is 0 except for `centre-v1` frames that were not fully received). A frame's start clock is as defined for its sampler
@@ -583,7 +583,7 @@ For each sampler, per project, under `<project>/<sampler>/`:
   content changes, the `missing` count changes, or a frame starts other than
   `frame_clocks` after the previous one.
 - `frame_hashes.<method>.txt`, one per hash method computed for that
-  sampler: `sha256-rgb6` for every sampler; `fnv1a64-tb2026-rgb888` for
+  sampler: `xxh3-128-rgb6` for every sampler; `fnv1a64-tb2026-rgb888` for
   `tb-v1` only, since it exists to continue the published hashes.
 - `png/<n>.png` (n zero-padded to 6 digits): every distinct frame, 8-bit
   indexed with a 64-entry palette (index i is rgb6 value i), native
@@ -591,7 +591,7 @@ For each sampler, per project, under `<project>/<sampler>/`:
   by the job's glue. `vgacap-sample` writes each new distinct frame's rgb6
   bytes, with its sampler, number, width and height, to a pipe the glue
   reads as it goes, so PNG encoding never has to decompress the store again. A PNG converts back to the identical rgb6 bytes. Where a
-  second sampler's distinct frame has the same width, height and SHA-256 as
+  second sampler's distinct frame has the same width, height and XXH3-128 as
   one already written for the project (the shape is part of the key, since
   two frames of different shapes can have the same bytes, all black for
   example), its `png/<n>.png` is a hard link to that file (same
@@ -612,7 +612,7 @@ test vectors. Initial methods:
 
 | id | algorithm | input |
 | --- | --- | --- |
-| `sha256-rgb6` | SHA-256 | the rgb6 bytes |
+| `xxh3-128-rgb6` | XXH3-128 | the rgb6 bytes |
 | `fnv1a64-tb2026-rgb888` | FNV-1a 64 loop, prime 0x100000001b3, offset basis 0x14650fb0739d0383 (the standard one with a digit lost) | RGB888, each channel = value * 85 |
 
 Every hash file starts with `hash_method: <id>` and the method's definition
@@ -982,7 +982,7 @@ one project from the command line.
    Simulate each without and with the trace to measure the overhead against
    the budget; measure trace size per candidate format, store and PNG sizes,
    and sampler, hashing and PNG CPU time. Check `tb-v1` reproduces the
-   published FNV hashes exactly. Compare SHA-256 and FNV distinct counts
+   published FNV hashes exactly. Compare XXH3-128 and FNV distinct counts
    (543,730 today is a count of distinct FNV values, `tb.cpp:477,488`). Show
    `tb-v1` against `centre-v1` frame by frame, with `frames diff` on any
    difference. Export one frame of each as FST and VCD, check with

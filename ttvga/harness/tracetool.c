@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "sha256.h"
+#include "xxhash.h"
 #include "vgacap/stream.h"
 #include "vgacap/trace.h"
 #include "zstd.h"
@@ -310,18 +310,18 @@ static int cmd_slice(const char *path, uint64_t from, uint64_t to, const char *o
 
 // ---- uohash -------------------------------------------------------------
 
-typedef struct { SHA256_CTX ctx; uint64_t done; } hash_t;
+typedef struct { XXH3_state_t *st; uint64_t done; } hash_t;
 
 static int hash_runs(void *user, const vgacap_trace_run_t *runs, size_t n) {
     hash_t *h = user;
-    static BYTE buf[65536];
+    static unsigned char buf[65536];
     for (size_t i = 0; i < n; i++) {
         uint64_t a = runs[i].first_sample, b = a + runs[i].run;
         uint64_t odd = (b >> 1) - (a >> 1);        // samples 2c + 1 in [a, b)
         memset(buf, (int)(runs[i].value & 0xFF), odd < sizeof buf ? (size_t)odd : sizeof buf);
         for (uint64_t left = odd; left;) {
             size_t k = left < sizeof buf ? (size_t)left : sizeof buf;
-            sha256_update(&h->ctx, buf, k);
+            XXH3_128bits_update(h->st, buf, k);
             left -= k;
         }
         h->done += odd;
@@ -338,17 +338,25 @@ static int cmd_uohash(const char *path, uint64_t limit) {
     uint64_t clocks = in->samples / in->header.samples_per_clock;
     uint64_t m = limit < clocks ? limit : clocks;
     hash_t h = {0};
-    sha256_init(&h.ctx);
+    h.st = XXH3_createState();
+    if (!h.st || XXH3_128bits_reset(h.st) != XXH_OK) { fprintf(stderr, "tracetool: cannot start XXH3-128\n"); return 1; }
     // Clocks [0, m) are samples [0, 2m): the half-open range.
     if (vgacap_trace_read_runs(r, 0, 2 * m, hash_runs, &h, err, sizeof err)) {
         fprintf(stderr, "tracetool: %s: %s\n", path, err);
+        XXH3_freeState(h.st);
         return 1;
     }
-    if (h.done != m) { fprintf(stderr, "tracetool: hashed %" PRIu64 " clocks, expected %" PRIu64 "\n", h.done, m); return 1; }
-    BYTE digest[SHA256_BLOCK_SIZE];
-    sha256_final(&h.ctx, digest);
-    printf("uo_out_sha256_clocks: 0 %" PRIu64 "\nuo_out_sha256: ", m);
-    for (int i = 0; i < SHA256_BLOCK_SIZE; i++) printf("%02x", digest[i]);
+    if (h.done != m) {
+        fprintf(stderr, "tracetool: hashed %" PRIu64 " clocks, expected %" PRIu64 "\n", h.done, m);
+        XXH3_freeState(h.st);
+        return 1;
+    }
+    // Canonical form (high 64 bits first, big-endian): what `xxhsum -H2` prints.
+    XXH128_canonical_t canon;
+    XXH128_canonicalFromHash(&canon, XXH3_128bits_digest(h.st));
+    XXH3_freeState(h.st);
+    printf("uo_out_xxh3_128_clocks: 0 %" PRIu64 "\nuo_out_xxh3_128: ", m);
+    for (size_t i = 0; i < sizeof canon.digest; i++) printf("%02x", canon.digest[i]);
     printf("\n");
     vgacap_trace_close(r);
     return 0;

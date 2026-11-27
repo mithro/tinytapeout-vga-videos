@@ -39,7 +39,7 @@ def test_host_scripts_run_under_the_pinned_python():
     host = remote.Host(ssh="ttvga@example.invalid", jobs=4)
     cmd = remote.queue_command(args, host, TOOLS)
     assert cmd.startswith(remote.host_python(TOOLS))
-    assert "~/ttvga/tools/uv/uv run --no-project --python 3.14.7 python" in cmd
+    assert f"~/ttvga/tools/uv/uv run --no-project --python 3.14.7 --with xxhash=={TOOLS['xxhash']['version']} python" in cmd
 
 
 def test_vgacap_commit_is_a_full_sha():
@@ -104,6 +104,7 @@ def test_uv_state_lives_under_ttvga_tools():
         assert "UV_CACHE_DIR=~/ttvga/tools/uv-cache" in text
         assert "UV_PYTHON_BIN_DIR=~/ttvga/tools/bin" in text
     assert "uv python install --no-bin 3.14.7" in remote.bootstrap_script(TOOLS)
+    assert f"--with xxhash=={TOOLS['xxhash']['version']} python --version" in remote.bootstrap_script(TOOLS)
     py = remote.host_python(TOOLS)
     assert "UV_PYTHON_PREFERENCE=only-managed" in py
     assert "UV_PYTHON_DOWNLOADS=never" in py
@@ -127,9 +128,15 @@ def test_host_check_reports_a_missing_interpreter(monkeypatch):
 
 def test_tracetool_is_built_against_the_vgacap_libraries_found_in_the_build_tree():
     cmds = "\n".join(remote.tracetool_build_commands("src", "bld", "tracetool.c"))
-    assert "cc -std=c99 -O2 -Wall -Wextra -Werror -Isrc/include -Isrc/third_party/sha256" in cmds
-    for lib in ("libvgacap_trace.a", "libvgacap_stream.a", "libvgacap_sha256.a", "libvgacap_zstd.a"):
+    assert "cc -std=c99 -O2 -Wall -Wextra -Werror -Isrc/include -Isrc/third_party/xxhash" in cmds
+    for lib in ("libvgacap_trace.a", "libvgacap_stream.a", "libvgacap_xxhash.a", "libvgacap_zstd.a"):
         assert f"find bld -name {lib}" in cmds
     assert cmds.rstrip().endswith("-pthread -o bld/tracetool")
     assert "building tracetool" in remote.bootstrap_script(TOOLS)
     assert "-o vgacap-build/tracetool" in remote.bootstrap_script(TOOLS)
+
+
+def test_the_host_xxhash_pin_is_the_project_pin():
+    """One xxhash version: tools.toml (the host) and pyproject.toml (local, uv.lock) must agree."""
+    deps = tomllib.loads((remote.ROOT / "pyproject.toml").read_text())["project"]["dependencies"]
+    assert f"xxhash=={TOOLS['xxhash']['version']}" in deps

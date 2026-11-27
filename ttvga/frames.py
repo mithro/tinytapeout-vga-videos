@@ -9,19 +9,19 @@ do the format work; this module only moves frames between STORE and PNG.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import re
 import sys
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
+import xxhash
 from compression import zstd
 
 from ttvga import devtools
 from ttvga.harness import pngio, vgacap_path
 
-METHODS = ("sha256-rgb6", "fnv1a64-tb2026-rgb888")
+METHODS = ("xxh3-128-rgb6", "fnv1a64-tb2026-rgb888")
 _SPEC = re.compile(r"(.+)([:@])([0-9]+)\Z")
 _PAIRS = 10
 
@@ -46,7 +46,7 @@ def _read_frames_txt(path: Path):
 
 
 def _read_store(ff, directory: Path) -> bytes:
-    """The uncompressed store of `ff`, checked against its length and SHA-256."""
+    """The uncompressed store of `ff`, checked against its length and XXH3-128."""
     path = directory / ff.store
     try:
         data = zstd.decompress(path.read_bytes())
@@ -55,8 +55,8 @@ def _read_store(ff, directory: Path) -> bytes:
     n = ff.width * ff.height
     if len(data) != ff.store_length or len(data) != len(ff.distinct) * n:
         raise FramesError(f"{path}: {len(data)} bytes, frames.txt says store_length {ff.store_length}")
-    if hashlib.sha256(data).hexdigest() != ff.store_sha256:
-        raise FramesError(f"{path}: SHA-256 differs from store_sha256 in frames.txt")
+    if xxhash.xxh3_128_hexdigest(data) != ff.store_xxh3_128:
+        raise FramesError(f"{path}: XXH3-128 differs from store_xxh3_128 in frames.txt")
     return data
 
 
@@ -126,9 +126,9 @@ def from_png(args: argparse.Namespace) -> int:
         parts.append(rgb6)
     store = b"".join(parts)
     Path(args.out).write_bytes(zstd.compress(store))
-    sha = hashlib.sha256(store).hexdigest()
-    print(f"{len(parts)} frames, {len(store)} bytes, sha256 {sha} "
-          f"({'matches' if sha == ff.store_sha256 else 'differs from'} frames.txt)")
+    digest = xxhash.xxh3_128_hexdigest(store)
+    print(f"{len(parts)} frames, {len(store)} bytes, xxh3-128 {digest} "
+          f"({'matches' if digest == ff.store_xxh3_128 else 'differs from'} frames.txt)")
     return 0
 
 
@@ -137,8 +137,8 @@ def hash_frames(args: argparse.Namespace) -> int:
     txt = Path(args.frames_txt)
     ff = _read_frames_txt(txt)
     frames = _distinct_frames(ff, _read_store(ff, txt.parent))
-    if args.method == "sha256-rgb6":
-        per = [hashes.sha256_rgb6(f) for f in frames]
+    if args.method == "xxh3-128-rgb6":
+        per = [hashes.xxh3_128_rgb6(f) for f in frames]
     else:
         per = [f"{hashes.fnv1a64_tb2026_rgb888(f):016x}" for f in frames]
     framesfile.write_hash_file(args.out, framesfile.HashFile.from_frames(ff, args.method, per))
@@ -217,7 +217,7 @@ class Comparison:
 @dataclass
 class _Run:
     path: Path
-    method: str                # sha256-rgb6 for a frames.txt (its distinct hashes are SHA-256 of rgb6)
+    method: str                # xxh3-128-rgb6 for a frames.txt (its distinct hashes are XXH3-128 of rgb6)
     keys: list[str | None]     # frame k's hash, None for a gap
     ff: object | None          # the FramesFile, for a frames.txt
 
@@ -234,7 +234,7 @@ def _load_run(path: Path) -> _Run:
     except (OSError, ValueError) as e:
         raise FramesError(f"{path}: {e}") from None
     keys = [None if f.distinct < 0 else ff.distinct[f.distinct] for f in ff.frames]
-    return _Run(path, "sha256-rgb6", keys, ff)
+    return _Run(path, "xxh3-128-rgb6", keys, ff)
 
 
 def _offsets():
@@ -266,7 +266,7 @@ def compare(a: Path, b: Path) -> Comparison:
     kinds = {r.path: ("frames.txt" if r.ff is not None else f"a {r.method} hash file") for r in (ra, rb)}
     if ra.method != rb.method:
         raise CompareError(f"{ra.path} is {kinds[ra.path]} and {rb.path} is {kinds[rb.path]}; "
-                           f"only runs of one hash method compare (a frames.txt compares as sha256-rgb6)")
+                           f"only runs of one hash method compare (a frames.txt compares as xxh3-128-rgb6)")
     ka, kb = ra.keys, rb.keys
     k = next((j for j in range(min(len(ka), len(kb)))
               if ka[j] is not None and kb[j] is not None and ka[j] != kb[j]), None)
@@ -369,7 +369,7 @@ def add_parser(sub: argparse._SubParsersAction) -> None:
     p = fs.add_parser("hash", help="write a frame_hashes file for a frames.txt (same bytes as vgacap-sample)",
                       description="Hash each distinct frame and write the hash file vgacap-sample would. "
                                   "Warning: fnv1a64-tb2026-rgb888 is computed in Python and takes about "
-                                  "0.15 s per 640x480 frame; sha256-rgb6 is fast.")
+                                  "0.15 s per 640x480 frame; xxh3-128-rgb6 is fast.")
     p.add_argument("frames_txt", metavar="FRAMES_TXT")
     p.add_argument("--method", required=True, choices=METHODS, metavar="ID", help=" or ".join(METHODS))
     p.add_argument("--out", required=True, metavar="FILE")
@@ -386,7 +386,7 @@ def add_parser(sub: argparse._SubParsersAction) -> None:
     p = fs.add_parser("compare", help="first mismatch, frame offset and start-clock deltas of two runs",
                       description="RUN_A and RUN_B are each a frames.txt or a frame_hashes file. Two hash files "
                                   "must share a method; a frames.txt compares only with frames.txt or a "
-                                  "sha256-rgb6 file (otherwise exit 2). A gap is no data, never a mismatch. "
+                                  "xxh3-128-rgb6 file (otherwise exit 2). A gap is no data, never a mismatch. "
                                   "offset d: b[j + d] shows a[j] for every frame j from the first mismatch on "
                                   f"with data in both, |d| <= {MAX_OFFSET}, over at least {MIN_PAIRS} pairs. "
                                   "With both stores beside their frames.txt, the first mismatching pair is "

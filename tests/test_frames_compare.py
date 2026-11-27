@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-import hashlib
 
 import pytest
+import xxhash
 from compression import zstd
 
 from ttvga import devtools, frames
@@ -50,14 +50,14 @@ def _run(framesfile, directory, labels, starts=None, store=True, trace=False):
     ff = framesfile.FramesFile(
         id="x", status="ok", sampler="centre-v1", sampler_status="ok", width=W, height=H, mode="test",
         clock_hz=25000000, clocks_per_pixel=1.0, capture_after_clock=0, store=name, store_length=len(data),
-        store_sha256=hashlib.sha256(data).hexdigest(), distinct=[hashlib.sha256(p).hexdigest() for p in pix],
+        store_xxh3_128=xxhash.xxh3_128_hexdigest(data), distinct=[xxhash.xxh3_128_hexdigest(p) for p in pix],
         frames=fr, centre=framesfile.Centre((0, 0), (0, 0), 0, (0, 0), 0, 0))
     framesfile.write_frames_txt(sampler_dir / "frames.txt", ff)
     return sampler_dir / "frames.txt", ff
 
 
-def _hash_file(framesfile, path, ff, method="sha256-rgb6"):
-    if method == "sha256-rgb6":
+def _hash_file(framesfile, path, ff, method="xxh3-128-rgb6"):
+    if method == "xxh3-128-rgb6":
         per = list(ff.distinct)
     else:
         per = [f"{k:016x}" for k in range(len(ff.distinct))]
@@ -73,8 +73,8 @@ def test_identical(framesfile, tmp_path, capsys):
     assert (c.first_mismatch, c.offset) == (None, 0)
     assert (c.frames_a, c.frames_b, c.gaps_a, c.gaps_b) == (30, 30, 0, 0)
     assert c.start_clock_deltas == {0: 30}
-    # A frames.txt against the sha256-rgb6 hash file of the same frames.
-    h = _hash_file(framesfile, tmp_path / "frame_hashes.sha256-rgb6.txt", ffa)
+    # A frames.txt against the xxh3-128-rgb6 hash file of the same frames.
+    h = _hash_file(framesfile, tmp_path / "frame_hashes.xxh3-128-rgb6.txt", ffa)
     c = frames.compare(a, h)
     assert (c.first_mismatch, c.offset, c.start_clock_deltas) == (None, 0, None)
     assert main(["frames", "compare", str(a), str(b)]) == 0
@@ -187,7 +187,7 @@ def test_start_clock_deltas(framesfile, tmp_path, capsys):
 
 def test_methods_must_match(framesfile, tmp_path, capsys):
     a, ffa = _run(framesfile, tmp_path / "a", list(range(20)))
-    sha = _hash_file(framesfile, tmp_path / "frame_hashes.sha256-rgb6.txt", ffa)
+    sha = _hash_file(framesfile, tmp_path / "frame_hashes.xxh3-128-rgb6.txt", ffa)
     fnv = _hash_file(framesfile, tmp_path / "frame_hashes.fnv1a64-tb2026-rgb888.txt", ffa,
                      "fnv1a64-tb2026-rgb888")
     fnv2 = _hash_file(framesfile, tmp_path / "fnv2.txt", ffa, "fnv1a64-tb2026-rgb888")

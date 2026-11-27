@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-import hashlib
+import xxhash
 import signal
 import subprocess
 import time
@@ -162,22 +162,22 @@ def test_uohash_matches_python(dev, bars):
     t = vgch.read(bars, dev)
     data = bytes(s & 0xFF for s in samples(t, 0, 2 * M)[1::2])
     assert len(data) == M
-    want = hashlib.sha256(data).hexdigest()
+    want = xxhash.xxh3_128_hexdigest(data)
     got = kv(tracetool(dev, "uohash", bars, "--clocks", M).stdout)
-    assert got == {"uo_out_sha256_clocks": f"0 {M}", "uo_out_sha256": want}
+    assert got == {"uo_out_xxh3_128_clocks": f"0 {M}", "uo_out_xxh3_128": want}
     # Half-open: one clock fewer is a different hash, over M - 1 clocks.
     short = kv(tracetool(dev, "uohash", bars, "--clocks", M - 1).stdout)
-    assert short["uo_out_sha256_clocks"] == f"0 {M - 1}"
-    assert short["uo_out_sha256"] == hashlib.sha256(data[:-1]).hexdigest() != want
+    assert short["uo_out_xxh3_128_clocks"] == f"0 {M - 1}"
+    assert short["uo_out_xxh3_128"] == xxhash.xxh3_128_hexdigest(data[:-1]) != want
 
 
 def test_uohash_clamps_to_the_trace(dev, bars, tmp_path):
     sl = tmp_path / "s.vgch.zst"
     tracetool(dev, "slice", bars, "--from", 0, "--to", 3000, "--out", sl)
     got = kv(tracetool(dev, "uohash", sl).stdout)     # default N = 2^25 is past the end
-    assert got["uo_out_sha256_clocks"] == "0 3000"
+    assert got["uo_out_xxh3_128_clocks"] == "0 3000"
     t = vgch.read(sl, dev)
-    assert got["uo_out_sha256"] == hashlib.sha256(bytes(s & 0xFF for s in samples(t, 0, 6000)[1::2])).hexdigest()
+    assert got["uo_out_xxh3_128"] == xxhash.xxh3_128_hexdigest(bytes(s & 0xFF for s in samples(t, 0, 6000)[1::2]))
 
 
 def test_refuses_a_trace_whose_clock_starts_high(dev, tmp_path):

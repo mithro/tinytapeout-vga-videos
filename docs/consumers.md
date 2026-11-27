@@ -6,16 +6,36 @@ read, what stimulus made them, and how to compare against them.
 
 vgacap's format documents are the authority for every byte of the trace, of `frames.txt` and of the
 hash files. This note links to them at the pinned commit
-([`ttvga/tools.toml`](../ttvga/tools.toml), `[vgacap]`, `c7176da`) and never restates them:
+([`ttvga/tools.toml`](../ttvga/tools.toml), `[vgacap]`, `4a3c670`) and never restates them:
 
-- [trace-format.md](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/docs/trace-format.md)
-- [frames-format.md](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/docs/frames-format.md)
+- [trace-format.md](https://github.com/mithro/vgacap/blob/4a3c6701638c67956b54d5dee8f589e89e869b32/docs/trace-format.md)
+- [frames-format.md](https://github.com/mithro/vgacap/blob/4a3c6701638c67956b54d5dee8f589e89e869b32/docs/frames-format.md)
+
+## Change notice: XXH3-128 replaces SHA-256 in the frames format
+
+vgacap [PR 62](https://github.com/mithro/vgacap/pull/62) replaced SHA-256 with XXH3-128 for frame
+identity and store integrity ("There is no need for secure hashes here"). This repository follows it.
+The pin in [`ttvga/tools.toml`](../ttvga/tools.toml) is the merge commit, [4a3c670](https://github.com/mithro/vgacap/commit/4a3c6701638c67956b54d5dee8f589e89e869b32).
+
+| what | before | after | digits before | digits after |
+|---|---|---|---|---|
+| store key in `frames.txt` | `store_sha256` | `store_xxh3_128` | 64 | 32 |
+| `distinct:` lines in `frames.txt` | SHA-256 | XXH3-128 | 64 | 32 |
+| hash method | `sha256-rgb6` | `xxh3-128-rgb6` | 64 | 32 |
+| hash file | `frame_hashes.sha256-rgb6.txt` | `frame_hashes.xxh3-128-rgb6.txt` | 64 | 32 |
+| trace-content digest in `result.json` | `trace.uo_out_sha256` | `trace.uo_out_xxh3_128` | 64 | 32 |
+| trace-content clock range in `result.json` | `trace.uo_out_sha256_clocks` | `trace.uo_out_xxh3_128_clocks` | n/a | n/a |
+
+- The readers refuse the old key and the old method. There is no reader for both.
+- The FNV files (`fnv1a64-tb2026-rgb888`) are byte-identical, so readers of only those need no change.
+- `trace.sha256` and `tb-v1/TRACE_SHA256` stay SHA-256: they identify the trace file, not frames.
+- Python needs the [`xxhash`](https://pypi.org/project/xxhash/) package (`>=3.4`) to compute the digest.
 
 ## What exists today, and what is still to come
 
 The re-run of all projects with traces (Task 23 of the [pipeline plan](superpowers/plans/2026-11-26-raw-traces-pipeline.md)) has not happened yet. Until it does:
 
-- The archive has no `frames/` subtree. There are no traces, stores, PNGs, pages or `sha256-rgb6`
+- The archive has no `frames/` subtree. There are no traces, stores, PNGs, pages or `xxh3-128-rgb6`
   files to download yet.
 - No committed `result.json` has `trace`, `samplers`, `tb_v1_check` or `published`. Those come with
   the re-run.
@@ -122,14 +142,14 @@ All of this is [`ttvga/harness/tb.cpp`](../ttvga/harness/tb.cpp), `tick` and the
   `_ctor_var_reset`, with no random reset. So every variable not set by the design's own initialisers (`initial` blocks, declaration
   initialisers, `$readmemh`) starts at 0.
 - The trace's sample `2c` is clock `c` with clk low, sample `2c + 1` with clk high
-  ([trace-format.md](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/docs/trace-format.md),
+  ([trace-format.md](https://github.com/mithro/vgacap/blob/4a3c6701638c67956b54d5dee8f589e89e869b32/docs/trace-format.md),
   "Clocks and time"). Byte `i` of a `uo_out` dump is sample `2i + 1`, `uo_out` after the rising edge
   of clock `i`.
 
 ## The trace-content check
 
-`trace.uo_out_sha256` in `result.json` is the SHA-256 of the `uo_out` dump over the half-open clock
-range `[0, M)`, one byte per clock, with `M = trace.uo_out_sha256_clocks[1]`. No sampler is involved.
+`trace.uo_out_xxh3_128` in `result.json` is the XXH3-128 of the `uo_out` dump over the half-open clock
+range `[0, M)`, one byte per clock, with `M = trace.uo_out_xxh3_128_clocks[1]`. No sampler is involved.
 [`tracetool uohash`](../ttvga/harness/tracetool.c) computes it. `M` is the trace's clock count or
 2^25, whichever is smaller.
 
@@ -139,10 +159,10 @@ To check another simulation's dump against a trace, hash its first `M` bytes and
 
 | method | pixel bytes | bytes per pixel |
 |---|---|---|
-| `sha256-rgb6` | rgb6 | 1 |
+| `xxh3-128-rgb6` | rgb6 | 1 |
 | `fnv1a64-tb2026-rgb888` | RGB888 | 3 |
 
-- **`sha256-rgb6`** is SHA-256 over the frame as rgb6, one byte per pixel: `R<<4 | G<<2 | B`.
+- **`xxh3-128-rgb6`** is XXH3-128 (seed 0, canonical big-endian hex, 32 digits; [`xxhsum -H2`](https://github.com/Cyan4973/xxHash) prints the same) over the frame as rgb6, one byte per pixel: `R<<4 | G<<2 | B`.
   - R is `uo_out[0]`, `uo_out[4]`; G is `uo_out[1]`, `uo_out[5]`; B is `uo_out[2]`, `uo_out[6]`.
     The first bit is the more significant.
   - The bytes are row-major, `width * height` of them, from the sampler's first active pixel of its
@@ -153,13 +173,13 @@ To check another simulation's dump against a trace, hash its first `M` bytes and
   `0xcbf29ce484222325`. The FPGA harness's own hash uses the standard basis
   ([frame-definition.md](https://github.com/mithro/tt-harness-fpga-vga/blob/e5b96b2edbb43ee9ed916091b61fcc5c9fdf76ae/docs/frame-definition.md), "Hash").
 
-Sources: [`hashes.py`](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/python/vgacap/hashes.py)
-and [`tbv1.py`](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/python/vgacap/tbv1.py) (`_rgb6`).
+Sources: [`hashes.py`](https://github.com/mithro/vgacap/blob/4a3c6701638c67956b54d5dee8f589e89e869b32/python/vgacap/hashes.py)
+and [`tbv1.py`](https://github.com/mithro/vgacap/blob/4a3c6701638c67956b54d5dee8f589e89e869b32/python/vgacap/tbv1.py) (`_rgb6`).
 
 ## Frame starts, and cpp = 1
 
 **tb-v1**
-([`tbv1.py`](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/python/vgacap/tbv1.py), `sample`):
+([`tbv1.py`](https://github.com/mithro/vgacap/blob/4a3c6701638c67956b54d5dee8f589e89e869b32/python/vgacap/tbv1.py), `sample`):
 
 - A frame starts at the end of the vsync pulse: the first clock whose clk-high sample is outside it.
   `capture_after_clock` is in the spec's clock numbering, so consumers must not subtract 1. Frame 0
@@ -186,7 +206,7 @@ replay timed or gamepad scripts (frame-definition.md, "Stimulus and initial stat
 neither of those, so a design that reads its own `uio` outputs back, or has such a script, can differ.
 
 **centre-v1**
-([`centre.py`](https://github.com/mithro/vgacap/blob/c7176da10e2171a76605734d4364de85bb549280/python/vgacap/centre.py)):
+([`centre.py`](https://github.com/mithro/vgacap/blob/4a3c6701638c67956b54d5dee8f589e89e869b32/python/vgacap/centre.py)):
 
 - A frame starts at the hsync leading edge that begins the first line of the vsync pulse.
 - Rows count from the start of the vsync pulse: row `y` is line `vsync + vback' + y`.
@@ -216,6 +236,8 @@ Read `tb_v1` in `result.json` ([`ttvga/harness/job.py`](../ttvga/harness/job.py)
 - `tb_v1.dropped` is `true` only after [`job.py --drop-tb-v1`](../ttvga/harness/job.py).
 
 A run never deletes tb-v1 files ([Ruling Z](superpowers/plans/2026-11-26-raw-traces-pipeline.md)), so a default re-run leaves them `stale`.
+
+A published tb-v1 in the pre-XXH3 format cannot be left in place: the run fails in a check before it fetches, builds or simulates anything, so no file is changed. The failed run's `tb_v1` still says what the files are by their trace (`current` or `stale`); its `error` says they were refused. A run given `--tb-v1` or `--drop-tb-v1` skips that check; if it then fails before replacing the files, its `error` says the pre-XXH3 tb-v1 was left in place. The error names the project and the two ways out, [`--tb-v1`](../ttvga/harness/job.py) (derive tb-v1 again) and [`--drop-tb-v1`](../ttvga/harness/job.py) (retire it).
 
 ## To fill in later
 

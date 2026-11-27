@@ -1,6 +1,7 @@
 # Raw traces in the pipeline: implementation plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **Amended 2026-11-27:** the frame hash is XXH3-128 (method `xxh3-128-rgb6`, `store_xxh3_128`), replacing SHA-256, per [vgacap PR 62](https://github.com/mithro/vgacap/pull/62). The trace-content digest is `uo_out_xxh3_128`. The trace file hash (`trace.sha256`) stays SHA-256. See [consumers.md](../../consumers.md).
 
 **Goal:** Make every simulation keep a raw pin trace and derive its frames, hashes, PNGs and pages from that trace through vgacap, cheaply enough to sit beside the simulation. Then re-run all 408 projects, check them, and publish the new data so other tooling (the FPGA and handheld harnesses) can compare against it properly.
 
@@ -265,7 +266,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
 **Files:**
 - Create: `ttvga/harness/tracetool.c` (C99, `-Wall -Wextra -Werror`).
 - Modify: `ttvga/remote.py` (bootstrap builds it after vgacap), `ttvga/devtools.py`, `ttvga/harness/vgacap_path.py`.
-  - The build is `cc -std=c99 -O2 -I<src>/include -I<src>/third_party/sha256 tracetool.c`, then the trace, stream, sha256 and zstd static libraries of the vgacap build, then `-pthread -o <build>/tracetool`.
+  - The build is `cc -std=c99 -O2 -I<src>/include -I<src>/third_party/xxhash tracetool.c`, then the trace, stream, xxhash and zstd static libraries of the vgacap build, then `-pthread -o <build>/tracetool`.
   - The library paths are found in the build tree, not guessed.
 - Test: `tests/sim/test_tracetool.py`.
 
@@ -279,8 +280,8 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
     - META(open) is copied, with `slice_from_clock` and `slice_to_clock` added.
     - META(close) is written only when the original has one, with the original's `status`, `capture_after_clock=0` and `frames=0`. The slice of a truncated trace has none, so it reads as truncated by the format's own rule.
     - Exit 2 if the range is empty or past the end.
-  - **`tracetool uohash TRACE [--clocks N]`** prints `uo_out_sha256_clocks: 0 <M>` and `uo_out_sha256: <64 hex>`.
-    - It is SHA-256 over byte `c` = `uo_out` of sample `2c + 1`, for `0 <= c < M`, the half-open clock range `[0, M)`.
+  - **`tracetool uohash TRACE [--clocks N]`** prints `uo_out_xxh3_128_clocks: 0 <M>` and `uo_out_xxh3_128: <32 hex>`.
+    - It is XXH3-128 (seed 0, canonical big-endian hex) over byte `c` = `uo_out` of sample `2c + 1`, for `0 <= c < M`, the half-open clock range `[0, M)`.
     - `M = min(N, clocks in trace)`, with `N` default 33,554,432 (2^25).
 - [ ] **Step 1: Write the failing tests:**
   - `test_info_on_killed_trace`: `bars640`, `--seconds 30 --trace`. Poll every second (each poll logged): copy the growing file and run `tracetool info` on the copy, which rebuilds the table; once the copy reports `blocks >= 2`, SIGKILL the model (bounded: fail the test after 120 s). Expected: `table_rebuilt: 1`, `close.status: truncated`, `blocks >= 1`. A SIGTERMed run gives `table_rebuilt: 0` and `close.status: sim-timeout`.
@@ -421,19 +422,19 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - `derive.derive(trace: Path, out: Path, stem: str, *, tb_v1: bool, centre_window: tuple[int, int] | None, store_level: int | None, tools: Tools, log: Path, tb_hashes: Path | None) -> DeriveResult`. In order, it:
     1. refuses a trace whose `tracetool info` has `open.slice_from_clock` (`DeriveError`);
     2. computes `trace_sha` (`hashlib.sha256`, 1 MiB reads);
-    3. runs `vgacap-sample <trace> --out <out> --name <stem> --sampler centre-v1 [--sampler tb-v1] [--centre-window DX,DY] [--store-level N] --png-fd <w>`. A reader thread parses each record (`"<sampler> <distinct> <width> <height>\n"` + `w*h` bytes) and writes `<out>/<sampler>/png/<distinct:06d>.png`. A frame with the same `(width, height, sha256(rgb6))` as an earlier PNG is hard-linked to it instead of encoded again;
+    3. runs `vgacap-sample <trace> --out <out> --name <stem> --sampler centre-v1 [--sampler tb-v1] [--centre-window DX,DY] [--store-level N] --png-fd <w>`. A reader thread parses each record (`"<sampler> <distinct> <width> <height>\n"` + `w*h` bytes) and writes `<out>/<sampler>/png/<distinct:06d>.png`. A frame with the same `(width, height, XXH3-128 of rgb6)` as an earlier PNG is hard-linked to it instead of encoded again;
     4. writes `pages.write_sampler_page` for each sampler;
     5. runs `tracetool uohash`;
     6. with tb-v1, writes `<out>/tb-v1/TRACE_SHA256` (the hex and a newline);
     7. sets `tb_v1_check`: `match` or `mismatch` when `tb_v1` and `tb_hashes` exist (hash lines compared line for line); `not-run` when `tb_v1` without `tb_hashes`; `off` when not `tb_v1`.
-  - `DeriveResult(samplers: dict[str, dict], trace_sha: str, uo_out_sha256: str, uo_out_sha256_clocks: tuple[int, int], tb_v1_check: str, error: str | None, cpu_seconds: float, pngs_written: int, pngs_linked: int)`. `samplers[s]` is `{sampler_status, frames, distinct_frames, mode, width, height, clocks_per_pixel}` from `vgacap.framesfile.read_frames_txt`.
+  - `DeriveResult(samplers: dict[str, dict], trace_sha: str, uo_out_xxh3_128: str, uo_out_xxh3_128_clocks: tuple[int, int], tb_v1_check: str, error: str | None, cpu_seconds: float, pngs_written: int, pngs_linked: int)`. `samplers[s]` is `{sampler_status, frames, distinct_frames, mode, width, height, clocks_per_pixel}` from `vgacap.framesfile.read_frames_txt`.
   - `error` is set for:
     - `vgacap-sample` exit 2, or exit 1 other than a bad window: stderr's last line;
     - `centre-v1/frames.txt` `sampler_status: bad-window` (Ruling U): `"centre_window <dx>,<dy> does not fit"`, with vgacap-sample's message appended;
     - `tb_v1_check == "mismatch"`: `"tb-v1 differs from tb.cpp at frame <k>"`.
 - [ ] **Step 1: Write the failing tests** (`-m sim` unless noted):
   - `test_derive_centre_only_by_default`:
-    - on `bars640`, `out/centre-v1/` holds `frames.txt`, `frame_hashes.sha256-rgb6.txt`, the store, `index.html` and `png/`;
+    - on `bars640`, `out/centre-v1/` holds `frames.txt`, `frame_hashes.xxh3-128-rgb6.txt`, the store, `index.html` and `png/`;
     - there is no `out/tb-v1`, and `tb_v1_check == "off"`;
     - each PNG equals the store's bytes at `n * w * h` (store read with `compression.zstd`).
   - `test_derive_tb_v1_on_request_links_identical_pngs`: `match`, hard links, and `TRACE_SHA256` equal to `trace_sha`.
@@ -491,7 +492,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
     - `harness` (`HARNESS_VERSION`);
     - `tb_v1`;
     - `tb_v1_check`;
-    - `trace` = `{"file", "sha256", "bytes", "blocks", "clocks", "uo_out_sha256", "uo_out_sha256_clocks": [0, M]}`;
+    - `trace` = `{"file", "sha256", "bytes", "blocks", "clocks", "uo_out_xxh3_128", "uo_out_xxh3_128_clocks": [0, M]}`;
     - `samplers`;
     - `timings.derive` and `timings.publish`;
     - `derive_cpu_seconds`;
@@ -648,7 +649,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
 - Test: `tests/test_frames_cli.py`, `tests/sim/test_frames_hash.py`.
 
 **Interfaces:**
-- Consumes: `vgacap.framesfile` (`read_frames_txt`, `HashFile.from_frames`, `write_hash_file`) and `vgacap.hashes` (`sha256_rgb6`, `fnv1a64_tb2026_rgb888`).
+- Consumes: `vgacap.framesfile` (`read_frames_txt`, `HashFile.from_frames`, `write_hash_file`) and `vgacap.hashes` (`xxh3_128_rgb6`, `fnv1a64_tb2026_rgb888`).
 - Produces:
   - `tt-vga frames to-png FRAMES_TXT --out DIR`.
   - `tt-vga frames from-png DIR --frames FRAMES_TXT --out STORE`, written with `compression.zstd`.
@@ -684,7 +685,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
 - Produces: `ttvga.frames.compare(a: Path, b: Path) -> Comparison` and `tt-vga frames compare RUN_A RUN_B`.
   - **Inputs.** RUN is a `frames.txt` or a hash file, read with `vgacap.framesfile`.
     - Two hash files must share a method.
-    - A `frames.txt` compares against a `sha256-rgb6` file only; anything else exits 2.
+    - A `frames.txt` compares against a `xxh3-128-rgb6` file only; anything else exits 2.
     - A gap is "no data", never a mismatch.
   - **`Comparison`** has `first_mismatch: int | None`, `offset: int | None`, `start_clock_deltas: dict[int, int] | None`, `frames_a`, `frames_b`, `gaps_a`, `gaps_b`.
   - **Rule.**
@@ -793,9 +794,9 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
     - with the QSPI model, `uio_in` is the model's response;
     - the initial state is Verilator's `--x-initial fast`. State here what that means, checked against Verilator's docs at the pinned oss-cad-suite;
     - byte `i` of a `uo_out` dump is sample `2i + 1` (after rising edge `i`).
-  - **The trace-content check:** `trace.uo_out_sha256` over the half-open clock range `[0, M)`, `M = trace.uo_out_sha256_clocks[1]`. No sampler is involved.
+  - **The trace-content check:** `trace.uo_out_xxh3_128` over the half-open clock range `[0, M)`, `M = trace.uo_out_xxh3_128_clocks[1]`. No sampler is involved.
   - **Hash inputs:**
-    - `sha256-rgb6` is computed over rgb6 bytes (`R<<4 | G<<2 | B`; R = uo[0], uo[4]; G = uo[1], uo[5]; B = uo[2], uo[6]; first bit more significant), row-major, `width * height` bytes from the window's first active pixel of its first active line. It is not RGB888.
+    - `xxh3-128-rgb6` is computed over rgb6 bytes (`R<<4 | G<<2 | B`; R = uo[0], uo[4]; G = uo[1], uo[5]; B = uo[2], uo[6]; first bit more significant), row-major, `width * height` bytes from the window's first active pixel of its first active line. It is not RGB888.
     - The FNV method is computed over RGB888, each channel `value * 85`, with `hash_offset_basis` unchanged.
   - **Frame starts and cpp = 1.**
     - tb-v1 starts a frame at the end of the vsync pulse and lines at the end of the hsync pulse. At cpp 1 it reads pixel `p` at clock `p` after the line start. That is the FPGA harness's `ideal` convention, so for cpp = 1 table modes its one-sample-per-pixel crop is tb-v1's frame.
@@ -907,7 +908,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
     3. then the format note's planar alternative, which is vgacap work: send the profile to the controller for the vgacap session and the report.
   - Post-simulation over 5%, in the spec's order:
     1. `store_level` lower (1, then -1) when `distinct_frames / frames > 0.5`, as a `derive` rule;
-    2. a faster SHA-256 (vgacap work, through the controller);
+    2. a faster frame hash (done: XXH3-128, vgacap PR 62);
     3. the second sampler only on request (already the default).
     - Hashing on a thread does not count as a fix.
   - Each fix is a commit with its numbers. A target still missed goes into the report with the profile.
@@ -920,7 +921,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
 - Create: `docs/reports/2026-11-pilot/frames/`, `docs/reports/2026-11-pilot/viewers/`, `scripts/pilot_formats.py`.
 
 - [ ] **Step 1: tb-v1 against the published hashes.** For each of the 11, the new FNV hash lines equal the committed converted file's. Any difference stops the task: investigate it and report it. It is never accepted.
-- [ ] **Step 2: Distinct counts.** Compare distinct SHA-256 frames with distinct FNV values per project. Record the 408-project total today, 543,730 FNV values.
+- [ ] **Step 2: Distinct counts.** Compare distinct XXH3-128 frames with distinct FNV values per project. Record the 408-project total today, 543,730 FNV values.
 - [ ] **Step 3: tb-v1 against centre-v1**, frame by frame.
   - For each project, run `tt-vga frames compare` on the two `frames.txt`, and `tt-vga frames diff` on the first differing pair. Save the PNGs.
   - For `tt08/tt_um_nyan`, `ttihp25a/tt_um_MichaelBell_rle_vga` and `tt08/tt_um_MichaelBell_mandelbrot`, check:
@@ -934,7 +935,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
   - It must be pixel-exact, including 720x400 and the three polarity cases. A difference is a centre-v1 bug for the vgacap session (via the controller).
 - [ ] **Step 5: Hardware, where it exists.**
   - For `cfib_demo`, `vgadonut`, `rle_vga` and `mandelbrot`, look for a vgacap capture (the Welland board claims and captures, and tt-harness-fpga-vga's results).
-  - Where one exists, decode it with `vgacap-frames` and compare by rgb6 SHA-256. Where none exists, record `none`.
+  - Where one exists, decode it with `vgacap-frames` and compare by rgb6 XXH3-128. Where none exists, record `none`.
 - [ ] **Step 6: Formats.** `scripts/pilot_formats.py` measures, per project:
   - VGCH (the file);
   - FST: `vgacap-export --format fst` with and without `--no-clk`;

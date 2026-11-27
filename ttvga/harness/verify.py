@@ -59,6 +59,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import hostconf  # noqa: E402
+import vgacap_path  # noqa: E402
 from encode import AUDIO_OUT_RATE, GIF_SECONDS, LENGTHS, clip_names, preview_names, stem_for  # noqa: E402
 
 # Files in the archive that the FPGA harness session owns (Ruling AA), relative
@@ -176,24 +177,12 @@ def stale_on_server(local: Path, base_url: str, roots, fetch=urllib.request.urlo
 # The frames subtree: complete, and what the last run of each project says
 # ---------------------------------------------------------------------------
 
-_DISTINCT = re.compile(r"distinct_frames: ([0-9]+)")
-
-
-def _distinct_frames(frames_txt: Path) -> int | None:
-    """The `distinct_frames:` header value of a frames.txt, or None when it has none."""
-    with open(frames_txt, encoding="utf-8", errors="replace") as f:
-        for line in f:
-            if not line.strip():
-                break
-            if m := _DISTINCT.fullmatch(line.rstrip("\n")):
-                return int(m.group(1))
-    return None
-
-
-def check_frames(frames_root: Path, work: Path) -> tuple[list[str], list[str]]:
+def check_frames(frames_root: Path, work: Path, framesfile) -> tuple[list[str], list[str]]:
     """(failures, notes) for every project directory `<frames_root>/<shuttle>/<macro>/`.
 
     `work` is the host's `<root>/work`, which holds each project's result.json.
+    `framesfile` is vgacap's reader module: every frames.txt and hash file is read with it, so a
+    pre-XXH3 file fails here with vgacap's own message.
     """
     failures: list[str] = []
     notes: list[str] = []
@@ -215,11 +204,18 @@ def check_frames(frames_root: Path, work: Path) -> tuple[list[str], list[str]]:
                 failures.append(f"{pid}: {s}: {n} missing")
             if "frames.txt" in missing:
                 continue
-            distinct = _distinct_frames(d / s / "frames.txt")
+            try:
+                distinct = len(framesfile.read_frames_txt(d / s / "frames.txt").distinct)
+            except (OSError, ValueError) as e:
+                failures.append(f"{pid}: {s}: frames.txt: {e}")
+                distinct = None
+            for hf in sorted((d / s).glob("frame_hashes.*.txt")):
+                try:
+                    framesfile.read_hash_file(hf)
+                except (OSError, ValueError) as e:
+                    failures.append(f"{pid}: {s}: {hf.name}: {e}")
             pngs = len(list((d / s / "png").glob("*.png"))) if (d / s / "png").is_dir() else 0
-            if distinct is None:
-                failures.append(f"{pid}: {s}: frames.txt has no distinct_frames")
-            elif pngs != distinct:
+            if distinct is not None and pngs != distinct:
                 failures.append(f"{pid}: {s}: {pngs} PNGs, distinct_frames is {distinct}")
 
         result_path = work / pid / "result.json"
@@ -421,7 +417,9 @@ def main() -> int:
     except (hostconf.ConfigError, OSError) as e:
         failures.append(f"frames: host.toml: {e}")
     else:
-        frame_failures, notes = check_frames(conf.frames_root, args.root / "work")
+        vgacap_path.add(args.root)
+        from vgacap import framesfile
+        frame_failures, notes = check_frames(conf.frames_root, args.root / "work", framesfile)
         n = sum(1 for p in conf.frames_root.glob("*/*") if p.is_dir())
         print(f"  frames projects without a problem: {n - len({f.split(':', 1)[0] for f in frame_failures})} of {n}")
         failures.extend(frame_failures)

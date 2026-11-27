@@ -8,6 +8,7 @@ requires-python = ">=3.14"
 dependencies = [
     "pyyaml>=6.0",
     "tinytapeout-project-search",
+    "xxhash==4.1.0",
 ]
 
 [project.scripts]

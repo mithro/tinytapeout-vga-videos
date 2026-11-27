@@ -43,7 +43,7 @@ def basic_files(tag: bytes) -> dict[str, bytes]:
     return {
         f"{STEM}_trace.vgch.zst": b"trace " + tag,
         "centre-v1/frames.txt": b"frames " + tag,
-        "centre-v1/frame_hashes.sha256-rgb6.txt": b"hashes " + tag,
+        "centre-v1/frame_hashes.xxh3-128-rgb6.txt": b"hashes " + tag,
         f"centre-v1/{STEM}_centre-v1_frames.rgb6.zst": b"store " + tag,
         "centre-v1/index.html": b"<html>" + tag,
         "centre-v1/png/000000.png": b"png " + tag,
@@ -584,6 +584,8 @@ def test_install_refuses_disallowed_file(tmp_path):
         "unknown-sampler": lambda s: make_scratch(s, {"edge-v1/frames.txt": b""}),
         "sha-in-centre": lambda s: (s / "centre-v1" / "TRACE_SHA256").write_bytes(b""),
         "marker": lambda s: (s / ".ttvga-frames").write_bytes(b""),
+        # The pre-XXH3 method file is refused, never published beside the new format.
+        "sha256-method": lambda s: (s / "centre-v1" / "frame_hashes.sha256-rgb6.txt").write_bytes(b""),
         "bin": lambda s: (s / "x.bin").write_bytes(b""),
     }
     for name, plant in cases.items():
