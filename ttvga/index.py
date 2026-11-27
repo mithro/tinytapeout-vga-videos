@@ -44,6 +44,9 @@ INDEX_JSON = DATA_DIR / "index.json"
 INDEX_HTML = DATA_DIR / "index.html"
 VIDEOS_MD = ROOT / "docs" / "videos.md"
 PROJECT_URL = "https://tinytapeout.com/chips/{shuttle}/{macro}"
+# The published archive (Ruling BH). The FPGA link is absolute to it (Ruling BG): index.html is also served
+# from copies elsewhere (the host's public_html, mirrors), where a relative link would find no bitstream.
+ARCHIVE_URL = "https://data.wafer.space/big-storage/tinytapeout-vga-videos/"
 # A line of `--fpga-ids`: a project with a bitstream in its archive directory.
 FPGA_ID = re.compile(r"[a-z0-9]+/tt_um_[A-Za-z0-9_]+")
 
@@ -649,7 +652,7 @@ f"Every file is named for its shuttle and project. Generated {generated}.</p>",
                 f'<a href="{html.escape(e["page"])}">chip page</a> &middot; '
                 f'<a href="{html.escape(e["repo"])}">source</a> &middot; '
                 f'<a href="{html.escape(playground(e))}">playground</a>'
-                + (f' &middot; <a href="{html.escape(quote(e["shuttle"]))}/{html.escape(quote(e["macro"]))}/">'
+                + (f' &middot; <a href="{html.escape(ARCHIVE_URL + quote(e["shuttle"]) + "/" + quote(e["macro"]))}/">'
                    "FPGA bitstream</a>" if e["id"] in fpga_ids else "")
                 + (('<br><span class="alsoon">also on '
                     + " ".join(f'<a href="#{html.escape(anchor(o["id"]))}">{html.escape(o["shuttle"])}</a>'

@@ -205,7 +205,7 @@ def test_index_links_fpga_when_listed(tmp_path):
     assert listed == {"tt08/tt_um_x"}
     page = write_html([record(TARGET, RESULT), record(other, None)], "now", fpga_ids=listed)
     assert page.count(">FPGA bitstream</a>") == 1
-    assert '<a href="tt08/tt_um_x/">FPGA bitstream</a>' in page
+    assert '<a href="https://data.wafer.space/big-storage/tinytapeout-vga-videos/tt08/tt_um_x/">FPGA bitstream</a>' in page
     # Without the list, no row links one.
     assert "FPGA bitstream" not in write_html([record(TARGET, RESULT)], "now")
     # A line that is not a <shuttle>/<macro> id is refused, not skipped.
