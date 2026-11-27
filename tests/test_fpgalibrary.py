@@ -102,11 +102,6 @@ def _unknown_entry(d):
     d["designs"][0]["future_key"] = 1
 
 
-def _no_pdk_latches(d):
-    for entry in d["designs"]:
-        entry.pop("pdk_latches", None)
-
-
 D0 = ["designs", 0]
 P0 = "ttsky25b/tt_um_lukasdragoste_vga_patterns"
 CASES = [
@@ -180,12 +175,11 @@ CASES = [
     ("pdk-latches-int", _set(D0 + ["pdk_latches"], 1), "designs[0].pdk_latches"),
     ("pdk-latches-string", _set(D0 + ["pdk_latches"], "true"), "designs[0].pdk_latches"),
     ("pdk-latches-null", _set(D0 + ["pdk_latches"], None), "designs[0].pdk_latches"),
+    ("pdk-latches-missing", _delete(D0 + ["pdk_latches"]), "designs[0].pdk_latches"),
 ]
 ALLOWED = [
     ("unknown-top-key", _unknown_top),
     ("unknown-entry-key", _unknown_entry),
-    # Ruling BJ: optional for now, and missing means false.
-    ("pdk-latches-missing", _no_pdk_latches),
     ("pdk-latches-true", _set(D0 + ["pdk_latches"], True)),
     ("pdk-latches-false", _set(D0 + ["pdk_latches"], False)),
 ]
@@ -267,9 +261,18 @@ def test_cli_exit_codes(tmp_path, capsys):
     assert cli.main(["fpga-library-check", str(path)]) == 1
 
 
-def test_fixture_omits_pdk_latches(doc):
-    """The fixture stays free of the key, so it also proves a missing key passes."""
-    assert all("pdk_latches" not in entry for entry in doc["designs"])
+def test_fixture_has_pdk_latches(doc):
+    """Ruling BJ: the key is required, so every fixture entry carries it."""
+    assert all(entry["pdk_latches"] is False for entry in doc["designs"])
+
+
+def test_cli_reports_missing_pdk_latches(tmp_path, capsys):
+    bad = json.loads((FIXTURE / "fpga-library.json").read_text())
+    del bad["designs"][2]["pdk_latches"]
+    path = tmp_path / "bad.json"
+    path.write_text(json.dumps(bad))
+    assert cli.main(["fpga-library-check", str(path)]) == 1
+    assert "designs[2].pdk_latches: missing" in capsys.readouterr().out
 
 
 def test_cli_reports_pdk_latches_type(tmp_path, capsys):
