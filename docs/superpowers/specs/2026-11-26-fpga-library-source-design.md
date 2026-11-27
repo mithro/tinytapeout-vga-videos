@@ -20,8 +20,8 @@ These rulings bind this spec.
 | AC | The id rule in section 1 stands. It replaces Ruling X's draft wording (`<shuttle>_<macro>`, cut to 40 characters plus a 6-hex hash) and the `demo_name` function on the harness's `demos-export` branch. Two independent checks found it collision-free: the harness session ran it over its 445 designs, and the reviewer ran it over the 440 targets in this repo. |
 | AD | The daemon never changes `tt.mode` and never uses the SDK's "MCU controls inputs" mode. It drives the `ui_in` pins directly, as `safe.py` intends. It drives only the bits in the entry's `ui_in_mask`, which the harness publishes using its `effective_ui_in_mask` rule. Every library load makes the bits outside its mask inputs with the pull-down, released as described in section 2, including when the mask is 0, so a mask of 0 makes all eight bits inputs (controller ruling on m-a). "A mask of 0 drives nothing" still holds: no bit is driven. Every enable, whatever the source, first releases the pins the daemon drove before, so a later demo or upload never inherits a library design's inputs. |
 | AF | Only pins in `_fo_ui_driven` get the 1 ms output-low discharge. Every other released pin goes straight to `Pin.IN` with the pull-down and is never made an output. The E9 input-enable workaround (PADS_BANK0 `GPIOn.IE = 0`) is used only if the hardware check shows the discharge alone is not enough. |
-| BJ | Entries carry a bool `pdk_latches`: true when the design uses PDK latch or clock-gate cells. The publisher writes it on every entry. Readers accept it missing for now and treat that as false; a later task makes it required. When true, both UIs show the warn badge `PDK latch cells: may not behave as on silicon`, which never disables Load. Provenance: on 2026-11-27, about 08:35 local, the FPGA session asked the owner, as item 4 of a numbered list, "Should the 11 latch-cell designs be listed with a warning, or stay unpublished as now?" The owner replied "(4) Yes." Because it was an either/or question, the FPGA session read that as "list with a warning" and said so back to the owner, who made no correction. The controller is confirming it directly with the owner. If the owner reverses it, the publisher drops the 11 again, and the reader support stays harmless. |
 | AG | `safe.py:99` reads `0xd0000020` as the SIO output-enable register. That is `GPIO_OE` on the RP2040, but on the RP2350 it is the write-only `GPIO_OUT_CLR`; the RP2350's `GPIO_OE` is `0xd0000030`. A separate fpgas.online-tt PR, before the daemon's library work, picks the register by chip, with a test, and keeps `SAFE_CODE`'s structure. |
+| BJ | Entries carry a bool `pdk_latches`: true when the design uses PDK latch or clock-gate cells. The publisher writes it on every entry. Readers accept it missing for now and treat that as false; a later task makes it required. When true, both UIs show the warn badge `PDK latch cells: may not behave as on silicon`, which never disables Load. Provenance: on 2026-11-27, about 08:35 local, the FPGA session asked the owner, as item 4 of a numbered list, "Should the 11 latch-cell designs be listed with a warning, or stay unpublished as now?" The owner replied "(4) Yes." Because it was an either/or question, the FPGA session read that as "list with a warning" and said so back to the owner, who made no correction. The owner then confirmed it directly on 2026-11-27, in the controller session (AskUserQuestion answer: "List with the warning"). |
 
 ## Why
 
@@ -786,7 +786,11 @@ the last ETag the archive sent, and reads at most 4 MiB. The JSON is parsed with
 ### Caching
 
 - **The index.** It is kept in the `default` locmem cache (per worker; that is fine for data)
-  under `ttsite:library:index`. The entry is `(archive_etag, body_bytes, site_etag, fetched_at)`.
+  under `ttsite:library:index:v<NORMALISE_VERSION>`. The entry is `(archive_etag, body_bytes,
+  site_etag, fetched_at)`, where `body_bytes` is the normalised body. A 304 reuses it without
+  normalising again, so the key names the normaliser's version: a change to what `normalise`
+  keeps bumps `NORMALISE_VERSION`, and a copy made by older code is a miss, fetched in full
+  without `If-None-Match` (version 2 keeps `pdk_latches`, Ruling BJ).
   - It is fresh for 300 s.
   - If the archive fails, the last good copy is served for up to 24 h, with the header
     `X-TTSite-Library-Stale: <age>`.
@@ -1068,6 +1072,9 @@ daemon, file names come only from ids that pass `NAME_RE`, and the metadata is t
 3. **Site PR.** Merge it; Tim runs the site play.
 4. **Commander library PR.** Merge it, tag `embed-v0.3.0`, bump the pin, and run the site play.
 5. **Publish.** The harness session publishes once Tim has approved the format.
+
+For `pdk_latches` (Ruling BJ), the readers go first: deploy the site, with its cache version
+bumped (`NORMALISE_VERSION` 2), and the Commander, then publish an index that sets the key.
 6. **Hardware check** (section 9).
 
 | Deployed | Not yet | Result |
@@ -1077,6 +1084,7 @@ daemon, file names come only from ids that pass `NAME_RE`, and the metadata is t
 | daemon | site | the library stays empty; the old board.js and Commander ignore the `library` key; a library entry would show with the `other` badge, but none exist |
 | site, daemon | Commander 0.3.0 | the board.js panel works; 0.2.x lists a loaded library design by its name only |
 | Commander 0.3.0 | daemon | no `library` key, so the Commander shows no library entries |
+| publisher writing `pdk_latches` | site and Commander with Ruling BJ | the old site and Commander drop the key, so latch designs are listed without a warning |
 
 ## 9. Testing
 
@@ -1166,7 +1174,9 @@ releases bit 0.
 - a slow trickling archive stopped by the deadline;
 - `trust_env` off;
 - responses closed;
-- the bin checks and the syncing message.
+- the bin checks and the syncing message;
+- `pdk_latches`: missing kept as false, a non-bool dropped with `pdk_latches: must be a bool`,
+  and a copy cached by an older normaliser fetched in full, not revived by a 304.
 
 **`tests/test_views.py`**, with the fake daemon (`monkeypatch` on `ttsite.daemon`):
 
@@ -1183,7 +1193,8 @@ releases bit 0.
 - CSRF with `Client(enforce_csrf_checks=True)`.
 
 **`tests/js/library.test.mjs`:** matching, shuttle order derived from the index, paging bounds,
-badge text, and `renderPage` on a fake document for each panel state.
+badge text (the latch badge only for a real `true`, with Load still enabled), and `renderPage`
+on a fake document for each panel state.
 
 ### tt-commander-app
 
@@ -1195,7 +1206,8 @@ badge text, and `renderPage` on a fake document for each panel state.
 - the 100 cap;
 - `selectFpgaDesign` routing, and `syncState` after a library load;
 - the Pinout tab of an enabled library design, taken from the index;
-- warnings that never disable Load.
+- warnings that never disable Load;
+- the latch badge only for a real `true`.
 
 ### Hardware check (one FabricFox board, after Tim's deploys)
 
