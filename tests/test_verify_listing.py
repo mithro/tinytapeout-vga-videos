@@ -16,7 +16,7 @@ import verify  # noqa: E402
 
 import pytest  # noqa: E402
 
-from tests.frames_txt import framesfile, to_pre_xxh3, write_frames_txt  # noqa: E402, F401
+from tests.frames_txt import to_pre_xxh3, write_frames_txt  # noqa: E402
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 BASE = "https://example.org/archive/"
@@ -103,7 +103,14 @@ def project(framesfile, frames_root: Path, work: Path, pid: str, *, distinct: in
         (d / f"{stem}_trace.vgch.zst").write_bytes(trace)
     for s in samplers:
         (d / s / "png").mkdir(parents=True)
-        write_frames_txt(framesfile, d / s / "frames.txt", pid, s, f"{stem}_{s}_frames.rgb6.zst", distinct)
+        ff = write_frames_txt(framesfile, d / s / "frames.txt", pid, s, f"{stem}_{s}_frames.rgb6.zst", distinct)
+        # The hash files vgacap-sample writes: XXH3-128 for both samplers, FNV for tb-v1.
+        framesfile.write_hash_file(d / s / "frame_hashes.xxh3-128-rgb6.txt",
+                                   framesfile.HashFile.from_frames(ff, "xxh3-128-rgb6", list(ff.distinct)))
+        if s == "tb-v1":
+            framesfile.write_hash_file(
+                d / s / "frame_hashes.fnv1a64-tb2026-rgb888.txt",
+                framesfile.HashFile.from_frames(ff, "fnv1a64-tb2026-rgb888", [f"{k:016x}" for k in range(distinct)]))
         (d / s / "index.html").write_text("<html></html>\n")
         (d / s / f"{stem}_{s}_frames.rgb6.zst").write_bytes(b"z")
         for n in range(distinct if pngs is None else pngs):

@@ -215,9 +215,7 @@ def check_frames(frames_root: Path, work: Path, framesfile) -> tuple[list[str], 
                 except (OSError, ValueError) as e:
                     failures.append(f"{pid}: {s}: {hf.name}: {e}")
             pngs = len(list((d / s / "png").glob("*.png"))) if (d / s / "png").is_dir() else 0
-            if distinct is None:
-                pass
-            elif pngs != distinct:
+            if distinct is not None and pngs != distinct:
                 failures.append(f"{pid}: {s}: {pngs} PNGs, distinct_frames is {distinct}")
 
         result_path = work / pid / "result.json"

@@ -480,22 +480,27 @@ def run_derive(trace: Path, scratch: Path, stem: str, *, tb_v1: bool, tb_hashes:
     return res, res.error
 
 
-def _frames_txt_readable(path: Path) -> bool:
-    """Whether vgacap's own reader accepts `path` (it refuses the pre-XXH3 format)."""
+class Tb1Refused(Exception):
+    """The published tb-v1/ cannot be carried over, and the run asked neither to replace nor to drop it."""
+
+
+def _frames_txt_refusal(path: Path) -> str | None:
+    """Why vgacap's own reader refuses `path` (it refuses the pre-XXH3 format), or None when it accepts it."""
     from vgacap import framesfile
     try:
         framesfile.read_frames_txt(path)
-    except (OSError, ValueError):
-        return False
-    return True
+    except (OSError, ValueError) as e:
+        return str(e)
+    return None
 
 
-def tb_v1_rule(*, tb_v1: bool, drop: bool, published: Path | None, work_frames: Path,
+def tb_v1_rule(*, project: str, tb_v1: bool, drop: bool, published: Path | None, work_frames: Path,
                trace_sha: str | None) -> tuple[list[str], dict]:
     """What to carry over from the published copy, and result.json's `tb_v1` (Global Constraints, Ruling Z).
 
     `published` is the project's published directory (None when there is none to
-    look at), `work_frames` its `work/.../frames/`.
+    look at), `work_frames` its `work/.../frames/`. Raises Tb1Refused, naming `project`, when
+    the published tb-v1/ is in a format vgacap's reader refuses and neither `tb_v1` nor `drop` is set.
     """
     if drop:
         return [], {"state": "none", "trace_sha": None, "dropped": True}
@@ -504,9 +509,11 @@ def tb_v1_rule(*, tb_v1: bool, drop: bool, published: Path | None, work_frames: 
     if published is not None and (published / derive.TB_V1).is_dir():
         sha_file = published / derive.TB_V1 / derive.TRACE_SHA_FILE
         recorded = (sha_file.read_text().strip() if sha_file.is_file() else "") or None
-        if not _frames_txt_readable(published / derive.TB_V1 / "frames.txt"):
-            # A pre-XXH3 tb-v1 (or a broken one) is never carried: vgacap's reader refuses it.
-            return [], {"state": "stale", "trace_sha": recorded, "dropped": False}
+        if (why := _frames_txt_refusal(published / derive.TB_V1 / "frames.txt")):
+            # Never carried, never dropped silently (Ruling Z): the run fails before it publishes.
+            raise Tb1Refused(f"{project}: the published tb-v1/ is not in the current frames format "
+                             f"(vgacap's reader refuses it: {why}); nothing was published. Re-run with "
+                             f"--tb-v1 to derive tb-v1 again, or with --drop-tb-v1 to retire it")
         state = "current" if recorded is not None and recorded == trace_sha else "stale"
         return [derive.TB_V1], {"state": state, "trace_sha": recorded, "dropped": False}
     if (work_frames / derive.TB_V1).exists():
@@ -689,8 +696,12 @@ def rederive(args: argparse.Namespace, target: dict, ov: dict, work: Path, tools
         if error:
             return error
         stage = "publish"
-        carry, tb_state = tb_v1_rule(tb_v1=args.tb_v1, drop=args.drop_tb_v1, published=published,
-                                     work_frames=work / "frames", trace_sha=dres.trace_sha)
+        try:
+            carry, tb_state = tb_v1_rule(project=target["id"], tb_v1=args.tb_v1, drop=args.drop_tb_v1,
+                                         published=published, work_frames=work / "frames",
+                                         trace_sha=dres.trace_sha)
+        except Tb1Refused as e:
+            return str(e)
 
         return install_and_record(scratch, conf, target, work, args, carry, errors,
                                   mark=lambda: done.update(at=now(), tb_v1=tb_state))
@@ -848,9 +859,12 @@ def _job() -> int:
             result["tb_v1_check"] = dres.tb_v1_check if dres is not None else ("not-run" if args.tb_v1 else "off")
             if result["tb_v1"] is None:
                 # Nothing was published: say what the files already there are.
-                _, result["tb_v1"] = tb_v1_rule(tb_v1=False, drop=False, published=published_dir,
-                                                work_frames=work / "frames",
-                                                trace_sha=dres.trace_sha if dres is not None else None)
+                try:
+                    _, result["tb_v1"] = tb_v1_rule(project=target["id"], tb_v1=False, drop=False,
+                                                    published=published_dir, work_frames=work / "frames",
+                                                    trace_sha=dres.trace_sha if dres is not None else None)
+                except Tb1Refused:
+                    pass   # the publish stage has already reported it; there is no honest state to record
         except Exception as e:
             errors.append(f"stage crashed: result: {type(e).__name__}: {e}")
             result["traceback"] = traceback.format_exc()
@@ -891,18 +905,22 @@ def _job() -> int:
                     if dres is not None:
                         result["derive_cpu_seconds"] = round(dres.cpu_seconds, 3)
                     if fatal is None and testpatterns:
-                        _, result["tb_v1"] = tb_v1_rule(tb_v1=args.tb_v1, drop=args.drop_tb_v1, published=None,
+                        _, result["tb_v1"] = tb_v1_rule(project=target["id"], tb_v1=args.tb_v1, drop=args.drop_tb_v1, published=None,
                                                         work_frames=work / "frames", trace_sha=dres.trace_sha)
                         update_work_frames(scratch, work / "frames", tb_v1=args.tb_v1, drop=args.drop_tb_v1)
                 elif stage == "encode":
                     if (err := encode(work, videos, work / "sim.log", tools, stem)):
                         errors.append(err)   # recorded; the trace and frames are still published
                 elif stage == "publish":
-                    carry, tb_state = tb_v1_rule(tb_v1=args.tb_v1, drop=args.drop_tb_v1, published=published_dir,
-                                                 work_frames=work / "frames", trace_sha=dres.trace_sha)
-
-                    fatal = install_and_record(scratch, conf, target, work, args, carry, errors,
-                                               mark=lambda: result.update(published=True, tb_v1=tb_state))
+                    try:
+                        carry, tb_state = tb_v1_rule(project=target["id"], tb_v1=args.tb_v1, drop=args.drop_tb_v1,
+                                                     published=published_dir, work_frames=work / "frames",
+                                                     trace_sha=dres.trace_sha)
+                    except Tb1Refused as e:
+                        fatal = str(e)
+                    else:
+                        fatal = install_and_record(scratch, conf, target, work, args, carry, errors,
+                                                   mark=lambda: result.update(published=True, tb_v1=tb_state))
             except Exception as e:   # a bug or an unexpected failure: recorded, and nothing (more) published
                 fatal = f"stage crashed: {stage}: {type(e).__name__}: {e}"
                 result["traceback"] = traceback.format_exc()

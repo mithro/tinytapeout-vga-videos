@@ -14,7 +14,7 @@ from ttvga import HARNESS_DIR
 sys.path.insert(0, str(HARNESS_DIR))
 
 import job  # noqa: E402
-from tests.frames_txt import framesfile, to_pre_xxh3, write_frames_txt  # noqa: E402, F401
+from tests.frames_txt import to_pre_xxh3, write_frames_txt  # noqa: E402
 from tests.test_job_build import fake_project, fake_vgacap  # noqa: E402
 
 
@@ -107,14 +107,12 @@ def test_tb_v1_rule(framesfile, tmp_path, published, seeded, flags, want_carry, 
             (pub / "tb-v1" / "TRACE_SHA256").write_text(published + "\n")
     if seeded:
         (frames / "tb-v1").mkdir(parents=True)
-    carry, state = job.tb_v1_rule(tb_v1=flags.get("tb_v1", False), drop=flags.get("drop", False),
+    carry, state = job.tb_v1_rule(project="tt06/tt_um_x", tb_v1=flags.get("tb_v1", False), drop=flags.get("drop", False),
                                   published=pub, work_frames=frames, trace_sha="b" * 64)
     assert (carry, state) == (want_carry, want)
 
 
-@pytest.mark.parametrize("how", ["pre-xxh3", "missing"])
-def test_tb_v1_rule_never_carries_a_pre_xxh3_or_unreadable_tb_v1(framesfile, tmp_path, how):
-    """The trace sha matches, yet the files are not carried: vgacap's reader refuses them."""
+def pre_xxh3_tb_v1(framesfile, tmp_path, how):
     pub = tmp_path / "pub"
     (pub / "tb-v1").mkdir(parents=True)
     (pub / "tb-v1" / "TRACE_SHA256").write_text("b" * 64 + "\n")
@@ -122,10 +120,31 @@ def test_tb_v1_rule_never_carries_a_pre_xxh3_or_unreadable_tb_v1(framesfile, tmp
         write_frames_txt(framesfile, pub / "tb-v1" / "frames.txt", "x", "tb-v1", "s.zst", 2)
         txt = pub / "tb-v1" / "frames.txt"
         txt.write_text(to_pre_xxh3(txt.read_text()))
-    carry, state = job.tb_v1_rule(tb_v1=False, drop=False, published=pub, work_frames=tmp_path / "frames",
-                                  trace_sha="b" * 64)
-    assert carry == []
-    assert state == {"state": "stale", "trace_sha": "b" * 64, "dropped": False}
+    return pub
+
+
+@pytest.mark.parametrize("how", ["pre-xxh3", "missing"])
+def test_tb_v1_rule_fails_loudly_on_a_pre_xxh3_or_unreadable_tb_v1(framesfile, tmp_path, how):
+    """Neither flag: the run fails (Ruling BS), naming the project and both flags. Nothing is dropped or relabelled."""
+    pub = pre_xxh3_tb_v1(framesfile, tmp_path, how)
+    with pytest.raises(job.Tb1Refused) as e:
+        job.tb_v1_rule(project="tt06/tt_um_x", tb_v1=False, drop=False, published=pub,
+                       work_frames=tmp_path / "frames", trace_sha="b" * 64)
+    msg = str(e.value)
+    assert "tt06/tt_um_x" in msg and "--tb-v1" in msg and "--drop-tb-v1" in msg and "nothing was published" in msg
+    assert (pub / "tb-v1").is_dir()
+
+
+@pytest.mark.parametrize("flags, want", [
+    ({"tb_v1": True}, {"state": "current", "trace_sha": "b" * 64, "dropped": False}),
+    ({"drop": True}, {"state": "none", "trace_sha": None, "dropped": True}),
+])
+def test_tb_v1_rule_with_either_flag_a_pre_xxh3_tb_v1_is_replaced_or_dropped(framesfile, tmp_path, flags, want):
+    pub = pre_xxh3_tb_v1(framesfile, tmp_path, "pre-xxh3")
+    carry, state = job.tb_v1_rule(project="tt06/tt_um_x", tb_v1=flags.get("tb_v1", False),
+                                  drop=flags.get("drop", False), published=pub,
+                                  work_frames=tmp_path / "frames", trace_sha="b" * 64)
+    assert (carry, state) == ([], want)
 
 
 def test_job_testpatterns_not_published(tmp_path, monkeypatch):

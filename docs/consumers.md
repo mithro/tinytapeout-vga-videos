@@ -237,6 +237,8 @@ Read `tb_v1` in `result.json` ([`ttvga/harness/job.py`](../ttvga/harness/job.py)
 
 A run never deletes tb-v1 files ([Ruling Z](superpowers/plans/2026-11-26-raw-traces-pipeline.md)), so a default re-run leaves them `stale`.
 
+A published tb-v1 in the pre-XXH3 format cannot be left in place: the run fails before it publishes, and nothing is swapped. The error names the project and the two ways out, [`--tb-v1`](../ttvga/harness/job.py) (derive tb-v1 again) and [`--drop-tb-v1`](../ttvga/harness/job.py) (retire it).
+
 ## To fill in later
 
 - The reference sampler (plan Task 22).
