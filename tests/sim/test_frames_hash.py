@@ -25,8 +25,8 @@ def sampled(models, dev, tmp_path_factory):
     return res
 
 
-# vgacap-sample writes sha256-rgb6 for both samplers and the FNV file for tb-v1 only.
-@pytest.mark.parametrize("sampler,method", [("centre-v1", "sha256-rgb6"), ("tb-v1", "sha256-rgb6"),
+# vgacap-sample writes xxh3-128-rgb6 for both samplers and the FNV file for tb-v1 only.
+@pytest.mark.parametrize("sampler,method", [("centre-v1", "xxh3-128-rgb6"), ("tb-v1", "xxh3-128-rgb6"),
                                             ("tb-v1", "fnv1a64-tb2026-rgb888")])
 def test_hash_matches_vgacap_sample(sampled, sampler, method, tmp_path):
     theirs = sampled / sampler / f"frame_hashes.{method}.txt"

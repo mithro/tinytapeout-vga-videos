@@ -11,11 +11,31 @@ hash files. This note links to them at the pinned commit
 - [trace-format.md](https://github.com/mithro/vgacap/blob/80f6aa3fc3c5a7ebace8625bf4ab6d14c69373a2/docs/trace-format.md)
 - [frames-format.md](https://github.com/mithro/vgacap/blob/80f6aa3fc3c5a7ebace8625bf4ab6d14c69373a2/docs/frames-format.md)
 
+## Change notice: XXH3-128 replaces SHA-256 in the frames format
+
+vgacap [PR 62](https://github.com/mithro/vgacap/pull/62) replaced SHA-256 with XXH3-128 for frame
+identity and store integrity ("There is no need for secure hashes here"). This repository follows it.
+The pin in [`ttvga/tools.toml`](../ttvga/tools.toml) is temporary, at the PR's head, until the PR merges.
+
+| before | after |
+|---|---|
+| `store_sha256:` (64 hex digits) | `store_xxh3_128:` (32 hex digits) |
+| `distinct:` lines of 64 hex digits | `distinct:` lines of 32 hex digits |
+| method `sha256-rgb6` | method `xxh3-128-rgb6` |
+| `frame_hashes.sha256-rgb6.txt` | `frame_hashes.xxh3-128-rgb6.txt` |
+| `trace.uo_out_sha256` | `trace.uo_out_xxh3_128` |
+| `trace.uo_out_sha256_clocks` | `trace.uo_out_xxh3_128_clocks` |
+
+- The readers refuse the old key and the old method. There is no reader for both.
+- The FNV files (`fnv1a64-tb2026-rgb888`) are byte-identical, so readers of only those need no change.
+- `trace.sha256` and `tb-v1/TRACE_SHA256` stay SHA-256: they identify the trace file, not frames.
+- Python needs the [`xxhash`](https://pypi.org/project/xxhash/) package (`>=3.4`) to compute the digest.
+
 ## What exists today, and what is still to come
 
 The re-run of all projects with traces (Task 23 of the [pipeline plan](superpowers/plans/2026-11-26-raw-traces-pipeline.md)) has not happened yet. Until it does:
 
-- The archive has no `frames/` subtree. There are no traces, stores, PNGs, pages or `sha256-rgb6`
+- The archive has no `frames/` subtree. There are no traces, stores, PNGs, pages or `xxh3-128-rgb6`
   files to download yet.
 - No committed `result.json` has `trace`, `samplers`, `tb_v1_check` or `published`. Those come with
   the re-run.
@@ -128,8 +148,8 @@ All of this is [`ttvga/harness/tb.cpp`](../ttvga/harness/tb.cpp), `tick` and the
 
 ## The trace-content check
 
-`trace.uo_out_sha256` in `result.json` is the SHA-256 of the `uo_out` dump over the half-open clock
-range `[0, M)`, one byte per clock, with `M = trace.uo_out_sha256_clocks[1]`. No sampler is involved.
+`trace.uo_out_xxh3_128` in `result.json` is the XXH3-128 of the `uo_out` dump over the half-open clock
+range `[0, M)`, one byte per clock, with `M = trace.uo_out_xxh3_128_clocks[1]`. No sampler is involved.
 [`tracetool uohash`](../ttvga/harness/tracetool.c) computes it. `M` is the trace's clock count or
 2^25, whichever is smaller.
 
@@ -139,10 +159,10 @@ To check another simulation's dump against a trace, hash its first `M` bytes and
 
 | method | pixel bytes | bytes per pixel |
 |---|---|---|
-| `sha256-rgb6` | rgb6 | 1 |
+| `xxh3-128-rgb6` | rgb6 | 1 |
 | `fnv1a64-tb2026-rgb888` | RGB888 | 3 |
 
-- **`sha256-rgb6`** is SHA-256 over the frame as rgb6, one byte per pixel: `R<<4 | G<<2 | B`.
+- **`xxh3-128-rgb6`** is XXH3-128 (seed 0, canonical big-endian hex, 32 digits; `xxhsum -H2` prints the same) over the frame as rgb6, one byte per pixel: `R<<4 | G<<2 | B`.
   - R is `uo_out[0]`, `uo_out[4]`; G is `uo_out[1]`, `uo_out[5]`; B is `uo_out[2]`, `uo_out[6]`.
     The first bit is the more significant.
   - The bytes are row-major, `width * height` of them, from the sampler's first active pixel of its

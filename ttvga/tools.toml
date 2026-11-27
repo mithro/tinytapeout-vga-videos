@@ -31,3 +31,8 @@ version = "3.14.7"
 [vgacap]
 git = "https://github.com/mithro/vgacap"
 commit = "80f6aa3fc3c5a7ebace8625bf4ab6d14c69373a2"
+
+# derive.py hashes each PNG record with XXH3-128 (the frames format's digest); the host
+# scripts run without a project, so uv installs it for them: `uv run --with xxhash==<version>`.
+[xxhash]
+version = "4.1.0"

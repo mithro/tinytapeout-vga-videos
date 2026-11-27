@@ -475,7 +475,7 @@ def run_derive(trace: Path, scratch: Path, stem: str, *, tb_v1: bool, tb_hashes:
     if "error" in payload:
         return None, payload["error"]
     fields = payload["result"]
-    fields["uo_out_sha256_clocks"] = tuple(fields["uo_out_sha256_clocks"])
+    fields["uo_out_xxh3_128_clocks"] = tuple(fields["uo_out_xxh3_128_clocks"])
     res = derive.DeriveResult(**fields)
     return res, res.error
 
@@ -605,7 +605,7 @@ def trace_summary(dres: derive.DeriveResult, trace: Path, fast_path: bool | None
     return {
         "file": trace.name, "sha256": dres.trace_sha, "bytes": trace.stat().st_size,
         "blocks": int(dres.info["blocks"]), "clocks": int(dres.info["clocks"]),
-        "uo_out_sha256": dres.uo_out_sha256, "uo_out_sha256_clocks": list(dres.uo_out_sha256_clocks),
+        "uo_out_xxh3_128": dres.uo_out_xxh3_128, "uo_out_xxh3_128_clocks": list(dres.uo_out_xxh3_128_clocks),
         "fast_path": fast_path,
     }
 

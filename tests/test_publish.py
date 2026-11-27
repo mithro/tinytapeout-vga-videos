@@ -43,7 +43,7 @@ def basic_files(tag: bytes) -> dict[str, bytes]:
     return {
         f"{STEM}_trace.vgch.zst": b"trace " + tag,
         "centre-v1/frames.txt": b"frames " + tag,
-        "centre-v1/frame_hashes.sha256-rgb6.txt": b"hashes " + tag,
+        "centre-v1/frame_hashes.xxh3-128-rgb6.txt": b"hashes " + tag,
         f"centre-v1/{STEM}_centre-v1_frames.rgb6.zst": b"store " + tag,
         "centre-v1/index.html": b"<html>" + tag,
         "centre-v1/png/000000.png": b"png " + tag,

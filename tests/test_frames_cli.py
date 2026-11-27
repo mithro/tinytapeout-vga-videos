@@ -3,10 +3,10 @@
 
 from __future__ import annotations
 
-import hashlib
 import random
 
 import pytest
+import xxhash
 from compression import zstd
 
 from ttvga import devtools, frames
@@ -41,7 +41,7 @@ def sample(framesfile, tmp_path):
     ff = framesfile.FramesFile(
         id="x", status="ok", sampler="tb-v1", sampler_status="ok", width=W, height=H, mode="test", clock_hz=25000000,
         clocks_per_pixel=1.0, capture_after_clock=0, store="x_frames.rgb6.zst", store_length=len(store),
-        store_sha256=hashlib.sha256(store).hexdigest(), distinct=[hashlib.sha256(p).hexdigest() for p in pix],
+        store_xxh3_128=xxhash.xxh3_128_hexdigest(store), distinct=[xxhash.xxh3_128_hexdigest(p) for p in pix],
         frames=fr)
     framesfile.write_frames_txt(d / "frames.txt", ff)
     return d / "frames.txt", pix

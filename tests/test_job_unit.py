@@ -136,7 +136,7 @@ def test_job_testpatterns_not_published(tmp_path, monkeypatch):
         (out / "centre-v1" / "frames.txt").write_text("frames.txt\n")
         return job.derive.DeriveResult(
             samplers={"centre-v1": {"sampler_status": "ok", "frames": 3}}, trace_sha="c" * 64,
-            uo_out_sha256="d" * 64, uo_out_sha256_clocks=(0, 100), tb_v1_check="off", error=None,
+            uo_out_xxh3_128="d" * 64, uo_out_xxh3_128_clocks=(0, 100), tb_v1_check="off", error=None,
             cpu_seconds=0.5, pngs_written=1, pngs_linked=2, info={"blocks": "1", "clocks": "100"})
 
     monkeypatch.setattr(job, "simulate", simulate)
@@ -218,8 +218,8 @@ def test_run_derive_derive_error_and_result(tmp_path, monkeypatch):
     assert _go_derive(tmp_path) == (None, "not a trace")
 
     want = job.derive.DeriveResult(
-        samplers={"centre-v1": {"frames": 2}}, trace_sha="e" * 64, uo_out_sha256="f" * 64,
-        uo_out_sha256_clocks=(0, 9), tb_v1_check="off", error="a sampler error", cpu_seconds=1.5,
+        samplers={"centre-v1": {"frames": 2}}, trace_sha="e" * 64, uo_out_xxh3_128="f" * 64,
+        uo_out_xxh3_128_clocks=(0, 9), tb_v1_check="off", error="a sampler error", cpu_seconds=1.5,
         pngs_written=1, pngs_linked=0, info={"blocks": "1", "clocks": "9"})
     monkeypatch.setattr(job.derive, "derive", lambda *a, **kw: want)
     assert _go_derive(tmp_path) == (want, "a sampler error")

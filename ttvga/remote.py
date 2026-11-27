@@ -125,9 +125,9 @@ def uv_env(runtime: bool = False) -> str:
 
 
 def host_python(tools: dict) -> str:
-    """The pinned interpreter every host script starts through."""
+    """The pinned interpreter every host script starts through, with the pinned xxhash."""
     return (f"{uv_env(runtime=True)} ~/{REMOTE_ROOT}/tools/uv/uv run --no-project "
-            f"--python {tools['python']['version']} python")
+            f"--python {tools['python']['version']} --with xxhash=={tools['xxhash']['version']} python")
 
 
 def vgacap_build_commands(src: str, build: str, commit: str, url: str | None = None) -> list[str]:
@@ -158,11 +158,11 @@ def tracetool_build_commands(src: str, build: str, source: str) -> list[str]:
     """
     cmds = ["set -e", f"rm -f {build}/tracetool"]
     libs = []
-    for i, lib in enumerate(("libvgacap_trace.a", "libvgacap_stream.a", "libvgacap_sha256.a", "libvgacap_zstd.a")):
+    for i, lib in enumerate(("libvgacap_trace.a", "libvgacap_stream.a", "libvgacap_xxhash.a", "libvgacap_zstd.a")):
         cmds += [f"L{i}=$(find {build} -name {lib} -print -quit)",
                  f'[ -n "$L{i}" ] || {{ echo "tracetool: {lib} not found under {build}" >&2; exit 1; }}']
         libs.append(f'"$L{i}"')
-    cmds.append(f"cc -std=c99 -O2 -Wall -Wextra -Werror -I{src}/include -I{src}/third_party/sha256 "
+    cmds.append(f"cc -std=c99 -O2 -Wall -Wextra -Werror -I{src}/include -I{src}/third_party/xxhash "
                 f"-I{src}/third_party/zstd/lib {source} {' '.join(libs)} -pthread -o {build}/tracetool")
     return cmds
 
@@ -198,6 +198,8 @@ cd ~/{REMOTE_ROOT}/tools
 ./ffmpeg/bin/ffmpeg -version | head -1
 ./uv/uv --version
 ./uv/uv python install --no-bin {py}
+# Fill the uv cache with xxhash now, so the host scripts need no network later.
+./uv/uv run --no-project --python {py} --with xxhash=={tools['xxhash']['version']} python --version
 if [ -f vgacap-build/PINNED ] && [ "$(cat vgacap-build/PINNED)" = "{vg['commit']}" ]; then
   echo "vgacap: present at {vg['commit']}"
 else

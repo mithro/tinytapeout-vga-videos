@@ -24,7 +24,7 @@ import job  # noqa: E402
 pytestmark = pytest.mark.sim
 
 FNV = "frame_hashes.fnv1a64-tb2026-rgb888.txt"
-CENTRE_HASHES = "frame_hashes.sha256-rgb6.txt"
+CENTRE_HASHES = "frame_hashes.xxh3-128-rgb6.txt"
 
 
 @pytest.fixture
@@ -92,9 +92,9 @@ def test_job_publishes_trace_and_centre_v1(root, go, dev):
     ti = info(dev, trace)
     assert t == {"file": trace.name, "sha256": sha(trace), "bytes": trace.stat().st_size,
                  "blocks": int(ti["blocks"]), "clocks": int(ti["clocks"]),
-                 "uo_out_sha256": t["uo_out_sha256"], "uo_out_sha256_clocks": [0, int(ti["clocks"])],
+                 "uo_out_xxh3_128": t["uo_out_xxh3_128"], "uo_out_xxh3_128_clocks": [0, int(ti["clocks"])],
                  "fast_path": True}
-    assert len(t["uo_out_sha256"]) == 64 and t["blocks"] >= 1
+    assert len(t["uo_out_xxh3_128"]) == 32 and t["blocks"] >= 1
     assert r["harness"] == "test"
     assert r["tb_v1"] == {"state": "none", "trace_sha": None, "dropped": False}
     assert r["tb_v1_check"] == "off"

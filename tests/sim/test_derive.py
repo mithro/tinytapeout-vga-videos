@@ -15,7 +15,7 @@ from ttvga.harness import derive, pngio, vgacap_path
 
 pytestmark = pytest.mark.sim
 
-CENTRE_HASHES = "frame_hashes.sha256-rgb6.txt"
+CENTRE_HASHES = "frame_hashes.xxh3-128-rgb6.txt"
 
 
 @pytest.fixture(scope="module")
@@ -81,8 +81,8 @@ def test_derive_centre_only_by_default(tools, dev, bars, tmp_path):
     assert r.cpu_seconds > 0
     # uohash is tracetool's, over its default clock count clamped to the trace.
     u = kv(tracetool(dev, "uohash", trace).stdout)
-    assert r.uo_out_sha256 == u["uo_out_sha256"]
-    assert r.uo_out_sha256_clocks == tuple(int(x) for x in u["uo_out_sha256_clocks"].split())
+    assert r.uo_out_xxh3_128 == u["uo_out_xxh3_128"]
+    assert r.uo_out_xxh3_128_clocks == tuple(int(x) for x in u["uo_out_xxh3_128_clocks"].split())
     # C4: the trace hash is in no file the derive wrote except the tb-v1 sidecar.
     for p in out.rglob("*"):
         if p.is_file() and p.suffix in (".txt", ".html"):
@@ -152,7 +152,7 @@ def test_derive_no_sync_writes_empty_files(tools, models, dev, tmp_path):
         assert (d / "frames.txt").is_file() and (d / "index.html").is_file()
         assert (d / "png").is_dir() and pngs(d) == []
     assert (r.pngs_written, r.pngs_linked) == (0, 0)
-    assert len(r.uo_out_sha256) == 64
+    assert len(r.uo_out_xxh3_128) == 32
 
 
 def test_derive_truncated_trace(tools, models, dev, tmp_path_factory, tmp_path):
