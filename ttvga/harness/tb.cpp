@@ -413,6 +413,10 @@ int main(int argc, char** argv) {
         std::signal(SIGTERM, SIG_IGN);
 #endif
     VerilatedContext ctx;
+    // The model is Verilated single-threaded. Without this the context defaults to the
+    // process's parallelism and starts that many minus one idle pool threads (87 on an
+    // 88-CPU host), which the queue scope's TasksMax refuses: std::system_error, EAGAIN.
+    ctx.threads(1);
     ctx.commandArgs(argc, argv);
     Vtop top{&ctx};
     // QSPI Pmod model (flash and two PSRAMs on the bidirectional pins).
