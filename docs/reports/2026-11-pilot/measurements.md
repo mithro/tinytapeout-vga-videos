@@ -529,7 +529,7 @@ From the published `frames.txt` (`distinct:` lines) and the published FNV file (
 - Every project has the same number of frames in both samplers and no gaps. Where they differ, they differ from frame 0 and no offset up to ±120 lines them up: the crop differs, not the frame cut.
 - The start clock delta is the same for every frame of a project (one value per [`compare.txt`](frames/)): centre-v1 starts each frame at the hsync edge of the first vsync line, tb-v1 at the end of the vsync pulse.
 - tomkeddie_a: centre-v1's `porches` are 47 and 0 against the mode's 48 and 33; the mask is one-pixel vertical edges.
-- nyan: tb-v1's cpp is 1.04; its frame has a 29-pixel black band on the left and a wider cat, centre-v1's an 8-pixel band (`suggested_offset` 8).
+- nyan: tb-v1's cpp is 1.04; its frame has a wider black band on the left and a wider cat than centre-v1's, whose band is 8 pixels (`suggested_offset` 8).
 - mandelbrot: tb-v1's frame (cpp 4.27) ends in black rows at the bottom; centre-v1's (cpp 4) fills the height.
 
 The three projects the plan names, from centre-v1's `frames.txt`:
