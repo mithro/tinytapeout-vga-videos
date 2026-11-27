@@ -198,6 +198,29 @@ def test_job_default_run_over_a_pre_xxh3_tb_v1_fails_before_anything_runs(root, 
     assert r["tb_v1"]["dropped"] is True and not (pub / "tb-v1").exists()
 
 
+def test_job_failed_tb_v1_run_over_a_pre_xxh3_tb_v1_says_it_was_left_in_place(root, go, monkeypatch):
+    from tests.frames_txt import to_pre_xxh3
+
+    rc, first = go("bars640", "--tb-v1")
+    assert (rc, first["error"]) == (0, None)
+    pub = jobroot.published(root, "bars640")
+    txt = pub / "tb-v1" / "frames.txt"
+    txt.write_text(to_pre_xxh3(txt.read_text()))
+    before = tree(pub)
+    real = job.derive.derive
+
+    def mismatched(*a, **kw):
+        return dataclasses.replace(real(*a, **kw), tb_v1_check="mismatch", error="tb-v1 differs from tb.cpp at frame 3")
+
+    monkeypatch.setattr(job.derive, "derive", mismatched)
+    rc, r = go("bars640", "--tb-v1")
+    assert rc == 1 and r["published"] is False
+    assert r["error"].startswith("tb-v1 differs from tb.cpp at frame 3")
+    assert "pre-XXH3" in r["error"] and "left in place" in r["error"]
+    assert r["tb_v1"]["state"] in ("current", "stale")
+    assert tree(pub) == before
+
+
 def test_job_default_rerun_keeps_seeded_tb_v1(root, go):
     seeded = jobroot.work(root, "bars640") / "frames" / "tb-v1" / FNV
     seeded.parent.mkdir(parents=True)

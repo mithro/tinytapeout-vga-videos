@@ -846,6 +846,7 @@ def _job() -> int:
             errors.append(f"host.toml: {e}" if isinstance(e, OSError) else str(e))
             result["stage"] = "setup"
     published_dir = conf.frames_root / shuttle / macro if conf else None
+    preflight_refused = False
     if published_dir is not None and not args.tb_v1 and not args.drop_tb_v1:
         # Pre-flight, before fetch, build, simulation and encode: a published tb-v1 that vgacap's
         # reader refuses stops the run here, so nothing at all is changed (Ruling BS).
@@ -855,6 +856,7 @@ def _job() -> int:
         except Tb1Refused as e:
             errors.append(str(e))
             result["stage"] = "setup"
+            preflight_refused = True
 
     repo_dir, build_dir, out = work / "repo", work / "build", work / "out"
     scratch = work / "scratch"
@@ -874,6 +876,12 @@ def _job() -> int:
                 _, result["tb_v1"] = tb_v1_rule(project=target["id"], tb_v1=False, drop=False, refuse=False,
                                                 published=published_dir, work_frames=work / "frames",
                                                 trace_sha=dres.trace_sha if dres is not None else None)
+                if published_dir is not None and not preflight_refused and (published_dir / derive.TB_V1).is_dir() \
+                        and (why := _frames_txt_refusal(published_dir / derive.TB_V1 / "frames.txt")):
+                    # --tb-v1 or --drop-tb-v1 skipped the pre-flight and the run failed before it replaced
+                    # the files: say so, so the state above is never left unexplained.
+                    errors.append(f"{target['id']}: the published tb-v1/ is not in the current frames format "
+                                  f"(vgacap's reader refuses it: {why}) and was left in place")
         except Exception as e:
             errors.append(f"stage crashed: result: {type(e).__name__}: {e}")
             result["traceback"] = traceback.format_exc()

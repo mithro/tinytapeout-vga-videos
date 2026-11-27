@@ -14,7 +14,7 @@ from ttvga.harness import vgacap_path
 FIXTURE = devtools.ROOT / "tests" / "fixtures" / "frames" / "bars640" / "frames.txt"
 
 # rgb6 frames and their XXH3-128 (seed 0, canonical big-endian: `xxhsum -H2`). The constants are
-# copied from vgacap at 80f6aa3 (python/tests/test_hashes.py, VECTORS; tests/test_hashes.c), where
+# copied from vgacap at 4a3c670 (python/tests/test_hashes.py, VECTORS; tests/test_hashes.c), where
 # upstream `xxhsum -H2` confirms them. Calling the xxhash package alone would be circular (vgacap's
 # reference wraps it), so these literals are the independent evidence. The empty-input value is
 # XXH3-128's published check value, from the same vgacap test (test_xxh3_128_of_nothing_is_xxhash_s).
@@ -56,8 +56,7 @@ def test_frames_txt_with_the_sha256_key_is_refused(vgacap, tmp_path, capsys):
     old.write_text(to_pre_xxh3(FIXTURE.read_text()))
     assert main(["frames", "compare", str(old), str(FIXTURE)]) != 0
     err = capsys.readouterr().err
-    # vgacap's wording is still moving: the pin's message names the keys, the fix round's says "pre-XXH3".
-    assert "pre-XXH3" in err or ("store_sha256" in err and "store_xxh3_128" in err), err
+    assert "pre-XXH3" in err and "store_sha256" in err, err
 
 
 def test_a_hash_file_with_the_sha256_method_is_refused(vgacap, tmp_path, capsys):
@@ -65,7 +64,7 @@ def test_a_hash_file_with_the_sha256_method_is_refused(vgacap, tmp_path, capsys)
     old.write_text("hash_method: sha256-rgb6\n# SHA-256 of the frame as rgb6\n")
     assert main(["frames", "compare", str(old), str(FIXTURE)]) != 0
     err = capsys.readouterr().err
-    assert "pre-XXH3" in err or "unknown hash method 'sha256-rgb6'" in err, err
+    assert "pre-XXH3" in err and "sha256-rgb6" in err, err
 
 
 def test_frames_hash_no_longer_offers_the_sha256_method(capsys):
