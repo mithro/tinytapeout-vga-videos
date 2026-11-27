@@ -1,0 +1,32 @@
+[dumpfile] "ttihp25a_tt_um_cfib_demo_f100.fst"
+[timestart] 1762906420000
+[size] 1425 800
+*-31.645814 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+@800200
+-ports
+@28
+ttihp25a_tt_um_cfib_demo.clk
+ttihp25a_tt_um_cfib_demo.rst_n
+ttihp25a_tt_um_cfib_demo.ena
+@22
+ttihp25a_tt_um_cfib_demo.ui_in[7:0]
+ttihp25a_tt_um_cfib_demo.uio_in[7:0]
+ttihp25a_tt_um_cfib_demo.uo_out[7:0]
+ttihp25a_tt_um_cfib_demo.uio_out[7:0]
+ttihp25a_tt_um_cfib_demo.uio_oe[7:0]
+@1000200
+-ports
+@800200
+-decoded
+@28
+ttihp25a_tt_um_cfib_demo.decoded.hsync
+ttihp25a_tt_um_cfib_demo.decoded.vsync
+@22
+ttihp25a_tt_um_cfib_demo.decoded.r[1:0]
+ttihp25a_tt_um_cfib_demo.decoded.g[1:0]
+ttihp25a_tt_um_cfib_demo.decoded.b[1:0]
+ttihp25a_tt_um_cfib_demo.decoded.rgb6[5:0]
+@24
+ttihp25a_tt_um_cfib_demo.decoded.frame[31:0]
+@1000200
+-decoded

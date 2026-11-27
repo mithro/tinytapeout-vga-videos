@@ -1,0 +1,32 @@
+[dumpfile] "tt08_tt_um_a1k0n_nyancat_f100.fst"
+[timestart] 1750652075472
+[size] 1425 800
+*-31.635750 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+@800200
+-ports
+@28
+tt08_tt_um_a1k0n_nyancat.clk
+tt08_tt_um_a1k0n_nyancat.rst_n
+tt08_tt_um_a1k0n_nyancat.ena
+@22
+tt08_tt_um_a1k0n_nyancat.ui_in[7:0]
+tt08_tt_um_a1k0n_nyancat.uio_in[7:0]
+tt08_tt_um_a1k0n_nyancat.uo_out[7:0]
+tt08_tt_um_a1k0n_nyancat.uio_out[7:0]
+tt08_tt_um_a1k0n_nyancat.uio_oe[7:0]
+@1000200
+-ports
+@800200
+-decoded
+@28
+tt08_tt_um_a1k0n_nyancat.decoded.hsync
+tt08_tt_um_a1k0n_nyancat.decoded.vsync
+@22
+tt08_tt_um_a1k0n_nyancat.decoded.r[1:0]
+tt08_tt_um_a1k0n_nyancat.decoded.g[1:0]
+tt08_tt_um_a1k0n_nyancat.decoded.b[1:0]
+tt08_tt_um_a1k0n_nyancat.decoded.rgb6[5:0]
+@24
+tt08_tt_um_a1k0n_nyancat.decoded.frame[31:0]
+@1000200
+-decoded

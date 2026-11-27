@@ -1,0 +1,24 @@
+load_file ttihp25a_tt_um_cfib_demo_f100.fst
+variable_add ttihp25a_tt_um_cfib_demo.clk
+item_focus a
+group_marked ports
+item_focus b
+variable_add ttihp25a_tt_um_cfib_demo.rst_n
+variable_add ttihp25a_tt_um_cfib_demo.ena
+variable_add ttihp25a_tt_um_cfib_demo.ui_in
+variable_add ttihp25a_tt_um_cfib_demo.uio_in
+variable_add ttihp25a_tt_um_cfib_demo.uo_out
+variable_add ttihp25a_tt_um_cfib_demo.uio_out
+variable_add ttihp25a_tt_um_cfib_demo.uio_oe
+item_unfocus
+variable_add ttihp25a_tt_um_cfib_demo.decoded.hsync
+item_focus j
+group_marked decoded
+item_focus k
+variable_add ttihp25a_tt_um_cfib_demo.decoded.vsync
+variable_add ttihp25a_tt_um_cfib_demo.decoded.r
+variable_add ttihp25a_tt_um_cfib_demo.decoded.g
+variable_add ttihp25a_tt_um_cfib_demo.decoded.b
+variable_add ttihp25a_tt_um_cfib_demo.decoded.rgb6
+variable_add ttihp25a_tt_um_cfib_demo.decoded.frame
+item_unfocus
