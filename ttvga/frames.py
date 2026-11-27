@@ -204,7 +204,16 @@ class CompareError(FramesError):
 class Comparison:
     """`frames compare` of runs A and B. Counts are of each run's frames (gaps included) and gaps.
 
-    `offset` d means b[j + d] shows a[j] for every frame j >= first_mismatch with data in both.
+    `first_mismatch` is the first frame j where both runs have data and a[j] != b[j]; None when there
+    is no such frame. A gap is no data, never a mismatch.
+
+    With a mismatch, `offset` d means b[j + d] shows a[j] for every frame j >= first_mismatch with data
+    in both, over at least MIN_PAIRS such pairs, with |d| <= MAX_OFFSET; 0 is tried first, then -1, 1,
+    -2, 2 and so on, and the first that fits is taken. None when no d fits.
+
+    Without a mismatch, `offset` is 0 when at least MIN_PAIRS frames have data in both runs (they agree
+    frame for frame), and None when fewer do: too little data to say the runs agree.
+
     `start_clock_deltas` (two frames.txt only) counts b's start clock minus a's over the pairs:
     offset 0 before first_mismatch, `offset` (or 0 when there is none) from it on.
     """
@@ -265,7 +274,10 @@ def _pair_offset(j: int, k: int | None, offset: int | None) -> int:
 
 def compare(a: Path, b: Path) -> Comparison:
     """Compare two runs, each a frames.txt or a hash file. Raises CompareError if they cannot be compared."""
-    ra, rb = _load_run(Path(a)), _load_run(Path(b))
+    return _compare(_load_run(Path(a)), _load_run(Path(b)))
+
+
+def _compare(ra: _Run, rb: _Run) -> Comparison:
     kinds = {r.path: ("frames.txt" if r.ff is not None else f"a {r.method} hash file") for r in (ra, rb)}
     if ra.method != rb.method:
         raise CompareError(f"{ra.path} is {kinds[ra.path]} and {rb.path} is {kinds[rb.path]}; "
@@ -289,11 +301,22 @@ def compare(a: Path, b: Path) -> Comparison:
     return Comparison(k, offset, deltas, len(ka), len(kb), ka.count(None), kb.count(None))
 
 
-def _store_frame(run: _Run, j: int) -> tuple[int, int, bytes] | None:
-    """Frame j of a frames.txt run from its store, or None when the store is not beside it."""
-    if run.ff is None or not (run.path.parent / run.ff.store).is_file():
-        return None
-    return load_frame(f"{run.path.parent / run.ff.store}@{j}")
+def _store_frame(run: _Run, j: int) -> tuple[int, int, bytes] | str:
+    """Frame j of a run from the store beside its frames.txt, or why there is none.
+
+    The run's own frames.txt is used, whatever its file name. Raises FramesError for a store that is
+    there but corrupt.
+    """
+    if run.ff is None:
+        return f"{run.path} is a hash file, it has no store"
+    if not (run.path.parent / run.ff.store).is_file():
+        return f"the store {run.path.parent / run.ff.store} is not there"
+    ff = run.ff
+    d = ff.frames[j].distinct
+    if d < 0:
+        return f"frame {j} of {run.path} is a gap"
+    n = ff.width * ff.height
+    return ff.width, ff.height, _read_store(ff, run.path.parent)[d * n:(d + 1) * n]
 
 
 def _trace_of(run: _Run) -> Path | None:
@@ -308,8 +331,9 @@ def _trace_of(run: _Run) -> Path | None:
 
 
 def compare_cmd(args: argparse.Namespace) -> int:
+    ra, rb = _load_run(Path(args.run_a)), _load_run(Path(args.run_b))
     try:
-        c = compare(Path(args.run_a), Path(args.run_b))
+        c = _compare(ra, rb)
     except CompareError as e:
         print(f"tt-vga: {e}", file=sys.stderr)
         return 2
@@ -326,16 +350,13 @@ def compare_cmd(args: argparse.Namespace) -> int:
     k = c.first_mismatch
     if k is None:
         return 0
-    ra, rb = _load_run(Path(args.run_a)), _load_run(Path(args.run_b))
-    try:
-        fa, fb = _store_frame(ra, k), _store_frame(rb, k)
-    except ValueError as e:
-        raise FramesError(str(e)) from None
-    if fa is not None and fb is not None:
-        if fa[:2] != fb[:2]:
-            print(f"diff: none, frame {k} is {fa[0]}x{fa[1]} in A and {fb[0]}x{fb[1]} in B")
-        else:
-            _diff_report(fa[0], fa[1], fa[2], fb[2], Path(args.out) if args.out else None)
+    fa, fb = _store_frame(ra, k), _store_frame(rb, k)
+    if isinstance(fa, str) or isinstance(fb, str):
+        print(f"diff: none, {fa if isinstance(fa, str) else fb}")
+    elif fa[:2] != fb[:2]:
+        print(f"diff: none, frame {k} is {fa[0]}x{fa[1]} in A and {fb[0]}x{fb[1]} in B")
+    else:
+        _diff_report(fa[0], fa[1], fa[2], fb[2], Path(args.out) if args.out else None)
     for name, run in (("a", ra), ("b", rb)):
         if _trace_of(run) is not None:
             c0 = run.ff.frames[k].start_clock
@@ -393,10 +414,15 @@ def add_parser(sub: argparse._SubParsersAction) -> None:
                       description="RUN_A and RUN_B are each a frames.txt or a frame_hashes file. Two hash files "
                                   "must share a method; a frames.txt compares only with frames.txt or a "
                                   "xxh3-128-rgb6 file (otherwise exit 2). A gap is no data, never a mismatch. "
-                                  "offset d: b[j + d] shows a[j] for every frame j from the first mismatch on "
-                                  f"with data in both, |d| <= {MAX_OFFSET}, over at least {MIN_PAIRS} pairs. "
-                                  "With both stores beside their frames.txt, the first mismatching pair is "
-                                  "diffed; with the traces present, their clock ranges are printed.")
+                                  "first_mismatch: the first frame with data in both runs that differs, or none. "
+                                  "offset d after a mismatch: b[j + d] shows a[j] for every frame j from the "
+                                  f"first mismatch on with data in both, |d| <= {MAX_OFFSET}, over at least "
+                                  f"{MIN_PAIRS} pairs (0 tried first, then -1, 1, -2, 2 ...); none if no d fits. "
+                                  "offset without a mismatch: 0 if at least "
+                                  f"{MIN_PAIRS} frames have data in both (the runs agree frame for frame), none "
+                                  "if fewer. With both stores beside their frames.txt, the first mismatching "
+                                  "pair is diffed, otherwise 'diff: none, <reason>' is printed; with the "
+                                  "traces present, their clock ranges are printed.")
     p.add_argument("run_a", metavar="RUN_A")
     p.add_argument("run_b", metavar="RUN_B")
     p.add_argument("--out", metavar="DIR", help="write the first mismatching pair's a.png, b.png and mask.png here")

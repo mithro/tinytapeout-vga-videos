@@ -197,3 +197,71 @@ def test_methods_must_match(framesfile, tmp_path, capsys):
             frames.compare(x, y)
         assert main(["frames", "compare", str(x), str(y)]) == 2
         assert "fnv1a64-tb2026-rgb888" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("d", [120, -120])
+def test_offset_at_the_limit(framesfile, tmp_path, d):
+    # B is A delayed (d > 0) or advanced (d < 0) by |d| frames; 30 frames still pair up.
+    extra = [40] * abs(d)            # _pixels has 64 distinct images: one frame unlike the body, repeated
+    body = list(range(30))
+    a_labels, b_labels = (body, extra + body) if d > 0 else (extra + body, body)
+    a, _ = _run(framesfile, tmp_path / "a", a_labels)
+    b, _ = _run(framesfile, tmp_path / "b", b_labels)
+    assert frames.compare(a, b).offset == d
+
+
+@pytest.mark.parametrize("d", [121, -121])
+def test_offset_past_the_limit(framesfile, tmp_path, d):
+    extra = [40] * abs(d)            # _pixels has 64 distinct images: one frame unlike the body, repeated
+    body = list(range(30))
+    a_labels, b_labels = (body, extra + body) if d > 0 else (extra + body, body)
+    a, _ = _run(framesfile, tmp_path / "a", a_labels)
+    b, _ = _run(framesfile, tmp_path / "b", b_labels)
+    c = frames.compare(a, b)
+    assert (c.first_mismatch, c.offset) == (0, None)
+
+
+def test_run_end(framesfile, tmp_path):
+    # A mismatch with fewer than MIN_PAIRS frames left after it: no offset can be stood on.
+    labels = list(range(30))
+    b_labels = labels[:25] + [99] + labels[26:]
+    a, _ = _run(framesfile, tmp_path / "a", labels)
+    b, _ = _run(framesfile, tmp_path / "b", b_labels)
+    assert (frames.compare(a, b).first_mismatch, frames.compare(a, b).offset) == (25, None)
+    # B runs on past A's end: the extra frames have nothing to pair with, so no mismatch.
+    b2, _ = _run(framesfile, tmp_path / "b2", labels + [200, 201, 202])
+    c = frames.compare(a, b2)
+    assert (c.first_mismatch, c.offset, c.frames_a, c.frames_b) == (None, 0, 30, 33)
+    # A shift whose last pairs fall off B's end still fits on the pairs that remain.
+    b3, _ = _run(framesfile, tmp_path / "b3", [100, 101] + labels[:20])
+    assert frames.compare(a, b3).offset == 2
+
+
+def test_diff_none_reasons(framesfile, tmp_path, capsys):
+    a_labels, b_labels = list(range(30)), list(range(30))
+    b_labels[4] = 99
+    a, ffa = _run(framesfile, tmp_path / "a", a_labels)
+    b, _ = _run(framesfile, tmp_path / "b", b_labels, store=False)
+    assert main(["frames", "compare", str(a), str(b)]) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert f"diff: none, the store {b.parent / 's_m_centre-v1_frames.rgb6.zst'} is not there" in out
+    assert not any(ln.startswith("differing_pixels") for ln in out)
+    # A hash file has no store.
+    b2, ffb = _run(framesfile, tmp_path / "b2", b_labels)
+    h = _hash_file(framesfile, tmp_path / "frame_hashes.xxh3-128-rgb6.txt", ffb)
+    assert main(["frames", "compare", str(a), str(h)]) == 0
+    assert f"diff: none, {h} is a hash file, it has no store" in capsys.readouterr().out.splitlines()
+
+
+def test_diff_uses_the_named_frames_txt(framesfile, tmp_path, capsys):
+    # The run's own file is read, whatever its name, not a frames.txt beside the store.
+    a_labels, b_labels = list(range(30)), list(range(30))
+    b_labels[4] = 99
+    a, _ = _run(framesfile, tmp_path / "a", a_labels)
+    b, _ = _run(framesfile, tmp_path / "b", b_labels)
+    other = b.with_name("copy.txt")
+    b.rename(other)
+    assert main(["frames", "compare", str(a), str(other), "--out", str(tmp_path / "out")]) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert f"differing_pixels: {sum(x != y for x, y in zip(_pixels(4), _pixels(99)))}" in out
+    assert (tmp_path / "out" / "mask.png").is_file()
