@@ -25,8 +25,9 @@ check = "uv/uv"
 [python]
 version = "3.14.7"
 
-# Pinned to vgacap `main` at c7176da (2026-11-27): the merged M10 stack (PRs #15-#24)
-# plus later documentation-only changes.
+# TEMPORARY pin to the head of the unmerged vgacap PR #62 (fast-frame-hash, XXH3-128 digests).
+# Replace it with the vgacap `main` merge commit before this branch merges.
+# The last pin on `main` was c7176da (2026-11-27).
 [vgacap]
 git = "https://github.com/mithro/vgacap"
-commit = "c7176da10e2171a76605734d4364de85bb549280"
+commit = "80f6aa3fc3c5a7ebace8625bf4ab6d14c69373a2"
