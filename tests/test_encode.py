@@ -194,3 +194,17 @@ def test_audio_is_encoded_at_an_ordinary_rate():
 
     for opts in (encode.AUDIO_MP4, encode.AUDIO_WEBM):
         assert opts[opts.index("-ar") + 1] == "48000"
+
+
+def test_every_ffmpeg_call_caps_its_cpu_count():
+    """Inside the queue's scope (TasksMax=64) ffmpeg's automatic thread counts, sized for
+    the host's 88 CPUs, fail to start (EAGAIN): every call carries `-cpucount`."""
+    import re
+
+    from encode import FFMPEG_CPUS, QUIET
+
+    assert QUIET[QUIET.index("-cpucount") + 1] == str(FFMPEG_CPUS)
+    assert 1 <= FFMPEG_CPUS <= 8
+    src = (HARNESS_DIR / "encode.py").read_text()
+    calls = re.findall(r"run\(\[ffmpeg,\s*([^,\]]+)", src)
+    assert calls and all(c.strip() == "*QUIET" for c in calls), calls
