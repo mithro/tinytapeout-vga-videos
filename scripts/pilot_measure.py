@@ -34,12 +34,14 @@ The host part is standard library only, like the harness.
 from __future__ import annotations
 
 import argparse
+import atexit
 import json
 import math
 import os
 import re
 import shlex
 import shutil
+import signal
 import subprocess
 import sys
 import threading
@@ -227,8 +229,9 @@ def postsim_row(raw: dict) -> dict:
             "post_cpu_s": post, "post_pct": pct, "budget_s": 0.05 * c_no, "ok": pct <= 5}
 
 
-def _mb(x: float | None) -> str:
-    return "-" if x is None else f"{x / 1e6:.0f}"
+def _mib(x: float | None) -> str:
+    """Bytes as MiB (2**20): time -v's max RSS is in KiB, MemoryPeak in bytes."""
+    return "-" if x is None else f"{x / 2**20:,.0f}"
 
 
 def _kb(x: float | None) -> str:
@@ -237,6 +240,10 @@ def _kb(x: float | None) -> str:
 
 def _gb(x: float | None) -> str:
     return "-" if x is None else f"{x / 1e9:.2f}"
+
+
+def _n(x: int | None) -> str:
+    return "-" if x is None else f"{x:,}"
 
 
 def _sec(x: float) -> str:
@@ -248,10 +255,10 @@ def _yes(ok: bool) -> str:
 
 
 def memory_row(raw: dict) -> dict:
-    rss = [r["time"]["max_rss_kb"] * 1000 for r in raw["runs"] if r.get("time")]
-    samples = {s["variant"]: s["time"]["max_rss_kb"] * 1000 for s in raw.get("samples", []) if s.get("time")}
+    rss = [r["time"]["max_rss_kb"] * 1024 for r in raw["runs"] if r.get("time")]
+    samples = {s["variant"]: s["time"]["max_rss_kb"] * 1024 for s in raw.get("samples", []) if s.get("time")}
     scope = raw.get("scope") or {}
-    return {"job_rss": raw["job"]["time"]["max_rss_kb"] * 1000 if raw["job"].get("time") else None,
+    return {"job_rss": raw["job"]["time"]["max_rss_kb"] * 1024 if raw["job"].get("time") else None,
             "model_rss": max(rss) if rss else None, "sample_default_rss": samples.get("default"),
             "sample_both_rss": samples.get("both"), "scope_peak": scope.get("memory_peak"),
             "tasks_peak": scope.get("tasks_peak")}
@@ -290,14 +297,14 @@ def report(raw_dir: Path) -> str:
                    f"{_yes(x['ok'])} |")
     out.append("\n## Memory per job\n")
     out.append("Max RSS from `time -v` (the largest single process), and the scope's MemoryPeak (all its processes "
-               "and page cache), in MB.\n")
+               "and page cache), in MiB. `time -v` reports KiB.\n")
     out.append("| project | job max RSS | model max RSS | sample default max RSS | sample both max RSS | "
                "scope MemoryPeak | scope peak tasks |")
     out.append("| --- | ---: | ---: | ---: | ---: | ---: | ---: |")
     for r in raws:
         x = memory_row(r)
-        out.append(f"| {r['id']} | {_mb(x['job_rss'])} | {_mb(x['model_rss'])} | {_mb(x['sample_default_rss'])} | "
-                   f"{_mb(x['sample_both_rss'])} | {_mb(x['scope_peak'])} | {x['tasks_peak'] if x['tasks_peak'] is not None else '-'} |")
+        out.append(f"| {r['id']} | {_mib(x['job_rss'])} | {_mib(x['model_rss'])} | {_mib(x['sample_default_rss'])} | "
+                   f"{_mib(x['sample_both_rss'])} | {_mib(x['scope_peak'])} | {x['tasks_peak'] if x['tasks_peak'] is not None else '-'} |")
     out.append("\n## Root-volume peak per job\n")
     out.append("Peak `du -sb` of the project's work directory while job.py ran, polled every 5 s, in GB.\n")
     out.append("| project | work directory peak | scratch peak | pilot re-run directory peak |")
@@ -312,6 +319,9 @@ def report(raw_dir: Path) -> str:
         peak = max(peaks)
         out.append(f"\nLargest peak {peak / 1e9:.2f} GB: 24 x {peak / 1e9:.2f} x 2 = {48 * peak / 1e9:.1f} GB, "
                    f"rounded up to 10: `min_free_root_gb = {min_free_root_gb(peak)}`.")
+    done = Path(raw_dir) / "DONE"
+    if done.is_file() and (m := re.search(r"root_free_min_bytes (\d+)", done.read_text())):
+        out.append(f"\nRoot volume free, lowest seen by the 5 s polls during the pilot: {int(m.group(1)) / 1e9:,.0f} GB.")
     out.append("\n## Sizes\n")
     out.append("The published directory (`du -b`, hard links once), in kB (1,000 bytes).\n")
     out.append("| project | trace | centre-v1 store | tb-v1 store | centre-v1 PNGs | tb-v1 PNGs | centre-v1 PNG files | "
@@ -325,7 +335,7 @@ def report(raw_dir: Path) -> str:
             return (sm.get(name) or {}).get(key)
         out.append(f"| {r['id']} | {_kb(s.get('trace'))} | {_kb(g('centre-v1', 'store'))} | {_kb(g('tb-v1', 'store'))} | "
                    f"{_kb(g('centre-v1', 'png_bytes'))} | {_kb(g('tb-v1', 'png_bytes'))} | "
-                   f"{g('centre-v1', 'png_files')} | {g('tb-v1', 'png_files')} | {_kb(s.get('total'))} |")
+                   f"{_n(g('centre-v1', 'png_files'))} | {_n(g('tb-v1', 'png_files'))} | {_kb(s.get('total'))} |")
     out.append("\n## vgacap-sample alone\n")
     out.append("On the published trace, VGACAP_SAMPLE_DEBUG=1; and the job's derive from result.json.\n")
     out.append("| project | default wall (s) | default CPU (s) | both wall (s) | both CPU (s) | both debug | "
@@ -338,7 +348,7 @@ def report(raw_dir: Path) -> str:
         out.append(f"| {r['id']} | {_sec(d['time']['wall_s']) if d else '-'} | {_sec(d['time']['cpu_s']) if d else '-'} | "
                    f"{_sec(b['time']['wall_s']) if b else '-'} | {_sec(b['time']['cpu_s']) if b else '-'} | "
                    f"{(b or {}).get('debug') or '-'} | {r['result']['timings'].get('derive', '-')} | "
-                   f"{r['result']['derive_cpu_seconds']:.1f} | {c.get('frames', '-')} | {c.get('distinct_frames', '-')} |")
+                   f"{r['result']['derive_cpu_seconds']:.1f} | {_n(c.get('frames'))} | {_n(c.get('distinct_frames'))} |")
     return "\n".join(out) + "\n"
 
 
@@ -446,7 +456,7 @@ def on_host_project(args: argparse.Namespace) -> int:
                 shutil.rmtree(out)
             out.mkdir()
             env = dict(os.environ, VGACAP_SAMPLE_DEBUG="1")
-            cmd = ["timeout", str(args.timeout), str(sample), str(local), "--out", str(out), "--name", stem] + extra
+            cmd = ["timeout", f"--kill-after={GRACE}", str(args.timeout), str(sample), str(local), "--out", str(out), "--name", stem] + extra
             mark = log.stat().st_size
             r = _timed(cmd, pdir / f"sample-{variant}.time", log, env=env)
             with log.open() as f:
@@ -572,6 +582,22 @@ def on_host(args: argparse.Namespace) -> int:
         say(f"{pid}: finished, scope exit {rc}, MemoryPeak {scope_peaks[pid]['memory_peak']}, "
             f"peak tasks {scope_peaks[pid]['tasks_peak']}")
 
+    def stop_scopes() -> None:
+        """Stop every scope still running (a pilot stopped part way leaves none behind)."""
+        alive = [units[pid] for pid, proc in procs.items() if proc.poll() is None]
+        if alive:
+            say(f"stopping {len(alive)} scopes: {' '.join(alive)}")
+            subprocess.run(["systemctl", "--user", "stop", *alive])
+
+    def on_signal(signum, frame):
+        say(f"signal {signum}: stopping the scopes")
+        stop_scopes()
+        sys.exit(128 + signum)
+
+    for sig in (signal.SIGTERM, signal.SIGHUP, signal.SIGINT):
+        signal.signal(sig, on_signal)
+    atexit.register(stop_scopes)
+
     last_progress = 0.0
     while queue or procs:
         while queue and len(procs) < args.jobs:
@@ -677,11 +703,14 @@ def local(args: argparse.Namespace) -> int:
                 print(f"{now()} the pilot's tmux session ended without raw/DONE", flush=True)
                 return 1
             time.sleep(60)
-    remote.rsync_from(host, f"{pilot}/raw/", Path(args.out), extra=["--include", "*.json", "--exclude", "*"])
-    p = remote.ssh(host, f"echo $HOME; cat ~/{remote.REMOTE_ROOT}/host.toml", capture=True)
-    home, _, conf = p.stdout.partition("\n")
+    remote.rsync_from(host, f"{pilot}/raw/", Path(args.out),
+                      extra=["--include", "*.json", "--include", "DONE", "--exclude", "*"])
+    p = remote.ssh(host, f"echo $HOME; uname -n; hostname -f; cat ~/{remote.REMOTE_ROOT}/host.toml", capture=True)
+    home, node, fqdn, conf = p.stdout.split("\n", 3)
     conf = tomllib.loads(conf)
-    paths = {conf["staging_dir"]: "<staging_dir>", conf["frames_root"]: "<frames_root>", home.strip(): "~"}
+    paths = {conf["staging_dir"]: "<staging_dir>", conf["frames_root"]: "<frames_root>",
+             f"{home.strip()}/{remote.REMOTE_VIDEOS}": "<videos>", home.strip(): "~",
+             fqdn.strip(): "<host>", node.strip(): "<host>"}
     for path in Path(args.out).glob("*.json"):
         path.write_text(redact(path.read_text(), paths))
     print(f"{now()} pulled {pilot}/raw/*.json into {args.out}", flush=True)

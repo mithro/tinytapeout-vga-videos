@@ -154,6 +154,9 @@ def test_report_markdown_has_one_table_per_target(pm, tmp_path):
         assert f"## {heading}" in md
     assert "| tt08/x |" in md
     assert "min_free_root_gb = 100" in md   # 24 * 2.0 GB * 2 = 96 -> 100
+    assert "lowest seen" not in md
+    (tmp_path / "DONE").write_text("2026-11-27T04:28:18+00:00\nroot_free_min_bytes 772000000000\n")
+    assert "lowest seen by the 5 s polls during the pilot: 772 GB" in pm.report(tmp_path)
 
 
 def test_redact_replaces_host_paths(pm):
