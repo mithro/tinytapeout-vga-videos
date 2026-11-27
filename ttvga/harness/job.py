@@ -495,11 +495,13 @@ def _frames_txt_refusal(path: Path) -> str | None:
 
 
 def tb_v1_rule(*, project: str, tb_v1: bool, drop: bool, published: Path | None, work_frames: Path,
+               refuse: bool = True,
                trace_sha: str | None) -> tuple[list[str], dict]:
     """What to carry over from the published copy, and result.json's `tb_v1` (Global Constraints, Ruling Z).
 
     `published` is the project's published directory (None when there is none to
-    look at), `work_frames` its `work/.../frames/`. Raises Tb1Refused, naming `project`, when
+    look at), `work_frames` its `work/.../frames/`. With `refuse=False` it only reports what the files
+    are (by trace) and never raises. Otherwise it raises Tb1Refused, naming `project`, when
     the published tb-v1/ is in a format vgacap's reader refuses and neither `tb_v1` nor `drop` is set.
     """
     if drop:
@@ -509,10 +511,10 @@ def tb_v1_rule(*, project: str, tb_v1: bool, drop: bool, published: Path | None,
     if published is not None and (published / derive.TB_V1).is_dir():
         sha_file = published / derive.TB_V1 / derive.TRACE_SHA_FILE
         recorded = (sha_file.read_text().strip() if sha_file.is_file() else "") or None
-        if (why := _frames_txt_refusal(published / derive.TB_V1 / "frames.txt")):
+        if refuse and (why := _frames_txt_refusal(published / derive.TB_V1 / "frames.txt")):
             # Never carried, never dropped silently (Ruling Z): the run fails before it publishes.
             raise Tb1Refused(f"{project}: the published tb-v1/ is not in the current frames format "
-                             f"(vgacap's reader refuses it: {why}); nothing was published. Re-run with "
+                             f"(vgacap's reader refuses it: {why}); nothing was changed. Re-run with "
                              f"--tb-v1 to derive tb-v1 again, or with --drop-tb-v1 to retire it")
         state = "current" if recorded is not None and recorded == trace_sha else "stale"
         return [derive.TB_V1], {"state": state, "trace_sha": recorded, "dropped": False}
@@ -844,6 +846,15 @@ def _job() -> int:
             errors.append(f"host.toml: {e}" if isinstance(e, OSError) else str(e))
             result["stage"] = "setup"
     published_dir = conf.frames_root / shuttle / macro if conf else None
+    if published_dir is not None and not args.tb_v1 and not args.drop_tb_v1:
+        # Pre-flight, before fetch, build, simulation and encode: a published tb-v1 that vgacap's
+        # reader refuses stops the run here, so nothing at all is changed (Ruling BS).
+        try:
+            tb_v1_rule(project=target["id"], tb_v1=False, drop=False, published=published_dir,
+                       work_frames=work / "frames", trace_sha=None)
+        except Tb1Refused as e:
+            errors.append(str(e))
+            result["stage"] = "setup"
 
     repo_dir, build_dir, out = work / "repo", work / "build", work / "out"
     scratch = work / "scratch"
@@ -858,13 +869,11 @@ def _job() -> int:
                 result["samplers"] = dres.samplers
             result["tb_v1_check"] = dres.tb_v1_check if dres is not None else ("not-run" if args.tb_v1 else "off")
             if result["tb_v1"] is None:
-                # Nothing was published: say what the files already there are.
-                try:
-                    _, result["tb_v1"] = tb_v1_rule(project=target["id"], tb_v1=False, drop=False,
-                                                    published=published_dir, work_frames=work / "frames",
-                                                    trace_sha=dres.trace_sha if dres is not None else None)
-                except Tb1Refused:
-                    pass   # the publish stage has already reported it; there is no honest state to record
+                # Nothing was published: say what the files already there are, by the trace they
+                # came from. A pre-XXH3 tb-v1 was refused by the pre-flight and is in `error`.
+                _, result["tb_v1"] = tb_v1_rule(project=target["id"], tb_v1=False, drop=False, refuse=False,
+                                                published=published_dir, work_frames=work / "frames",
+                                                trace_sha=dres.trace_sha if dres is not None else None)
         except Exception as e:
             errors.append(f"stage crashed: result: {type(e).__name__}: {e}")
             result["traceback"] = traceback.format_exc()

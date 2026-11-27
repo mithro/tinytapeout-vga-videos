@@ -167,6 +167,37 @@ def test_job_default_rerun_keeps_tb_v1_stale(root, go):
     assert sha(pub / f"{stem('bars640')}_trace.vgch.zst") == second["trace"]["sha256"]
 
 
+def test_job_default_run_over_a_pre_xxh3_tb_v1_fails_before_anything_runs(root, go):
+    from tests.frames_txt import to_pre_xxh3
+
+    rc, first = go("bars640", "--tb-v1")
+    assert (rc, first["error"]) == (0, None)
+    pub = jobroot.published(root, "bars640")
+    txt = pub / "tb-v1" / "frames.txt"
+    txt.write_text(to_pre_xxh3(txt.read_text()))
+    videos = root.parent / "videos"
+    before = (tree(pub), tree(videos), tree(jobroot.work(root, "bars640") / "frames"))
+
+    src = (jobroot.DESIGNS / "bars640.v").read_text()
+    jobroot.change_design(root, "bars640", src.replace("active ? bar : 3'b000, vsync", "active ? ~bar : 3'b000, vsync"))
+    work = jobroot.work(root, "bars640")
+    for log in ("sim.log", "derive.log"):
+        (work / log).unlink(missing_ok=True)
+    rc, r = go("bars640")
+    assert r["error"]
+    assert "tb-v1" in r["error"] and "--tb-v1" in r["error"] and "--drop-tb-v1" in r["error"]
+    assert r["stage"] == "setup" and r["published"] is False
+    # Never null: what the files are, by trace; no trace was made, so the state is stale.
+    assert r["tb_v1"] == {"state": "stale", "trace_sha": first["trace"]["sha256"], "dropped": False}
+    assert not (work / "sim.log").exists() and not (work / "derive.log").exists()   # nothing was simulated
+    assert (tree(pub), tree(videos), tree(work / "frames")) == before                # nothing was replaced
+
+    # With --drop-tb-v1 the same run goes ahead and retires tb-v1.
+    rc, r = go("bars640", "--drop-tb-v1")
+    assert (rc, r["error"]) == (0, None)
+    assert r["tb_v1"]["dropped"] is True and not (pub / "tb-v1").exists()
+
+
 def test_job_default_rerun_keeps_seeded_tb_v1(root, go):
     seeded = jobroot.work(root, "bars640") / "frames" / "tb-v1" / FNV
     seeded.parent.mkdir(parents=True)

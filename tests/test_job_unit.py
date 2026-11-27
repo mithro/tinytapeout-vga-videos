@@ -131,7 +131,7 @@ def test_tb_v1_rule_fails_loudly_on_a_pre_xxh3_or_unreadable_tb_v1(framesfile, t
         job.tb_v1_rule(project="tt06/tt_um_x", tb_v1=False, drop=False, published=pub,
                        work_frames=tmp_path / "frames", trace_sha="b" * 64)
     msg = str(e.value)
-    assert "tt06/tt_um_x" in msg and "--tb-v1" in msg and "--drop-tb-v1" in msg and "nothing was published" in msg
+    assert "tt06/tt_um_x" in msg and "--tb-v1" in msg and "--drop-tb-v1" in msg and "nothing was changed" in msg
     assert (pub / "tb-v1").is_dir()
 
 
