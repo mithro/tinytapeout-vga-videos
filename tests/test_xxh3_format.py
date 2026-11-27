@@ -51,14 +51,16 @@ def test_frames_txt_with_the_sha256_key_is_refused(vgacap, tmp_path, capsys):
     old.write_text(FIXTURE.read_text().replace("store_xxh3_128: ", "store_sha256: ", 1))
     assert main(["frames", "compare", str(old), str(FIXTURE)]) != 0
     err = capsys.readouterr().err
-    assert "store_sha256" in err and "store_xxh3_128" in err, err
+    # vgacap's wording is still moving: the pin's message names the keys, the fix round's says "pre-XXH3".
+    assert "pre-XXH3" in err or ("store_sha256" in err and "store_xxh3_128" in err), err
 
 
 def test_a_hash_file_with_the_sha256_method_is_refused(vgacap, tmp_path, capsys):
     old = tmp_path / "frame_hashes.sha256-rgb6.txt"
     old.write_text("hash_method: sha256-rgb6\n# SHA-256 of the frame as rgb6\n")
     assert main(["frames", "compare", str(old), str(FIXTURE)]) != 0
-    assert "unknown hash method 'sha256-rgb6'" in capsys.readouterr().err
+    err = capsys.readouterr().err
+    assert "pre-XXH3" in err or "unknown hash method 'sha256-rgb6'" in err, err
 
 
 def test_frames_hash_no_longer_offers_the_sha256_method(capsys):
