@@ -86,6 +86,84 @@ def test_stale_on_server_ignores_bin_and_library(tmp_path):
         "tt05of/tt_um_dinogame/tt05of_tt_um_dinogame_old.avi", "tt05of/tt_um_gone/"]
 
 
+def test_server_listing_hrefs_it_cannot_read():
+    page = autoindex("d/", files=["a.txt"]).replace(
+        '<a href="a.txt">', '<a href="?C=N;O=D">Name</a> <a href="./b:c.txt">b:c.txt</a> '
+        '<a href="x:y">x:y</a> <a href="/abs">abs</a> <a href="a.txt">')
+    dropped: list[str] = []
+    dirs, files = verify.server_listing(BASE, "d/", fetch=fake_fetch({BASE + "d/": page}), dropped=dropped)
+    # A name nginx writes behind ./ is read; a bare scheme-like href and an absolute link are not.
+    assert files == {"a.txt", "b:c.txt"} and dirs == set()
+    assert dropped == ["d/x:y", "d//abs"]
+
+
+def test_stale_on_server_walks_below_unlisted_and_server_only_roots(tmp_path):
+    local = tmp_path / "archive"
+    sampler = local / "frames" / "tt05" / "tt_um_a" / "centre-v1"
+    (sampler / "png").mkdir(parents=True)
+    (sampler / "index.html").write_text("<html></html>")
+    (sampler / "png" / "000000.png").write_bytes(b"p")
+    (local / "tt05" / "tt_um_a").mkdir(parents=True)
+    (local / "tt05" / "tt_um_a" / "same.bin").write_bytes(b"b")
+    page = "<html><head><title>tt-vga</title></head><body>a page</body></html>"
+    pages = {
+        BASE + "frames/": autoindex("frames/", dirs=["tt05"]),
+        BASE + "frames/tt05/": autoindex("frames/tt05/", dirs=["tt_um_a"]),
+        BASE + "frames/tt05/tt_um_a/": autoindex("frames/tt05/tt_um_a/", dirs=["centre-v1"]),
+        BASE + "frames/tt05/tt_um_a/centre-v1/": page,
+        BASE + "frames/tt05/tt_um_a/centre-v1/png/": autoindex(
+            "frames/tt05/tt_um_a/centre-v1/png/", files=["000000.png", "000001.png"]),
+        BASE + "tt05/": autoindex("tt05/", dirs=["tt_um_a"]),
+        # A bitstream of the same name as a local file, another one, and one a level deeper: only the last
+        # is outside FOREIGN_PATTERNS.
+        BASE + "tt05/tt_um_a/": autoindex("tt05/tt_um_a/", dirs=["old"], files=["same.bin", "other.bin"]),
+        BASE + "gone/": autoindex("gone/", files=["x.mp4"]),
+    }
+    unlisted: list[str] = []
+    stale = verify.stale_on_server(local, BASE, ["frames/", "gone/", "tt05/"], fetch=fake_fetch(pages),
+                                   unlisted=unlisted)
+    assert unlisted == ["frames/tt05/tt_um_a/centre-v1/"]
+    # Below the unlisted sampler directory, png/ is walked; the server-only root is one stale entry.
+    assert stale == ["frames/tt05/tt_um_a/centre-v1/png/000001.png", "gone/", "tt05/tt_um_a/old/"]
+
+
+def test_top_level_hrefs():
+    page = ('<html><head><title>t</title></head><body><a href="tt05/tt_um_a/x_60s.mp4">a</a>'
+            '<a href="./ttsky25a/tt_um_b/">b</a><a href="https://example.org/x/y">c</a>'
+            '<a href="#tt05-tt_um_a">d</a><a href="index.json">e</a><a href="../up/z">f</a></body></html>')
+    assert verify.top_level_hrefs(BASE, fetch=fake_fetch({BASE: page})) == {"tt05/", "ttsky25a/"}
+
+
+def test_server_stale_prints_what_it_cannot_see(tmp_path, capsys):
+    import argparse
+    local = tmp_path / "archive"
+    (local / "tt05" / "tt_um_a").mkdir(parents=True)
+    (local / "tt05" / "tt_um_a" / "a_60s.mp4").write_bytes(b"m")
+    sampler = local / "frames" / "tt05" / "tt_um_a" / "centre-v1"
+    sampler.mkdir(parents=True)
+    (sampler / "index.html").write_text("<html></html>")
+    top = ('<html><head><title>tt-vga</title></head><body><a href="tt05/tt_um_a/a_60s.mp4">a</a>'
+           '<a href="old/tt_um_z/z.mp4">z</a></body></html>')
+    pages = {
+        BASE: top,
+        BASE + "frames/": autoindex("frames/", dirs=["tt05"]),
+        BASE + "frames/tt05/": autoindex("frames/tt05/", dirs=["tt_um_a"]),
+        BASE + "frames/tt05/tt_um_a/": autoindex("frames/tt05/tt_um_a/", dirs=["centre-v1"]),
+        BASE + "frames/tt05/tt_um_a/centre-v1/": top,
+        BASE + "tt05/": autoindex("tt05/", dirs=["tt_um_a"]),
+        BASE + "tt05/tt_um_a/": autoindex("tt05/tt_um_a/", files=["a_60s.mp4", "x:y"]),
+        BASE + "old/": autoindex("old/", dirs=["tt_um_z"]),
+    }
+    args = argparse.Namespace(server_stale=BASE.rstrip("/"), archive=local, root=None)
+    assert verify.server_stale(args, fetch=fake_fetch(pages)) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert out[0] == f"walked 3 top-level directories of {BASE} against {local} (1 linked from the top page only)"
+    assert f"  the files at the top of {BASE} (it serves index.html, not a listing)" in out
+    assert "  the files directly in frames/tt05/tt_um_a/centre-v1/ (it serves its own index.html)" in out
+    assert "  an href the listing cannot read: 'tt05/tt_um_a/x:y'" in out
+    assert out[-2:] == ["  old/", "1 stale"]
+
+
 # ---------------------------------------------------------------------------
 # The frames subtree on the host
 # ---------------------------------------------------------------------------
