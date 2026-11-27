@@ -81,7 +81,7 @@ syncs (recorded as `auto_ui_in` in the result).
 
 Beside each `result.json`, `frames/tb-v1/frame_hashes.fnv1a64-tb2026-rgb888.txt`
 lists a hash of every captured frame, frame 0 first, in vgacap's hash-file
-format ([`docs/frames-format.md`](https://github.com/mithro/vgacap/blob/80f6aa3fc3c5a7ebace8625bf4ab6d14c69373a2/docs/frames-format.md) in
+format ([`docs/frames-format.md`](https://github.com/mithro/vgacap/blob/4a3c6701638c67956b54d5dee8f589e89e869b32/docs/frames-format.md) in
 [vgacap](https://github.com/mithro/vgacap) at the pin in [`ttvga/tools.toml`](ttvga/tools.toml)).
 The clips are lossy, so this is what to compare against when checking another
 implementation (an FPGA build, say) pixel for pixel. The hash is FNV-1a 64 over

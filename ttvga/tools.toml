@@ -25,12 +25,10 @@ check = "uv/uv"
 [python]
 version = "3.14.7"
 
-# TEMPORARY pin to the head of the unmerged vgacap PR #62 (fast-frame-hash, XXH3-128 digests).
-# Replace it with the vgacap `main` merge commit before this branch merges.
-# The last pin on `main` was c7176da (2026-11-27).
+# Pinned to vgacap `main` at 4a3c670: the merge of PR #62 (XXH3-128 frame digests replace SHA-256).
 [vgacap]
 git = "https://github.com/mithro/vgacap"
-commit = "80f6aa3fc3c5a7ebace8625bf4ab6d14c69373a2"
+commit = "4a3c6701638c67956b54d5dee8f589e89e869b32"
 
 # derive.py hashes each PNG record with XXH3-128 (the frames format's digest); the host
 # scripts run without a project, so uv installs it for them: `uv run --with xxhash==<version>`.
