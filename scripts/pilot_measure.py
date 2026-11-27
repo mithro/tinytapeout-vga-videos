@@ -161,6 +161,16 @@ def parse_rsync_log(text: str) -> list[dict]:
     return runs
 
 
+def redact(text: str, paths: dict[str, str]) -> str:
+    """`text` with each host path (host.toml's directories, the home) replaced by its placeholder.
+
+    The repository never names a host path (Global Constraints); the longest path goes first.
+    """
+    for path in sorted(paths, key=len, reverse=True):
+        text = text.replace(path, paths[path])
+    return text
+
+
 def min_free_root_gb(peak_bytes: float) -> int:
     """Step 2's rule: 24 jobs times the peak, times 2, in GB (1e9), rounded up to 10."""
     return int(math.ceil(round(24 * peak_bytes / 1e9 * 2, 6) / 10) * 10)
@@ -219,6 +229,10 @@ def postsim_row(raw: dict) -> dict:
 
 def _mb(x: float | None) -> str:
     return "-" if x is None else f"{x / 1e6:.0f}"
+
+
+def _kb(x: float | None) -> str:
+    return "-" if x is None else f"{x / 1e3:,.0f}"
 
 
 def _gb(x: float | None) -> str:
@@ -299,7 +313,7 @@ def report(raw_dir: Path) -> str:
         out.append(f"\nLargest peak {peak / 1e9:.2f} GB: 24 x {peak / 1e9:.2f} x 2 = {48 * peak / 1e9:.1f} GB, "
                    f"rounded up to 10: `min_free_root_gb = {min_free_root_gb(peak)}`.")
     out.append("\n## Sizes\n")
-    out.append("The published directory (`du -b`, hard links once), in MB.\n")
+    out.append("The published directory (`du -b`, hard links once), in kB (1,000 bytes).\n")
     out.append("| project | trace | centre-v1 store | tb-v1 store | centre-v1 PNGs | tb-v1 PNGs | centre-v1 PNG files | "
                "tb-v1 PNG files | whole directory |")
     out.append("| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
@@ -309,9 +323,9 @@ def report(raw_dir: Path) -> str:
 
         def g(name, key, sm=sm):
             return (sm.get(name) or {}).get(key)
-        out.append(f"| {r['id']} | {_mb(s.get('trace'))} | {_mb(g('centre-v1', 'store'))} | {_mb(g('tb-v1', 'store'))} | "
-                   f"{_mb(g('centre-v1', 'png_bytes'))} | {_mb(g('tb-v1', 'png_bytes'))} | "
-                   f"{g('centre-v1', 'png_files')} | {g('tb-v1', 'png_files')} | {_mb(s.get('total'))} |")
+        out.append(f"| {r['id']} | {_kb(s.get('trace'))} | {_kb(g('centre-v1', 'store'))} | {_kb(g('tb-v1', 'store'))} | "
+                   f"{_kb(g('centre-v1', 'png_bytes'))} | {_kb(g('tb-v1', 'png_bytes'))} | "
+                   f"{g('centre-v1', 'png_files')} | {g('tb-v1', 'png_files')} | {_kb(s.get('total'))} |")
     out.append("\n## vgacap-sample alone\n")
     out.append("On the published trace, VGACAP_SAMPLE_DEBUG=1; and the job's derive from result.json.\n")
     out.append("| project | default wall (s) | default CPU (s) | both wall (s) | both CPU (s) | both debug | "
@@ -664,6 +678,12 @@ def local(args: argparse.Namespace) -> int:
                 return 1
             time.sleep(60)
     remote.rsync_from(host, f"{pilot}/raw/", Path(args.out), extra=["--include", "*.json", "--exclude", "*"])
+    p = remote.ssh(host, f"echo $HOME; cat ~/{remote.REMOTE_ROOT}/host.toml", capture=True)
+    home, _, conf = p.stdout.partition("\n")
+    conf = tomllib.loads(conf)
+    paths = {conf["staging_dir"]: "<staging_dir>", conf["frames_root"]: "<frames_root>", home.strip(): "~"}
+    for path in Path(args.out).glob("*.json"):
+        path.write_text(redact(path.read_text(), paths))
     print(f"{now()} pulled {pilot}/raw/*.json into {args.out}", flush=True)
     return 0
 

@@ -1,0 +1,522 @@
+{
+  "id": "ttihp25a/tt_um_a1k0n_vgadonut",
+  "started": "2026-11-27T01:34:58+00:00",
+  "host_load_start": [
+    72.32763671875,
+    69.31005859375,
+    71.14599609375
+  ],
+  "nproc": 88,
+  "runs": [
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/build/Vtop",
+        "--clock-hz",
+        "48000000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_a1k0n_vgadonut/run0"
+      ],
+      "time": {
+        "wall_s": 723.05,
+        "user_s": 771.02,
+        "sys_s": 4.95,
+        "cpu_s": 775.97,
+        "max_rss_kb": 63328,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": false,
+      "index": 0,
+      "trace_bytes": null,
+      "capture_bytes": 586220876,
+      "timing": {
+        "status": "ok",
+        "frames": 3597,
+        "wall_seconds": 723.0,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/build/Vtop",
+        "--clock-hz",
+        "48000000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_a1k0n_vgadonut/run1",
+        "--trace",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_a1k0n_vgadonut/run1/ttihp25a_tt_um_a1k0n_vgadonut_trace.vgch.zst",
+        "--meta",
+        "project=ttihp25a/tt_um_a1k0n_vgadonut",
+        "--meta",
+        "override=none",
+        "--meta",
+        "simulator=Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+        "--meta",
+        "harness=0b581aeab69291a9"
+      ],
+      "time": {
+        "wall_s": 753.06,
+        "user_s": 809.07,
+        "sys_s": 5.39,
+        "cpu_s": 814.46,
+        "max_rss_kb": 99424,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": true,
+      "index": 1,
+      "trace_bytes": 167330036,
+      "capture_bytes": 586220876,
+      "timing": {
+        "status": "ok",
+        "frames": 3597,
+        "wall_seconds": 753.0,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/build/Vtop",
+        "--clock-hz",
+        "48000000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_a1k0n_vgadonut/run2"
+      ],
+      "time": {
+        "wall_s": 689.42,
+        "user_s": 738.95,
+        "sys_s": 4.88,
+        "cpu_s": 743.83,
+        "max_rss_kb": 70640,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": false,
+      "index": 2,
+      "trace_bytes": null,
+      "capture_bytes": 586220876,
+      "timing": {
+        "status": "ok",
+        "frames": 3597,
+        "wall_seconds": 689.4,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/build/Vtop",
+        "--clock-hz",
+        "48000000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_a1k0n_vgadonut/run3",
+        "--trace",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_a1k0n_vgadonut/run3/ttihp25a_tt_um_a1k0n_vgadonut_trace.vgch.zst",
+        "--meta",
+        "project=ttihp25a/tt_um_a1k0n_vgadonut",
+        "--meta",
+        "override=none",
+        "--meta",
+        "simulator=Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+        "--meta",
+        "harness=0b581aeab69291a9"
+      ],
+      "time": {
+        "wall_s": 728.04,
+        "user_s": 780.93,
+        "sys_s": 5.79,
+        "cpu_s": 786.72,
+        "max_rss_kb": 98484,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": true,
+      "index": 3,
+      "trace_bytes": 167330036,
+      "capture_bytes": 586220876,
+      "timing": {
+        "status": "ok",
+        "frames": 3597,
+        "wall_seconds": 728.0,
+        "width": 640,
+        "height": 480
+      }
+    }
+  ],
+  "samples": [
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "10800.0",
+        "~/ttvga/tools/vgacap-build/vgacap-sample",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_trace.vgch.zst",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_a1k0n_vgadonut/sample-default",
+        "--name",
+        "ttihp25a_tt_um_a1k0n_vgadonut"
+      ],
+      "time": {
+        "wall_s": 35.87,
+        "user_s": 35.39,
+        "sys_s": 0.38,
+        "cpu_s": 35.77,
+        "max_rss_kb": 331168,
+        "exit_status": 0,
+        "signal": null
+      },
+      "variant": "default",
+      "debug": "trace_passes=1 blocks_decoded=195",
+      "stores": {
+        "centre-v1": 27660224
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "10800.0",
+        "~/ttvga/tools/vgacap-build/vgacap-sample",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_trace.vgch.zst",
+        "--out",
+        "~/ttvga/work/pilot/ttihp25a/tt_um_a1k0n_vgadonut/sample-both",
+        "--name",
+        "ttihp25a_tt_um_a1k0n_vgadonut",
+        "--sampler",
+        "centre-v1",
+        "--sampler",
+        "tb-v1"
+      ],
+      "time": {
+        "wall_s": 69.22,
+        "user_s": 68.53,
+        "sys_s": 0.6,
+        "cpu_s": 69.13,
+        "max_rss_kb": 474112,
+        "exit_status": 0,
+        "signal": null
+      },
+      "variant": "both",
+      "debug": "trace_passes=1 blocks_decoded=195",
+      "stores": {
+        "centre-v1": 27660224,
+        "tb-v1": 27724460
+      }
+    }
+  ],
+  "errors": [],
+  "job": {
+    "rc": 0,
+    "cmd": [
+      "~/ttvga/tools/python/cpython-3.14.7-linux-x86_64-gnu/bin/python3.14",
+      "~/ttvga/harness/job.py",
+      "--targets",
+      "~/ttvga/harness/targets.json",
+      "--id",
+      "ttihp25a/tt_um_a1k0n_vgadonut",
+      "--root",
+      "~/ttvga",
+      "--seconds",
+      "60",
+      "--timeout",
+      "10800.0",
+      "--grace",
+      "120",
+      "--tb-v1",
+      "--keep-build"
+    ],
+    "time": {
+      "wall_s": 1890.94,
+      "user_s": 2815.63,
+      "sys_s": 31.8,
+      "cpu_s": 2847.43,
+      "max_rss_kb": 763724,
+      "exit_status": 0,
+      "signal": null
+    }
+  },
+  "result": {
+    "id": "ttihp25a/tt_um_a1k0n_vgadonut",
+    "shuttle": "ttihp25a",
+    "macro": "tt_um_a1k0n_vgadonut",
+    "started": "2026-11-27T01:34:58+00:00",
+    "host": "big-storage",
+    "harness": "0b581aeab69291a9",
+    "test_hooks": false,
+    "override": null,
+    "stage": "publish",
+    "error": null,
+    "timings": {
+      "fetch": 1.5,
+      "build": 13.4,
+      "simulate": 877.2,
+      "derive": 117.1,
+      "encode": 875.6,
+      "publish": 4.8
+    },
+    "tools": {
+      "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+      "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+    },
+    "auto_ui_in": null,
+    "qspi": null,
+    "trace": {
+      "file": "ttihp25a_tt_um_a1k0n_vgadonut_trace.vgch.zst",
+      "sha256": "196505f58df7558a65798b58abedebbe2d39c4336cb5ee2402d0a3f499937c01",
+      "bytes": 167330036,
+      "blocks": 195,
+      "clocks": 2883800936,
+      "uo_out_sha256": "c136a13dfe81a506f62c5a5ecce17628c4d4eb5eb6930326b5be5cd057d2c783",
+      "uo_out_sha256_clocks": [
+        0,
+        33554432
+      ],
+      "fast_path": true
+    },
+    "samplers": {
+      "centre-v1": {
+        "sampler_status": "ok",
+        "frames": 3597,
+        "distinct_frames": 3597,
+        "mode": "640x480@60",
+        "width": 640,
+        "height": 480,
+        "clocks_per_pixel": 1.90625
+      },
+      "tb-v1": {
+        "sampler_status": "ok",
+        "frames": 3597,
+        "distinct_frames": 3597,
+        "mode": "640x480@60",
+        "width": 640,
+        "height": 480,
+        "clocks_per_pixel": 1.90625
+      }
+    },
+    "tb_v1": {
+      "state": "current",
+      "trace_sha": "196505f58df7558a65798b58abedebbe2d39c4336cb5ee2402d0a3f499937c01",
+      "dropped": false
+    },
+    "tb_v1_check": "match",
+    "derive_cpu_seconds": 179.782,
+    "published": true,
+    "timing": {
+      "status": "ok",
+      "clock_hz": 48000000,
+      "first_sync_clock": 11,
+      "capture_after_clock": 3211264,
+      "hsync_active_low": true,
+      "vsync_active_low": true,
+      "line_clocks": 1525,
+      "lines": 525,
+      "hsync_pulse_clocks": 183,
+      "vsync_pulse_clocks": 3050,
+      "line_clocks_range": [
+        1525,
+        1525
+      ],
+      "frame_clocks_range": [
+        800625,
+        800625
+      ],
+      "mode": "640x480@60",
+      "clocks_per_pixel": 1.9062,
+      "width": 640,
+      "height": 480,
+      "fps": 59.9532,
+      "frames": 3597,
+      "target_frames": 3597,
+      "distinct_frames": 3597,
+      "uniform_frames": 0,
+      "black_frames": 0,
+      "colours": 14,
+      "mean_frame_delta": 0.228464,
+      "pixels_ever_changed": 0.997917,
+      "lines_seen": 1888911,
+      "short_lines": 0,
+      "long_lines": 0,
+      "clocks_simulated": 2883800936,
+      "sim_seconds": 60.079,
+      "wall_seconds": 877.1,
+      "clocks_per_wall_second": 3287937,
+      "ffmpeg_status": 0,
+      "audio_driven": false,
+      "audio_transitions": 0,
+      "audio_rate": 192000,
+      "audio_samples": 0
+    },
+    "videos": {
+      "ttihp25a_tt_um_a1k0n_vgadonut_10s.mp4": {
+        "bytes": 16186533,
+        "sha256": "e420aaf07d091211d925b1ad9bc152ff8ce04bbed0482cd4ac94c2f15b99693d"
+      },
+      "ttihp25a_tt_um_a1k0n_vgadonut_10s.webm": {
+        "bytes": 12850637,
+        "sha256": "a56d12bd6b0b5d6573f2fc6fd3254d7e1b55182794452e4286235b32fa9873dc"
+      },
+      "ttihp25a_tt_um_a1k0n_vgadonut_30s.mp4": {
+        "bytes": 46180266,
+        "sha256": "f5c60b0bc1fb455241c92d2d3aa7336ab5da8c767e8019e38c4ba70905d73910"
+      },
+      "ttihp25a_tt_um_a1k0n_vgadonut_30s.webm": {
+        "bytes": 38557990,
+        "sha256": "ec0d56776a163a4e10496b08994f9aa10f91c83fc4d4a641197816306ad0fcfd"
+      },
+      "ttihp25a_tt_um_a1k0n_vgadonut_60s.mp4": {
+        "bytes": 91114962,
+        "sha256": "c954a1151f25629e6746ccc28f3b9fc5b1a35a2ebf6fe6fd7164910d1084d4b6"
+      },
+      "ttihp25a_tt_um_a1k0n_vgadonut_60s.webm": {
+        "bytes": 76567166,
+        "sha256": "d96be98cd034d841896a7850fadc1755ea607d1a7818473f353c2e794a9f3dd4"
+      },
+      "ttihp25a_tt_um_a1k0n_vgadonut_contact.png": {
+        "bytes": 942250,
+        "sha256": "8cf7893dcaaddc1db38a125be9e989152d8f1db59a57478eb78dbd68c03960ac"
+      },
+      "ttihp25a_tt_um_a1k0n_vgadonut_poster.png": {
+        "bytes": 190617,
+        "sha256": "705c47d1c5582fa259e52fdce2b206864ac179bff5f493e5a09eb3ed07ea7278"
+      },
+      "ttihp25a_tt_um_a1k0n_vgadonut_preview.gif": {
+        "bytes": 1790678,
+        "sha256": "b45d67b63a000be2805fca1b61da368b9ad11427e49f2e24bd08a7e7baf41189"
+      }
+    },
+    "build_log_tail": "dic3step.v ~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/repo/src/step3vec.v ~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/repo/src/donut.v\nmake: Entering directory '~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/build'\ng++  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -O2  -c -o tb.o ~/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o verilated.o ~/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o verilated_threads.o ~/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 ~/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__ConstPool__0__Slow.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a   ~/ttvga/tools/vgacap-build/libvgacap_trace.a ~/ttvga/tools/vgacap-build/libvgacap_stream.a ~/ttvga/tools/vgacap-build/third_party/libvgacap_zstd.a -pthread  -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.323 MB sources in 575 modules, into 0.179 MB in 6 C++ files needing 0.000 MB\n- Verilator: Walltime 13.250 s (elab=0.029, cvt=0.031, bld=13.153); cpu 0.097 s on 1 threads; allocated 27.957 MB\n[exit 0]\n",
+    "sim_log_tail": "ols/ffmpeg/bin/ffmpeg --trace ~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/scratch/ttihp25a_tt_um_a1k0n_vgadonut_trace.vgch.zst --meta project=ttihp25a/tt_um_a1k0n_vgadonut --meta override=none --meta simulator=Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod) --meta harness=0b581aeab69291a9\ntb: sync at clock 3211264: line 1525 clocks, 525 lines, hsync active-low, vsync active-low, mode 640x480@60, 1.906 clk/px, 640x480 @ 59.953 fps\ntb: ok: 3597 frames (3597 distinct, 0 uniform, 14 colours, 22.846% of pixels change per frame, 99.8% ever), 2883800936 clocks in 877.1s wall (3.29 Mclk/s)\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_60s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_60s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_60s.mp4 -t 30 -c copy -movflags +faststart ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_30s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_60s.webm -t 30 -c copy ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_30s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_60s.mp4 -t 10 -c copy -movflags +faststart ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_10s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_60s.webm -t 10 -c copy ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_10s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -ss 5.000 -i ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_poster.png\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_60s.mp4 -vf select='not(mod(n\\,224))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_contact.png\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -ss 5.000 -t 8.000 -i ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 ~/public_html/ttihp25a/tt_um_a1k0n_vgadonut/ttihp25a_tt_um_a1k0n_vgadonut_preview.gif\n[exit 0]\n",
+    "derive_log_tail": "derive ~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/scratch/ttihp25a_tt_um_a1k0n_vgadonut_trace.vgch.zst -> ~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/scratch (stem ttihp25a_tt_um_a1k0n_vgadonut, samplers centre-v1 tb-v1)\n$ ~/ttvga/tools/vgacap-build/tracetool info ~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/scratch/ttihp25a_tt_um_a1k0n_vgadonut_trace.vgch.zst\nexit 0\n--- stdout\nversion: 2\nsample_bits: 43\nmode: 2\nclock_hz: 48000000\nsamples_per_clock: 2\nclock_bit: 42\nclock_first: 0\nsamples: 5767601872\nclocks: 2883800936\nblocks: 195\ntable_rebuilt: 0\nopen.project: ttihp25a/tt_um_a1k0n_vgadonut\nopen.override: none\nopen.simulator: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\nopen.harness: 0b581aeab69291a9\nopen.calib_seconds: 1.0\nopen.seconds: 60.0\nopen.layout: tt-um-43\nclose.capture_after_clock: 3211264\nclose.status: ok\nclose.frames: 3597\nclose.ffmpeg_status: 0\nchanges.uo_out: 457046574\nchanges.uio_out: 0\nchanges.uio_oe: 0\nchanges.ui_in: 0\nchanges.uio_in: 0\nchanges.rst_n: 1\nchanges.ena: 0\n$ ~/ttvga/tools/vgacap-build/vgacap-sample ~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/scratch/ttihp25a_tt_um_a1k0n_vgadonut_trace.vgch.zst --out ~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/scratch --name ttihp25a_tt_um_a1k0n_vgadonut --sampler centre-v1 --sampler tb-v1 --png-fd 9\nexit 0\n$ ~/ttvga/tools/vgacap-build/tracetool uohash ~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/scratch/ttihp25a_tt_um_a1k0n_vgadonut_trace.vgch.zst\nexit 0\n--- stdout\nuo_out_sha256_clocks: 0 33554432\nuo_out_sha256: c136a13dfe81a506f62c5a5ecce17628c4d4eb5eb6930326b5be5cd057d2c783\nderive done: error None, tb_v1_check match, pngs 7194 written, 0 linked, cpu 179.78 s\n",
+    "publish_log_tail": "$ rsync -aH --delete --chmod=D0755,F0644 ~/ttvga/work/ttihp25a/tt_um_a1k0n_vgadonut/scratch/ <staging_dir>/ttihp25a_tt_um_a1k0n_vgadonut.new/\n",
+    "finished": "2026-11-27T02:06:29+00:00"
+  },
+  "sizes": {
+    "total": 384086609,
+    "samplers": {
+      "centre-v1": {
+        "dir": 108482308,
+        "store": 27660224,
+        "png_bytes": 79348194,
+        "png_files": 3597,
+        "png_inodes": 3597
+      },
+      "tb-v1": {
+        "dir": 108274265,
+        "store": 27724460,
+        "png_bytes": 79014288,
+        "png_files": 3597,
+        "png_inodes": 3597
+      }
+    },
+    "trace": 167330036
+  },
+  "finished": "2026-11-27T02:56:30+00:00",
+  "host_load_end": [
+    54.0390625,
+    65.4287109375,
+    72.95068359375
+  ],
+  "poll": {
+    "job": {
+      "work_bytes_peak": 972210642,
+      "scratch_bytes_peak": 384086609,
+      "pilot_bytes_peak": 366,
+      "memory_current_peak": 1931821056,
+      "tasks_peak": 53
+    },
+    "rerun0-notrace": {
+      "work_bytes_peak": 2497724,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 582485936,
+      "memory_current_peak": 1417994240,
+      "tasks_peak": 17
+    },
+    "rerun1-trace": {
+      "work_bytes_peak": 2497724,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 751914858,
+      "memory_current_peak": 1625591808,
+      "tasks_peak": 18
+    },
+    "rerun2-notrace": {
+      "work_bytes_peak": 2497724,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 582227647,
+      "memory_current_peak": 1422635008,
+      "tasks_peak": 17
+    },
+    "rerun3-trace": {
+      "work_bytes_peak": 2497724,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 747262815,
+      "memory_current_peak": 1624387584,
+      "tasks_peak": 18
+    },
+    "samples": {
+      "work_bytes_peak": 2497724,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 219917266,
+      "memory_current_peak": 1280958464,
+      "tasks_peak": 4
+    },
+    "done": {
+      "work_bytes_peak": 2497724,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 12086,
+      "memory_current_peak": 0,
+      "tasks_peak": 0
+    }
+  },
+  "scope": {
+    "memory_peak": 1932099584,
+    "tasks_peak": 53,
+    "unit": "ttvga-pilot-ttihp25a-tt_um_a1k0n_vgadonut.scope",
+    "exit": 0,
+    "runtime_max_sec": 130320,
+    "memory_max": "6G",
+    "cpu_quota": "200%",
+    "tasks_max": 64
+  }
+}

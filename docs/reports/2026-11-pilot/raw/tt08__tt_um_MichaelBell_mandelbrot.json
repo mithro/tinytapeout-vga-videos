@@ -1,0 +1,522 @@
+{
+  "id": "tt08/tt_um_MichaelBell_mandelbrot",
+  "started": "2026-11-27T01:34:58+00:00",
+  "host_load_start": [
+    72.32763671875,
+    69.31005859375,
+    71.14599609375
+  ],
+  "nproc": 88,
+  "runs": [
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/build/Vtop",
+        "--clock-hz",
+        "100000000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/tt08/tt_um_MichaelBell_mandelbrot/run0"
+      ],
+      "time": {
+        "wall_s": 1898.13,
+        "user_s": 1929.7,
+        "sys_s": 4.98,
+        "cpu_s": 1934.68,
+        "max_rss_kb": 57448,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": false,
+      "index": 0,
+      "trace_bytes": null,
+      "capture_bytes": 286707806,
+      "timing": {
+        "status": "ok",
+        "frames": 3355,
+        "wall_seconds": 1898.1,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/build/Vtop",
+        "--clock-hz",
+        "100000000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/tt08/tt_um_MichaelBell_mandelbrot/run1",
+        "--trace",
+        "~/ttvga/work/pilot/tt08/tt_um_MichaelBell_mandelbrot/run1/tt08_tt_um_MichaelBell_mandelbrot_trace.vgch.zst",
+        "--meta",
+        "project=tt08/tt_um_MichaelBell_mandelbrot",
+        "--meta",
+        "override=none",
+        "--meta",
+        "simulator=Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+        "--meta",
+        "harness=0b581aeab69291a9"
+      ],
+      "time": {
+        "wall_s": 1922.81,
+        "user_s": 1950.67,
+        "sys_s": 4.73,
+        "cpu_s": 1955.4,
+        "max_rss_kb": 62640,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": true,
+      "index": 1,
+      "trace_bytes": 14719301,
+      "capture_bytes": 286707806,
+      "timing": {
+        "status": "ok",
+        "frames": 3355,
+        "wall_seconds": 1922.8,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/build/Vtop",
+        "--clock-hz",
+        "100000000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/tt08/tt_um_MichaelBell_mandelbrot/run2"
+      ],
+      "time": {
+        "wall_s": 1801.46,
+        "user_s": 1834.34,
+        "sys_s": 4.53,
+        "cpu_s": 1838.87,
+        "max_rss_kb": 63864,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": false,
+      "index": 2,
+      "trace_bytes": null,
+      "capture_bytes": 286707806,
+      "timing": {
+        "status": "ok",
+        "frames": 3355,
+        "wall_seconds": 1801.5,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "--kill-after=120",
+        "10800.0",
+        "~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/build/Vtop",
+        "--clock-hz",
+        "100000000",
+        "--seconds",
+        "60.0",
+        "--calib-seconds",
+        "1.0",
+        "--ffmpeg",
+        "~/ttvga/tools/ffmpeg/bin/ffmpeg",
+        "--out",
+        "~/ttvga/work/pilot/tt08/tt_um_MichaelBell_mandelbrot/run3",
+        "--trace",
+        "~/ttvga/work/pilot/tt08/tt_um_MichaelBell_mandelbrot/run3/tt08_tt_um_MichaelBell_mandelbrot_trace.vgch.zst",
+        "--meta",
+        "project=tt08/tt_um_MichaelBell_mandelbrot",
+        "--meta",
+        "override=none",
+        "--meta",
+        "simulator=Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+        "--meta",
+        "harness=0b581aeab69291a9"
+      ],
+      "time": {
+        "wall_s": 1862.04,
+        "user_s": 1899.54,
+        "sys_s": 5.25,
+        "cpu_s": 1904.79,
+        "max_rss_kb": 64044,
+        "exit_status": 0,
+        "signal": null
+      },
+      "traced": true,
+      "index": 3,
+      "trace_bytes": 14719301,
+      "capture_bytes": 286707806,
+      "timing": {
+        "status": "ok",
+        "frames": 3355,
+        "wall_seconds": 1862.0,
+        "width": 640,
+        "height": 480
+      }
+    }
+  ],
+  "samples": [
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "10800.0",
+        "~/ttvga/tools/vgacap-build/vgacap-sample",
+        "~/ttvga/work/pilot/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_trace.vgch.zst",
+        "--out",
+        "~/ttvga/work/pilot/tt08/tt_um_MichaelBell_mandelbrot/sample-default",
+        "--name",
+        "tt08_tt_um_MichaelBell_mandelbrot"
+      ],
+      "time": {
+        "wall_s": 14.5,
+        "user_s": 14.47,
+        "sys_s": 0.03,
+        "cpu_s": 14.5,
+        "max_rss_kb": 75436,
+        "exit_status": 0,
+        "signal": null
+      },
+      "variant": "default",
+      "debug": "trace_passes=1 blocks_decoded=359",
+      "stores": {
+        "centre-v1": 560261
+      }
+    },
+    {
+      "rc": 0,
+      "cmd": [
+        "timeout",
+        "10800.0",
+        "~/ttvga/tools/vgacap-build/vgacap-sample",
+        "~/ttvga/work/pilot/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_trace.vgch.zst",
+        "--out",
+        "~/ttvga/work/pilot/tt08/tt_um_MichaelBell_mandelbrot/sample-both",
+        "--name",
+        "tt08_tt_um_MichaelBell_mandelbrot",
+        "--sampler",
+        "centre-v1",
+        "--sampler",
+        "tb-v1"
+      ],
+      "time": {
+        "wall_s": 30.93,
+        "user_s": 30.81,
+        "sys_s": 0.07,
+        "cpu_s": 30.88,
+        "max_rss_kb": 114856,
+        "exit_status": 0,
+        "signal": null
+      },
+      "variant": "both",
+      "debug": "trace_passes=1 blocks_decoded=359",
+      "stores": {
+        "centre-v1": 560261,
+        "tb-v1": 598404
+      }
+    }
+  ],
+  "errors": [],
+  "job": {
+    "rc": 0,
+    "cmd": [
+      "~/ttvga/tools/python/cpython-3.14.7-linux-x86_64-gnu/bin/python3.14",
+      "~/ttvga/harness/job.py",
+      "--targets",
+      "~/ttvga/harness/targets.json",
+      "--id",
+      "tt08/tt_um_MichaelBell_mandelbrot",
+      "--root",
+      "~/ttvga",
+      "--seconds",
+      "60",
+      "--timeout",
+      "10800.0",
+      "--grace",
+      "120",
+      "--tb-v1",
+      "--keep-build"
+    ],
+    "time": {
+      "wall_s": 2864.72,
+      "user_s": 3365.62,
+      "sys_s": 22.28,
+      "cpu_s": 3387.9,
+      "max_rss_kb": 740732,
+      "exit_status": 0,
+      "signal": null
+    }
+  },
+  "result": {
+    "id": "tt08/tt_um_MichaelBell_mandelbrot",
+    "shuttle": "tt08",
+    "macro": "tt_um_MichaelBell_mandelbrot",
+    "started": "2026-11-27T01:34:58+00:00",
+    "host": "big-storage",
+    "harness": "0b581aeab69291a9",
+    "test_hooks": false,
+    "override": null,
+    "stage": "publish",
+    "error": null,
+    "timings": {
+      "fetch": 2.5,
+      "build": 14.5,
+      "simulate": 2315.6,
+      "derive": 32.9,
+      "encode": 498.6,
+      "publish": 0.1
+    },
+    "tools": {
+      "verilator": "Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)",
+      "ffmpeg": "ffmpeg version n8.1.2-52-g5a03dfa0f6-20260914 Copyright (c) 2000-2026 the FFmpeg developers"
+    },
+    "auto_ui_in": null,
+    "qspi": null,
+    "trace": {
+      "file": "tt08_tt_um_MichaelBell_mandelbrot_trace.vgch.zst",
+      "sha256": "47ffbf67857813848516b24925e9a3d3c4470ccd385c15730b4227e66b05a8c4",
+      "bytes": 14719301,
+      "blocks": 359,
+      "clocks": 6007335947,
+      "uo_out_sha256": "86516bca04e7a63f77e16475b8da8dfc0ba64f388e7c6ee56368afa5bcc9f98a",
+      "uo_out_sha256_clocks": [
+        0,
+        33554432
+      ],
+      "fast_path": true
+    },
+    "samplers": {
+      "centre-v1": {
+        "sampler_status": "ok",
+        "frames": 3355,
+        "distinct_frames": 103,
+        "mode": "640x480@75",
+        "width": 640,
+        "height": 480,
+        "clocks_per_pixel": 4.0
+      },
+      "tb-v1": {
+        "sampler_status": "ok",
+        "frames": 3355,
+        "distinct_frames": 103,
+        "mode": "640x480@75",
+        "width": 640,
+        "height": 480,
+        "clocks_per_pixel": 4.266666666666667
+      }
+    },
+    "tb_v1": {
+      "state": "current",
+      "trace_sha": "47ffbf67857813848516b24925e9a3d3c4470ccd385c15730b4227e66b05a8c4",
+      "dropped": false
+    },
+    "tb_v1_check": "match",
+    "derive_cpu_seconds": 34.611,
+    "published": true,
+    "timing": {
+      "status": "ok",
+      "clock_hz": 100000000,
+      "first_sync_clock": 10763,
+      "capture_after_clock": 5439488,
+      "hsync_active_low": true,
+      "vsync_active_low": false,
+      "line_clocks": 3584,
+      "lines": 499,
+      "hsync_pulse_clocks": 256,
+      "vsync_pulse_clocks": 35840,
+      "line_clocks_range": [
+        3584,
+        3584
+      ],
+      "frame_clocks_range": [
+        1788416,
+        1788416
+      ],
+      "mode": "640x480@75",
+      "clocks_per_pixel": 4.2667,
+      "width": 640,
+      "height": 480,
+      "fps": 55.9154,
+      "frames": 3355,
+      "target_frames": 3355,
+      "distinct_frames": 103,
+      "uniform_frames": 0,
+      "black_frames": 0,
+      "colours": 15,
+      "mean_frame_delta": 0.102143,
+      "pixels_ever_changed": 0.976107,
+      "lines_seen": 1674635,
+      "short_lines": 0,
+      "long_lines": 0,
+      "clocks_simulated": 6007335947,
+      "sim_seconds": 60.073,
+      "wall_seconds": 2315.5,
+      "clocks_per_wall_second": 2594388,
+      "ffmpeg_status": 0,
+      "audio_driven": false,
+      "audio_transitions": 0,
+      "audio_rate": 192000,
+      "audio_samples": 0
+    },
+    "videos": {
+      "tt08_tt_um_MichaelBell_mandelbrot_10s.mp4": {
+        "bytes": 4644965,
+        "sha256": "1c6c38ee1ab804ad6534a62635d700ae14231ef9106a53ae39f5c28e346d0672"
+      },
+      "tt08_tt_um_MichaelBell_mandelbrot_10s.webm": {
+        "bytes": 3501409,
+        "sha256": "a832bf5f8e5fed46610de3fd018055f5def8d226c7e1140c5297417b1cbe8d0c"
+      },
+      "tt08_tt_um_MichaelBell_mandelbrot_30s.mp4": {
+        "bytes": 13768015,
+        "sha256": "c470fccf685656e1a4e64af694812464728ca40c0e2f76e9a56752cbb59febc1"
+      },
+      "tt08_tt_um_MichaelBell_mandelbrot_30s.webm": {
+        "bytes": 10638576,
+        "sha256": "1a4da98bef1d264fa75b3c302fd483bbc5ea8a514f45449ec3cf0e3acee110f1"
+      },
+      "tt08_tt_um_MichaelBell_mandelbrot_60s.mp4": {
+        "bytes": 27242032,
+        "sha256": "c60d23164aba349248ba0304d248d9ce56c574a3545a72fb5ae00ad26af4d260"
+      },
+      "tt08_tt_um_MichaelBell_mandelbrot_60s.webm": {
+        "bytes": 21287885,
+        "sha256": "f04e6846fbae2307adb4b736f6856dbaf3a955a6f55bd5535beb2b839977f64e"
+      },
+      "tt08_tt_um_MichaelBell_mandelbrot_contact.png": {
+        "bytes": 687128,
+        "sha256": "10d5677dc1dd79e0e586b099768aec1dea216a0a2cd49d52537585187733010a"
+      },
+      "tt08_tt_um_MichaelBell_mandelbrot_poster.png": {
+        "bytes": 76560,
+        "sha256": "8ba0fce7b6a0fc91ec3800ead5c9b824420203de8196242e0178064757486fcd"
+      },
+      "tt08_tt_um_MichaelBell_mandelbrot_preview.gif": {
+        "bytes": 945288,
+        "sha256": "357f8c29debc0f0176f72c6e221f431488492e853c74fa94ad193d2a15c681d9"
+      }
+    },
+    "build_log_tail": "ndelbrot/repo/src/vga.sv ~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/repo/src/timing.sv ~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/repo/src/coord.v\nmake: Entering directory '~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/build'\ng++  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -O2  -c -o tb.o ~/ttvga/harness/tb.cpp\ng++ -Os  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o verilated.o ~/ttvga/tools/oss-cad-suite/share/verilator/include/verilated.cpp\ng++ -Os  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o verilated_threads.o ~/ttvga/tools/oss-cad-suite/share/verilator/include/verilated_threads.cpp\npython3 ~/ttvga/tools/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp\ng++ -O2  -I.  -MMD -I~/ttvga/tools/oss-cad-suite/share/verilator/include -I~/ttvga/tools/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -std=c++17 -I~/ttvga/tools/vgacap-src/include   -c -o Vtop__ALL.o Vtop__ALL.cpp\ng++    tb.o verilated.o verilated_threads.o Vtop__ALL.a   ~/ttvga/tools/vgacap-build/libvgacap_trace.a ~/ttvga/tools/vgacap-build/libvgacap_stream.a ~/ttvga/tools/vgacap-build/third_party/libvgacap_zstd.a -pthread  -pthread -lpthread -latomic   -o Vtop\nrm Vtop__ALL.verilator_deplist.tmp\nmake: Leaving directory '~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/build'\n- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\n- Verilator: Built from 0.353 MB sources in 576 modules, into 0.238 MB in 5 C++ files needing 0.000 MB\n- Verilator: Walltime 14.342 s (elab=0.038, cvt=0.077, bld=14.191); cpu 0.151 s on 1 threads; allocated 28.070 MB\n[exit 0]\n",
+    "sim_log_tail": "a project=tt08/tt_um_MichaelBell_mandelbrot --meta override=none --meta simulator=Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod) --meta harness=0b581aeab69291a9\ntb: sync at clock 5439488: line 3584 clocks, 499 lines, hsync active-low, vsync active-high, mode 640x480@75, 4.267 clk/px, 640x480 @ 55.915 fps\ntb: ok: 3355 frames (103 distinct, 0 uniform, 15 colours, 10.214% of pixels change per frame, 97.6% ever), 6007335947 clocks in 2315.5s wall (2.59 Mclk/s)\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -maxrate 12M -bufsize 24M -an -force_key_frames 30,10 -movflags +faststart ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_60s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/out/capture.avi -vf scale=iw*2:ih*2:flags=neighbor,scale=out_range=tv:out_color_matrix=bt709 -c:v libvpx-vp9 -crf 36 -b:v 12M -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_trc bt709 -color_primaries bt709 -an -deadline good -cpu-used 4 -row-mt 1 -threads 4 -tile-columns 2 -force_key_frames 30,10 ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_60s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_60s.mp4 -t 30 -c copy -movflags +faststart ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_30s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_60s.webm -t 30 -c copy ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_30s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_60s.mp4 -t 10 -c copy -movflags +faststart ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_10s.mp4\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_60s.webm -t 10 -c copy ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_10s.webm\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -ss 5.000 -i ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_60s.mp4 -frames:v 1 -vf scale=iw/2:-1 ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_poster.png\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -i ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_60s.mp4 -vf select='not(mod(n\\,209))',scale=iw/4:-1,tile=4x4:padding=6:margin=6:color=0xd8d5e0 -frames:v 1 ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_contact.png\n[exit 0]\n\n$ ~/ttvga/tools/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -y -cpucount 4 -ss 5.000 -t 8.000 -i ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_60s.mp4 -vf fps=12,scale=320:-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none -r 12 -loop 0 ~/public_html/tt08/tt_um_MichaelBell_mandelbrot/tt08_tt_um_MichaelBell_mandelbrot_preview.gif\n[exit 0]\n",
+    "derive_log_tail": "derive ~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/scratch/tt08_tt_um_MichaelBell_mandelbrot_trace.vgch.zst -> ~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/scratch (stem tt08_tt_um_MichaelBell_mandelbrot, samplers centre-v1 tb-v1)\n$ ~/ttvga/tools/vgacap-build/tracetool info ~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/scratch/tt08_tt_um_MichaelBell_mandelbrot_trace.vgch.zst\nexit 0\n--- stdout\nversion: 2\nsample_bits: 43\nmode: 2\nclock_hz: 100000000\nsamples_per_clock: 2\nclock_bit: 42\nclock_first: 0\nsamples: 12014671894\nclocks: 6007335947\nblocks: 359\ntable_rebuilt: 0\nopen.project: tt08/tt_um_MichaelBell_mandelbrot\nopen.override: none\nopen.simulator: Verilator 5.053 devel rev v5.052-80-g0bad0faca (mod)\nopen.harness: 0b581aeab69291a9\nopen.calib_seconds: 1.0\nopen.seconds: 60.0\nopen.layout: tt-um-43\nclose.capture_after_clock: 5439488\nclose.status: ok\nclose.frames: 3355\nclose.ffmpeg_status: 0\nchanges.uo_out: 24688791\nchanges.uio_out: 0\nchanges.uio_oe: 0\nchanges.ui_in: 0\nchanges.uio_in: 0\nchanges.rst_n: 1\nchanges.ena: 0\n$ ~/ttvga/tools/vgacap-build/vgacap-sample ~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/scratch/tt08_tt_um_MichaelBell_mandelbrot_trace.vgch.zst --out ~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/scratch --name tt08_tt_um_MichaelBell_mandelbrot --sampler centre-v1 --sampler tb-v1 --png-fd 9\nexit 0\n$ ~/ttvga/tools/vgacap-build/tracetool uohash ~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/scratch/tt08_tt_um_MichaelBell_mandelbrot_trace.vgch.zst\nexit 0\n--- stdout\nuo_out_sha256_clocks: 0 33554432\nuo_out_sha256: 86516bca04e7a63f77e16475b8da8dfc0ba64f388e7c6ee56368afa5bcc9f98a\nderive done: error None, tb_v1_check match, pngs 206 written, 0 linked, cpu 34.61 s\n",
+    "publish_log_tail": "$ rsync -aH --delete --chmod=D0755,F0644 ~/ttvga/work/tt08/tt_um_MichaelBell_mandelbrot/scratch/ <staging_dir>/tt08_tt_um_MichaelBell_mandelbrot.new/\n",
+    "finished": "2026-11-27T02:22:43+00:00"
+  },
+  "sizes": {
+    "total": 18994881,
+    "samplers": {
+      "centre-v1": {
+        "dir": 2033732,
+        "store": 560261,
+        "png_bytes": 1047300,
+        "png_files": 103,
+        "png_inodes": 103
+      },
+      "tb-v1": {
+        "dir": 2241848,
+        "store": 598404,
+        "png_bytes": 1159722,
+        "png_files": 103,
+        "png_inodes": 103
+      }
+    },
+    "trace": 14719301
+  },
+  "finished": "2026-11-27T04:28:13+00:00",
+  "host_load_end": [
+    54.95849609375,
+    54.95068359375,
+    57.78759765625
+  ],
+  "poll": {
+    "job": {
+      "work_bytes_peak": 335305852,
+      "scratch_bytes_peak": 18994881,
+      "pilot_bytes_peak": 370,
+      "memory_current_peak": 1132601344,
+      "tasks_peak": 53
+    },
+    "rerun0-notrace": {
+      "work_bytes_peak": 29650504,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 286001096,
+      "memory_current_peak": 506146816,
+      "tasks_peak": 17
+    },
+    "rerun1-trace": {
+      "work_bytes_peak": 29650504,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 300404680,
+      "memory_current_peak": 523554816,
+      "tasks_peak": 18
+    },
+    "rerun2-notrace": {
+      "work_bytes_peak": 29650504,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 285742870,
+      "memory_current_peak": 504082432,
+      "tasks_peak": 17
+    },
+    "rerun3-trace": {
+      "work_bytes_peak": 29650504,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 300978606,
+      "memory_current_peak": 519282688,
+      "tasks_peak": 18
+    },
+    "samples": {
+      "work_bytes_peak": 29650504,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 15881431,
+      "memory_current_peak": 246558720,
+      "tasks_peak": 4
+    },
+    "done": {
+      "work_bytes_peak": 29650504,
+      "scratch_bytes_peak": 0,
+      "pilot_bytes_peak": 12280,
+      "memory_current_peak": 0,
+      "tasks_peak": 0
+    }
+  },
+  "scope": {
+    "memory_peak": 1133735936,
+    "tasks_peak": 53,
+    "unit": "ttvga-pilot-tt08-tt_um_MichaelBell_mandelbrot.scope",
+    "exit": 0,
+    "runtime_max_sec": 130320,
+    "memory_max": "6G",
+    "cpu_quota": "200%",
+    "tasks_max": 64
+  }
+}

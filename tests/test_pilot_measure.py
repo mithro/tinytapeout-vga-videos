@@ -154,3 +154,9 @@ def test_report_markdown_has_one_table_per_target(pm, tmp_path):
         assert f"## {heading}" in md
     assert "| tt08/x |" in md
     assert "min_free_root_gb = 100" in md   # 24 * 2.0 GB * 2 = 96 -> 100
+
+
+def test_redact_replaces_host_paths(pm):
+    text = '{"a": "/backups/st/x.new/\\n", "b": "/srv/frames/tt08/x", "c": "/home/u/ttvga/work"}'
+    out = pm.redact(text, {"/backups/st": "<staging_dir>", "/srv/frames": "<frames_root>", "/home/u": "~"})
+    assert out == '{"a": "<staging_dir>/x.new/\\n", "b": "<frames_root>/tt08/x", "c": "~/ttvga/work"}'
