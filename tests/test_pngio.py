@@ -105,3 +105,24 @@ def test_write_rgb6_refuses_a_byte_above_63(tmp_path, bad):
     with pytest.raises(ValueError, match="not an rgb6 value"):
         pngio.write_rgb6(tmp_path / "x.png", 16, 16, bytes(px))
     assert not (tmp_path / "x.png").exists()
+
+
+def test_rgb6_value_63_is_accepted_and_reads_back(tmp_path):
+    px = bytes([63, 0, 21, 42] * 64)
+    pngio.write_rgb6(tmp_path / "x.png", 16, 16, px)
+    assert pngio.read_rgb6(tmp_path / "x.png") == (16, 16, px)
+
+
+def test_read_rgb6_refuses_a_pixel_above_63(tmp_path):
+    """A well-formed indexed PNG with the rgb6 palette but a pixel index of 64."""
+    w = h = 4
+    rows = b"".join(b"\x00" + bytes([64 if y == 2 else 1] * w) for y in range(h))
+
+    def chunk(kind, body):
+        return struct.pack(">I", len(body)) + kind + body + struct.pack(">I", zlib.crc32(kind + body))
+
+    data = (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 3, 0, 0, 0))
+            + chunk(b"PLTE", pngio.PALETTE) + chunk(b"IDAT", zlib.compress(rows)) + chunk(b"IEND", b""))
+    (tmp_path / "bad.png").write_bytes(data)
+    with pytest.raises(ValueError, match="not an rgb6 value"):
+        pngio.read_rgb6(tmp_path / "bad.png")

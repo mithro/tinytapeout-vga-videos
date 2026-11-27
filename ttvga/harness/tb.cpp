@@ -416,6 +416,8 @@ int main(int argc, char** argv) {
     // The model is Verilated single-threaded. Without this the context defaults to the
     // process's parallelism and starts that many minus one idle pool threads (87 on an
     // 88-CPU host), which the queue scope's TasksMax refuses: std::system_error, EAGAIN.
+    // A runtime `+verilator+threads+N` (commandArgs below) or a model Verilated with
+    // --threads N > 1 would conflict with this: keep the model single-threaded.
     ctx.threads(1);
     ctx.commandArgs(argc, argv);
     Vtop top{&ctx};

@@ -3,6 +3,7 @@
 on these exactly, so they are pinned here rather than written out twice."""
 
 import sys
+from pathlib import Path
 
 from ttvga import HARNESS_DIR
 
@@ -196,15 +197,31 @@ def test_audio_is_encoded_at_an_ordinary_rate():
         assert opts[opts.index("-ar") + 1] == "48000"
 
 
-def test_every_ffmpeg_call_caps_its_cpu_count():
+def test_every_ffmpeg_call_caps_its_cpu_count(tmp_path, monkeypatch):
     """Inside the queue's scope (TasksMax=64) ffmpeg's automatic thread counts, sized for
-    the host's 88 CPUs, fail to start (EAGAIN): every call carries `-cpucount`."""
-    import re
+    the host's 88 CPUs, fail to start (EAGAIN): every ffmpeg encode.py runs carries
+    `-cpucount 2`, the scope's CPUQuota (Ruling BN)."""
+    import encode
 
-    from encode import FFMPEG_CPUS, QUIET
+    calls: list[list[str]] = []
 
-    assert QUIET[QUIET.index("-cpucount") + 1] == str(FFMPEG_CPUS)
-    assert 1 <= FFMPEG_CPUS <= 8
-    src = (HARNESS_DIR / "encode.py").read_text()
-    calls = re.findall(r"run\(\[ffmpeg,\s*([^,\]]+)", src)
-    assert calls and all(c.strip() == "*QUIET" for c in calls), calls
+    def fake_run(cmd, log, cwd=None, timeout=None, env=None, grace=0.0):
+        calls.append(cmd)
+        Path(cmd[-1]).write_bytes(b"x")   # the output file, so the next step finds it
+        return 0
+
+    monkeypatch.setattr(encode, "run", fake_run)
+    src = tmp_path / "out" / "capture.avi"
+    src.parent.mkdir()
+    src.write_bytes(b"avi")
+    videos = tmp_path / "videos"
+    videos.mkdir()
+    log = tmp_path / "log"
+    assert encode.transcode(src, videos, "s", log, "ffmpeg") is None
+    assert encode.render_previews(videos, "s", log, "ffmpeg", 3600, 60.0) is None
+    assert encode.rewrite_webm(videos, "s", log, "ffmpeg") is None
+    assert encode.FFMPEG_CPUS == 2
+    assert len(calls) >= 12
+    for cmd in calls:
+        assert cmd[0] == "ffmpeg"
+        assert cmd[cmd.index("-cpucount") + 1] == "2", cmd
