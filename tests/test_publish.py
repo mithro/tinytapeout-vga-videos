@@ -584,6 +584,8 @@ def test_install_refuses_disallowed_file(tmp_path):
         "unknown-sampler": lambda s: make_scratch(s, {"edge-v1/frames.txt": b""}),
         "sha-in-centre": lambda s: (s / "centre-v1" / "TRACE_SHA256").write_bytes(b""),
         "marker": lambda s: (s / ".ttvga-frames").write_bytes(b""),
+        # The pre-XXH3 method file is refused, never published beside the new format.
+        "sha256-method": lambda s: (s / "centre-v1" / "frame_hashes.sha256-rgb6.txt").write_bytes(b""),
         "bin": lambda s: (s / "x.bin").write_bytes(b""),
     }
     for name, plant in cases.items():

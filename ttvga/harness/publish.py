@@ -67,7 +67,8 @@ FOREIGN_NAMES = ("*.bin", "fpga*")
 CHANGED_LOG = "changed.log"
 
 _PLACEHOLDERS = {
-    "method": r"[a-z0-9]+(?:-[a-z0-9]+)*",
+    # The methods vgacap's frames format has; the pre-XXH3 `sha256-rgb6` is not one of them.
+    "method": r"(?:xxh3-128-rgb6|fnv1a64-tb2026-rgb888)",
     "NNNNNN": r"[0-9]{6}",
 }
 _SHUTTLE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9.-]*")

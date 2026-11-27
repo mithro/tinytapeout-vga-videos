@@ -14,6 +14,10 @@ sys.path.insert(0, str(HARNESS_DIR))
 
 import verify  # noqa: E402
 
+import pytest  # noqa: E402
+
+from tests.frames_txt import framesfile, to_pre_xxh3, write_frames_txt  # noqa: E402, F401
+
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 BASE = "https://example.org/archive/"
 
@@ -89,7 +93,7 @@ def test_stale_on_server_ignores_bin_and_library(tmp_path):
 SHA = "ab" * 32
 
 
-def project(frames_root: Path, work: Path, pid: str, *, distinct: int = 2, pngs: int | None = None,
+def project(framesfile, frames_root: Path, work: Path, pid: str, *, distinct: int = 2, pngs: int | None = None,
             result: dict | None = None, samplers=("centre-v1",), trace: bytes = b"trace") -> Path:
     shuttle, macro = pid.split("/")
     stem = f"{shuttle}_{macro}"
@@ -99,8 +103,7 @@ def project(frames_root: Path, work: Path, pid: str, *, distinct: int = 2, pngs:
         (d / f"{stem}_trace.vgch.zst").write_bytes(trace)
     for s in samplers:
         (d / s / "png").mkdir(parents=True)
-        (d / s / "frames.txt").write_text(f"id: {pid}\nstatus: ok\nsampler: {s}\nframes: 5\n"
-                                          f"distinct_frames: {distinct}\nstore: {stem}_{s}_frames.rgb6.zst\n")
+        write_frames_txt(framesfile, d / s / "frames.txt", pid, s, f"{stem}_{s}_frames.rgb6.zst", distinct)
         (d / s / "index.html").write_text("<html></html>\n")
         (d / s / f"{stem}_{s}_frames.rgb6.zst").write_bytes(b"z")
         for n in range(distinct if pngs is None else pngs):
@@ -112,20 +115,20 @@ def project(frames_root: Path, work: Path, pid: str, *, distinct: int = 2, pngs:
     return d
 
 
-def test_verify_frames_completeness(tmp_path):
+def test_verify_frames_completeness(framesfile, tmp_path):
     root, work = tmp_path / "frames", tmp_path / "work"
-    project(root, work, "tt06/tt_um_good", samplers=("centre-v1", "tb-v1"))
-    project(root, work, "tt06/tt_um_fewpngs", distinct=3, pngs=2)
-    project(root, work, "tt06/tt_um_notrace", trace=None)
-    project(root, work, "tt06/tt_um_emptytrace", trace=b"")
-    d = project(root, work, "tt06/tt_um_nopage")
+    project(framesfile, root, work, "tt06/tt_um_good", samplers=("centre-v1", "tb-v1"))
+    project(framesfile, root, work, "tt06/tt_um_fewpngs", distinct=3, pngs=2)
+    project(framesfile, root, work, "tt06/tt_um_notrace", trace=None)
+    project(framesfile, root, work, "tt06/tt_um_emptytrace", trace=b"")
+    d = project(framesfile, root, work, "tt06/tt_um_nopage")
     (d / "centre-v1" / "index.html").unlink()
-    d = project(root, work, "tt06/tt_um_nostore")
+    d = project(framesfile, root, work, "tt06/tt_um_nostore")
     (d / "centre-v1" / "tt06_tt_um_nostore_centre-v1_frames.rgb6.zst").unlink()
-    d = project(root, work, "tt06/tt_um_noframes")
+    d = project(framesfile, root, work, "tt06/tt_um_noframes")
     (d / "centre-v1" / "frames.txt").unlink()
-    project(root, work, "tt06/tt_um_nopicture", distinct=0)
-    failures, notes = verify.check_frames(root, work)
+    project(framesfile, root, work, "tt06/tt_um_nopicture", distinct=0)
+    failures, notes = verify.check_frames(root, work, framesfile)
     assert notes == []
     assert failures == [
         "tt06/tt_um_emptytrace: trace tt06_tt_um_emptytrace_trace.vgch.zst is empty",
@@ -137,12 +140,12 @@ def test_verify_frames_completeness(tmp_path):
     ]
 
 
-def test_verify_stale_tb_v1_is_a_note(tmp_path):
+def test_verify_stale_tb_v1_is_a_note(framesfile, tmp_path):
     root, work = tmp_path / "frames", tmp_path / "work"
-    project(root, work, "tt06/tt_um_a", result={"tb_v1": {"state": "stale", "trace_sha": SHA, "dropped": False}})
-    project(root, work, "tt06/tt_um_b", result={"tb_v1": {"state": "stale", "trace_sha": None, "dropped": False}})
-    project(root, work, "tt06/tt_um_c", result={"tb_v1": {"state": "current", "trace_sha": SHA, "dropped": False}})
-    failures, notes = verify.check_frames(root, work)
+    project(framesfile, root, work, "tt06/tt_um_a", result={"tb_v1": {"state": "stale", "trace_sha": SHA, "dropped": False}})
+    project(framesfile, root, work, "tt06/tt_um_b", result={"tb_v1": {"state": "stale", "trace_sha": None, "dropped": False}})
+    project(framesfile, root, work, "tt06/tt_um_c", result={"tb_v1": {"state": "current", "trace_sha": SHA, "dropped": False}})
+    failures, notes = verify.check_frames(root, work, framesfile)
     assert failures == []
     assert notes == [
         f"tt06/tt_um_a: tb-v1 files are from trace {SHA[:12]}, not the current trace",
@@ -150,18 +153,32 @@ def test_verify_stale_tb_v1_is_a_note(tmp_path):
     ]
 
 
-def test_verify_failed_project_is_a_failure(tmp_path):
+def test_verify_failed_project_is_a_failure(framesfile, tmp_path):
     root, work = tmp_path / "frames", tmp_path / "work"
-    project(root, work, "tt06/tt_um_a", result={"published": False, "error": "build failed: exit 2"})
+    project(framesfile, root, work, "tt06/tt_um_a", result={"published": False, "error": "build failed: exit 2"})
     # Published with an error (an encode failure) is not a failed project.
-    project(root, work, "tt06/tt_um_b", result={"published": True, "error": "encode: ffmpeg exit 1"})
-    failures, notes = verify.check_frames(root, work)
+    project(framesfile, root, work, "tt06/tt_um_b", result={"published": True, "error": "encode: ffmpeg exit 1"})
+    failures, notes = verify.check_frames(root, work, framesfile)
     assert failures == ["tt06/tt_um_a: failed (previous output kept): build failed: exit 2"]
     assert notes == []
 
 
-def test_verify_test_hooks_is_a_failure(tmp_path):
+def test_verify_test_hooks_is_a_failure(framesfile, tmp_path):
     root, work = tmp_path / "frames", tmp_path / "work"
-    project(root, work, "tt06/tt_um_a", result={"test_hooks": True})
-    failures, _ = verify.check_frames(root, work)
+    project(framesfile, root, work, "tt06/tt_um_a", result={"test_hooks": True})
+    failures, _ = verify.check_frames(root, work, framesfile)
     assert failures == ["tt06/tt_um_a: built with test hooks"]
+
+
+def test_verify_refuses_a_pre_xxh3_frames_txt_and_hash_file(framesfile, tmp_path):
+    root, work = tmp_path / "frames", tmp_path / "work"
+    d = project(framesfile, root, work, "tt06/tt_um_old", samplers=("centre-v1", "tb-v1"))
+    txt = d / "tb-v1" / "frames.txt"
+    txt.write_text(to_pre_xxh3(txt.read_text()))
+    (d / "centre-v1" / "frame_hashes.sha256-rgb6.txt").write_text(
+        "hash_method: sha256-rgb6\n# SHA-256 of the frame as rgb6\n")
+    failures, _ = verify.check_frames(root, work, framesfile)
+    assert len(failures) == 2, failures
+    assert failures[0].startswith("tt06/tt_um_old: centre-v1: frame_hashes.sha256-rgb6.txt: ")
+    assert failures[1].startswith("tt06/tt_um_old: tb-v1: frames.txt: ")
+    assert "sha256" in failures[0] and "sha256" in failures[1]

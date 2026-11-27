@@ -480,6 +480,16 @@ def run_derive(trace: Path, scratch: Path, stem: str, *, tb_v1: bool, tb_hashes:
     return res, res.error
 
 
+def _frames_txt_readable(path: Path) -> bool:
+    """Whether vgacap's own reader accepts `path` (it refuses the pre-XXH3 format)."""
+    from vgacap import framesfile
+    try:
+        framesfile.read_frames_txt(path)
+    except (OSError, ValueError):
+        return False
+    return True
+
+
 def tb_v1_rule(*, tb_v1: bool, drop: bool, published: Path | None, work_frames: Path,
                trace_sha: str | None) -> tuple[list[str], dict]:
     """What to carry over from the published copy, and result.json's `tb_v1` (Global Constraints, Ruling Z).
@@ -494,6 +504,9 @@ def tb_v1_rule(*, tb_v1: bool, drop: bool, published: Path | None, work_frames: 
     if published is not None and (published / derive.TB_V1).is_dir():
         sha_file = published / derive.TB_V1 / derive.TRACE_SHA_FILE
         recorded = (sha_file.read_text().strip() if sha_file.is_file() else "") or None
+        if not _frames_txt_readable(published / derive.TB_V1 / "frames.txt"):
+            # A pre-XXH3 tb-v1 (or a broken one) is never carried: vgacap's reader refuses it.
+            return [], {"state": "stale", "trace_sha": recorded, "dropped": False}
         state = "current" if recorded is not None and recorded == trace_sha else "stale"
         return [derive.TB_V1], {"state": state, "trace_sha": recorded, "dropped": False}
     if (work_frames / derive.TB_V1).exists():

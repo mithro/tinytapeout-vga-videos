@@ -14,6 +14,7 @@ from ttvga import HARNESS_DIR
 sys.path.insert(0, str(HARNESS_DIR))
 
 import job  # noqa: E402
+from tests.frames_txt import framesfile, to_pre_xxh3, write_frames_txt  # noqa: E402, F401
 from tests.test_job_build import fake_project, fake_vgacap  # noqa: E402
 
 
@@ -97,10 +98,11 @@ def test_override_meta(tmp_path):
     ("a" * 64, True, {"tb_v1": True}, [], {"state": "current", "trace_sha": "b" * 64, "dropped": False}),
     ("a" * 64, True, {"drop": True}, [], {"state": "none", "trace_sha": None, "dropped": True}),
 ])
-def test_tb_v1_rule(tmp_path, published, seeded, flags, want_carry, want):
+def test_tb_v1_rule(framesfile, tmp_path, published, seeded, flags, want_carry, want):
     pub, frames = tmp_path / "pub", tmp_path / "frames"
     if published is not None:
         (pub / "tb-v1").mkdir(parents=True)
+        write_frames_txt(framesfile, pub / "tb-v1" / "frames.txt", "x", "tb-v1", "s.zst", 2)
         if published:
             (pub / "tb-v1" / "TRACE_SHA256").write_text(published + "\n")
     if seeded:
@@ -108,6 +110,22 @@ def test_tb_v1_rule(tmp_path, published, seeded, flags, want_carry, want):
     carry, state = job.tb_v1_rule(tb_v1=flags.get("tb_v1", False), drop=flags.get("drop", False),
                                   published=pub, work_frames=frames, trace_sha="b" * 64)
     assert (carry, state) == (want_carry, want)
+
+
+@pytest.mark.parametrize("how", ["pre-xxh3", "missing"])
+def test_tb_v1_rule_never_carries_a_pre_xxh3_or_unreadable_tb_v1(framesfile, tmp_path, how):
+    """The trace sha matches, yet the files are not carried: vgacap's reader refuses them."""
+    pub = tmp_path / "pub"
+    (pub / "tb-v1").mkdir(parents=True)
+    (pub / "tb-v1" / "TRACE_SHA256").write_text("b" * 64 + "\n")
+    if how == "pre-xxh3":
+        write_frames_txt(framesfile, pub / "tb-v1" / "frames.txt", "x", "tb-v1", "s.zst", 2)
+        txt = pub / "tb-v1" / "frames.txt"
+        txt.write_text(to_pre_xxh3(txt.read_text()))
+    carry, state = job.tb_v1_rule(tb_v1=False, drop=False, published=pub, work_frames=tmp_path / "frames",
+                                  trace_sha="b" * 64)
+    assert carry == []
+    assert state == {"state": "stale", "trace_sha": "b" * 64, "dropped": False}
 
 
 def test_job_testpatterns_not_published(tmp_path, monkeypatch):
@@ -136,7 +154,7 @@ def test_job_testpatterns_not_published(tmp_path, monkeypatch):
         (out / "centre-v1" / "frames.txt").write_text("frames.txt\n")
         return job.derive.DeriveResult(
             samplers={"centre-v1": {"sampler_status": "ok", "frames": 3}}, trace_sha="c" * 64,
-            uo_out_xxh3_128="d" * 64, uo_out_xxh3_128_clocks=(0, 100), tb_v1_check="off", error=None,
+            uo_out_xxh3_128="d" * 32, uo_out_xxh3_128_clocks=(0, 100), tb_v1_check="off", error=None,
             cpu_seconds=0.5, pngs_written=1, pngs_linked=2, info={"blocks": "1", "clocks": "100"})
 
     monkeypatch.setattr(job, "simulate", simulate)
@@ -218,7 +236,7 @@ def test_run_derive_derive_error_and_result(tmp_path, monkeypatch):
     assert _go_derive(tmp_path) == (None, "not a trace")
 
     want = job.derive.DeriveResult(
-        samplers={"centre-v1": {"frames": 2}}, trace_sha="e" * 64, uo_out_xxh3_128="f" * 64,
+        samplers={"centre-v1": {"frames": 2}}, trace_sha="e" * 64, uo_out_xxh3_128="f" * 32,
         uo_out_xxh3_128_clocks=(0, 9), tb_v1_check="off", error="a sampler error", cpu_seconds=1.5,
         pngs_written=1, pngs_linked=0, info={"blocks": "1", "clocks": "9"})
     monkeypatch.setattr(job.derive, "derive", lambda *a, **kw: want)
