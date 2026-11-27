@@ -227,7 +227,7 @@ On the published trace, VGACAP_SAMPLE_DEBUG=1; and the job's derive from result.
 
 ### Side by side
 
-Each round runs 2 models without the trace and 2 with it at the same moment, in queue-sized scopes, for 20 s of simulated time. A pair is one without and one with, started together. colorbars and nyancat ran alone. The other six ran together, 24 models at once. nyancat's pairs come from the level bench below (level 1 against no trace).
+The logs are in [`bench/`](bench/), summarised by [`bench_summary.py`](bench_summary.py). Each round runs 2 models without the trace and 2 with it at the same moment, in queue-sized scopes, for 20 s of simulated time. A pair is one without and one with, started together. colorbars and nyancat ran alone. The other six ran together, 24 models at once. nyancat's pairs come from the level bench below (level 1 against no trace).
 
 | project | round | pair | without (s) | with (s) | overhead (%) |
 | --- | ---: | --- | ---: | ---: | ---: |
@@ -309,7 +309,7 @@ No level beats 1, so [`tb.cpp`](../../../ttvga/harness/tb.cpp) keeps level 1 and
 
 ### The push is inline
 
-[`objdump`](https://sourceware.org/binutils/docs/binutils/objdump.html) `-d -C` of colorbars' `Vtop` (logged on the host as `~/ttvga/work/pilot/diag/objdump-colorbars.txt`):
+[`objdump`](https://sourceware.org/binutils/docs/binutils/objdump.html) `-d -C` of colorbars' `Vtop`, its trace call sites in [`bench/objdump-colorbars-trace-calls.txt`](bench/objdump-colorbars-trace-calls.txt):
 
 | callee | call sites |
 | --- | ---: |
@@ -359,7 +359,7 @@ Saving: 0.6 s of dvd's 131.3 s post-simulation CPU. It is not committed as a der
 
 ### Where derive's CPU goes
 
-[gprof](https://sourceware.org/binutils/docs/gprof/) of a `-pg` copy of `vgacap-sample` (built aside in `~/ttvga/work/pilot/diag/vgacap-pg` from the pinned c7176da) on dvd_screensaver's trace:
+[gprof](https://sourceware.org/binutils/docs/gprof/) of a `-pg` copy of `vgacap-sample` (built aside from the pinned c7176da) on dvd_screensaver's trace; flat profiles in [`bench/gprof-default.txt`](bench/gprof-default.txt) and [`bench/gprof-both.txt`](bench/gprof-both.txt):
 
 | function | default sampler: self (s) | default: share (%) | both samplers: self (s) | both: share (%) |
 | --- | ---: | ---: | ---: | ---: |
