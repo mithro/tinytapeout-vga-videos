@@ -179,9 +179,6 @@ ENTRY_KEYS = (
     "clock_hz", "pinout", "ui_in_mask", "ui_in", "bin", "bin_bytes", "bin_sha256", "build_status",
     "fmax_hz", "validation", "verdict", "qspi", "pdk_latches", "poster", "preview_gif", "video_10s_webm",
 )  # fmt: skip
-# Keys a reader accepts missing, for now (Ruling BJ: missing `pdk_latches` means false). Making
-# one required is removing it from this set.
-OPTIONAL_FOR_NOW = frozenset({"pdk_latches"})
 MEDIA_KEYS = ("poster", "preview_gif", "video_10s_webm")
 # Fields whose invalidity defers the checks that depend on them (see the module docstring).
 DEFERRING_FIELDS = frozenset({"shuttle", "macro", "bin_sha256", "ui_in_mask"})
@@ -216,8 +213,7 @@ def _entry_violations(entry: dict, seen_ids: set[str]) -> list[tuple[str, str]]:
     out: list[tuple[str, str]] = []
     for key in ENTRY_KEYS:
         if key not in entry:
-            if key not in OPTIONAL_FOR_NOW:
-                out.append((key, "missing"))
+            out.append((key, "missing"))
             continue
         value = entry[key]
         rule: str | None

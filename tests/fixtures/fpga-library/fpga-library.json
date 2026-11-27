@@ -57,6 +57,7 @@
       "validation": "none",
       "verdict": "barely-moving",
       "qspi": "none",
+      "pdk_latches": false,
       "poster": "ttsky25b/tt_um_lukasdragoste_vga_patterns/ttsky25b_tt_um_lukasdragoste_vga_patterns_poster.png",
       "preview_gif": "ttsky25b/tt_um_lukasdragoste_vga_patterns/ttsky25b_tt_um_lukasdragoste_vga_patterns_preview.gif",
       "video_10s_webm": "ttsky25b/tt_um_lukasdragoste_vga_patterns/ttsky25b_tt_um_lukasdragoste_vga_patterns_10s.webm"
@@ -114,6 +115,7 @@
       "validation": "none",
       "verdict": "ok",
       "qspi": "none",
+      "pdk_latches": false,
       "poster": "ttsky25a/tt_um_vga_example/ttsky25a_tt_um_vga_example_poster.png",
       "preview_gif": "ttsky25a/tt_um_vga_example/ttsky25a_tt_um_vga_example_preview.gif",
       "video_10s_webm": "ttsky25a/tt_um_vga_example/ttsky25a_tt_um_vga_example_10s.webm"
@@ -171,6 +173,7 @@
       "validation": "none",
       "verdict": "ok",
       "qspi": "none",
+      "pdk_latches": false,
       "poster": null,
       "preview_gif": null,
       "video_10s_webm": null
@@ -228,6 +231,7 @@
       "validation": "none",
       "verdict": "ok",
       "qspi": "none",
+      "pdk_latches": false,
       "poster": "ttihp25a/tt_um_yuri_panchul_sea_battle_vga_game/ttihp25a_tt_um_yuri_panchul_sea_battle_vga_game_poster.png",
       "preview_gif": "ttihp25a/tt_um_yuri_panchul_sea_battle_vga_game/ttihp25a_tt_um_yuri_panchul_sea_battle_vga_game_preview.gif",
       "video_10s_webm": "ttihp25a/tt_um_yuri_panchul_sea_battle_vga_game/ttihp25a_tt_um_yuri_panchul_sea_battle_vga_game_10s.webm"
@@ -285,6 +289,7 @@
       "validation": "none",
       "verdict": "ok",
       "qspi": "none",
+      "pdk_latches": false,
       "poster": "tt05/tt_um_flappy_vga_cutout1/tt05_tt_um_flappy_vga_cutout1_poster.png",
       "preview_gif": "tt05/tt_um_flappy_vga_cutout1/tt05_tt_um_flappy_vga_cutout1_preview.gif",
       "video_10s_webm": "tt05/tt_um_flappy_vga_cutout1/tt05_tt_um_flappy_vga_cutout1_10s.webm"

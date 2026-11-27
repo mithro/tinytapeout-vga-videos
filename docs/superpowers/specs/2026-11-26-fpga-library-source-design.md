@@ -21,7 +21,7 @@ These rulings bind this spec.
 | AD | The daemon never changes `tt.mode` and never uses the SDK's "MCU controls inputs" mode. It drives the `ui_in` pins directly, as `safe.py` intends. It drives only the bits in the entry's `ui_in_mask`, which the harness publishes using its `effective_ui_in_mask` rule. Every library load makes the bits outside its mask inputs with the pull-down, released as described in section 2, including when the mask is 0, so a mask of 0 makes all eight bits inputs (controller ruling on m-a). "A mask of 0 drives nothing" still holds: no bit is driven. Every enable, whatever the source, first releases the pins the daemon drove before, so a later demo or upload never inherits a library design's inputs. |
 | AF | Only pins in `_fo_ui_driven` get the 1 ms output-low discharge. Every other released pin goes straight to `Pin.IN` with the pull-down and is never made an output. The E9 input-enable workaround (PADS_BANK0 `GPIOn.IE = 0`) is used only if the hardware check shows the discharge alone is not enough. |
 | AG | `safe.py:99` reads `0xd0000020` as the SIO output-enable register. That is `GPIO_OE` on the RP2040, but on the RP2350 it is the write-only `GPIO_OUT_CLR`; the RP2350's `GPIO_OE` is `0xd0000030`. A separate fpgas.online-tt PR, before the daemon's library work, picks the register by chip, with a test, and keeps `SAFE_CODE`'s structure. |
-| BJ | Entries carry a bool `pdk_latches`: true when the design uses PDK latch or clock-gate cells. The publisher writes it on every entry. Readers accept it missing for now and treat that as false; a later task makes it required. When true, both UIs show the warn badge `PDK latch cells: may not behave as on silicon`, which never disables Load. Provenance: on 2026-11-27, about 08:35 local, the FPGA session asked the owner, as item 4 of a numbered list, "Should the 11 latch-cell designs be listed with a warning, or stay unpublished as now?" The owner replied "(4) Yes." Because it was an either/or question, the FPGA session read that as "list with a warning" and said so back to the owner, who made no correction. The owner then confirmed it directly on 2026-11-27, in the controller session (AskUserQuestion answer: "List with the warning"). |
+| BJ | Entries carry a bool `pdk_latches`: true when the design uses PDK latch or clock-gate cells. The publisher writes it on every entry, and it is required like every other key: it was optional only while the readers were deployed, and became required once the published index carried it on all 357 entries (2026-11-27). When true, both UIs show the warn badge `PDK latch cells: may not behave as on silicon`, which never disables Load. Provenance: on 2026-11-27, about 08:35 local, the FPGA session asked the owner, as item 4 of a numbered list, "Should the 11 latch-cell designs be listed with a warning, or stay unpublished as now?" The owner replied "(4) Yes." Because it was an either/or question, the FPGA session read that as "list with a warning" and said so back to the owner, who made no correction. The owner then confirmed it directly on 2026-11-27, in the controller session (AskUserQuestion answer: "List with the warning"). |
 
 ## Why
 
@@ -176,8 +176,7 @@ Every key is required.
 
 ### Entry keys
 
-Every key is required, except `pdk_latches` for now (Ruling BJ): readers accept it missing and
-treat that as false. A key whose type allows null is still present.
+Every key is required. A key whose type allows null is still present.
 
 | Key | Type | Rule |
 |---|---|---|
@@ -202,7 +201,7 @@ treat that as false. A key whose type allows null is still present.
 | `validation` | string | `none`, `mcu` or `full-speed` (from the harness spec's Validate section) |
 | `verdict` | string | `^[a-z-]{1,32}$`: the videos pipeline's render verdict |
 | `qspi` | string | `none` or `emulated` |
-| `pdk_latches` | bool | true when the design uses PDK latch or clock-gate cells (Ruling BJ); missing means false for now |
+| `pdk_latches` | bool | true when the design uses PDK latch or clock-gate cells (Ruling BJ) |
 | `poster` | string or null | relative path; see The archive path rule |
 | `preview_gif` | string or null | relative path; same rule |
 | `video_10s_webm` | string or null | relative path; same rule |
@@ -790,7 +789,8 @@ the last ETag the archive sent, and reads at most 4 MiB. The JSON is parsed with
   site_etag, fetched_at)`, where `body_bytes` is the normalised body. A 304 reuses it without
   normalising again, so the key names the normaliser's version: a change to what `normalise`
   keeps bumps `NORMALISE_VERSION`, and a copy made by older code is a miss, fetched in full
-  without `If-None-Match` (version 2 keeps `pdk_latches`, Ruling BJ).
+  without `If-None-Match` (version 2 keeps `pdk_latches`; version 3 requires it, so no copy
+  carries the old default; Ruling BJ).
   - It is fresh for 300 s.
   - If the archive fails, the last good copy is served for up to 24 h, with the header
     `X-TTSite-Library-Stale: <age>`.
@@ -1073,8 +1073,9 @@ daemon, file names come only from ids that pass `NAME_RE`, and the metadata is t
 4. **Commander library PR.** Merge it, tag `embed-v0.3.0`, bump the pin, and run the site play.
 5. **Publish.** The harness session publishes once Tim has approved the format.
 
-For `pdk_latches` (Ruling BJ), the readers go first: deploy the site, with its cache version
-bumped (`NORMALISE_VERSION` 2), and the Commander, then publish an index that sets the key.
+For `pdk_latches` (Ruling BJ), the readers went first: the site, with its cache version
+bumped (`NORMALISE_VERSION` 2), and the Commander, then an index that sets the key on every
+entry. Only then did the readers make the key required (`NORMALISE_VERSION` 3).
 6. **Hardware check** (section 9).
 
 | Deployed | Not yet | Result |
@@ -1098,7 +1099,7 @@ bumped (`NORMALISE_VERSION` 2), and the Commander, then publish an index that se
 - one test per rule;
 - NaN and Infinity are refused;
 - `ui_in` with bits outside the mask is refused;
-- `pdk_latches` may be missing, and when present must be a bool (Ruling BJ);
+- `pdk_latches` is required and must be a bool (Ruling BJ);
 - non-contiguous shuttles are refused;
 - `--bins` mismatches are reported.
 
@@ -1175,8 +1176,9 @@ releases bit 0.
 - `trust_env` off;
 - responses closed;
 - the bin checks and the syncing message;
-- `pdk_latches`: missing kept as false, a non-bool dropped with `pdk_latches: must be a bool`,
-  and a copy cached by an older normaliser fetched in full, not revived by a 304.
+- `pdk_latches`: an entry without it dropped with `pdk_latches: missing`, a non-bool dropped
+  with `pdk_latches: must be a bool`, and a copy cached by an older normaliser fetched in full,
+  not revived by a 304.
 
 **`tests/test_views.py`**, with the fake daemon (`monkeypatch` on `ttsite.daemon`):
 
