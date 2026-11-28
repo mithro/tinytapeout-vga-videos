@@ -109,7 +109,8 @@ def test_derive_tb_v1_on_request_links_identical_pngs(tools, bars, tmp_path):
     # bars640 is 640x480@60 timing with one row lit outside the window (as its committed fixture).
     assert r.samplers["centre-v1"]["window"] == {"exact": False, "frame_clocks": 420000, "mode_frame_clocks": 420000,
                                                  "outside": 640, "suggested_offset": [0, -1]}
-    assert r.samplers["tb-v1"]["window"] == {"exact": True, "frame_clocks": 420000, "mode_frame_clocks": 420000}
+    assert r.samplers["tb-v1"]["window"] == {"exact": True, "frame_clocks": 420000, "line_clocks": 800, "lines": 525,
+                                             "mode_line_clocks": 800, "mode_lines": 525}
     c_inodes = {p.stat().st_ino for p in pngs(out / "centre-v1")}
     linked = [p for p in pngs(t) if p.stat().st_ino in c_inodes]
     assert len(linked) == r.pngs_linked

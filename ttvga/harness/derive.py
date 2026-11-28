@@ -30,6 +30,7 @@ import sys
 import threading
 import time
 from dataclasses import dataclass
+from fractions import Fraction
 from pathlib import Path
 
 import xxhash
@@ -188,48 +189,99 @@ def _summary(ff, window: dict | None) -> dict:
 
 
 def mode_totals() -> dict[str, dict[str, tuple[int, int]]]:
-    """Each sampler's mode table, from vgacap itself: {sampler: {mode: (clocks per line in pixels, lines)}}.
+    """Each sampler's mode table, from vgacap itself: {sampler: {mode: (pixels per line, lines per frame)}}.
 
     centre-v1 matches against `vgacap.modes.TABLE` (src/frame/modes.c), tb-v1 against
     `vgacap.tbv1.TB_MODES` (tb.cpp's table). Read here, never copied.
     """
     from vgacap import modes, tbv1
 
-    return {CENTRE: {m.name: (m.cpl, m.lpf) for m in modes.TABLE},
-            TB_V1: {m[0]: (m[1], m[2]) for m in tbv1.TB_MODES}}
+    tb = {}
+    # TB_MODES rows (tbv1.py, tb.cpp:39-51): name, line_px, lines, hpulse, hback, width, vpulse, vback, height.
+    for name, line_px, lines, _hpulse, _hback, _width, _vpulse, _vback, _height in tbv1.TB_MODES:
+        tb[name] = (line_px, lines)
+    return {CENTRE: {m.name: (m.cpl, m.lpf) for m in modes.TABLE}, TB_V1: tb}
+
+
+UNKNOWN_MODE = "unknown"
+
+
+def _per_line(cpp: float, line_px: int, what: str) -> Fraction:
+    """A sampler's `clocks_per_pixel` as the exact ratio it stands for, line clocks / `line_px`.
+
+    vgacap writes the double that round-trips (frames-format.md), and a sampler's fractional cpp is
+    an integer line over the mode's `line_px`, so the nearest fraction with a denominator of at
+    most `line_px` is that ratio. Whole cpp values are exact already.
+    """
+    f = Fraction(cpp).limit_denominator(line_px)
+    if float(f) != cpp or (f * line_px).denominator != 1:
+        raise DeriveError(f"{what}: clocks_per_pixel {cpp!r} is not a whole line over {line_px} pixels")
+    return f
+
+
+def _mode(totals: dict[str, tuple[int, int]], ff, s: str) -> tuple[int, int] | None:
+    if ff.mode == UNKNOWN_MODE:
+        return None
+    if ff.mode not in totals:
+        raise DeriveError(f"{s}: mode {ff.mode!r} is in neither `unknown` nor vgacap's mode table for {s}")
+    return totals[ff.mode]
+
+
+def _centre_window(ff, mode: tuple[int, int] | None) -> dict:
+    """centre-v1: `exact` is `outside == 0` (owner ruling CA); the timing is data beside it."""
+    mode_fc = None
+    if mode is not None:
+        cpl, lpf = mode
+        mode_fc = int(_per_line(ff.clocks_per_pixel, cpl, CENTRE) * cpl) * lpf
+    return {"exact": ff.centre.outside == 0, "frame_clocks": ff.frame_clocks, "mode_frame_clocks": mode_fc,
+            "outside": ff.centre.outside, "suggested_offset": list(ff.centre.suggested_offset)}
+
+
+def _tb_v1_window(ff, mode: tuple[int, int] | None) -> dict:
+    """tb-v1: its line and line count against the mode's, from its own frames.txt alone."""
+    w = {"exact": False, "frame_clocks": ff.frame_clocks, "line_clocks": None, "lines": None,
+         "mode_line_clocks": None, "mode_lines": None}
+    if mode is None:
+        return w
+    line_px, mode_lines = mode
+    k = _per_line(ff.clocks_per_pixel, line_px, TB_V1)
+    line = int(k * line_px)                       # tb-v1's cpp is the line over the mode's line_px
+    whole = max(1, (2 * k.numerator + k.denominator) // (2 * k.denominator))   # k to the nearest whole, halves up
+    w["mode_line_clocks"], w["mode_lines"] = whole * line_px, mode_lines
+    # A frame period that is not a whole number of these lines leaves the line unmeasured: tb-v1
+    # rounded its cpp to a whole number (within 0.01, tbv1.py), or the frame period is not steady.
+    if ff.frame_clocks > 0 and ff.frame_clocks % line == 0:
+        w["line_clocks"], w["lines"] = line, ff.frame_clocks // line
+        w["exact"] = (line, w["lines"]) == (w["mode_line_clocks"], mode_lines)
+    return w
 
 
 def windows(read: dict) -> dict[str, dict | None]:
     """Each sampler's `window` flag in result.json (docs/consumers.md, "Sampler windows").
 
     `read` maps a sampler to its frames.txt (`vgacap.framesfile.FramesFile`). A sampler whose
-    `sampler_status` is not `ok` has no window: None. Otherwise:
+    `sampler_status` is not `ok` has no window: None. Each sampler's flag reads its own frames.txt only.
 
-    - `frame_clocks`: the sampler's own `frame_clocks` (the measured frame period).
-    - `mode_frame_clocks`: the sampler's mode, clocks per line times lines, times centre-v1's
-      `clocks_per_pixel`, rounded to a whole clock. None when the mode is not in the sampler's
-      table or centre-v1 has no window. centre-v1's cpp is the reference for both samplers:
-      it is checked against the hsync pulse, where tb-v1's is the line over the mode's.
-    - centre-v1 only: `outside` and `suggested_offset` from its frames.txt.
-    - `exact`: `frame_clocks == mode_frame_clocks`, and for centre-v1 also `outside == 0`.
+    - centre-v1: `exact` is `outside == 0`. `frame_clocks` is its `frame_clocks`; `mode_frame_clocks`
+      the mode's pixels per line times lines times its cpp; `outside` and `suggested_offset` as in its
+      frames.txt. The timing is not part of `exact`.
+    - tb-v1: `line_clocks` is its cpp times the mode's pixels per line, `lines` is `frame_clocks` over
+      that. `mode_line_clocks` is the mode's pixels per line times the whole number nearest its cpp,
+      `mode_lines` the mode's lines. `exact` is both pairs equal. With a frame period that is not a whole
+      number of lines, `line_clocks` and `lines` are None and `exact` is false.
+    - The mode `unknown` has no totals: None for the mode keys, `exact` false for tb-v1.
+
+    Raises DeriveError for a mode name in neither vgacap table nor `unknown`, and for a cpp that is not
+    a whole number of clocks per line.
     """
     totals = mode_totals()
-    centre = read.get(CENTRE)
-    cpp = centre.clocks_per_pixel if centre is not None and centre.sampler_status == "ok" else None
     out: dict[str, dict | None] = {}
     for s, ff in read.items():
         if ff.sampler_status != "ok":
             out[s] = None
             continue
-        line_frame = totals[s].get(ff.mode)
-        mode_fc = None if line_frame is None or cpp is None else round(cpp * line_frame[0] * line_frame[1])
-        exact = mode_fc is not None and ff.frame_clocks == mode_fc
-        w = {"exact": exact, "frame_clocks": ff.frame_clocks, "mode_frame_clocks": mode_fc}
-        if s == CENTRE:
-            w["exact"] = exact and ff.centre.outside == 0
-            w["outside"] = ff.centre.outside
-            w["suggested_offset"] = list(ff.centre.suggested_offset)
-        out[s] = w
+        mode = _mode(totals[s], ff, s)
+        out[s] = _centre_window(ff, mode) if s == CENTRE else _tb_v1_window(ff, mode)
     return out
 
 

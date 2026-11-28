@@ -37,73 +37,114 @@ def test_mode_totals_come_from_vgacap(framesfile):
         assert t[derive.CENTRE][name] == lf
 
 
+def tb(exact, frame_clocks, line_clocks, lines, mode_line_clocks, mode_lines):
+    return {"exact": exact, "frame_clocks": frame_clocks, "line_clocks": line_clocks, "lines": lines,
+            "mode_line_clocks": mode_line_clocks, "mode_lines": mode_lines}
+
+
+def centre(exact, frame_clocks, mode_frame_clocks, outside=0, suggested=(0, 0)):
+    return {"exact": exact, "frame_clocks": frame_clocks, "mode_frame_clocks": mode_frame_clocks,
+            "outside": outside, "suggested_offset": list(suggested)}
+
+
+def both(framesfile, *, mode="640x480@60", centre_cpp=1.0, tb_cpp=1.0, frame_clocks=420000, outside=0,
+         suggested=(0, 0)):
+    return derive.windows({
+        derive.CENTRE: ff_of(framesfile, derive.CENTRE, mode=mode, cpp=centre_cpp, frame_clocks=frame_clocks,
+                             outside=outside, suggested=suggested),
+        derive.TB_V1: ff_of(framesfile, derive.TB_V1, mode=mode, cpp=tb_cpp, frame_clocks=frame_clocks)})
+
+
 def test_both_exact(framesfile):
-    w = derive.windows({derive.CENTRE: ff_of(framesfile, derive.CENTRE), derive.TB_V1: ff_of(framesfile, derive.TB_V1)})
-    assert w[derive.CENTRE] == {"exact": True, "frame_clocks": 420000, "mode_frame_clocks": 420000,
-                                "outside": 0, "suggested_offset": [0, 0]}
-    assert w[derive.TB_V1] == {"exact": True, "frame_clocks": 420000, "mode_frame_clocks": 420000}
+    w = both(framesfile)
+    assert w[derive.CENTRE] == centre(True, 420000, 420000)
+    assert w[derive.TB_V1] == tb(True, 420000, 800, 525, 800, 525)
 
 
 def test_centre_outside_flags_centre_only(framesfile):
-    """Lit pixels outside centre-v1's window flag it; tb-v1's flag is from the timing alone."""
-    w = derive.windows({derive.CENTRE: ff_of(framesfile, derive.CENTRE, outside=640, suggested=(0, -1)),
-                        derive.TB_V1: ff_of(framesfile, derive.TB_V1)})
-    assert w[derive.CENTRE] == {"exact": False, "frame_clocks": 420000, "mode_frame_clocks": 420000,
-                                "outside": 640, "suggested_offset": [0, -1]}
+    """Lit pixels outside centre-v1's window flag it; tb-v1's flag is its line and line count."""
+    w = both(framesfile, outside=640, suggested=(0, -1))
+    assert w[derive.CENTRE] == centre(False, 420000, 420000, 640, (0, -1))
     assert w[derive.TB_V1]["exact"] is True
 
 
-def test_line_longer_than_the_mode_flags_both(framesfile):
-    """nyan's timing: 832-clock lines, 525 lines. centre-v1 takes cpp 1, tb-v1 stretches the mode's 800 to 1.04."""
-    w = derive.windows({derive.CENTRE: ff_of(framesfile, derive.CENTRE, frame_clocks=436800),
-                        derive.TB_V1: ff_of(framesfile, derive.TB_V1, cpp=1.04, frame_clocks=436800)})
-    assert w[derive.CENTRE]["exact"] is False and w[derive.CENTRE]["outside"] == 0
-    assert w[derive.TB_V1] == {"exact": False, "frame_clocks": 436800, "mode_frame_clocks": 420000}
+def test_line_longer_than_the_mode(framesfile):
+    """nyan's timing: 832-clock lines, 525 lines. tb-v1 stretches the mode's 800 to cpp 1.04."""
+    w = both(framesfile, tb_cpp=1.04, frame_clocks=436800)
+    assert w[derive.TB_V1] == tb(False, 436800, 832, 525, 800, 525)
+    # centre-v1's `exact` is `outside` alone: the off-mode timing is data beside it.
+    assert w[derive.CENTRE] == centre(True, 436800, 420000)
+
+
+def test_same_product_different_factors_is_flagged(framesfile):
+    """840 x 500 lines has the product of 640x480@60's 800 x 525; tb-v1 matched to 640x480@60 at 1.05 is flagged."""
+    w = derive.windows({derive.TB_V1: ff_of(framesfile, derive.TB_V1, cpp=1.05, frame_clocks=420000)})
+    assert w[derive.TB_V1] == tb(False, 420000, 840, 500, 800, 525)
 
 
 def test_whole_cpp_above_one_is_exact(framesfile):
-    w = derive.windows({derive.CENTRE: ff_of(framesfile, derive.CENTRE, cpp=2.0, frame_clocks=840000),
-                        derive.TB_V1: ff_of(framesfile, derive.TB_V1, cpp=2.0, frame_clocks=840000)})
-    assert w[derive.CENTRE]["exact"] and w[derive.TB_V1]["exact"]
-    assert w[derive.TB_V1]["mode_frame_clocks"] == 840000
+    w = both(framesfile, centre_cpp=2.0, tb_cpp=2.0, frame_clocks=840000)
+    assert w[derive.CENTRE] == centre(True, 840000, 840000)
+    assert w[derive.TB_V1] == tb(True, 840000, 1600, 525, 1600, 525)
 
 
-def test_fractional_cpp_on_the_mode_is_exact(framesfile):
-    """vgadonut's timing: 1525-clock lines = 800 x 1.90625, 525 lines; both samplers take cpp 1.90625."""
-    w = derive.windows({derive.CENTRE: ff_of(framesfile, derive.CENTRE, cpp=1.90625, frame_clocks=800625),
-                        derive.TB_V1: ff_of(framesfile, derive.TB_V1, cpp=1.90625, frame_clocks=800625)})
-    assert w[derive.CENTRE]["exact"] and w[derive.TB_V1]["exact"]
+def test_fractional_cpp_is_not_tb_v1_exact(framesfile):
+    """vgadonut's timing: 1525-clock lines = 800 x 1.90625, 525 lines. The mode's line at a whole cpp is 1600."""
+    w = both(framesfile, centre_cpp=1.90625, tb_cpp=1.90625, frame_clocks=800625)
+    assert w[derive.CENTRE] == centre(True, 800625, 800625)
+    assert w[derive.TB_V1] == tb(False, 800625, 1525, 525, 1600, 525)
 
 
 def test_short_line_tb_v1_below_one_cpp_is_flagged(framesfile):
     """rle_vga's timing: 800-clock lines, 500 lines, matched to 640x480@75 (840 x 500)."""
-    w = derive.windows({derive.CENTRE: ff_of(framesfile, derive.CENTRE, mode="640x480@75", frame_clocks=400000),
-                        derive.TB_V1: ff_of(framesfile, derive.TB_V1, mode="640x480@75", cpp=800 / 840,
-                                            frame_clocks=400000)})
-    assert w[derive.CENTRE] == {"exact": False, "frame_clocks": 400000, "mode_frame_clocks": 420000,
-                                "outside": 0, "suggested_offset": [0, 0]}
-    assert w[derive.TB_V1] == {"exact": False, "frame_clocks": 400000, "mode_frame_clocks": 420000}
+    w = both(framesfile, mode="640x480@75", tb_cpp=800 / 840, frame_clocks=400000)
+    assert w[derive.CENTRE] == centre(True, 400000, 420000)
+    assert w[derive.TB_V1] == tb(False, 400000, 800, 500, 840, 500)
+
+
+def test_rounded_cpp_leaves_the_line_unmeasured(framesfile):
+    """tomkeddie_a's timing: 799 x 506. tb-v1 rounds 799/800 to cpp 1, so 404,294 is not whole 800-clock lines."""
+    w = derive.windows({derive.TB_V1: ff_of(framesfile, derive.TB_V1, frame_clocks=404294)})
+    assert w[derive.TB_V1] == tb(False, 404294, None, None, 800, 525)
 
 
 def test_unknown_mode_is_not_exact(framesfile):
-    w = derive.windows({derive.CENTRE: ff_of(framesfile, derive.CENTRE),
+    w = derive.windows({derive.CENTRE: ff_of(framesfile, derive.CENTRE, mode="unknown"),
                         derive.TB_V1: ff_of(framesfile, derive.TB_V1, mode="unknown")})
-    assert w[derive.TB_V1] == {"exact": False, "frame_clocks": 420000, "mode_frame_clocks": None}
+    assert w[derive.TB_V1] == tb(False, 420000, None, None, None, None)
+    assert w[derive.CENTRE] == centre(True, 420000, None)
+
+
+@pytest.mark.parametrize("sampler", [derive.CENTRE, derive.TB_V1])
+def test_a_mode_missing_from_vgacap_is_raised(framesfile, sampler):
+    with pytest.raises(derive.DeriveError, match="mode '640x480@61'"):
+        derive.windows({sampler: ff_of(framesfile, sampler, mode="640x480@61")})
+
+
+def test_tb_v1_has_no_720x400():
+    assert "720x400@70" in derive.mode_totals()[derive.CENTRE]
+    assert "720x400@70" not in derive.mode_totals()[derive.TB_V1]
+
+
+def test_a_cpp_off_the_line_grid_is_raised(framesfile):
+    """A cpp that is not a whole number of clocks over the mode's 800 pixels cannot come from tb-v1."""
+    with pytest.raises(derive.DeriveError, match="not a whole line over 800 pixels"):
+        derive.windows({derive.TB_V1: ff_of(framesfile, derive.TB_V1, cpp=1.0001234)})
 
 
 def test_fewer_than_two_frames_is_not_exact(framesfile):
-    """frame_clocks is 0 with fewer than two frames: the timing is not known, so not exact."""
-    w = derive.windows({derive.CENTRE: ff_of(framesfile, derive.CENTRE, frames=1)})
-    assert w[derive.CENTRE]["frame_clocks"] == 0 and w[derive.CENTRE]["exact"] is False
+    """frame_clocks is 0 with fewer than two frames: tb-v1's line count is not known."""
+    w = derive.windows({derive.TB_V1: ff_of(framesfile, derive.TB_V1, frames=1)})
+    assert w[derive.TB_V1] == tb(False, 0, None, None, 800, 525)
 
 
 @pytest.mark.parametrize("status", ["no-sync", "bad-timing", "bad-window"])
-def test_no_window_is_null(framesfile, status):
-    """A sampler without a window has `window: null`; tb-v1 without centre-v1's cpp is not exact."""
+def test_no_window_is_null_and_tb_v1_stands_alone(framesfile, status):
+    """A sampler without a window has `window: null`; tb-v1's flag does not need centre-v1's."""
     w = derive.windows({derive.CENTRE: ff_of(framesfile, derive.CENTRE, status=status),
                         derive.TB_V1: ff_of(framesfile, derive.TB_V1)})
     assert w[derive.CENTRE] is None
-    assert w[derive.TB_V1] == {"exact": False, "frame_clocks": 420000, "mode_frame_clocks": None}
+    assert w[derive.TB_V1] == tb(True, 420000, 800, 525, 800, 525)
 
 
 def test_centre_alone(framesfile):
@@ -116,9 +157,7 @@ def test_centre_alone(framesfile):
 def test_committed_centre_fixtures(framesfile, name):
     """The committed centre-v1 fixtures: 640x480@60 timing, one row lit outside the window."""
     ff = framesfile.read_frames_txt(FIXTURES / "frames" / name / "frames.txt")
-    assert derive.windows({derive.CENTRE: ff})[derive.CENTRE] == {
-        "exact": False, "frame_clocks": 420000, "mode_frame_clocks": 420000,
-        "outside": 640, "suggested_offset": [0, -1]}
+    assert derive.windows({derive.CENTRE: ff})[derive.CENTRE] == centre(False, 420000, 420000, 640, (0, -1))
 
 
 def test_pilot_nyan(framesfile):
@@ -126,9 +165,7 @@ def test_pilot_nyan(framesfile):
     d = FIXTURES / "pilot-frames" / "tt08__tt_um_nyan"
     read = {s: framesfile.read_frames_txt(d / s / "frames.txt") for s in (derive.CENTRE, derive.TB_V1)}
     assert read[derive.TB_V1].clocks_per_pixel == 1.04
-    w = derive.windows(read)
-    assert w == {
-        derive.CENTRE: {"exact": False, "frame_clocks": 436800, "mode_frame_clocks": 420000,
-                        "outside": 4472, "suggested_offset": [8, -1]},
-        derive.TB_V1: {"exact": False, "frame_clocks": 436800, "mode_frame_clocks": 420000},
+    assert derive.windows(read) == {
+        derive.CENTRE: centre(False, 436800, 420000, 4472, (8, -1)),
+        derive.TB_V1: tb(False, 436800, 832, 525, 800, 525),
     }

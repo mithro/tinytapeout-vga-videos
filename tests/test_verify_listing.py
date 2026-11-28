@@ -341,8 +341,8 @@ def test_script_runs_standalone():
 WINDOWS = {"centre-v1": {"sampler_status": "ok", "window": {"exact": False, "frame_clocks": 436800,
                                                             "mode_frame_clocks": 420000, "outside": 4472,
                                                             "suggested_offset": [8, -1]}},
-           "tb-v1": {"sampler_status": "ok", "window": {"exact": False, "frame_clocks": 436800,
-                                                        "mode_frame_clocks": 420000}}}
+           "tb-v1": {"sampler_status": "ok", "window": {"exact": False, "frame_clocks": 436800, "line_clocks": 832,
+                                                        "lines": 525, "mode_line_clocks": 800, "mode_lines": 525}}}
 
 
 def test_verify_takes_the_window_flags(framesfile, tmp_path):
