@@ -4,6 +4,9 @@
 #   xvfb-run -a -s "-screen 0 1600x900x24" docs/reports/2026-11-pilot/viewers/screenshot.sh gtkwave WAVE.fst WAVE.gtkw OUT.png
 #   xvfb-run -a -s "-screen 0 1600x900x24" docs/reports/2026-11-pilot/viewers/screenshot.sh surfer WAVE.fst WAVE.sucl OUT.png
 #
+# Run it from the waveform's directory with relative paths: Surfer's status bar shows the
+# path it was given, and a published screenshot must not carry a home directory.
+#
 # Starts the viewer with the save file vgacap-export wrote, waits WAIT seconds (default 20) for it
 # to load and draw, captures the whole screen with ImageMagick's import, and stops the viewer.
 set -eu
