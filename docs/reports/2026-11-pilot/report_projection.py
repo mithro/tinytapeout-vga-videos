@@ -35,6 +35,13 @@ STUDY_MB = {
     "metaballs": (1.33, 0.72, 90.56, 1.03, 1.00, 36.62, 19.54, 36.35),
     "tomkeddie_a": (0.11, 0.16, 60.14, 0.67, 1.14, 53.09, 49.86, 61.76),
 }
+# The same study, "A full-pin export to FST: vgch2's file against planar's, median of the reps":
+# process CPU s of the export from vgch2's file, and of vgacap-export itself on it.
+EXPORT_CPU_S = {
+    "tt08/tt_um_a1k0n_nyancat": (447.9, 541.0),
+    "ttihp25a/tt_um_MichaelBell_rle_vga": (516.2, 468.9),
+    "ttihp25a/tt_um_rejunity_atari2600": (757.5, 791.3),
+}
 JOBS = 24
 OLD_STAGES = ("fetch", "build", "simulate", "encode")
 NEW_STAGES = ("fetch", "build", "simulate", "derive", "encode", "publish")
@@ -79,6 +86,16 @@ def main() -> None:
     for k, name in enumerate(STUDY_FORMATS):
         tot = sum(v[k] for v in STUDY_MB.values())
         print(f"| {name} | {tot:,.2f} | {tot / vg:.3f} | {tot * 1e6 / clocks_pilot * clocks_all / 1e9:,.1f} |")
+    print()
+
+    # 1b. Exporting every trace to FST from VGCH v2, scaled by clocks from the study's 3 busy traces.
+    print("## A full-pin export to FST, projected\n")
+    ex_clocks = sum(int(res[i]["timing"]["clocks_simulated"]) for i in EXPORT_CPU_S)
+    print("| exporter | 3 busy traces (CPU s) | their clocks | 408 projects, projected (CPU h) |")
+    print("| --- | ---: | ---: | ---: |")
+    for k, name in enumerate(("the study's export from VGCH v2", "vgacap-export on VGCH v2")):
+        s = sum(v[k] for v in EXPORT_CPU_S.values())
+        print(f"| {name} | {s:,.1f} | {ex_clocks:,} | {s / ex_clocks * clocks_all / 3600:,.1f} |")
     print()
 
     # 2. Stores and PNGs, and what tb-v1 adds after sharing.

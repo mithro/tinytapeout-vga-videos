@@ -14,6 +14,13 @@ pilot: clocks 25,403,566,098; distinct frames 19,692; clocks share 0.0359
 | VCD (zstd 1) | 11,233.93 | 8.714 | 312.8 |
 | LXT2 | 30,083.45 | 23.336 | 837.7 |
 
+## A full-pin export to FST, projected
+
+| exporter | 3 busy traces (CPU s) | their clocks | 408 projects, projected (CPU h) |
+| --- | ---: | ---: | ---: |
+| the study's export from VGCH v2 | 1,721.6 | 4,466,000,832 | 75.7 |
+| vgacap-export on VGCH v2 | 1,801.2 | 4,466,000,832 | 79.3 |
+
 ## Stores and PNGs, pilot
 
 | project | distinct frames | centre-v1 store (bytes) | tb-v1 store (bytes) | centre-v1 PNGs (bytes) | centre-v1 PNG files | PNGs written, both samplers | tb-v1 PNG files added | tb-v1 PNG bytes added |
