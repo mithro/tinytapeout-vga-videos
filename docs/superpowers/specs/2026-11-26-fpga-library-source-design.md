@@ -204,7 +204,7 @@ treat that as null. Every other key whose type allows null is still present.
 | `verdict` | string | `^[a-z-]{1,32}$`: the videos pipeline's render verdict |
 | `qspi` | string | `none` or `emulated` |
 | `pdk_latches` | bool | true when the design uses PDK latch or clock-gate cells (Ruling BJ) |
-| `synthesis_differs` | bool or null | true, false or null (Ruling CH); absent means null for now |
+| `synthesis_differs` | bool or null | `true`, `false` or `null` (Ruling CH) |
 | `poster` | string or null | relative path; see The archive path rule |
 | `preview_gif` | string or null | relative path; same rule |
 | `video_10s_webm` | string or null | relative path; same rule |
@@ -316,7 +316,7 @@ Tim said on 2026-11-24 that designs which fail timing are listed, with a visible
 | `build_status == "timing-fail"` and `fmax_hz < clock_hz` | `timing: <fmax_hz / 1e6, 2 decimals> MHz < <clock_hz / 1e6, 3 decimals> MHz`, for example `timing: 17.08 MHz < 25.175 MHz` | warn |
 | `build_status == "timing-fail"` and `fmax_hz >= clock_hz` (Ruling AN: the main clock passes, another clock or a cross-domain path fails) | `timing not met on a secondary clock or path` | warn |
 | `pdk_latches == true` (Ruling BJ) | `PDK latch cells: may not behave as on silicon` | warn |
-| `synthesis_differs === true`, the JSON boolean only (Ruling CH) | `Board picture may differ from the preview` | warn |
+| `synthesis_differs == true` (Ruling CH) | `Board picture may differ from the preview` | warn |
 | `validation == "none"` | `not hardware-validated` | info |
 | `validation == "mcu"` | `validated at MCU speed only` | info |
 | `qspi == "emulated"` | `QSPI emulated` | info |
@@ -327,7 +327,8 @@ Tim said on 2026-11-24 that designs which fail timing are listed, with a visible
 and a warning icon on all 445 entries would teach visitors to ignore warnings (finding m16).
 The warn class, and the Commander's warning icon, mean a doubt about how the design behaves on
 the FPGA: missed timing, PDK latch cells (Ruling BJ), or a synthesised netlist that differs from the RTL
-the preview shows (Ruling CH); the provenance of each is in the rulings table.
+the preview shows (Ruling CH); the provenance of each is in the rulings table. The `synthesis_differs` badge shows only
+for the JSON boolean `true`: the string `"true"` and the number 1 show none.
 
 ### Reference checker and fixture (this repo)
 
