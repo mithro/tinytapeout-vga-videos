@@ -49,7 +49,7 @@ The rulings ledger is not committed, so each links where the ruling is written i
 | BK | one upload and the listing measured | owner | 2026-11-27 | [plan Task 19](../../superpowers/plans/2026-11-26-raw-traces-pipeline.md#task-19-the-upload-split-decision-4-with-the-frames-upload-left-off) and [measurements.md](measurements.md#rulings-used-here) |
 | BO | proceed with one upload and watch the listing | owner | 2026-11-27 | none |
 | BV | re-run on VGCH v2 and decide planar later | owner | 2026-11-27 | none |
-| BY | the `--host big` alias is a local config name | controller | 2026-11-28 | none |
+| BY | the `--host big` alias is a local config name and a `SITE.conf` placeholder stands for the host-named nginx file | controller | 2026-11-28 | none |
 | CA | per-sampler window flags | owner | 2026-11-28 | [consumers.md#sampler-windows](../../consumers.md#sampler-windows) |
 
 ## Left for the owner
@@ -340,7 +340,7 @@ Made with `tim`'s sudo, from the controller's logs `tmp/t18-host.log` and `tmp/t
 - No etckeeper commit SHA is recorded in those logs, the Task 18 and Task 19 reports, or the ledger. None of the recorded commands writes under `/etc`, which is all etckeeper tracks.
 - etckeeper's history since 2026-11-25 holds 5 commits, all "letsencrypt: auto-commit changes", and `/etc` has no uncommitted change ([host facts](logs/host-facts-2026-11-28.md)).
 - The upload-split changes that would have had etckeeper commits ([plan Task 19](../../superpowers/plans/2026-11-26-raw-traces-pipeline.md#task-19-the-upload-split-decision-4-with-the-frames-upload-left-off) Steps 1, 3 and 4) were not made: the owner chose one upload (Ruling BK).
-- Checked read-only on 2026-11-28 ([host facts](logs/host-facts-2026-11-28.md)): `Linger=yes`; `ttvga` has no timers; the only upload timer is the main one. `<staging_dir>` and the frames marker exist, owned by `ttvga`.
+- Checked read-only on 2026-11-28 ([host facts](logs/host-facts-2026-11-28.md)): `Linger=yes`; `ttvga` has no timers; the only upload timer is the main one. `<staging_dir>`, `<frames_root>` and the frames marker exist, owned by `ttvga` ([host facts, `ls -ld`](logs/host-facts-2026-11-28.md#the-staging-and-frames-directories-ls--ld)).
 
 ## Carried minors folded in
 

@@ -60,3 +60,13 @@ No `data-upload-wafer-space-frames` timer is installed. The other 22 rows are no
 `sudo -n etckeeper unclean`: exit 1, so `/etc` has no uncommitted change.
 
 None of these commits comes from this pipeline.
+
+## The staging and frames directories: `ls -ld`
+
+Run 2026-11-28T11:53:43Z as `ttvga` over ssh to the same host, read only: `ls -ld --time-style=+%Y-%m-%dT%H:%M:%S%z` on [`host.toml`](../../../host-setup.md#hosttoml)'s `staging_dir`, its `frames_root` and the frames marker (exit 0). Each literal path is written as its `host.toml` key.
+
+```
+drwxr-xr-x 2 ttvga ttvga 4096 2026-11-27T19:12:48+1030 <staging_dir>
+drwxr-xr-x 6 ttvga ttvga 4096 2026-11-27T12:15:48+1030 <frames_root>
+-rw-rw-r-- 1 ttvga ttvga    0 2026-11-27T11:39:02+1030 <frames_root>/.ttvga-frames-root
+```
