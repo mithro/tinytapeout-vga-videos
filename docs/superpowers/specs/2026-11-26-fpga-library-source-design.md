@@ -22,6 +22,7 @@ These rulings bind this spec.
 | AF | Only pins in `_fo_ui_driven` get the 1 ms output-low discharge. Every other released pin goes straight to `Pin.IN` with the pull-down and is never made an output. The E9 input-enable workaround (PADS_BANK0 `GPIOn.IE = 0`) is used only if the hardware check shows the discharge alone is not enough. |
 | AG | `safe.py:99` reads `0xd0000020` as the SIO output-enable register. That is `GPIO_OE` on the RP2040, but on the RP2350 it is the write-only `GPIO_OUT_CLR`; the RP2350's `GPIO_OE` is `0xd0000030`. A separate fpgas.online-tt PR, before the daemon's library work, picks the register by chip, with a test, and keeps `SAFE_CODE`'s structure. |
 | BJ | Entries carry a bool `pdk_latches`: true when the design uses PDK latch or clock-gate cells. The publisher writes it on every entry, and it is required like every other key: it was optional only while the readers were deployed, and became required once the published index carried it on all 357 entries (2026-11-27). When true, both UIs show the warn badge `PDK latch cells: may not behave as on silicon`, which never disables Load. Provenance: on 2026-11-27, about 08:35 local, the FPGA session asked the owner, as item 4 of a numbered list, "Should the 11 latch-cell designs be listed with a warning, or stay unpublished as now?" The owner replied "(4) Yes." Because it was an either/or question, the FPGA session read that as "list with a warning" and said so back to the owner, who made no correction. The owner then confirmed it directly on 2026-11-27, in the controller session (AskUserQuestion answer: "List with the warning"). |
+| CH | Entries may carry `synthesis_differs`, a nullable bool, per `bin_sha256`, from the FPGA harness's committed fpga-4 hardware record (the 2026-11-27 run). That run compared the board capture against two Verilator simulations with the fpga-4 stimulus (`ui_in` 0, `uio_in` 0xc0, reset released after 10 clocks): the RTL simulation (the harness's published reference, the same RTL the preview is rendered from) and a simulation of the build's synthesised Yosys netlist. `true`: a non-exact capture of this `bin_sha256` whose cause is "synthesis differs", because the netlist simulation reproduces every capture exactly and the RTL simulation does not. `false`: an exact capture of this `bin_sha256` against the RTL reference. `null`: not checked, because there is no record for this `bin_sha256`, or the capture is non-exact with another cause. `null` is the common case, and unlike `pdk_latches` the key is nullable. When `true`, both UIs show the warn badge `Board picture may differ from the preview`, which never disables Load; `false`, `null`, absent and any non-boolean value show no badge. Rollout follows Ruling BJ: (a) the spec, the checker, the site and the Commander accept the key as optional, readers treat absent as `null`, and the checker refuses any value that is not `true`, `false` or `null`; (b) the FPGA session publishes it on every entry once all four step (a) pieces are live; (c) a later step makes it required. Provenance: on 2026-11-28, a few minutes before 12:20Z, the owner typed in the FPGA session's terminal "(1) yes (2) yes", answering that session's question "(2) What to do about 13 designs where the board doesn't match the preview? ... (a) Flag them: keep them in the library with a warning that the picture may differ from the preview ... My recommendation: (a) now". So the owner decided "keep the 13 and flag them". The key name `synthesis_differs`, the nullable definition and the badge text are the FPGA session's proposal, accepted by the controller; they are not the owner's words. The answer reached the controller through the FPGA session, not directly from the owner. |
 
 ## Why
 
@@ -176,7 +177,8 @@ Every key is required.
 
 ### Entry keys
 
-Every key is required. A key whose type allows null is still present.
+Every key is required, except `synthesis_differs` for now (Ruling CH): readers accept it absent and
+treat that as null. A key whose type allows null is still present.
 
 | Key | Type | Rule |
 |---|---|---|
@@ -202,6 +204,7 @@ Every key is required. A key whose type allows null is still present.
 | `verdict` | string | `^[a-z-]{1,32}$`: the videos pipeline's render verdict |
 | `qspi` | string | `none` or `emulated` |
 | `pdk_latches` | bool | true when the design uses PDK latch or clock-gate cells (Ruling BJ) |
+| `synthesis_differs` | bool or null | true, false or null (Ruling CH); absent means null for now |
 | `poster` | string or null | relative path; see The archive path rule |
 | `preview_gif` | string or null | relative path; same rule |
 | `video_10s_webm` | string or null | relative path; same rule |
@@ -313,6 +316,7 @@ Tim said on 2026-11-24 that designs which fail timing are listed, with a visible
 | `build_status == "timing-fail"` and `fmax_hz < clock_hz` | `timing: <fmax_hz / 1e6, 2 decimals> MHz < <clock_hz / 1e6, 3 decimals> MHz`, for example `timing: 17.08 MHz < 25.175 MHz` | warn |
 | `build_status == "timing-fail"` and `fmax_hz >= clock_hz` (Ruling AN: the main clock passes, another clock or a cross-domain path fails) | `timing not met on a secondary clock or path` | warn |
 | `pdk_latches == true` (Ruling BJ) | `PDK latch cells: may not behave as on silicon` | warn |
+| `synthesis_differs === true`, the JSON boolean only (Ruling CH) | `Board picture may differ from the preview` | warn |
 | `validation == "none"` | `not hardware-validated` | info |
 | `validation == "mcu"` | `validated at MCU speed only` | info |
 | `qspi == "emulated"` | `QSPI emulated` | info |
@@ -322,7 +326,8 @@ Tim said on 2026-11-24 that designs which fail timing are listed, with a visible
 `not hardware-validated` is an info badge, not a warning. Every entry has it in the first pass,
 and a warning icon on all 445 entries would teach visitors to ignore warnings (finding m16).
 The warn class, and the Commander's warning icon, mean a doubt about how the design behaves on
-the FPGA: missed timing, or PDK latch cells (Ruling BJ; its provenance is in the rulings table).
+the FPGA: missed timing, PDK latch cells (Ruling BJ), or a synthesised netlist that differs from the RTL
+the preview shows (Ruling CH); the provenance of each is in the rulings table.
 
 ### Reference checker and fixture (this repo)
 
@@ -1076,6 +1081,12 @@ daemon, file names come only from ids that pass `NAME_RE`, and the metadata is t
 For `pdk_latches` (Ruling BJ), the readers went first: the site, with its cache version
 bumped (`NORMALISE_VERSION` 2), and the Commander, then an index that sets the key on every
 entry. Only then did the readers make the key required (`NORMALISE_VERSION` 3).
+
+For `synthesis_differs` (Ruling CH), the readers go first again: the spec, the checker, the site
+(`NORMALISE_VERSION` 4, keeping `null` for an absent key, never `false`) and the Commander accept
+the key as optional (step a); the FPGA session then publishes it on every entry (step b). The key
+stays optional, and `synthesis_differs` is optional until step (c), a later step that makes it
+required on every entry with the value `true`, `false` or `null`.
 6. **Hardware check** (section 9).
 
 | Deployed | Not yet | Result |
@@ -1086,6 +1097,7 @@ entry. Only then did the readers make the key required (`NORMALISE_VERSION` 3).
 | site, daemon | Commander 0.3.0 | the board.js panel works; 0.2.x lists a loaded library design by its name only |
 | Commander 0.3.0 | daemon | no `library` key, so the Commander shows no library entries |
 | publisher writing `pdk_latches` | site and Commander with Ruling BJ | the old site and Commander drop the key, so latch designs are listed without a warning |
+| publisher writing `synthesis_differs` | site and Commander with Ruling CH | the old site and Commander drop the key, so flagged designs are listed without a warning |
 
 ## 9. Testing
 
@@ -1100,6 +1112,7 @@ entry. Only then did the readers make the key required (`NORMALISE_VERSION` 3).
 - NaN and Infinity are refused;
 - `ui_in` with bits outside the mask is refused;
 - `pdk_latches` is required and must be a bool (Ruling BJ);
+- `synthesis_differs` may be absent, and when present must be `true`, `false` or `null` (Ruling CH);
 - non-contiguous shuttles are refused;
 - `--bins` mismatches are reported.
 
