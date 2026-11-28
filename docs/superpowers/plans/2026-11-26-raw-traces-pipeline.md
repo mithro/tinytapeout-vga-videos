@@ -274,8 +274,8 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
 - Produces:
   - **`tracetool info TRACE`** prints `key: value` lines:
     - the header fields, `samples`, `clocks`, `blocks`, `table_rebuilt`;
-    - every META(open) and META(close) key, as `open.<key>` and `close.<key>` (`close.status: truncated` when there is none);
-    - `changes.<port>: <n>` for each tt-um-43 port except `clk`.
+    - every META(open) and META(close) key, as `open.<key>` and `close.<key>` (`close.status: truncated` when there is none).
+    - It reads only the header, index and META (no run scan), so it takes about 0.2 s on any trace.
   - **`tracetool slice TRACE --from CLOCK --to CLOCK --out PATH`**: a trace of samples `[2*from, 2*to)`, renumbered from sample 0.
     - META(open) is copied, with `slice_from_clock` and `slice_to_clock` added.
     - META(close) is written only when the original has one, with the original's `status`, `capture_after_clock=0` and `frames=0`. The slice of a truncated trace has none, so it reads as truncated by the format's own rule.
