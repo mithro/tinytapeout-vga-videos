@@ -25,10 +25,10 @@ check = "uv/uv"
 [python]
 version = "3.14.7"
 
-# Pinned to vgacap `main` at 4a3c670: the merge of PR #62 (XXH3-128 frame digests replace SHA-256).
+# Pinned to vgacap `main` at da9ea98: includes PR #62 (XXH3-128 frame digests), #74 (vectorised centre-v1) and #68 (tb-v1 run fill).
 [vgacap]
 git = "https://github.com/mithro/vgacap"
-commit = "4a3c6701638c67956b54d5dee8f589e89e869b32"
+commit = "da9ea98b287740aa11b99263948bb3ca62d961c4"
 
 # derive.py hashes each PNG record with XXH3-128 (the frames format's digest); the host
 # scripts run without a project, so uv installs it for them: `uv run --with xxhash==<version>`.
