@@ -1085,9 +1085,9 @@ entry. Only then did the readers make the key required (`NORMALISE_VERSION` 3).
 
 For `synthesis_differs` (Ruling CH), the readers go first again: the spec, the checker, the site
 (`NORMALISE_VERSION` 4, keeping `null` for an absent key, never `false`) and the Commander accept
-the key as optional (step a); the FPGA session then publishes it on every entry (step b). The key
-stays optional, and `synthesis_differs` is optional until step (c), a later step that makes it
-required on every entry with the value `true`, `false` or `null`.
+the key as optional (step a); the FPGA session then publishes it on every entry (step b). It stays
+optional until step (c), a later step that makes it required on every entry, with the value `true`,
+`false` or `null`.
 6. **Hardware check** (section 9).
 
 | Deployed | Not yet | Result |
