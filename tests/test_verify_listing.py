@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import io
 import json
 import sys
@@ -135,7 +136,6 @@ def test_top_level_hrefs():
 
 
 def test_server_stale_prints_what_it_cannot_see(tmp_path, capsys):
-    import argparse
     local = tmp_path / "archive"
     (local / "tt05" / "tt_um_a").mkdir(parents=True)
     (local / "tt05" / "tt_um_a" / "a_60s.mp4").write_bytes(b"m")
@@ -268,3 +268,71 @@ def test_verify_refuses_a_pre_xxh3_frames_txt_and_hash_file(framesfile, tmp_path
     assert failures[0].startswith("tt06/tt_um_old: centre-v1: frame_hashes.sha256-rgb6.txt: ")
     assert failures[1].startswith("tt06/tt_um_old: tb-v1: frames.txt: ")
     assert "sha256" in failures[0] and "sha256" in failures[1]
+
+
+# ---------------------------------------------------------------------------
+# main(): the command line
+# ---------------------------------------------------------------------------
+
+def test_main_server_stale_dispatches_and_skips_the_archive_checks(tmp_path, monkeypatch):
+    seen = []
+    monkeypatch.setattr(verify, "server_stale", lambda args: seen.append(args) or 3)
+    monkeypatch.setattr(verify, "projects", lambda videos: pytest.fail("--server-stale checks no videos"))
+    monkeypatch.setattr(sys, "argv", ["verify.py", "--server-stale", BASE, "--archive", str(tmp_path)])
+    assert verify.main() == 3
+    assert seen[0].server_stale == BASE and seen[0].archive == tmp_path
+
+
+def test_main_missing_host_toml_is_a_failure(tmp_path, monkeypatch, capsys):
+    videos = tmp_path / "videos"
+    videos.mkdir()
+    monkeypatch.setattr(sys, "argv", ["verify.py", "--videos", str(videos), "--root", str(tmp_path / "root")])
+    assert verify.main() == 1
+    out = capsys.readouterr().out.splitlines()
+    assert out[0] == f"verifying 0 projects in {videos}"
+    assert any(line.startswith("  frames: host.toml: ") for line in out)
+    assert out[-1] == "VERIFIED: NO"
+
+
+def test_main_passes_with_nothing_wrong(tmp_path, monkeypatch, capsys):
+    videos, frames_root = tmp_path / "videos", tmp_path / "frames"
+    videos.mkdir()
+    (frames_root / "tt05" / "tt_um_a").mkdir(parents=True)
+    fake = type(sys)("vgacap")
+    fake.framesfile = object()
+    monkeypatch.setitem(sys.modules, "vgacap", fake)
+    monkeypatch.setattr(verify.hostconf, "load", lambda root: argparse.Namespace(frames_root=frames_root))
+    monkeypatch.setattr(verify.vgacap_path, "add", lambda root: None)
+    calls = []
+    monkeypatch.setattr(verify, "check_frames", lambda *a: calls.append(a) or ([], []))
+    monkeypatch.setattr(sys, "argv", ["verify.py", "--videos", str(videos), "--root", str(tmp_path / "root")])
+    assert verify.main() == 0
+    assert calls == [(frames_root, tmp_path / "root" / "work", fake.framesfile)]
+    out = capsys.readouterr().out.splitlines()
+    assert "  frames projects without a problem: 1 of 1" in out
+    assert out[-1] == "VERIFIED: yes"
+
+
+def test_package_import_leaves_sys_path_alone(tmp_path):
+    """tt-vga imports `ttvga.harness.verify`: one `hostconf`, and the harness directory not put on sys.path."""
+    import subprocess
+    probe = tmp_path / "probe.py"
+    probe.write_text(
+        "import sys\n"
+        "before = list(sys.path)\n"
+        "from ttvga import remote  # imports ttvga.harness.verify and ttvga.harness.hostconf\n"
+        "from ttvga.harness import verify\n"
+        "assert sys.path == before, set(sys.path) - set(before)\n"
+        "assert 'hostconf' not in sys.modules\n"
+        "assert verify.hostconf is sys.modules['ttvga.harness.hostconf']\n")
+    root = Path(__file__).resolve().parent.parent
+    done = subprocess.run([sys.executable, str(probe)], cwd=root, capture_output=True, text=True)
+    assert done.returncode == 0, done.stderr
+
+
+def test_script_runs_standalone():
+    """On the host verify.py runs as a plain script, its siblings beside it."""
+    import subprocess
+    done = subprocess.run([sys.executable, str(HARNESS_DIR / "verify.py"), "--help"], capture_output=True, text=True)
+    assert done.returncode == 0, done.stderr
+    assert "--server-stale" in done.stdout

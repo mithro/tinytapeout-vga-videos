@@ -58,12 +58,19 @@ from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 from urllib.parse import quote, unquote
 
-HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE))
-
-import hostconf  # noqa: E402
-import vgacap_path  # noqa: E402
-from encode import AUDIO_OUT_RATE, GIF_SECONDS, LENGTHS, clip_names, preview_names, stem_for  # noqa: E402
+# As `ttvga.harness.verify` (tt-vga imports it for FOREIGN_PATTERNS) it takes its
+# siblings from the package and leaves sys.path alone, so `hostconf` is loaded
+# once. As a script on the host it puts its own directory on sys.path.
+if __package__:
+    from . import hostconf, vgacap_path
+    from .encode import AUDIO_OUT_RATE, GIF_SECONDS, LENGTHS, clip_names, preview_names, stem_for
+else:
+    HERE = Path(__file__).resolve().parent
+    if str(HERE) not in sys.path:
+        sys.path.insert(0, str(HERE))
+    import hostconf
+    import vgacap_path
+    from encode import AUDIO_OUT_RATE, GIF_SECONDS, LENGTHS, clip_names, preview_names, stem_for
 
 # Files in the archive that the FPGA harness session owns (Ruling AA), relative
 # to the archive root: its bitstreams `<id>-<sha256[:12]>.bin` in each
