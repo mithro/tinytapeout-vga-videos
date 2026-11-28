@@ -32,8 +32,9 @@ another trace are a note, never a failure.
 the only way to see what the upload put there, and prints what the archive no
 longer has, for removal by hand. It never deletes. FOREIGN_PATTERNS are not
 this pipeline's files and are never listed. It prints what it cannot see:
-the files at the top, the files directly in a directory that serves its own
-index.html (its local subdirectories are walked instead), and hrefs it cannot read.
+the files at the top, the files and server-only subdirectories directly in a
+directory that serves its own index.html (its local subdirectories are walked
+instead), and hrefs it cannot read.
 
 Exits non-zero if anything fails, so it can gate a publish.
 
@@ -321,7 +322,8 @@ def server_stale(args: argparse.Namespace, fetch=None) -> int:
     """`--server-stale URL`: print what the server holds that the archive does not. Deletes nothing.
 
     It also prints what it cannot see: the files at the top (served as index.html, not a listing),
-    the files directly in each directory that serves its own index.html, and hrefs it cannot read.
+    the files and server-only subdirectories directly in each directory that serves its own
+    index.html, and hrefs it cannot read.
     """
     fetch = fetch or urllib.request.urlopen
     base = args.server_stale if args.server_stale.endswith("/") else args.server_stale + "/"
@@ -344,7 +346,7 @@ def server_stale(args: argparse.Namespace, fetch=None) -> int:
     print("cannot see (check by hand):")
     print(f"  the files at the top of {base} (it serves index.html, not a listing)")
     for path in sorted(unlisted):
-        print(f"  the files directly in {path} (it serves its own index.html)")
+        print(f"  the files and server-only subdirectories directly in {path} (it serves its own index.html)")
     for href in sorted(dropped):
         print(f"  an href the listing cannot read: {href!r}")
     print("stale on server (remove by hand):")

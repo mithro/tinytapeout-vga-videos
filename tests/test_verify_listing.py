@@ -159,7 +159,8 @@ def test_server_stale_prints_what_it_cannot_see(tmp_path, capsys):
     out = capsys.readouterr().out.splitlines()
     assert out[0] == f"walked 3 top-level directories of {BASE} against {local} (1 linked from the top page only)"
     assert f"  the files at the top of {BASE} (it serves index.html, not a listing)" in out
-    assert "  the files directly in frames/tt05/tt_um_a/centre-v1/ (it serves its own index.html)" in out
+    assert ("  the files and server-only subdirectories directly in frames/tt05/tt_um_a/centre-v1/"
+            " (it serves its own index.html)") in out
     assert "  an href the listing cannot read: 'tt05/tt_um_a/x:y'" in out
     assert out[-2:] == ["  old/", "1 stale"]
 
