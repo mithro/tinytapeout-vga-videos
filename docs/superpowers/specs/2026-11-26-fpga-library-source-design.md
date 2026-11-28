@@ -796,10 +796,10 @@ the last ETag the archive sent, and reads at most 4 MiB. The JSON is parsed with
   normalising again, so the key names the normaliser's version: a change to what `normalise`
   keeps bumps `NORMALISE_VERSION`, and a copy made by older code is a miss, fetched in full
   without `If-None-Match`. The versions so far:
-  - 2: keeps `pdk_latches` (Ruling BJ).
-  - 3: requires `pdk_latches`, so no copy carries the old default (Ruling BJ).
-  - 4: adds `synthesis_differs`, kept as `null` when absent and never defaulted to `false`, which
-    would mean "checked and exact" (Ruling CH).
+    - 2: keeps `pdk_latches` (Ruling BJ).
+    - 3: requires `pdk_latches`, so no copy carries the old default (Ruling BJ).
+    - 4: adds `synthesis_differs`, kept as `null` when absent and never defaulted to `false`,
+      which would mean "checked and exact" (Ruling CH).
   - It is fresh for 300 s.
   - If the archive fails, the last good copy is served for up to 24 h, with the header
     `X-TTSite-Library-Stale: <age>`.
