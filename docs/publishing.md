@@ -113,7 +113,7 @@ PNGs and pages into the frames subtree of the archive (`frames_root` in
 [`host.toml`](host-setup.md#hosttoml)). There is one upload: the archive's
 normal five-minute upload carries the frames subtree with the clips and the
 index (owner rulings BK and BO in the
-[pipeline plan's ledger](superpowers/plans/2026-11-26-raw-traces-pipeline.md#task-19-the-upload-split-decision-4-with-the-frames-upload-left-off)).
+[pipeline plan, Task 19](superpowers/plans/2026-11-26-raw-traces-pipeline.md#task-19-the-upload-split-decision-4-with-the-frames-upload-left-off)).
 Nothing in this repository changes the upload.
 
 - **Nothing is held back.** A project's frames reach the server within one
