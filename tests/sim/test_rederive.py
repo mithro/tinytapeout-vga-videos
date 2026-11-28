@@ -78,6 +78,11 @@ def test_rederive_applies_centre_window(root, go):
     assert (rc, r["rederive_error"]) == (0, None), r.get("derive_log_tail")
     assert frames_txt(pub / "centre-v1" / "frames.txt")["window_offset"] == "2 1"
     assert r["samplers"]["centre-v1"]["sampler_status"] == "ok"
+    # The re-derived window flag: the shifted window still has the mode's timing; `outside` is its own.
+    w = r["samplers"]["centre-v1"]["window"]
+    assert (w["frame_clocks"], w["mode_frame_clocks"]) == (420000, 420000)
+    assert w["outside"] == int(frames_txt(pub / "centre-v1" / "frames.txt")["outside"])
+    assert w["exact"] is (w["outside"] == 0)
     assert r["rederive_override"].startswith(f"{jobroot.SHUTTLE}/{jobroot.macro_for('bars640')}.json sha256:")
     assert re.fullmatch(r"[0-9a-f]{40}", r["rederive_tools"]["vgacap"])
     work_txt = jobroot.work(root, "bars640") / "frames" / "centre-v1" / "frames.txt"

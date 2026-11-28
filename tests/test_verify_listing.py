@@ -336,3 +336,18 @@ def test_script_runs_standalone():
     done = subprocess.run([sys.executable, str(HARNESS_DIR / "verify.py"), "--help"], capture_output=True, text=True)
     assert done.returncode == 0, done.stderr
     assert "--server-stale" in done.stdout
+
+
+WINDOWS = {"centre-v1": {"sampler_status": "ok", "window": {"exact": False, "frame_clocks": 436800,
+                                                            "mode_frame_clocks": 420000, "outside": 4472,
+                                                            "suggested_offset": [8, -1]}},
+           "tb-v1": {"sampler_status": "ok", "window": {"exact": False, "frame_clocks": 436800, "line_clocks": 832,
+                                                        "lines": 525, "mode_line_clocks": 800, "mode_lines": 525}}}
+
+
+def test_verify_takes_the_window_flags(framesfile, tmp_path):
+    """A result.json with `samplers.<s>.window` (exact, not exact or null) passes as before: not exact is no failure."""
+    root, work = tmp_path / "frames", tmp_path / "work"
+    project(framesfile, root, work, "tt06/tt_um_a", samplers=("centre-v1", "tb-v1"), result={"samplers": WINDOWS})
+    project(framesfile, root, work, "tt06/tt_um_b", result={"samplers": {"centre-v1": {"window": None}}})
+    assert verify.check_frames(root, work, framesfile) == ([], [])

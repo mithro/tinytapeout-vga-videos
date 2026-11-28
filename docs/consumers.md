@@ -77,6 +77,114 @@ The `result.json` keys to read:
 The verdicts are listed at the top of [`ttvga/analyze.py`](../ttvga/analyze.py). `tb_v1_check` is
 `match`, `mismatch`, `not-run` or `off`.
 
+`samplers` has one entry per sampler the run derived, keyed `centre-v1` or `tb-v1`
+([`ttvga/harness/derive.py`](../ttvga/harness/derive.py), `_summary`):
+
+| key | from |
+|---|---|
+| `sampler_status` | `frames.txt` `sampler_status` |
+| `frames` | `frames.txt` `frames` |
+| `distinct_frames` | `frames.txt` `distinct_frames` |
+| `mode` | `frames.txt` `mode` |
+| `width` | `frames.txt` `width` |
+| `height` | `frames.txt` `height` |
+| `clocks_per_pixel` | `frames.txt` `clocks_per_pixel` |
+| `window` | [`derive.windows`](../ttvga/harness/derive.py); see [Sampler windows](#sampler-windows) |
+
+## Sampler windows
+
+**Change notice (2026-11-28).** vgacap [issue 100](https://github.com/mithro/vgacap/issues/100):
+for a design whose timing is not exactly one of vgacap's table modes, both samplers can show a shifted
+or cropped picture.
+- centre-v1 shows only correct pixels, but they may be the wrong part of the picture.
+- tb-v1 stretches the mode's standard line over the design's line. On `tt08/tt_um_nyan`, whose line is
+  832 clocks against the mode's 800, it samples every 1.04 clocks.
+
+Both samplers are published in the re-run, and each one's `window` says whether its window is exact
+for the design. Projects that are not exact are to be derived again, from their traces, with a future
+centre-v2 sampler. Until then, compare a project's frames only where `window.exact` is `true`.
+
+Each sampler's `window` is computed from that sampler's own `frames.txt` alone
+([`derive.windows`](../ttvga/harness/derive.py)).
+
+`samplers.<sampler>.window` is `null` when `sampler_status` is not `ok`. Otherwise it is an object:
+
+| key | type | centre-v1 | tb-v1 |
+|---|---|---|---|
+| `exact` | boolean | yes | yes |
+| `frame_clocks` | integer | yes | yes |
+| `mode_frame_clocks` | integer, or `null` | yes | no |
+| `outside` | integer | yes | no |
+| `suggested_offset` | array of two integers, x then y | yes | no |
+| `line_clocks` | integer, or `null` | no | yes |
+| `lines` | integer, or `null` | no | yes |
+| `mode_line_clocks` | integer, or `null` | no | yes |
+| `mode_lines` | integer, or `null` | no | yes |
+
+The modes are vgacap's own tables at the pinned commit, read and never copied:
+- centre-v1's: [`modes.py`](https://github.com/mithro/vgacap/blob/da9ea98b287740aa11b99263948bb3ca62d961c4/python/vgacap/modes.py), `TABLE` (`cpl` pixels per line, `lpf` lines);
+- tb-v1's: [`tbv1.py`](https://github.com/mithro/vgacap/blob/da9ea98b287740aa11b99263948bb3ca62d961c4/python/vgacap/tbv1.py), `TB_MODES` (`line_px`, `lines`).
+
+The mode `unknown` gives `null` for every key that needs the mode. Any other mode name missing from
+the sampler's table stops the derive with an error, as does a `clocks_per_pixel` that is not a whole
+number of clocks per line. All arithmetic is exact.
+
+### centre-v1
+
+- `exact` is `true` exactly when `outside` is 0. It does not include the timing.
+- `outside` and `suggested_offset` are its `frames.txt` keys of the same names. `outside` is the count
+  of lit pixels outside its window.
+- `frame_clocks` is its `frames.txt` `frame_clocks`, the measured frame period
+  ([frames-format.md](https://github.com/mithro/vgacap/blob/da9ea98b287740aa11b99263948bb3ca62d961c4/docs/frames-format.md)).
+- `mode_frame_clocks` is the mode's pixels per line, times its lines, times centre-v1's
+  `clocks_per_pixel`.
+- A consumer that wants the timing as well reads tb-v1's `window`, or compares `frame_clocks` with
+  `mode_frame_clocks`.
+- A `--centre-window` override moves the window. Its size still comes from the mode.
+
+### tb-v1
+
+- `line_clocks` is tb-v1's `clocks_per_pixel` times the mode's pixels per line: the design's line, as
+  tb-v1 measured it.
+- `lines` is `frame_clocks` divided by `line_clocks`.
+- `mode_line_clocks` is the mode's pixels per line times the whole number nearest tb-v1's
+  `clocks_per_pixel` (halves up, at least 1). `mode_lines` is the mode's lines.
+- `exact` is `true` exactly when `line_clocks` equals `mode_line_clocks` and `lines` equals
+  `mode_lines`.
+- `line_clocks` and `lines` are `null`, and `exact` is `false`, when `frame_clocks` is not a whole
+  number of tb-v1's lines:
+  - tb-v1 rounds a cpp within 0.01 of a whole number to it, so a 799-clock line reads as 800 clocks;
+  - the frame period is not steady;
+  - `frame_clocks` is 0 (fewer than two frames).
+- A design whose cpp is not a whole number is never exact. tb-v1 first rounds a cpp within 0.01 of a
+  whole number to it, so "not a whole number" means after that rounding: 1.04 is not whole, 1.005 is.
+
+What `exact` does not check:
+- Where the sync pulses sit inside the line, for tb-v1.
+- Lit pixels outside tb-v1's window. When tb-v1 is exact and centre-v1's `window_offset` is `0 0`, the
+  two windows are the same, so centre-v1's `outside` counts tb-v1's too.
+- The pixel phase within the window: centre-v1's `colour_changes_off_grid`.
+
+nyan's `samplers`, trimmed to the windows:
+
+```json
+{
+  "centre-v1": {"window": {"exact": false, "frame_clocks": 436800, "mode_frame_clocks": 420000,
+                           "outside": 4472, "suggested_offset": [8, -1]}},
+  "tb-v1": {"window": {"exact": false, "frame_clocks": 436800, "line_clocks": 832, "lines": 525,
+                       "mode_line_clocks": 800, "mode_lines": 525}}
+}
+```
+
+A sampler that found no sync:
+
+```json
+{"centre-v1": {"sampler_status": "no-sync", "window": null}}
+```
+
+The flags of the 11 pilot projects are in the
+[pilot measurements](reports/2026-11-pilot/measurements.md#sampler-window-flags).
+
 ## What to read, in the archive
 
 The archive is <https://data.wafer.space/big-storage/tinytapeout-vga-videos/>.
