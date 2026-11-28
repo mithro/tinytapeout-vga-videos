@@ -156,7 +156,8 @@ number of clocks per line. All arithmetic is exact.
   - tb-v1 rounds a cpp within 0.01 of a whole number to it, so a 799-clock line reads as 800 clocks;
   - the frame period is not steady;
   - `frame_clocks` is 0 (fewer than two frames).
-- A design whose cpp is not a whole number is never exact.
+- A design whose cpp is not a whole number is never exact. tb-v1 first rounds a cpp within 0.01 of a
+  whole number to it, so "not a whole number" means after that rounding: 1.04 is not whole, 1.005 is.
 
 What `exact` does not check:
 - Where the sync pulses sit inside the line, for tb-v1.

@@ -693,5 +693,6 @@ Done in plan Task 20: see [The upload's listing (Ruling BK)](#the-uploads-listin
   - nyan: `line_clocks` 832 against the mode's 800, 525 lines.
   - rle_vga: 800 against 840, 500 lines.
   - mandelbrot: 3,584 against 3,360, and 499 lines against 500.
-  - vgadonut: 1,525 against 1,600. Its cpp of 1.90625 is not a whole number.
+  - vgadonut: 1,525 against 1,600. Its cpp of 1.90625 is not a whole number, even after tb-v1's rounding of a cpp within 0.01 of one.
+    - This changed in review fix 1. Earlier versions of this table said tb-v1 exact "yes" for vgadonut, when tb-v1 was checked at centre-v1's cpp. That value is no longer current.
   - tomkeddie_a: the line is not measured. tb-v1 rounded 799/800 to cpp 1, and 404,294 is not a whole number of 800-clock lines (it is 799 x 506).
