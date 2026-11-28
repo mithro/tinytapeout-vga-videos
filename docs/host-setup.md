@@ -28,14 +28,14 @@ The user needs no sudo and no docker group. Disk, per project:
 Packages the host must already have, each printed by
 [`tt-vga host-check`](../ttvga/remote.py):
 
-| package | used by |
-|---|---|
-| [cmake](https://cmake.org/) | bootstrap, to build vgacap |
-| a C compiler (`cc`) | bootstrap, to build vgacap and [`tracetool`](../ttvga/harness/tracetool.c) |
-| [g++](https://gcc.gnu.org/) | every job, to compile the [Verilator](https://verilator.org) model |
-| [GNU make](https://www.gnu.org/software/make/) | every job, to run Verilator's generated makefile |
-| [git](https://git-scm.com/) | every job, to fetch the project's source |
-| [tmux](https://github.com/tmux/tmux) | the queue, to survive SSH disconnects |
+| package | used by | purpose |
+|---|---|---|
+| [cmake](https://cmake.org/) | bootstrap | build vgacap |
+| a C compiler (`cc`) | bootstrap | build vgacap and [`tracetool`](../ttvga/harness/tracetool.c) |
+| [g++](https://gcc.gnu.org/) | every job | compile the [Verilator](https://verilator.org) model |
+| [GNU make](https://www.gnu.org/software/make/) | every job | run Verilator's generated makefile |
+| [git](https://git-scm.com/) | every job | fetch the project's source |
+| [tmux](https://github.com/tmux/tmux) | the queue | survive SSH disconnects |
 
 Without tmux the runner falls back to
 [`setsid`](https://man7.org/linux/man-pages/man1/setsid.1.html) and
