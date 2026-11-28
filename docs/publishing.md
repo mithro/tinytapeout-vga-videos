@@ -40,9 +40,12 @@ directories are added once, in their own snippet, and included there.
 sudo install -m 644 -o root -g root ttvga/nginx/userdir-web.conf \
     /etc/nginx/snippets/userdir-web.conf
 sudo sed -i '/include snippets\/sky130-mask-web.conf;/a include snippets\/userdir-web.conf;' \
-    /etc/nginx/snippets/big-storage-site.conf
+    /etc/nginx/snippets/SITE.conf
 sudo nginx -t && sudo systemctl reload nginx
 ```
+
+`SITE.conf` stands for the host's shared site snippet, the one every virtual
+host includes.
 
 It maps `/~user/path` to `/home/user/public_html/path`, turns on directory
 listings, and leaves the media types to nginx's own `/etc/nginx/mime.types`.
