@@ -178,7 +178,7 @@ Every key is required.
 ### Entry keys
 
 Every key is required, except `synthesis_differs` for now (Ruling CH): readers accept it absent and
-treat that as null. A key whose type allows null is still present.
+treat that as null. Every other key whose type allows null is still present.
 
 | Key | Type | Rule |
 |---|---|---|
