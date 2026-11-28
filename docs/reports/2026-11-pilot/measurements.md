@@ -483,7 +483,7 @@ The 11 projects' published frames were re-derived on the host earlier today in t
 | tt08/tt_um_MichaelBell_mandelbrot | 3,355 | yes | yes |
 | tt07/tt_um_tinytapeout_dvd_screensaver | 3,596 | yes | yes |
 
-No difference: all 11 files are byte-identical to git.
+No difference: all 11 files are byte-identical to git. Output: [`logs/correctness.md`](logs/correctness.md), Step 1.
 
 ## Step 2: distinct counts
 
@@ -508,9 +508,11 @@ From the published `frames.txt` (`distinct:` lines) and the published FNV file (
 | committed FNV files | 408 |
 | distinct FNV values, summed per project | 543,730 |
 
+Output: [`logs/correctness.md`](logs/correctness.md), Step 2.
+
 ## Step 3: tb-v1 against centre-v1
 
-[`correctness.py`](correctness.py) runs [`tt-vga frames compare`](../../../ttvga/frames.py) with tb-v1 as A and centre-v1 as B, and [`tt-vga frames diff`](../../../ttvga/frames.py) on frame `first_mismatch` of both. The output and the PNGs (`a.png` tb-v1, `b.png` centre-v1, `mask.png`) are in [`frames/`](frames/), one directory per project.
+[`correctness.py`](correctness.py) runs [`tt-vga frames compare`](../../../ttvga/frames.py) with tb-v1 as A and centre-v1 as B, and [`tt-vga frames diff`](../../../ttvga/frames.py) on frame `first_mismatch` of both. The output and the PNGs (`a.png` tb-v1, `b.png` centre-v1, `mask.png`) are in [`frames/`](frames/), one directory per project. Output: [`logs/correctness.md`](logs/correctness.md), Step 3, and [`logs/compare-all.log`](logs/compare-all.log), the same compares run by hand first.
 
 | project | centre-v1 cpp | tb-v1 cpp | first mismatch | offset | start clock delta | differing pixels | diff |
 | --- | ---: | ---: | --- | --- | ---: | ---: | --- |
@@ -528,9 +530,14 @@ From the published `frames.txt` (`distinct:` lines) and the published FNV file (
 
 - Every project has the same number of frames in both samplers and no gaps. Where they differ, they differ from frame 0 and no offset up to ±120 lines them up: the crop differs, not the frame cut.
 - The start clock delta is the same for every frame of a project (one value per [`compare.txt`](frames/)): centre-v1 starts each frame at the hsync edge of the first vsync line, tb-v1 at the end of the vsync pulse.
-- tomkeddie_a: centre-v1's `porches` are 47 and 0 against the mode's 48 and 33; the mask is one-pixel vertical edges.
-- nyan: tb-v1's cpp is 1.04; its frame has a wider black band on the left and a wider cat than centre-v1's, whose band is 8 pixels (`suggested_offset` 8).
-- mandelbrot: tb-v1's frame (cpp 4.27) ends in black rows at the bottom; centre-v1's (cpp 4) fills the height.
+- **tomkeddie_a:** both samplers capture 640x504, not the mode's 640x480 (`height: 504`, `mode: 640x480@60`), which is why centre-v1's `porches` are 47 and 0.
+  - In tb-v1's `a.png` column 639 is black on every row; in centre-v1's `b.png` it is blue like the rest of the playfield.
+  - So tb-v1's window starts one pixel late and takes in a blanking pixel; centre-v1's 640 columns are all active. The mask is the one-pixel shift of every vertical edge.
+- **nyan:** the design's line is 832 clocks, not the mode's 800: `frame_clocks` is 436,800 = 832 x 525.
+  - tb-v1's cpp of 1.04 is 832/800: it stretches the mode's 800-clock line over the design's 832. centre-v1's cpp of 1 is the design's real pixel clock.
+  - In the committed PNGs the grey cat is 238 pixels wide in tb-v1 (x 167 to 405) and 247 in centre-v1 (x 152 to 399): tb-v1's is about 3.6% narrower, about 1/1.04.
+  - The black band on the left is 29 pixels in tb-v1 and 8 in centre-v1 (`suggested_offset` 8).
+- **mandelbrot:** see the check table below. tb-v1's last non-black row is 469; centre-v1's is 477, with rows 478 and 479 black.
 
 The three projects the plan names, from centre-v1's `frames.txt`:
 
@@ -541,7 +548,9 @@ The three projects the plan names, from centre-v1's `frames.txt`:
 | tt08/tt_um_MichaelBell_mandelbrot | 4 | 4 | 16,716,630 | 161,110 | -2 | -2 | 169 | 8 | **no** |
 
 - nyan: cpp and `colour_changes_off_grid` as wanted; `outside` is 4,472, suggested offset (8, -1).
-- mandelbrot: cpp as wanted; `colour_changes_off_grid` 16,716,630 and `outside` 161,110, suggested offset (-2, -2).
+- mandelbrot: cpp as wanted, but **every** colour change is off centre-v1's 4-clock grid: `colour_changes_off_grid` 16,716,630 of `colour_changes` 16,716,630, 100%.
+  - `outside` is 161,110 and the suggested offset (-2, -2). Rows 478 and 479 of centre-v1's frame are black, as the -2 rows suggest.
+  - 100% off grid is a systematic phase or period error, not noise. It is recorded as a **candidate centre-v1 grid-phase bug** for the vgacap session (reported via the controller), on the same terms as Step 4's rule.
 - No override was set for either.
 
 cpp = 1 projects (centre-v1) where the two samplers agree frame for frame:
@@ -556,7 +565,7 @@ The cpp = 1 projects that do not agree: tomkeddie_a and nyan.
 
 ## Step 4: calibration designs
 
-`tt-vga queue start --only testpatterns --timeout 10800` ran the 10 calibration jobs from 08:51 to 08:58 (the queue's log: 10 done, 0 with errors, `published=False`). Each job keeps its trace and centre-v1 output in its work directory's `kept/`.
+[`tt-vga queue start`](../../../ttvga/remote.py) `--only testpatterns --timeout 10800` ran the 10 calibration jobs from 08:51 to 08:58 (the queue's status and log: [`logs/testpatterns-queue-status.log`](logs/testpatterns-queue-status.log); 10 done, 0 with errors, `published=False`). Each job keeps its trace and centre-v1 output in its work directory's `kept/`.
 
 [`calibration.py`](calibration.py), run under [tt-vga-testpatterns](https://github.com/mithro/tt-vga-testpatterns/tree/1ff01b15eb0a9f624b45d38c01c7e010e5bbdd8d)' own environment (`uv run --project`), compares each distinct frame, written as PNG by [`tt-vga frames to-png`](../../../ttvga/frames.py), with [`tools/render.py`](https://github.com/mithro/tt-vga-testpatterns/blob/1ff01b15eb0a9f624b45d38c01c7e010e5bbdd8d/tools/render.py) for that design and `ui_in` ([`overrides/testpatterns/`](../../../overrides/testpatterns/)). For counter and prbs it decodes the frame counter from the frame, as [`tools/check.py`](https://github.com/mithro/tt-vga-testpatterns/blob/1ff01b15eb0a9f624b45d38c01c7e010e5bbdd8d/tools/check.py) does, and checks that it steps by 1 from each captured frame to the next.
 
@@ -573,16 +582,16 @@ The cpp = 1 projects that do not agree: tomkeddie_a and nyan.
 | tt_um_vgacal_modes_m0_vneg | 8 | 640x480@60 | 640x480@60 | 640 | 480 | 3,596 | 0 | 1 | 1 | - | pixel-exact |
 | tt_um_vgacal_modes_m0_hvneg | 12 | 640x480@60 | 640x480@60 | 640 | 480 | 3,596 | 0 | 1 | 1 | - | pixel-exact |
 
-- All 10 are pixel-exact, including 720x400 and the three polarity cases. No centre-v1 bug.
+- All 10 are pixel-exact, including 720x400 and the three polarity cases. No centre-v1 bug. Output: [`logs/calibration.md`](logs/calibration.md).
 - Each centre-v1 `frames.txt` has `outside` 0 and `colour_changes_off_grid` 0.
-- The check fails when it should: with bars' frame put in grid's place it reports 302,400 differing pixels, and with one prbs frame swapped for another the counter step fails.
+- The check fails when it should: with bars' frame put in grid's place it reports 302,400 differing pixels, and with one prbs frame swapped for another the counter step fails ([`logs/calibration-negative-control.md`](logs/calibration-negative-control.md)).
 
 ## Step 5: hardware
 
-Searched for a vgacap capture of each of the four:
-- the board claims and captures of the [tt-harness-fpga-vga](https://github.com/mithro/tt-harness-fpga-vga) hardware runs (the first validation and library batches 1 and 2 on fpga-4);
+Searched for a [vgacap](https://github.com/mithro/vgacap) capture of each of the four; the paths searched are in [`logs/hardware-search.md`](logs/hardware-search.md):
+- the captures of the [tt-harness-fpga-vga](https://github.com/mithro/tt-harness-fpga-vga) hardware runs (the first validation and the library batches, on the FPGA harness's board);
 - tt-harness-fpga-vga's `work/run/<id>/outcome.json` and its results;
-- vgacap's and tt-vga-capture's capture files.
+- vgacap's and [tt-vga-capture](https://github.com/mithro/tt-vga-capture)'s capture files.
 
 | project | FPGA build | capture | rgb6 XXH3-128 compared |
 | --- | --- | --- | --- |
@@ -599,21 +608,21 @@ Searched for a vgacap capture of each of the four:
 
 **The trace formats** (VGCH, FST, sigrok and others) are not measured here (Ruling BU). The [trace-format study](https://github.com/mithro/vgacap/blob/847a17f4a5e87a5b509f1722f0237de5d99ceb6a/docs/design/2026-11-27-trace-format-study.md) (vgacap branch `trace-format-study`, [847a17f](https://github.com/mithro/vgacap/commit/847a17f4a5e87a5b509f1722f0237de5d99ceb6a)) covers them.
 
-**The frames store.** [`scripts/pilot_formats.py`](../../../scripts/pilot_formats.py) reads each published centre-v1 store (one zstd stream with long-distance matching, as vgacap-sample writes it) and recompresses it as one zstd frame per distinct image (level 3, no long-distance matching), adding 8 bytes per image for an offset index. The read time is for the middle distinct frame, median of 5, one thread, wall time, on the host at a load of 1.3 to 1.6 a CPU. The stream is decompressed from its start up to that frame.
+**The frames store.** [`scripts/pilot_formats.py`](../../../scripts/pilot_formats.py) reads each published centre-v1 store (one zstd stream with long-distance matching, as vgacap-sample writes it) and recompresses it as one zstd frame per distinct image (level 3, no long-distance matching), adding 8 bytes per image for an offset index. The read time is for the middle distinct frame, median of 5, one thread, wall time, on the host at a load of about 1.4 a CPU. The stream is decompressed from its start up to that frame. Output: [`logs/formats.md`](logs/formats.md) (run again on 2026-11-28 for the busy-project median; sizes unchanged, times up to 23% from the first run's).
 
 | project | distinct frames | uncompressed (bytes) | stream (bytes) | one frame per image (bytes) | size ratio | stream: read middle (ms) | one frame per image: read middle (ms) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| tt08/tt_um_a1k0n_nyancat | 3,530 | 1,084,416,000 | 4,539,138 | 13,568,241 | 2.99 | 1234.0 | 0.08 |
-| tt08/tt_um_johshoff_metaballs | 4,325 | 2,076,000,000 | 2,237,504 | 1,917,974 | 0.86 | 2352.8 | 0.15 |
+| tt08/tt_um_a1k0n_nyancat | 3,530 | 1,084,416,000 | 4,539,138 | 13,568,241 | 2.99 | 1250.5 | 0.09 |
+| tt08/tt_um_johshoff_metaballs | 4,325 | 2,076,000,000 | 2,237,504 | 1,917,974 | 0.86 | 2468.5 | 0.15 |
 | ttihp25a/tt_um_rebeccargb_colorbars | 1 | 307,200 | 134 | 191 | 1.43 | 0.2 | 0.04 |
-| ttihp25a/tt_um_rejunity_atari2600 | 1,609 | 494,284,800 | 312,552 | 5,278,004 | 16.89 | 572.6 | 0.09 |
-| tt05/tt_um_tomkeddie_a | 636 | 205,148,160 | 113,758 | 274,165 | 2.41 | 268.1 | 0.08 |
-| ttihp25a/tt_um_cfib_demo | 2,320 | 712,704,000 | 2,156,619 | 5,348,618 | 2.48 | 1135.2 | 0.06 |
-| ttihp25a/tt_um_a1k0n_vgadonut | 3,597 | 1,104,998,400 | 27,660,224 | 47,486,237 | 1.72 | 1973.7 | 0.31 |
+| ttihp25a/tt_um_rejunity_atari2600 | 1,609 | 494,284,800 | 312,552 | 5,278,004 | 16.89 | 652.5 | 0.10 |
+| tt05/tt_um_tomkeddie_a | 636 | 205,148,160 | 113,758 | 274,165 | 2.41 | 313.4 | 0.08 |
+| ttihp25a/tt_um_cfib_demo | 2,320 | 712,704,000 | 2,156,619 | 5,348,618 | 2.48 | 962.7 | 0.07 |
+| ttihp25a/tt_um_a1k0n_vgadonut | 3,597 | 1,104,998,400 | 27,660,224 | 47,486,237 | 1.72 | 1763.9 | 0.33 |
 | tt08/tt_um_nyan | 2 | 614,400 | 1,164 | 5,551 | 4.77 | 0.5 | 0.15 |
-| ttihp25a/tt_um_MichaelBell_rle_vga | 1 | 307,200 | 29 | 38 | 1.31 | 0.3 | 0.05 |
-| tt08/tt_um_MichaelBell_mandelbrot | 103 | 31,641,600 | 560,261 | 685,438 | 1.22 | 29.9 | 0.10 |
-| tt07/tt_um_tinytapeout_dvd_screensaver | 3,568 | 1,096,089,600 | 139,780 | 3,400,570 | 24.33 | 1450.9 | 0.08 |
+| ttihp25a/tt_um_MichaelBell_rle_vga | 1 | 307,200 | 29 | 38 | 1.31 | 0.3 | 0.06 |
+| tt08/tt_um_MichaelBell_mandelbrot | 103 | 31,641,600 | 560,261 | 685,438 | 1.22 | 23.1 | 0.11 |
+| tt07/tt_um_tinytapeout_dvd_screensaver | 3,568 | 1,096,089,600 | 139,780 | 3,400,570 | 24.33 | 1262.8 | 0.08 |
 
 Projected to the 408 projects with frames, one sampler, from the pilot's bytes per distinct frame and the committed 543,730 distinct frames:
 
@@ -623,15 +632,16 @@ Projected to the 408 projects with frames, one sampler, from the pilot's bytes p
 | pilot distinct frames | 19,692 | 19,692 |
 | bytes per distinct frame | 1,916 | 3,959 |
 | 408 projects (GB) | 1.04 | 2.15 |
-| read cost per frame decompressed (ms, median) | 0.711 | - |
-| read one image (ms, median) | - | 0.083 |
-| read the middle frame, mean project of 1,333 distinct (s) | 0.47 | 0.0001 |
-| read the middle frame, largest project of 4,325 distinct (s) | 1.54 | 0.0001 |
+| read cost per frame decompressed (ms, median of 8 projects over 100 distinct) | 0.820 | - |
+| read one image (ms, median of the same 8) | - | 0.094 |
+| read the middle frame, mean project of 1,333 distinct (s) | 0.55 | 0.0001 |
+| read the middle frame, largest project of 4,325 distinct (s) | 1.77 | 0.0001 |
 
 - Per frame, the stream is about half the size: 2.1 times smaller over the pilot, and up to 24 times on designs whose frames differ only a little (dvd_screensaver, atari2600). On metaballs (800x600) it is larger.
-- One frame per image reads any frame in under 0.4 ms; the stream needs time proportional to the frame's position, up to 2.4 s in the pilot.
+- One frame per image reads any frame in under 0.4 ms; the stream needs time proportional to the frame's position, up to 2.5 s in the pilot.
 - The projection assumes the pilot's bytes per distinct frame hold for all 408. The pilot was chosen for busy designs, so it likely overstates both sizes.
-- The 408-project read times assume 640x480 frames; metaballs' 800x600 frames took 2.35 s, not the 1.54 s projected.
+- The 408-project read times assume 640x480 frames; metaballs' 800x600 frames took 2.47 s, not the 1.77 s projected.
+- The per-frame medians leave out the three projects with 1 or 2 distinct frames, whose times are fixed overhead.
 
 ## Step 7: viewers
 
@@ -642,8 +652,8 @@ Frame 100 of nyancat and of cfib_demo, exported by [`tt-vga trace export`](../..
 | tt08/tt_um_a1k0n_nyancat | 420,000 | 50,784 | 25,354,745 | 1,946,638 | yes |
 | ttihp25a/tt_um_cfib_demo | 840,000 | 19,731 | 30,719,333 | 1,731,441 | yes |
 
-- [`fst2vcd`](https://gtkwave.github.io/gtkwave/) (oss-cad-suite) of each FST against the VCD, by [`viewers/vcd_equal.py`](viewers/vcd_equal.py): the same set of (time, signal, value) changes ([nyancat](viewers/tt08_tt_um_a1k0n_nyancat/vcd_equal.txt), [cfib_demo](viewers/ttihp25a_tt_um_cfib_demo/vcd_equal.txt)).
-- Screenshots by [`viewers/screenshot.sh`](viewers/screenshot.sh) under [`xvfb-run`](https://manpages.debian.org/trixie/xvfb/xvfb-run.1.en.html) on the host, loading the `.gtkw` and `.sucl` vgacap-export wrote beside the FST.
+- [`fst2vcd`](https://gtkwave.github.io/gtkwave/) (from the pinned [oss-cad-suite](https://github.com/YosysHQ/oss-cad-suite-build/releases/tag/2026-09-14)) of each FST against the VCD, by [`viewers/vcd_equal.py`](viewers/vcd_equal.py): the same set of (time, signal, value) changes ([nyancat](viewers/tt08_tt_um_a1k0n_nyancat/vcd_equal.txt), [cfib_demo](viewers/ttihp25a_tt_um_cfib_demo/vcd_equal.txt); first run: [`logs/vcd-equal.log`](logs/vcd-equal.log)).
+- Screenshots by [`viewers/screenshot.sh`](viewers/screenshot.sh) under [`xvfb-run`](https://manpages.debian.org/trixie/xvfb/xvfb-run.1.en.html) on the host, loading the `.gtkw` and `.sucl` [vgacap-export](https://github.com/mithro/vgacap/blob/4a3c6701638c67956b54d5dee8f589e89e869b32/src/tools/vgacap_export.c) wrote beside the FST.
 - In [`viewers/`](viewers/): the FSTs, `.gtkw`, `.sucl` and screenshots. The VCDs are over 5 MB and are not committed. The save files' absolute paths are cut to the file name: open them from their directory.
 
 | project | [GTKWave](https://gtkwave.github.io/gtkwave/) 3.3.121 | [Surfer](https://gitlab.com/surfer-project/surfer) 0.7.0 |
