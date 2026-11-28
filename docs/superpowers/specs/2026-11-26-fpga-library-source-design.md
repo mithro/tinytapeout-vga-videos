@@ -1196,7 +1196,7 @@ releases bit 0.
 - `pdk_latches`: an entry without it dropped with `pdk_latches: missing`, a non-bool dropped
   with `pdk_latches: must be a bool`, and a copy cached by an older normaliser fetched in full,
   not revived by a 304;
-- `synthesis_differs` (Ruling CH), in [tests/test_library.py](https://github.com/fpgas-online/fpgas.online-site/blob/lib-synthdiff/tests/test_library.py) on branch `lib-synthdiff`:
+- `synthesis_differs` (Ruling CH), in [tests/test_library.py](https://github.com/fpgas-online/fpgas.online-site/blob/main/tests/test_library.py)
   `test_normalise_fixture_keeps_all_in_order_and_adds_base_url` (an absent key stays `null`, never
   `false`), `test_normalise_keeps_synthesis_differs` (`true`, `false` and `null` kept),
   `test_normalise_drops_entry_with_non_bool_synthesis_differs` (dropped with
@@ -1220,8 +1220,8 @@ releases bit 0.
 **`tests/js/library.test.mjs`:** matching, shuttle order derived from the index, paging bounds,
 badge text (the latch badge only for a real `true`, with Load still enabled), and `renderPage`
 on a fake document for each panel state. For Ruling CH,
-[tests/js/library.test.mjs](https://github.com/fpgas-online/fpgas.online-site/blob/lib-synthdiff/tests/js/library.test.mjs)
-on branch `lib-synthdiff` has "badges warn when the synthesised netlist differs from the preview
+[tests/js/library.test.mjs](https://github.com/fpgas-online/fpgas.online-site/blob/main/tests/js/library.test.mjs)
+has "badges warn when the synthesised netlist differs from the preview
 (synthesis_differs)": the badge only for a real `true`, and its order after the latch badge and
 before the validation badges.
 
@@ -1237,8 +1237,8 @@ before the validation badges.
 - the Pinout tab of an enabled library design, taken from the index;
 - warnings that never disable Load;
 - the latch badge only for a real `true`;
-- `synthesis_differs` (Ruling CH), in [src/model/fpgaLibrary.spec.ts](https://github.com/fpgas-online/tt-commander-app/blob/lib-synthdiff/src/model/fpgaLibrary.spec.ts)
-  on branch `lib-synthdiff` (PR #16): `synthesis_differs true gives a warn badge; every other value
+- `synthesis_differs` (Ruling CH), in [src/model/fpgaLibrary.spec.ts](https://github.com/fpgas-online/tt-commander-app/blob/fpgas-online/src/model/fpgaLibrary.spec.ts)
+  (PR #16): `synthesis_differs true gives a warn badge; every other value
   gives none`, `synthesis_differs badge comes after pdk_latches and before validation` and
   `a synthesis_differs design is medium danger, never high`.
 
