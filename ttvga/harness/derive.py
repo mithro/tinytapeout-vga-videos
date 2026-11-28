@@ -181,9 +181,56 @@ class _PngSink:
             raise DeriveError(f"PNG pipe from vgacap-sample: {self.error}{why}") from self.error
 
 
-def _summary(ff) -> dict:
+def _summary(ff, window: dict | None) -> dict:
     return {"sampler_status": ff.sampler_status, "frames": len(ff.frames), "distinct_frames": len(ff.distinct),
-            "mode": ff.mode, "width": ff.width, "height": ff.height, "clocks_per_pixel": ff.clocks_per_pixel}
+            "mode": ff.mode, "width": ff.width, "height": ff.height, "clocks_per_pixel": ff.clocks_per_pixel,
+            "window": window}
+
+
+def mode_totals() -> dict[str, dict[str, tuple[int, int]]]:
+    """Each sampler's mode table, from vgacap itself: {sampler: {mode: (clocks per line in pixels, lines)}}.
+
+    centre-v1 matches against `vgacap.modes.TABLE` (src/frame/modes.c), tb-v1 against
+    `vgacap.tbv1.TB_MODES` (tb.cpp's table). Read here, never copied.
+    """
+    from vgacap import modes, tbv1
+
+    return {CENTRE: {m.name: (m.cpl, m.lpf) for m in modes.TABLE},
+            TB_V1: {m[0]: (m[1], m[2]) for m in tbv1.TB_MODES}}
+
+
+def windows(read: dict) -> dict[str, dict | None]:
+    """Each sampler's `window` flag in result.json (docs/consumers.md, "Sampler windows").
+
+    `read` maps a sampler to its frames.txt (`vgacap.framesfile.FramesFile`). A sampler whose
+    `sampler_status` is not `ok` has no window: None. Otherwise:
+
+    - `frame_clocks`: the sampler's own `frame_clocks` (the measured frame period).
+    - `mode_frame_clocks`: the sampler's mode, clocks per line times lines, times centre-v1's
+      `clocks_per_pixel`, rounded to a whole clock. None when the mode is not in the sampler's
+      table or centre-v1 has no window. centre-v1's cpp is the reference for both samplers:
+      it is checked against the hsync pulse, where tb-v1's is the line over the mode's.
+    - centre-v1 only: `outside` and `suggested_offset` from its frames.txt.
+    - `exact`: `frame_clocks == mode_frame_clocks`, and for centre-v1 also `outside == 0`.
+    """
+    totals = mode_totals()
+    centre = read.get(CENTRE)
+    cpp = centre.clocks_per_pixel if centre is not None and centre.sampler_status == "ok" else None
+    out: dict[str, dict | None] = {}
+    for s, ff in read.items():
+        if ff.sampler_status != "ok":
+            out[s] = None
+            continue
+        line_frame = totals[s].get(ff.mode)
+        mode_fc = None if line_frame is None or cpp is None else round(cpp * line_frame[0] * line_frame[1])
+        exact = mode_fc is not None and ff.frame_clocks == mode_fc
+        w = {"exact": exact, "frame_clocks": ff.frame_clocks, "mode_frame_clocks": mode_fc}
+        if s == CENTRE:
+            w["exact"] = exact and ff.centre.outside == 0
+            w["outside"] = ff.centre.outside
+            w["suggested_offset"] = list(ff.centre.suggested_offset)
+        out[s] = w
+    return out
 
 
 def _compare_tb_v1(framesfile, tb_dir: Path, tb_hashes: Path) -> int | None:
@@ -266,6 +313,7 @@ def derive(trace: Path, out: Path, stem: str, *, tb_v1: bool, centre_window: tup
             errors.append(last)
             read = {}
 
+        flags = windows(read)
         for s, ff in read.items():
             if sink.next[s] != len(ff.distinct):
                 raise DeriveError(f"{s}: vgacap-sample piped {sink.next[s]} distinct frames, "
@@ -275,7 +323,7 @@ def derive(trace: Path, out: Path, stem: str, *, tb_v1: bool, centre_window: tup
                 raise DeriveError(f"{s}: vgacap-sample piped frames of {got}, frames.txt has {ff.width}x{ff.height}")
             (out / s / "png").mkdir(parents=True, exist_ok=True)
             pages.write_sampler_page(out / s, ff, stem, s)
-            summaries[s] = _summary(ff)
+            summaries[s] = _summary(ff, flags[s])
 
         uo = _tracetool(tools, lf, "uohash", str(trace))
         try:
