@@ -69,14 +69,12 @@ def test_info_on_finished_traces(models, dev, tmp_path):
     assert (i["table_rebuilt"], i["close.status"]) == ("0", "sim-timeout")
 
 
-def test_info_counts(models, dev, tmp_path):
+def test_info_prints_no_per_port_counts(models, dev, tmp_path):
+    """`info` reads the header, index and META only: no run is decoded, so no per-port change counts."""
     p = run(models("uio_echo"), dev, tmp_path, "--ui-in", "0x5a", design="uio_echo")
     assert p.returncode == 3, p.stderr
     i = info(dev, tmp_path / "trace.vgch.zst")
-    assert i["changes.ui_in"] == "0"
-    assert i["changes.rst_n"] == "1"
-    assert i["changes.ena"] == "0"
-    assert "changes.clk" not in i
+    assert not [k for k in i if k.startswith("changes.")]
     assert int(i["clocks"]) == int(i["samples"]) // 2 > 0
 
 

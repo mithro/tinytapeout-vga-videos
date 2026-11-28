@@ -102,7 +102,7 @@ def add_parser(sub: argparse._SubParsersAction) -> None:
     t = sub.add_parser("trace", help="inspect, export or slice a raw trace (.vgch.zst)")
     ts = t.add_subparsers(dest="trace_command", required=True)
 
-    p = ts.add_parser("info", help="print a trace's header, counts and close status")
+    p = ts.add_parser("info", help="print a trace's header, block and clock counts, META and close status")
     p.add_argument("trace")
     p.set_defaults(func=trace_info)
 

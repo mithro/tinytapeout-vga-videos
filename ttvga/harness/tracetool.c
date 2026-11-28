@@ -27,11 +27,6 @@
 
 // The tt-um-43 layout (docs/trace-format.md in vgacap).
 enum { CLK_BIT = 42 };
-static const struct { const char *name; unsigned lo, width; } PORTS[] = {
-    {"uo_out", 0, 8}, {"uio_out", 8, 8}, {"uio_oe", 16, 8}, {"ui_in", 24, 8},
-    {"uio_in", 32, 8}, {"rst_n", 40, 1}, {"ena", 41, 1},
-};
-#define NPORTS (sizeof PORTS / sizeof PORTS[0])
 
 static int usage(const char *why) {
     if (why) fprintf(stderr, "tracetool: %s\n", why);
@@ -85,26 +80,12 @@ static void print_meta(const char *prefix, const char *text) {
 }
 
 // ---- info ---------------------------------------------------------------
-
-typedef struct { int have_prev; uint64_t prev; uint64_t changes[NPORTS]; } changes_t;
-
-static int count_changes(void *user, const vgacap_trace_run_t *runs, size_t n) {
-    changes_t *c = user;
-    for (size_t i = 0; i < n; i++) {
-        uint64_t v = runs[i].value & ~(1ull << CLK_BIT);   // a run's samples differ only in the clock bit
-        if (c->have_prev) {
-            uint64_t d = v ^ c->prev;
-            for (size_t p = 0; p < NPORTS; p++)
-                if ((d >> PORTS[p].lo) & ((1u << PORTS[p].width) - 1u)) c->changes[p]++;
-        }
-        c->have_prev = 1;
-        c->prev = v;
-    }
-    return 0;
-}
+//
+// Reads only the VGCH header, META chunks and the seek-table/BLKH index that
+// vgacap_trace_open already parses (the last block is decoded whole there, for
+// its sample count and META(close)). No run is decoded.
 
 static int cmd_info(const char *path) {
-    char err[ERR_LEN];
     vgacap_trace_reader_t *r = open_trace(path);
     if (!r) return 1;
     const vgacap_trace_info_t *in = vgacap_trace_info(r);
@@ -118,12 +99,6 @@ static int cmd_info(const char *path) {
     if (in->open_meta) print_meta("open", in->open_meta);
     if (in->close_meta) print_meta("close", in->close_meta);
     else printf("close.status: truncated\n");
-    changes_t c = {0};
-    if (vgacap_trace_read_runs(r, 0, in->samples, count_changes, &c, err, sizeof err)) {
-        fprintf(stderr, "tracetool: %s: %s\n", path, err);
-        return 1;
-    }
-    for (size_t p = 0; p < NPORTS; p++) printf("changes.%s: %" PRIu64 "\n", PORTS[p].name, c.changes[p]);
     vgacap_trace_close(r);
     return 0;
 }
