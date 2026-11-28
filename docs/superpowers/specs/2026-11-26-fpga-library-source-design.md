@@ -1086,7 +1086,7 @@ For `pdk_latches` (Ruling BJ), the readers went first: the site, with its cache 
 bumped (`NORMALISE_VERSION` 2), and the Commander, then an index that sets the key on every
 entry. Only then did the readers make the key required (`NORMALISE_VERSION` 3).
 
-For `synthesis_differs` (Ruling CH), the readers go first again: this spec, the checker (`ttvga/fpgalibrary.py`), the
+For `synthesis_differs` (Ruling CH), the readers go first again: this spec, the checker ([ttvga/fpgalibrary.py](../../../ttvga/fpgalibrary.py)), the
 [site](https://github.com/fpgas-online/fpgas.online-site)
 (`NORMALISE_VERSION` 4, keeping `null` for an absent key, never `false`) and the
 [Commander](https://github.com/fpgas-online/tt-commander-app) accept
