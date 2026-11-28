@@ -88,8 +88,10 @@ def sample(args: argparse.Namespace) -> int:
     except derive.DeriveError as e:
         return _fail(str(e))
     for s, summary in res.samplers.items():
+        w = summary["window"]
+        window = "no window" if w is None else ("window exact" if w["exact"] else "window not exact")
         print(f"{s}: {summary['sampler_status']}, {summary['frames']} frames, "
-              f"{summary['distinct_frames']} distinct, {summary['mode']}")
+              f"{summary['distinct_frames']} distinct, {summary['mode']}, {window}")
     print(f"uo_out_xxh3_128: {res.uo_out_xxh3_128}")
     if res.error:
         return _fail(res.error)

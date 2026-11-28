@@ -131,6 +131,8 @@ def test_job_tb_v1_on_request(root, go):
     assert r["tb_v1"] == {"state": "current", "trace_sha": r["trace"]["sha256"], "dropped": False}
     assert r["tb_v1_check"] == "match"
     assert set(r["samplers"]) == {"centre-v1", "tb-v1"}
+    assert r["samplers"]["centre-v1"]["window"]["exact"] is False   # bars640 lights a row outside it
+    assert r["samplers"]["tb-v1"]["window"]["exact"] is True
     pub = jobroot.published(root, "bars640")
     assert (pub / "tb-v1" / FNV).is_file()
     assert (pub / "tb-v1" / "TRACE_SHA256").read_text() == r["trace"]["sha256"] + "\n"

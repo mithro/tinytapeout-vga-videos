@@ -106,6 +106,10 @@ def test_derive_tb_v1_on_request_links_identical_pngs(tools, bars, tmp_path):
     total = r.samplers["centre-v1"]["distinct_frames"] + r.samplers["tb-v1"]["distinct_frames"]
     assert r.pngs_written + r.pngs_linked == total
     assert r.pngs_linked >= 1
+    # bars640 is 640x480@60 timing with one row lit outside the window (as its committed fixture).
+    assert r.samplers["centre-v1"]["window"] == {"exact": False, "frame_clocks": 420000, "mode_frame_clocks": 420000,
+                                                 "outside": 640, "suggested_offset": [0, -1]}
+    assert r.samplers["tb-v1"]["window"] == {"exact": True, "frame_clocks": 420000, "mode_frame_clocks": 420000}
     c_inodes = {p.stat().st_ino for p in pngs(out / "centre-v1")}
     linked = [p for p in pngs(t) if p.stat().st_ino in c_inodes]
     assert len(linked) == r.pngs_linked
@@ -149,6 +153,7 @@ def test_derive_no_sync_writes_empty_files(tools, models, dev, tmp_path):
         d = out / s
         assert r.samplers[s]["sampler_status"] == "no-sync"
         assert (r.samplers[s]["frames"], r.samplers[s]["distinct_frames"]) == (0, 0)
+        assert r.samplers[s]["window"] is None
         assert (d / "frames.txt").is_file() and (d / "index.html").is_file()
         assert (d / "png").is_dir() and pngs(d) == []
     assert (r.pngs_written, r.pngs_linked) == (0, 0)
@@ -177,6 +182,7 @@ def test_derive_bad_window_is_an_error(tools, bars, tmp_path):
     assert r.error.startswith("centre_window 400,0 does not fit: ")
     assert r.samplers["centre-v1"]["sampler_status"] == "bad-window"
     assert r.samplers["centre-v1"]["frames"] == 0
+    assert r.samplers["centre-v1"]["window"] is None
     assert (out / "centre-v1" / "index.html").is_file()
     assert pngs(out / "centre-v1") == []
 

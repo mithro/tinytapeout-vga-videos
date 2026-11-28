@@ -213,3 +213,15 @@ def test_index_links_fpga_when_listed(tmp_path):
     import pytest
     with pytest.raises(ValueError, match="passwd"):
         read_fpga_ids(ids)
+
+
+def test_window_flags_in_result_do_not_change_the_index():
+    """The index shows no per-sampler information, so `samplers.<s>.window` leaves its pages as they were."""
+    flagged = {**RESULT, "samplers": {
+        "centre-v1": {"sampler_status": "ok", "window": {"exact": False, "frame_clocks": 436800,
+                                                         "mode_frame_clocks": 420000, "outside": 4472,
+                                                         "suggested_offset": [8, -1]}},
+        "tb-v1": {"sampler_status": "no-sync", "window": None}}}
+    assert record(TARGET, flagged) == record(TARGET, RESULT)
+    assert write_html([record(TARGET, flagged)], "now") == write_html([record(TARGET, RESULT)], "now")
+    assert write_markdown([record(TARGET, flagged)], "now") == write_markdown([record(TARGET, RESULT)], "now")
