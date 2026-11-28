@@ -1,0 +1,25 @@
+tmux session: running
+{
+  "started": "2026-11-27T08:51:25+00:00",
+  "jobs": 40,
+  "selected": 10,
+  "pending": 10,
+  "running": [],
+  "done": 10,
+  "failed": 0,
+  "finished": "2026-11-27T08:58:45+00:00",
+  "pid": 3803716
+}
+--- last log lines
+2026-11-27T08:51:25+00:00 queue start: 10 pending of 10 selected, 40 jobs
+2026-11-27T08:57:03+00:00 testpatterns/tt_um_vgacal_counter: job: testpatterns/tt_um_vgacal_counter: stage=derive error=None status=ok published=False (exit 0, 338s)
+2026-11-27T08:57:03+00:00 testpatterns/tt_um_vgacal_modes_m0: job: testpatterns/tt_um_vgacal_modes_m0: stage=derive error=None status=ok published=False (exit 0, 338s)
+2026-11-27T08:57:03+00:00 testpatterns/tt_um_vgacal_modes_m0_hvneg: job: testpatterns/tt_um_vgacal_modes_m0_hvneg: stage=derive error=None status=ok published=False (exit 0, 339s)
+2026-11-27T08:57:06+00:00 testpatterns/tt_um_vgacal_bars: job: testpatterns/tt_um_vgacal_bars: stage=derive error=None status=ok published=False (exit 0, 341s)
+2026-11-27T08:57:06+00:00 testpatterns/tt_um_vgacal_modes_m0_hneg: job: testpatterns/tt_um_vgacal_modes_m0_hneg: stage=derive error=None status=ok published=False (exit 0, 341s)
+2026-11-27T08:57:09+00:00 testpatterns/tt_um_vgacal_modes_m1: job: testpatterns/tt_um_vgacal_modes_m1: stage=derive error=None status=ok published=False (exit 0, 345s)
+2026-11-27T08:57:10+00:00 testpatterns/tt_um_vgacal_modes_m0_vneg: job: testpatterns/tt_um_vgacal_modes_m0_vneg: stage=derive error=None status=ok published=False (exit 0, 345s)
+2026-11-27T08:57:18+00:00 testpatterns/tt_um_vgacal_grid: job: testpatterns/tt_um_vgacal_grid: stage=derive error=None status=ok published=False (exit 0, 353s)
+2026-11-27T08:57:27+00:00 testpatterns/tt_um_vgacal_modes_m2: job: testpatterns/tt_um_vgacal_modes_m2: stage=derive error=None status=ok published=False (exit 0, 363s)
+2026-11-27T08:58:45+00:00 testpatterns/tt_um_vgacal_prbs: job: testpatterns/tt_um_vgacal_prbs: stage=derive error=None status=ok published=False (exit 0, 441s)
+2026-11-27T08:58:45+00:00 queue finished: 10 done, 0 with errors

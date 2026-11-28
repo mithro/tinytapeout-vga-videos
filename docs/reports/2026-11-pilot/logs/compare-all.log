@@ -1,0 +1,156 @@
+== tt08/tt_um_a1k0n_nyancat
+frames_a: 3596
+frames_b: 3596
+gaps_a: 0
+gaps_b: 0
+first_mismatch: none
+offset: 0
+start_clock_delta: -944 x3596
+== tt08/tt_um_johshoff_metaballs
+frames_a: 4331
+frames_b: 4331
+gaps_a: 0
+gaps_b: 0
+first_mismatch: none
+offset: 0
+start_clock_delta: -5384 x4331
+== ttihp25a/tt_um_rebeccargb_colorbars
+frames_a: 3596
+frames_b: 3596
+gaps_a: 0
+gaps_b: 0
+first_mismatch: none
+offset: 0
+start_clock_delta: -944 x3596
+== ttihp25a/tt_um_rejunity_atari2600
+frames_a: 3596
+frames_b: 3596
+gaps_a: 0
+gaps_b: 0
+first_mismatch: none
+offset: 0
+start_clock_delta: -944 x3596
+== tt05/tt_um_tomkeddie_a
+frames_a: 3736
+frames_b: 3736
+gaps_a: 0
+gaps_b: 0
+first_mismatch: 0
+offset: none
+start_clock_delta: -942 x3736
+differing_pixels: 1122
+bbox: 9 0 640 480
+per_channel: r 642 g 642 b 480
+0,0,0 -> 0,0,3: 480
+0,0,3 -> 3,3,3: 321
+3,3,3 -> 0,0,3: 321
+trace_range_a: --from 2020681 --to 2424975
+trace_range_b: --from 2019739 --to 2424033
+== ttihp25a/tt_um_cfib_demo
+frames_a: 3571
+frames_b: 3571
+gaps_a: 0
+gaps_b: 0
+first_mismatch: 0
+offset: none
+start_clock_delta: -1888 x3571
+differing_pixels: 14235
+bbox: 0 7 465 479
+per_channel: r 1265 g 13348 b 1273
+0,1,0 -> 0,2,0: 5761
+0,2,0 -> 0,1,0: 5761
+0,1,0 -> 0,3,0: 420
+0,3,0 -> 0,1,0: 420
+0,2,0 -> 0,0,0: 112
+0,2,0 -> 0,0,1: 112
+0,2,0 -> 1,0,0: 112
+0,2,0 -> 1,0,1: 97
+0,0,0 -> 1,0,0: 64
+0,0,0 -> 1,0,1: 64
+trace_range_a: --from 4147209 --to 4987209
+trace_range_b: --from 4145321 --to 4985321
+== ttihp25a/tt_um_a1k0n_vgadonut
+frames_a: 3597
+frames_b: 3597
+gaps_a: 0
+gaps_b: 0
+first_mismatch: 0
+offset: none
+start_clock_delta: -1799 x3597
+differing_pixels: 65089
+bbox: 64 0 602 479
+per_channel: r 33001 g 13445 b 54004
+3,3,3 -> 3,3,2: 14295
+3,3,2 -> 3,3,3: 14180
+2,2,1 -> 3,2,1: 4688
+3,2,1 -> 2,2,0: 4443
+3,2,1 -> 2,2,1: 4436
+2,2,0 -> 3,2,1: 4177
+2,1,0 -> 3,2,1: 3427
+3,2,1 -> 2,1,0: 3243
+1,1,0 -> 2,1,1: 1311
+0,1,3 -> 2,2,2: 1308
+trace_range_a: --from 3952810 --to 4753435
+trace_range_b: --from 3951011 --to 4751636
+== tt08/tt_um_nyan
+frames_a: 3434
+frames_b: 3434
+gaps_a: 0
+gaps_b: 0
+first_mismatch: 0
+offset: none
+start_clock_delta: -1008 x3434
+differing_pixels: 28371
+bbox: 8 0 414 479
+per_channel: r 12192 g 26051 b 22923
+0,0,0 -> 0,1,3: 9579
+0,0,0 -> 2,2,2: 1880
+2,2,2 -> 0,0,0: 1632
+0,1,3 -> 0,0,0: 1136
+3,3,2 -> 3,2,3: 896
+3,2,3 -> 0,0,0: 696
+0,0,0 -> 3,2,3: 672
+0,0,0 -> 3,3,2: 672
+3,1,2 -> 3,2,3: 592
+3,2,3 -> 3,1,2: 552
+trace_range_a: --from 2156554 --to 2593354
+trace_range_b: --from 2155546 --to 2592346
+== ttihp25a/tt_um_MichaelBell_rle_vga
+frames_a: 3600
+frames_b: 3600
+gaps_a: 0
+gaps_b: 0
+first_mismatch: none
+offset: 0
+start_clock_delta: -3184 x3600
+== tt08/tt_um_MichaelBell_mandelbrot
+frames_a: 3355
+frames_b: 3355
+gaps_a: 0
+gaps_b: 0
+first_mismatch: 0
+offset: none
+start_clock_delta: -35744 x3355
+differing_pixels: 97586
+bbox: 0 0 639 478
+per_channel: r 39478 g 50140 b 57621
+3,0,2 -> 3,0,1: 10531
+3,0,1 -> 3,0,0: 8759
+3,0,0 -> 3,1,0: 7781
+2,0,3 -> 3,0,2: 6944
+3,1,0 -> 3,2,0: 4887
+0,0,0 -> 3,0,2: 4443
+3,0,1 -> 3,0,2: 3156
+3,2,0 -> 2,3,0: 2738
+3,2,0 -> 3,1,0: 1976
+3,0,0 -> 3,0,1: 1974
+trace_range_a: --from 7200266 --to 8988682
+trace_range_b: --from 7164522 --to 8952938
+== tt07/tt_um_tinytapeout_dvd_screensaver
+frames_a: 3596
+frames_b: 3596
+gaps_a: 0
+gaps_b: 0
+first_mismatch: none
+offset: 0
+start_clock_delta: -944 x3596
