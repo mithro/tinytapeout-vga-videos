@@ -102,6 +102,11 @@ def _unknown_entry(d):
     d["designs"][0]["future_key"] = 1
 
 
+def _no_synthesis_differs(d):
+    for entry in d["designs"]:
+        entry.pop("synthesis_differs", None)
+
+
 D0 = ["designs", 0]
 P0 = "ttsky25b/tt_um_lukasdragoste_vga_patterns"
 CASES = [
@@ -176,12 +181,21 @@ CASES = [
     ("pdk-latches-string", _set(D0 + ["pdk_latches"], "true"), "designs[0].pdk_latches"),
     ("pdk-latches-null", _set(D0 + ["pdk_latches"], None), "designs[0].pdk_latches"),
     ("pdk-latches-missing", _delete(D0 + ["pdk_latches"]), "designs[0].pdk_latches"),
+    ("synthesis-differs-string", _set(D0 + ["synthesis_differs"], "true"), "designs[0].synthesis_differs"),
+    ("synthesis-differs-int-0", _set(D0 + ["synthesis_differs"], 0), "designs[0].synthesis_differs"),
+    ("synthesis-differs-int-1", _set(D0 + ["synthesis_differs"], 1), "designs[0].synthesis_differs"),
+    ("synthesis-differs-list", _set(D0 + ["synthesis_differs"], []), "designs[0].synthesis_differs"),
 ]
 ALLOWED = [
     ("unknown-top-key", _unknown_top),
     ("unknown-entry-key", _unknown_entry),
     ("pdk-latches-true", _set(D0 + ["pdk_latches"], True)),
     ("pdk-latches-false", _set(D0 + ["pdk_latches"], False)),
+    # Ruling CH: optional for now; absent, true, false and null all pass.
+    ("synthesis-differs-absent", _no_synthesis_differs),
+    ("synthesis-differs-true", _set(D0 + ["synthesis_differs"], True)),
+    ("synthesis-differs-false", _set(D0 + ["synthesis_differs"], False)),
+    ("synthesis-differs-null", _set(D0 + ["synthesis_differs"], None)),
 ]
 
 
@@ -347,3 +361,15 @@ def test_cli_reports_non_finite_and_recursion(tmp_path, capsys):
     path.write_text("[" * 100000 + "]" * 100000)
     assert cli.main(["fpga-library-check", str(path)]) == 1
     assert "RecursionError" in capsys.readouterr().out
+
+
+def test_cli_reports_synthesis_differs_type(tmp_path, capsys):
+    bad = json.loads((FIXTURE / "fpga-library.json").read_text())
+    bad["designs"][2]["synthesis_differs"] = "true"
+    path = tmp_path / "bad.json"
+    path.write_text(json.dumps(bad))
+    assert cli.main(["fpga-library-check", str(path)]) == 1
+    assert "designs[2].synthesis_differs: must be true, false or null" in capsys.readouterr().out
+    bad["designs"][2]["synthesis_differs"] = None
+    path.write_text(json.dumps(bad))
+    assert cli.main(["fpga-library-check", str(path), "--bins", str(FIXTURE)]) == 0
