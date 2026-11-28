@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import io
 import json
 import sys
@@ -84,6 +85,84 @@ def test_stale_on_server_ignores_bin_and_library(tmp_path):
     assert verify.stale_on_server(local, BASE, [""], fetch=fetch) == [
         "frames/fpga-library.json", "index.json",
         "tt05of/tt_um_dinogame/tt05of_tt_um_dinogame_old.avi", "tt05of/tt_um_gone/"]
+
+
+def test_server_listing_hrefs_it_cannot_read():
+    page = autoindex("d/", files=["a.txt"]).replace(
+        '<a href="a.txt">', '<a href="?C=N;O=D">Name</a> <a href="./b:c.txt">b:c.txt</a> '
+        '<a href="x:y">x:y</a> <a href="/abs">abs</a> <a href="a.txt">')
+    dropped: list[str] = []
+    dirs, files = verify.server_listing(BASE, "d/", fetch=fake_fetch({BASE + "d/": page}), dropped=dropped)
+    # A name nginx writes behind ./ is read; a bare scheme-like href and an absolute link are not.
+    assert files == {"a.txt", "b:c.txt"} and dirs == set()
+    assert dropped == ["d/x:y", "d//abs"]
+
+
+def test_stale_on_server_walks_below_unlisted_and_server_only_roots(tmp_path):
+    local = tmp_path / "archive"
+    sampler = local / "frames" / "tt05" / "tt_um_a" / "centre-v1"
+    (sampler / "png").mkdir(parents=True)
+    (sampler / "index.html").write_text("<html></html>")
+    (sampler / "png" / "000000.png").write_bytes(b"p")
+    (local / "tt05" / "tt_um_a").mkdir(parents=True)
+    (local / "tt05" / "tt_um_a" / "same.bin").write_bytes(b"b")
+    page = "<html><head><title>tt-vga</title></head><body>a page</body></html>"
+    pages = {
+        BASE + "frames/": autoindex("frames/", dirs=["tt05"]),
+        BASE + "frames/tt05/": autoindex("frames/tt05/", dirs=["tt_um_a"]),
+        BASE + "frames/tt05/tt_um_a/": autoindex("frames/tt05/tt_um_a/", dirs=["centre-v1"]),
+        BASE + "frames/tt05/tt_um_a/centre-v1/": page,
+        BASE + "frames/tt05/tt_um_a/centre-v1/png/": autoindex(
+            "frames/tt05/tt_um_a/centre-v1/png/", files=["000000.png", "000001.png"]),
+        BASE + "tt05/": autoindex("tt05/", dirs=["tt_um_a"]),
+        # A bitstream of the same name as a local file, another one, and one a level deeper: only the last
+        # is outside FOREIGN_PATTERNS.
+        BASE + "tt05/tt_um_a/": autoindex("tt05/tt_um_a/", dirs=["old"], files=["same.bin", "other.bin"]),
+        BASE + "gone/": autoindex("gone/", files=["x.mp4"]),
+    }
+    unlisted: list[str] = []
+    stale = verify.stale_on_server(local, BASE, ["frames/", "gone/", "tt05/"], fetch=fake_fetch(pages),
+                                   unlisted=unlisted)
+    assert unlisted == ["frames/tt05/tt_um_a/centre-v1/"]
+    # Below the unlisted sampler directory, png/ is walked; the server-only root is one stale entry.
+    assert stale == ["frames/tt05/tt_um_a/centre-v1/png/000001.png", "gone/", "tt05/tt_um_a/old/"]
+
+
+def test_top_level_hrefs():
+    page = ('<html><head><title>t</title></head><body><a href="tt05/tt_um_a/x_60s.mp4">a</a>'
+            '<a href="./ttsky25a/tt_um_b/">b</a><a href="https://example.org/x/y">c</a>'
+            '<a href="#tt05-tt_um_a">d</a><a href="index.json">e</a><a href="../up/z">f</a></body></html>')
+    assert verify.top_level_hrefs(BASE, fetch=fake_fetch({BASE: page})) == {"tt05/", "ttsky25a/"}
+
+
+def test_server_stale_prints_what_it_cannot_see(tmp_path, capsys):
+    local = tmp_path / "archive"
+    (local / "tt05" / "tt_um_a").mkdir(parents=True)
+    (local / "tt05" / "tt_um_a" / "a_60s.mp4").write_bytes(b"m")
+    sampler = local / "frames" / "tt05" / "tt_um_a" / "centre-v1"
+    sampler.mkdir(parents=True)
+    (sampler / "index.html").write_text("<html></html>")
+    top = ('<html><head><title>tt-vga</title></head><body><a href="tt05/tt_um_a/a_60s.mp4">a</a>'
+           '<a href="old/tt_um_z/z.mp4">z</a></body></html>')
+    pages = {
+        BASE: top,
+        BASE + "frames/": autoindex("frames/", dirs=["tt05"]),
+        BASE + "frames/tt05/": autoindex("frames/tt05/", dirs=["tt_um_a"]),
+        BASE + "frames/tt05/tt_um_a/": autoindex("frames/tt05/tt_um_a/", dirs=["centre-v1"]),
+        BASE + "frames/tt05/tt_um_a/centre-v1/": top,
+        BASE + "tt05/": autoindex("tt05/", dirs=["tt_um_a"]),
+        BASE + "tt05/tt_um_a/": autoindex("tt05/tt_um_a/", files=["a_60s.mp4", "x:y"]),
+        BASE + "old/": autoindex("old/", dirs=["tt_um_z"]),
+    }
+    args = argparse.Namespace(server_stale=BASE.rstrip("/"), archive=local, root=None)
+    assert verify.server_stale(args, fetch=fake_fetch(pages)) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert out[0] == f"walked 3 top-level directories of {BASE} against {local} (1 linked from the top page only)"
+    assert f"  the files at the top of {BASE} (it serves index.html, not a listing)" in out
+    assert ("  the files and server-only subdirectories directly in frames/tt05/tt_um_a/centre-v1/"
+            " (it serves its own index.html)") in out
+    assert "  an href the listing cannot read: 'tt05/tt_um_a/x:y'" in out
+    assert out[-2:] == ["  old/", "1 stale"]
 
 
 # ---------------------------------------------------------------------------
@@ -189,3 +268,71 @@ def test_verify_refuses_a_pre_xxh3_frames_txt_and_hash_file(framesfile, tmp_path
     assert failures[0].startswith("tt06/tt_um_old: centre-v1: frame_hashes.sha256-rgb6.txt: ")
     assert failures[1].startswith("tt06/tt_um_old: tb-v1: frames.txt: ")
     assert "sha256" in failures[0] and "sha256" in failures[1]
+
+
+# ---------------------------------------------------------------------------
+# main(): the command line
+# ---------------------------------------------------------------------------
+
+def test_main_server_stale_dispatches_and_skips_the_archive_checks(tmp_path, monkeypatch):
+    seen = []
+    monkeypatch.setattr(verify, "server_stale", lambda args: seen.append(args) or 3)
+    monkeypatch.setattr(verify, "projects", lambda videos: pytest.fail("--server-stale checks no videos"))
+    monkeypatch.setattr(sys, "argv", ["verify.py", "--server-stale", BASE, "--archive", str(tmp_path)])
+    assert verify.main() == 3
+    assert seen[0].server_stale == BASE and seen[0].archive == tmp_path
+
+
+def test_main_missing_host_toml_is_a_failure(tmp_path, monkeypatch, capsys):
+    videos = tmp_path / "videos"
+    videos.mkdir()
+    monkeypatch.setattr(sys, "argv", ["verify.py", "--videos", str(videos), "--root", str(tmp_path / "root")])
+    assert verify.main() == 1
+    out = capsys.readouterr().out.splitlines()
+    assert out[0] == f"verifying 0 projects in {videos}"
+    assert any(line.startswith("  frames: host.toml: ") for line in out)
+    assert out[-1] == "VERIFIED: NO"
+
+
+def test_main_passes_with_nothing_wrong(tmp_path, monkeypatch, capsys):
+    videos, frames_root = tmp_path / "videos", tmp_path / "frames"
+    videos.mkdir()
+    (frames_root / "tt05" / "tt_um_a").mkdir(parents=True)
+    fake = type(sys)("vgacap")
+    fake.framesfile = object()
+    monkeypatch.setitem(sys.modules, "vgacap", fake)
+    monkeypatch.setattr(verify.hostconf, "load", lambda root: argparse.Namespace(frames_root=frames_root))
+    monkeypatch.setattr(verify.vgacap_path, "add", lambda root: None)
+    calls = []
+    monkeypatch.setattr(verify, "check_frames", lambda *a: calls.append(a) or ([], []))
+    monkeypatch.setattr(sys, "argv", ["verify.py", "--videos", str(videos), "--root", str(tmp_path / "root")])
+    assert verify.main() == 0
+    assert calls == [(frames_root, tmp_path / "root" / "work", fake.framesfile)]
+    out = capsys.readouterr().out.splitlines()
+    assert "  frames projects without a problem: 1 of 1" in out
+    assert out[-1] == "VERIFIED: yes"
+
+
+def test_package_import_leaves_sys_path_alone(tmp_path):
+    """tt-vga imports `ttvga.harness.verify`: one `hostconf`, and the harness directory not put on sys.path."""
+    import subprocess
+    probe = tmp_path / "probe.py"
+    probe.write_text(
+        "import sys\n"
+        "before = list(sys.path)\n"
+        "from ttvga import remote  # imports ttvga.harness.verify and ttvga.harness.hostconf\n"
+        "from ttvga.harness import verify\n"
+        "assert sys.path == before, set(sys.path) - set(before)\n"
+        "assert 'hostconf' not in sys.modules\n"
+        "assert verify.hostconf is sys.modules['ttvga.harness.hostconf']\n")
+    root = Path(__file__).resolve().parent.parent
+    done = subprocess.run([sys.executable, str(probe)], cwd=root, capture_output=True, text=True)
+    assert done.returncode == 0, done.stderr
+
+
+def test_script_runs_standalone():
+    """On the host verify.py runs as a plain script, its siblings beside it."""
+    import subprocess
+    done = subprocess.run([sys.executable, str(HARNESS_DIR / "verify.py"), "--help"], capture_output=True, text=True)
+    assert done.returncode == 0, done.stderr
+    assert "--server-stale" in done.stdout

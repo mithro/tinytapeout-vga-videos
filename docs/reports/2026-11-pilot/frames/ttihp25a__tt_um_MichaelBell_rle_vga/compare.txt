@@ -1,0 +1,7 @@
+frames_a: 3600
+frames_b: 3600
+gaps_a: 0
+gaps_b: 0
+first_mismatch: none
+offset: 0
+start_clock_delta: -3184 x3600

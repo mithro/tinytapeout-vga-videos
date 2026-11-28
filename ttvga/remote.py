@@ -720,7 +720,7 @@ def fpga_ids_script(dest: str) -> str:
     """The script that lists the archive's bitstreams, `<shuttle>/<macro>/<file>.bin`, NUL terminated."""
     return f"""
 set -e
-LC_ALL=C find {shlex.quote(dest)} -mindepth 3 -maxdepth 3 -name '*.bin' -printf '%P\\0'
+LC_ALL=C find {shlex.quote(dest)} -mindepth 3 -maxdepth 3 -type f -name '*.bin' -printf '%P\\0'
 """
 
 

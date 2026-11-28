@@ -1,0 +1,24 @@
+load_file tt08_tt_um_a1k0n_nyancat_f100.fst
+variable_add tt08_tt_um_a1k0n_nyancat.clk
+item_focus a
+group_marked ports
+item_focus b
+variable_add tt08_tt_um_a1k0n_nyancat.rst_n
+variable_add tt08_tt_um_a1k0n_nyancat.ena
+variable_add tt08_tt_um_a1k0n_nyancat.ui_in
+variable_add tt08_tt_um_a1k0n_nyancat.uio_in
+variable_add tt08_tt_um_a1k0n_nyancat.uo_out
+variable_add tt08_tt_um_a1k0n_nyancat.uio_out
+variable_add tt08_tt_um_a1k0n_nyancat.uio_oe
+item_unfocus
+variable_add tt08_tt_um_a1k0n_nyancat.decoded.hsync
+item_focus j
+group_marked decoded
+item_focus k
+variable_add tt08_tt_um_a1k0n_nyancat.decoded.vsync
+variable_add tt08_tt_um_a1k0n_nyancat.decoded.r
+variable_add tt08_tt_um_a1k0n_nyancat.decoded.g
+variable_add tt08_tt_um_a1k0n_nyancat.decoded.b
+variable_add tt08_tt_um_a1k0n_nyancat.decoded.rgb6
+variable_add tt08_tt_um_a1k0n_nyancat.decoded.frame
+item_unfocus

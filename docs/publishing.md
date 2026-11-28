@@ -105,3 +105,54 @@ typically append-only: deleting a file from the source does not unpublish the
 copy already on the far server. Run `--dry-run`, and regenerate the index
 (`tt-vga index --upload`) before mirroring, so the page being published points
 at files that exist.
+
+## Frames upload
+
+The raw-traces pipeline publishes each project's trace, stores, hash files,
+PNGs and pages into the frames subtree of the archive (`frames_root` in
+[`host.toml`](host-setup.md#hosttoml)). There is one upload: the archive's
+normal five-minute upload carries the frames subtree with the clips and the
+index (owner rulings BK and BO in the
+[pipeline plan, Task 19](superpowers/plans/2026-11-26-raw-traces-pipeline.md#task-19-the-upload-split-decision-4-with-the-frames-upload-left-off)).
+Nothing in this repository changes the upload.
+
+- **Nothing is held back.** A project's frames reach the server within one
+  upload interval of [`publish.py`](../ttvga/harness/publish.py) swapping them
+  into the subtree.
+- **Nothing is deleted on the server.** Removing or replacing a project
+  locally does not unpublish its old files.
+  [`tt-vga verify --server-stale URL`](../ttvga/harness/verify.py) lists what
+  the server holds that the archive does not, for removal by hand.
+
+### The cost: the upload's listing
+
+Every run of the upload lists the whole archive, so the frames subtree
+lengthens every run, whether or not anything changed. The pilot measured it
+([measurements](reports/2026-11-pilot/measurements.md#the-uploads-listing-ruling-bk)):
+
+| archive | files | listing (s) |
+|---|---:|---:|
+| before the frames subtree | 62,991 | 24 |
+| with the pilot's 11 projects | 102,579 | 31 |
+| projected: 408 projects, centre-v1 only | 547,544 | 107 |
+| projected: 408 projects, both samplers | 1,094,642 | 189 |
+
+The projection extrapolates about ten times past what was measured, so it is
+checked as the files arrive.
+
+### Logging the listing on every re-run
+
+During every re-run that publishes frames, log each upload run's listing time
+from the upload's log (read only), for example every 5 minutes:
+
+```
+uv run scripts/pilot_measure.py --upload-listing /var/lib/data-upload/rsync.log --last 5 >> tmp/upload-listing.log 2>&1
+```
+
+[`pilot_measure.py`](../scripts/pilot_measure.py) prints, per run, the file
+count (`Number of files:`) and the time from `building file list` to
+`total size is`.
+
+If a listing comes near 4 minutes (240 s) of the 5-minute interval, stop
+adding projects and take it to the owner (Ruling BO): runs would start to
+overlap.

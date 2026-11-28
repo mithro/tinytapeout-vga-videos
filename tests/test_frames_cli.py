@@ -106,3 +106,54 @@ def test_load_frame_captured_vs_distinct(sample, tmp_path):
     png = tmp_path / "f.png"
     pngio.write_rgb6(png, W, H, pix[2])
     assert frames.load_frame(str(png)) == (W, H, pix[2])
+
+
+@pytest.mark.parametrize("damage", ["truncated", "other-bytes", "not-zstd"])
+def test_corrupt_store_is_refused(sample, tmp_path, capsys, damage):
+    txt, pix = sample
+    store = txt.parent / "x_frames.rgb6.zst"
+    if damage == "truncated":        # one byte short: store_length differs
+        store.write_bytes(zstd.compress(b"".join(pix)[:-1]))
+    elif damage == "other-bytes":    # the right length, other bytes: XXH3-128 differs
+        store.write_bytes(zstd.compress(bytes(len(b"".join(pix)))))
+    else:
+        store.write_bytes(b"not a zstd frame")
+    assert main(["frames", "to-png", str(txt), "--out", str(tmp_path / "png")]) == 1
+    err = capsys.readouterr().err
+    assert str(store) in err
+    assert {"truncated": "store_length", "other-bytes": "XXH3-128", "not-zstd": "tt-vga: "}[damage] in err
+    assert not (tmp_path / "png").exists()
+    with pytest.raises(ValueError, match="x_frames.rgb6.zst"):
+        frames.load_frame(f"{store}:0")
+
+
+def test_diff_lists_at_most_10_pairs(tmp_path, capsys):
+    # 12 distinct (a, b) value pairs, pair k on k + 1 pixels: the 10 most frequent are listed, most first.
+    w, h = 13, 12
+    a, b = bytearray(w * h), bytearray(w * h)
+    for k in range(12):
+        for x in range(k + 1):
+            b[k * w + x] = k + 1
+    pa, pb = tmp_path / "a.png", tmp_path / "b.png"
+    pngio.write_rgb6(pa, w, h, bytes(a))
+    pngio.write_rgb6(pb, w, h, bytes(b))
+    assert main(["frames", "diff", str(pa), str(pb), "--out", str(tmp_path / "out")]) == 0
+    pairs = [ln for ln in capsys.readouterr().out.splitlines() if " -> " in ln]
+    assert len(pairs) == 10
+    assert pairs[0] == f"0,0,0 -> {frames._channels(12)}: 12"
+    assert pairs[-1] == f"0,0,0 -> {frames._channels(3)}: 3"
+
+
+def test_unreadable_png_is_a_message_not_a_traceback(sample, tmp_path, capsys):
+    pa = tmp_path / "a.png"
+    pngio.write_rgb6(pa, W, H, bytes(W * H))
+    missing = tmp_path / "missing.png"
+    assert main(["frames", "diff", str(pa), str(missing), "--out", str(tmp_path / "out")]) == 1
+    assert f"tt-vga: {missing}: No such file or directory" in capsys.readouterr().err
+    # from-png: a file named like a frame that is not an rgb6 PNG.
+    txt, _ = sample
+    png = tmp_path / "png"
+    assert main(["frames", "to-png", str(txt), "--out", str(png)]) == 0
+    (png / "000001.png").write_bytes(b"not a png")
+    assert main(["frames", "from-png", str(png), "--frames", str(txt), "--out", str(tmp_path / "s.zst")]) == 1
+    assert "000001.png: not an rgb6 PNG" in capsys.readouterr().err

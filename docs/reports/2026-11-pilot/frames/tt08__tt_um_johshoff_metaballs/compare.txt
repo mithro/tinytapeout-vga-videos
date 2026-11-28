@@ -1,0 +1,7 @@
+frames_a: 4331
+frames_b: 4331
+gaps_a: 0
+gaps_b: 0
+first_mismatch: none
+offset: 0
+start_clock_delta: -5384 x4331

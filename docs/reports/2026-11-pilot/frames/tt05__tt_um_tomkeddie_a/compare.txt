@@ -1,0 +1,15 @@
+frames_a: 3736
+frames_b: 3736
+gaps_a: 0
+gaps_b: 0
+first_mismatch: 0
+offset: none
+start_clock_delta: -942 x3736
+differing_pixels: 1122
+bbox: 9 0 640 480
+per_channel: r 642 g 642 b 480
+0,0,0 -> 0,0,3: 480
+0,0,3 -> 3,3,3: 321
+3,3,3 -> 0,0,3: 321
+trace_range_a: --from 2020681 --to 2424975
+trace_range_b: --from 2019739 --to 2424033
