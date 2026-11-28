@@ -322,8 +322,43 @@ neither of those, so a design that reads its own `uio` outputs back, or has such
   clock `floor((hsync + hback' + p + 0.5) * cpp)` after the edge.
 - `hback'` and `vback'` are the `porches` line of its `frames.txt`.
 
-Which projects agree frame for frame between tb-v1, centre-v1 and the FPGA crop is the table from
-plan Tasks 21 and 22 (to fill in below). For cpp != 1, compare the raw trace only.
+## The reference sampler
+
+**tb-v1 is the reference sampler** (plan Task 22, decision 3; the
+[owner report](reports/2026-11-pilot/report.md#rulings)). centre-v1 is published beside it.
+- centre-v1 was not made the reference: on `tt08/tt_um_MichaelBell_mandelbrot` it shows a shifted
+  and cropped part of the picture ([vgacap issue 100](https://github.com/mithro/vgacap/issues/100)).
+- For either sampler, compare frames only where its `window.exact` is `true`
+  ([Sampler windows](#sampler-windows)).
+- Projects that are not exact are to be derived again with centre-v2 when it exists.
+
+## cpp = 1: where the samplers agree
+
+The 8 of the 11 pilot projects whose centre-v1 `clocks_per_pixel` is 1, from plan Task 21 Step 3
+([measurements](reports/2026-11-pilot/measurements.md#step-3-tb-v1-against-centre-v1)) and the
+[window flags](reports/2026-11-pilot/measurements.md#sampler-window-flags). The full table, for every
+project, comes with the re-run (plan Task 23).
+
+| project | mode | centre-v1 cpp | tb-v1 cpp | tb-v1 equal to centre-v1 | tb-v1 exact | centre-v1 exact | mode in the FPGA harness's table |
+|---|---|---:|---:|---|---|---|---|
+| `tt08/tt_um_a1k0n_nyancat` | 640x480@60 | 1 | 1 | yes | yes | no | yes |
+| `ttihp25a/tt_um_rebeccargb_colorbars` | 640x480@60 | 1 | 1 | yes | yes | no | yes |
+| `ttihp25a/tt_um_rejunity_atari2600` | 640x480@60 | 1 | 1 | yes | yes | no | yes |
+| `tt07/tt_um_tinytapeout_dvd_screensaver` | 640x480@60 | 1 | 1 | yes | yes | yes | yes |
+| `tt08/tt_um_johshoff_metaballs` | 800x600@72 | 1 | 1 | yes | yes | yes | no |
+| `ttihp25a/tt_um_MichaelBell_rle_vga` | 640x480@75 | 1 | 0.952381 | yes | no | yes | no |
+| `tt05/tt_um_tomkeddie_a` | 640x480@60 | 1 | 1 | no | no | yes | yes |
+| `tt08/tt_um_nyan` | 640x480@60 | 1 | 1.04 | no | no | no | yes |
+
+- "tb-v1 equal to centre-v1" means every frame's hash is the same in both, with no frame offset.
+- The FPGA harness's crop is tb-v1's frame for a cpp = 1 design in one of its three modes, under the
+  conditions in [Frame starts, and cpp = 1](#frame-starts-and-cpp--1). So nyancat, colorbars,
+  atari2600 and dvd_screensaver are the pilot projects where tb-v1, centre-v1 and the FPGA crop can
+  agree frame for frame.
+- On nyancat, colorbars and atari2600 the two samplers agree, but centre-v1's `outside` is not 0: some
+  lit pixels fall outside both windows.
+- rle_vga has one distinct frame, so its samplers agree although tb-v1's cpp is 0.95.
+- For cpp != 1, compare the raw trace only.
 
 ## tb-v1 freshness
 
@@ -349,6 +384,5 @@ A published tb-v1 in the pre-XXH3 format cannot be left in place: the run fails 
 
 ## To fill in later
 
-- The reference sampler (plan Task 22).
-- The table of projects that agree frame for frame (plan Tasks 21 and 22).
+- The table of projects that agree frame for frame, for every project (plan Task 23).
 - The commit of this repository to pin (plan Task 23).

@@ -243,11 +243,18 @@ On the published trace, VGACAP_SAMPLE_DEBUG=1; and the job's derive from result.
 
 The logs are in [`bench/`](bench/), summarised by [`bench_summary.py`](bench_summary.py), whose output the two tables below are. 20 s of simulated time per model, in queue-sized scopes. A pair is one without and one with, started together.
 
-| bench | models at once | pairs a round | rounds | projects |
-| --- | ---: | ---: | ---: | --- |
-| 2 + 2 | 4 | 2 | 3 | colorbars |
-| 2 + 2 | 24 | 2 | 3 | rle_vga, nyan, cfib_demo, metaballs, tomkeddie_a, vgadonut |
-| level bench | 5 | 1 | 3 | nyancat |
+| project | bench | models at once | pairs a round | rounds | log |
+| --- | --- | --- | ---: | ---: | --- |
+| colorbars | 2 + 2 | not recorded | 2 | 3 | [`colorbars.log`](bench/colorbars.log) |
+| rle_vga | 2 + 2 | 24 | 2 | 3 | [`six.log`](bench/six.log) |
+| nyan | 2 + 2 | 24 | 2 | 3 | [`six.log`](bench/six.log) |
+| cfib_demo | 2 + 2 | 24 | 2 | 3 | [`six.log`](bench/six.log) |
+| metaballs | 2 + 2 | 24 | 2 | 3 | [`six.log`](bench/six.log) |
+| tomkeddie_a | 2 + 2 | 24 | 2 | 3 | [`six.log`](bench/six.log) |
+| vgadonut | 2 + 2 | 24 | 2 | 3 | [`six.log`](bench/six.log) |
+| nyancat | level bench | 5 | 1 | 3 | [`levels-nyancat.log`](bench/levels-nyancat.log) |
+
+- No bench log has start times, so none shows how many models ran at once. The 24 and the 5 are the benches' design (6 projects of 4 models, and 5 variants), and their logs list the runs in that shape. colorbars' log holds only its own 4 runs a round, so its count is not recorded.
 
 | project | bench | round | pair | without (s) | with (s) | overhead (%) |
 | --- | --- | ---: | --- | ---: | ---: | ---: |
