@@ -126,6 +126,10 @@ def _bool(v: Any) -> str | None:
     return None if isinstance(v, bool) else "must be a bool"
 
 
+def _nullable_bool(v: Any) -> str | None:
+    return None if v is None or isinstance(v, bool) else "must be true, false or null"
+
+
 def _url(v: Any) -> str | None:
     if not isinstance(v, str):
         return "must be a string"
@@ -173,12 +177,16 @@ SIMPLE_RULES: dict[str, Rule] = {
     "verdict": _pattern(VERDICT_RE, "1 to 32 of a-z and -"),
     "qspi": _choice("none", "emulated"),
     "pdk_latches": _bool,
+    "synthesis_differs": _nullable_bool,
 }
 ENTRY_KEYS = (
     "id", "shuttle", "macro", "title", "author", "description", "docs_url", "repo_url", "commit",
     "clock_hz", "pinout", "ui_in_mask", "ui_in", "bin", "bin_bytes", "bin_sha256", "build_status",
-    "fmax_hz", "validation", "verdict", "qspi", "pdk_latches", "poster", "preview_gif", "video_10s_webm",
+    "fmax_hz", "validation", "verdict", "qspi", "pdk_latches", "synthesis_differs", "poster", "preview_gif", "video_10s_webm",
 )  # fmt: skip
+# Keys a reader accepts missing, for now (Ruling CH: missing `synthesis_differs` means null).
+# Making one required is removing it from this set.
+OPTIONAL_FOR_NOW = frozenset({"synthesis_differs"})
 MEDIA_KEYS = ("poster", "preview_gif", "video_10s_webm")
 # Fields whose invalidity defers the checks that depend on them (see the module docstring).
 DEFERRING_FIELDS = frozenset({"shuttle", "macro", "bin_sha256", "ui_in_mask"})
@@ -213,7 +221,8 @@ def _entry_violations(entry: dict, seen_ids: set[str]) -> list[tuple[str, str]]:
     out: list[tuple[str, str]] = []
     for key in ENTRY_KEYS:
         if key not in entry:
-            out.append((key, "missing"))
+            if key not in OPTIONAL_FOR_NOW:
+                out.append((key, "missing"))
             continue
         value = entry[key]
         rule: str | None
