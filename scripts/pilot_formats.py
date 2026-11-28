@@ -10,7 +10,8 @@ matching, plus an 8-byte offset per image so any one can be found):
 - size in bytes;
 - the time to read the middle distinct frame (index n // 2): for the stream, decompressing from the
   start until that frame is out; for one frame per image, decompressing that image's frame alone.
-  Median of 5 reads, wall time (time.perf_counter), one thread.
+  Median of 5 reads, wall time (time.perf_counter), one thread. The summary's per-frame costs are
+  medians over the projects with more than BUSY (100) distinct frames.
 
 The trace formats (VGCH, FST, sigrok) are not measured here: the trace-format study covers them.
 """
@@ -29,6 +30,7 @@ from vgacap import framesfile  # noqa: E402
 
 LEVEL = 3
 READS = 5
+BUSY = 100
 OPTIONS = {zstd.CompressionParameter.compression_level: LEVEL,
            zstd.CompressionParameter.enable_long_distance_matching: 0}
 
@@ -79,8 +81,11 @@ def main() -> int:
     frames = sum(r["count"] for r in rows)
     stream, images = sum(r["stream"] for r in rows), sum(r["images"] for r in rows)
     # The stream's middle read decompresses about half the store: its cost per decompressed frame.
-    per_frame = statistics.median(r["stream_s"] / (r["count"] // 2 + 1) for r in rows)
-    per_image = statistics.median(r["image_s"] for r in rows)
+    # Only projects with more than BUSY distinct frames: with 1 or 2 frames the time is fixed overhead.
+    busy = [r for r in rows if r["count"] > BUSY]
+    per_frame = statistics.median(r["stream_s"] / (r["count"] // 2 + 1) for r in busy)
+    per_image = statistics.median(r["image_s"] for r in busy)
+    print(f"projects with more than {BUSY} distinct frames: {len(busy)}")
     print(f"\npilot: {frames:,} distinct frames; stream {stream:,} bytes; one frame per image {images:,} bytes")
     print(f"stream bytes per distinct frame {stream / frames:,.0f}; one frame per image {images / frames:,.0f}")
     print(f"stream read cost per frame decompressed (median) {per_frame * 1e3:.3f} ms; "
