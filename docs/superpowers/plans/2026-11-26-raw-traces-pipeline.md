@@ -427,7 +427,7 @@ Test-run convention, used in every task's run steps: `uv run pytest <files> -v >
     5. runs `tracetool uohash`;
     6. with tb-v1, writes `<out>/tb-v1/TRACE_SHA256` (the hex and a newline);
     7. sets `tb_v1_check`: `match` or `mismatch` when `tb_v1` and `tb_hashes` exist (hash lines compared line for line); `not-run` when `tb_v1` without `tb_hashes`; `off` when not `tb_v1`.
-  - `DeriveResult(samplers: dict[str, dict], trace_sha: str, uo_out_xxh3_128: str, uo_out_xxh3_128_clocks: tuple[int, int], tb_v1_check: str, error: str | None, cpu_seconds: float, pngs_written: int, pngs_linked: int)`. `samplers[s]` is `{sampler_status, frames, distinct_frames, mode, width, height, clocks_per_pixel}` from `vgacap.framesfile.read_frames_txt`.
+  - `DeriveResult(samplers: dict[str, dict], trace_sha: str, uo_out_xxh3_128: str, uo_out_xxh3_128_clocks: tuple[int, int], tb_v1_check: str, error: str | None, cpu_seconds: float, pngs_written: int, pngs_linked: int)`. `samplers[s]` is `{sampler_status, frames, distinct_frames, mode, width, height, clocks_per_pixel}` from `vgacap.framesfile.read_frames_txt`, and `window` from `derive.windows` (added after the pilot for vgacap issue 100; defined in [consumers.md](../../consumers.md#sampler-windows)).
   - `error` is set for:
     - `vgacap-sample` exit 2, or exit 1 other than a bad window: stderr's last line;
     - `centre-v1/frames.txt` `sampler_status: bad-window` (Ruling U): `"centre_window <dx>,<dy> does not fit"`, with vgacap-sample's message appended;

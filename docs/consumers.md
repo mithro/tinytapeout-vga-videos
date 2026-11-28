@@ -77,6 +77,85 @@ The `result.json` keys to read:
 The verdicts are listed at the top of [`ttvga/analyze.py`](../ttvga/analyze.py). `tb_v1_check` is
 `match`, `mismatch`, `not-run` or `off`.
 
+`samplers` has one entry per sampler the run derived, keyed `centre-v1` or `tb-v1`
+([`ttvga/harness/derive.py`](../ttvga/harness/derive.py), `_summary`):
+
+| key | from |
+|---|---|
+| `sampler_status` | `frames.txt` `sampler_status` |
+| `frames` | `frames.txt` `frames` |
+| `distinct_frames` | `frames.txt` `distinct_frames` |
+| `mode` | `frames.txt` `mode` |
+| `width` | `frames.txt` `width` |
+| `height` | `frames.txt` `height` |
+| `clocks_per_pixel` | `frames.txt` `clocks_per_pixel` |
+| `window` | [`derive.windows`](../ttvga/harness/derive.py); see [Sampler windows](#sampler-windows) |
+
+## Sampler windows
+
+**Change notice (2026-11-28).** vgacap [issue 100](https://github.com/mithro/vgacap/issues/100):
+for a design whose timing is not exactly one of vgacap's table modes, both samplers can show a shifted
+or cropped picture.
+- centre-v1 shows only correct pixels, but they may be the wrong part of the picture.
+- tb-v1 stretches the mode's standard line over the design's line. On `tt08/tt_um_nyan`, whose line is
+  832 clocks against the mode's 800, it samples every 1.04 clocks.
+
+Both samplers are published in the re-run, and each one's `window` says whether its window is exact
+for the design. Projects that are not exact are to be derived again, from their traces, with a future
+centre-v2 sampler. Until then, compare a project's frames only where `window.exact` is `true`.
+
+`samplers.<sampler>.window` is `null` when `sampler_status` is not `ok`. Otherwise it is an object:
+
+| key | type | centre-v1 | tb-v1 |
+|---|---|---|---|
+| `exact` | boolean | yes | yes |
+| `frame_clocks` | integer | yes | yes |
+| `mode_frame_clocks` | integer, or `null` | yes | yes |
+| `outside` | integer | yes | no |
+| `suggested_offset` | array of two integers, x then y | yes | no |
+
+- `frame_clocks` is the sampler's own `frame_clocks` from its `frames.txt`: the measured frame period
+  ([frames-format.md](https://github.com/mithro/vgacap/blob/da9ea98b287740aa11b99263948bb3ca62d961c4/docs/frames-format.md)).
+- `mode_frame_clocks` is the standard frame period of the sampler's `mode`: the mode's clocks per line
+  times its lines, times centre-v1's `clocks_per_pixel`, rounded to a whole clock.
+  - The modes are vgacap's own tables at the pinned commit:
+    centre-v1's from [`modes.py`](https://github.com/mithro/vgacap/blob/da9ea98b287740aa11b99263948bb3ca62d961c4/python/vgacap/modes.py)
+    (`TABLE`, `cpl` and `lpf`), tb-v1's from [`tbv1.py`](https://github.com/mithro/vgacap/blob/da9ea98b287740aa11b99263948bb3ca62d961c4/python/vgacap/tbv1.py)
+    (`TB_MODES`). This repository reads them and keeps no copy.
+  - centre-v1's `clocks_per_pixel` is the reference for both samplers. centre-v1 checks it against the
+    hsync pulse; tb-v1's is the design's line divided by the mode's, so it always fits the mode.
+  - It is `null` when the mode is not in the sampler's table (`unknown`), or when centre-v1 has no
+    window.
+- `outside` and `suggested_offset` are centre-v1's `frames.txt` keys of the same names.
+  `outside` is the count of lit pixels outside centre-v1's window.
+- `exact` is `true` only when `frame_clocks` equals `mode_frame_clocks`, and for centre-v1 also
+  `outside` is 0. A `null` `mode_frame_clocks`, or a `frame_clocks` of 0 (fewer than two frames), is
+  never exact.
+
+What `exact` does not check:
+- The line length on its own. Neither `frames.txt` nor [`tracetool info`](../ttvga/harness/tracetool.c)
+  has it, so a design that is off-mode in its line shows up through its frame period. On nyan,
+  `frame_clocks` is 436,800 = 832 x 525 against the mode's 420,000.
+- Where the sync pulses sit inside the mode's totals, for tb-v1.
+- Lit pixels outside tb-v1's window. When both samplers are exact on timing and centre-v1's
+  `window_offset` is `0 0`, the two windows are the same, so centre-v1's `outside` counts tb-v1's too.
+- The pixel phase within the window: centre-v1's `colour_changes_off_grid`.
+- A `--centre-window` override does not make centre-v1 exact. The override moves the window, but its
+  size still comes from the mode.
+
+nyan's `samplers`, trimmed to the windows:
+
+```json
+{
+  "centre-v1": {"window": {"exact": false, "frame_clocks": 436800, "mode_frame_clocks": 420000,
+                           "outside": 4472, "suggested_offset": [8, -1]}},
+  "tb-v1": {"window": {"exact": false, "frame_clocks": 436800, "mode_frame_clocks": 420000}}
+}
+```
+
+The flags of the 11 pilot projects are in the
+[pilot measurements](reports/2026-11-pilot/measurements.md#sampler-window-flags).
+
 ## What to read, in the archive
 
 The archive is <https://data.wafer.space/big-storage/tinytapeout-vga-videos/>.

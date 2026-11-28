@@ -668,3 +668,27 @@ Frame 100 of nyancat and of cfib_demo, exported by [`tt-vga trace export`](../..
 ## Step 8: upload listing
 
 Done in plan Task 20: see [The upload's listing (Ruling BK)](#the-uploads-listing-ruling-bk) above (about 189 s of the 5-minute interval for both samplers at 408 projects, 107 s for centre-v1 alone). Not measured again.
+
+## Sampler window flags
+
+2026-11-28. [`window_flags.py`](window_flags.py) reads both samplers' published `<frames_root>/<id>/<sampler>/frames.txt`, read only, and computes each one's `window` with [`derive.windows`](../../../ttvga/harness/derive.py), the code that writes it into `result.json` ([consumers.md](../../consumers.md#sampler-windows)). The files are the ones Steps 1-3 read (vgacap [4a3c670](https://github.com/mithro/vgacap/commit/4a3c6701638c67956b54d5dee8f589e89e869b32)); the modes are vgacap's tables at the pin, [da9ea98](https://github.com/mithro/vgacap/commit/da9ea98b287740aa11b99263948bb3ca62d961c4).
+
+| project | mode | centre-v1 cpp | tb-v1 cpp | frame_clocks | mode_frame_clocks | `outside` | `suggested_offset` | centre-v1 exact | tb-v1 exact |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| tt08/tt_um_a1k0n_nyancat | 640x480@60 | 1 | 1 | 420,000 | 420,000 | 640 | (0, -1) | **no** | yes |
+| tt08/tt_um_johshoff_metaballs | 800x600@72 | 1 | 1 | 692,640 | 692,640 | 0 | (0, 0) | yes | yes |
+| ttihp25a/tt_um_rebeccargb_colorbars | 640x480@60 | 1 | 1 | 420,000 | 420,000 | 1,119 | (-1, -1) | **no** | yes |
+| ttihp25a/tt_um_rejunity_atari2600 | 640x480@60 | 1 | 1 | 420,000 | 420,000 | 22,968 | (0, -33) | **no** | yes |
+| tt05/tt_um_tomkeddie_a | 640x480@60 | 1 | 1 | 404,294 | 420,000 | 0 | (0, 0) | **no** | **no** |
+| ttihp25a/tt_um_cfib_demo | 640x480@60 | 2 | 2 | 840,000 | 840,000 | 0 | (0, 0) | yes | yes |
+| ttihp25a/tt_um_a1k0n_vgadonut | 640x480@60 | 1.90625 | 1.90625 | 800,625 | 800,625 | 1,220 | (0, -1) | **no** | yes |
+| tt08/tt_um_nyan | 640x480@60 | 1 | 1.04 | 436,800 | 420,000 | 4,472 | (8, -1) | **no** | **no** |
+| ttihp25a/tt_um_MichaelBell_rle_vga | 640x480@75 | 1 | 0.952381 | 400,000 | 420,000 | 0 | (0, 0) | **no** | **no** |
+| tt08/tt_um_MichaelBell_mandelbrot | 640x480@75 | 4 | 4.26667 | 1,788,416 | 1,680,000 | 161,110 | (-2, -2) | **no** | **no** |
+| tt07/tt_um_tinytapeout_dvd_screensaver | 640x480@60 | 1 | 1 | 420,000 | 420,000 | 0 | (0, 0) | yes | yes |
+
+- centre-v1 is not exact on the six projects with `outside` > 0: nyancat, colorbars, atari2600, vgadonut, nyan and mandelbrot.
+- centre-v1 is also not exact on tomkeddie_a and rle_vga, whose `outside` is 0: their frame period is not the mode's.
+- tb-v1 is not exact on tomkeddie_a, nyan, rle_vga and mandelbrot: their frame period is not the mode's at centre-v1's cpp.
+  - nyan: 436,800 = 832 x 525, against the mode's 800 x 525 = 420,000.
+- vgadonut's cpp of 1.90625 is on the mode (1,525 = 800 x 1.90625), so its tb-v1 is exact.
