@@ -1,0 +1,22 @@
+{"id": "ttihp25a/tt_um_rebeccargb_colorbars", "samplers": "both", "cpu_seconds": 3.06, "wall_seconds": 3.06, "pngs_written": 1, "pngs_linked": 1, "error": null, "distinct": {"centre-v1": 1, "tb-v1": 1}}
+{"id": "tt05/tt_um_tomkeddie_a", "samplers": "both", "cpu_seconds": 7.21, "wall_seconds": 5.26, "pngs_written": 1272, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 636, "tb-v1": 636}}
+{"id": "ttihp25a/tt_um_cfib_demo", "samplers": "both", "cpu_seconds": 24.76, "wall_seconds": 15.88, "pngs_written": 4640, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 2320, "tb-v1": 2320}}
+{"id": "tt08/tt_um_johshoff_metaballs", "samplers": "both", "cpu_seconds": 44.72, "wall_seconds": 29.83, "pngs_written": 4325, "pngs_linked": 4325, "error": null, "distinct": {"centre-v1": 4325, "tb-v1": 4325}}
+{"id": "tt08/tt_um_nyan", "samplers": "both", "cpu_seconds": 3.81, "wall_seconds": 3.8, "pngs_written": 4, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 2, "tb-v1": 2}}
+{"id": "ttihp25a/tt_um_rejunity_atari2600", "samplers": "both", "cpu_seconds": 64.65, "wall_seconds": 60.68, "pngs_written": 1609, "pngs_linked": 1609, "error": null, "distinct": {"centre-v1": 1609, "tb-v1": 1609}}
+{"id": "tt08/tt_um_a1k0n_nyancat", "samplers": "both", "cpu_seconds": 74.14, "wall_seconds": 64.75, "pngs_written": 3530, "pngs_linked": 3530, "error": null, "distinct": {"centre-v1": 3530, "tb-v1": 3530}}
+{"id": "tt08/tt_um_MichaelBell_mandelbrot", "samplers": "both", "cpu_seconds": 6.55, "wall_seconds": 5.97, "pngs_written": 206, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 103, "tb-v1": 103}}
+{"id": "ttihp25a/tt_um_a1k0n_vgadonut", "samplers": "both", "cpu_seconds": 67.57, "wall_seconds": 43.48, "pngs_written": 7194, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 3597, "tb-v1": 3597}}
+{"id": "tt08/tt_um_johshoff_metaballs", "samplers": "centre", "cpu_seconds": 17.09, "wall_seconds": 9.8, "pngs_written": 4325, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 4325}}
+{"id": "tt07/tt_um_tinytapeout_dvd_screensaver", "samplers": "both", "cpu_seconds": 22.94, "wall_seconds": 14.34, "pngs_written": 3568, "pngs_linked": 3568, "error": null, "distinct": {"centre-v1": 3568, "tb-v1": 3568}}
+{"id": "ttihp25a/tt_um_rebeccargb_colorbars", "samplers": "centre", "cpu_seconds": 2.15, "wall_seconds": 2.14, "pngs_written": 1, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 1}}
+{"id": "tt05/tt_um_tomkeddie_a", "samplers": "centre", "cpu_seconds": 2.91, "wall_seconds": 2.05, "pngs_written": 636, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 636}}
+{"id": "ttihp25a/tt_um_cfib_demo", "samplers": "centre", "cpu_seconds": 11.92, "wall_seconds": 7.35, "pngs_written": 2320, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 2320}}
+{"id": "ttihp25a/tt_um_MichaelBell_rle_vga", "samplers": "both", "cpu_seconds": 60.74, "wall_seconds": 60.74, "pngs_written": 1, "pngs_linked": 1, "error": null, "distinct": {"centre-v1": 1, "tb-v1": 1}}
+{"id": "tt08/tt_um_nyan", "samplers": "centre", "cpu_seconds": 2.52, "wall_seconds": 4.31, "pngs_written": 2, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 2}}
+{"id": "tt08/tt_um_a1k0n_nyancat", "samplers": "centre", "cpu_seconds": 49.67, "wall_seconds": 38.66, "pngs_written": 3530, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 3530}}
+{"id": "tt08/tt_um_MichaelBell_mandelbrot", "samplers": "centre", "cpu_seconds": 5.44, "wall_seconds": 5.11, "pngs_written": 103, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 103}}
+{"id": "ttihp25a/tt_um_a1k0n_vgadonut", "samplers": "centre", "cpu_seconds": 36.4, "wall_seconds": 24.38, "pngs_written": 3597, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 3597}}
+{"id": "tt07/tt_um_tinytapeout_dvd_screensaver", "samplers": "centre", "cpu_seconds": 10.56, "wall_seconds": 5.98, "pngs_written": 3568, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 3568}}
+{"id": "ttihp25a/tt_um_rejunity_atari2600", "samplers": "centre", "cpu_seconds": 45.65, "wall_seconds": 41.34, "pngs_written": 1609, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 1609}}
+{"id": "ttihp25a/tt_um_MichaelBell_rle_vga", "samplers": "centre", "cpu_seconds": 46.57, "wall_seconds": 46.57, "pngs_written": 1, "pngs_linked": 0, "error": null, "distinct": {"centre-v1": 1}}
